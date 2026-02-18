@@ -7170,3 +7170,4 @@
 - [x] Tooltip nos cards truncados de Lançamentos Futuros (exibir nome completo ao hover)
 - [x] Botões Nova meta e Gerenciar categorias lado a lado no card de Indicadores
 - [x] Barra de rolagem horizontal do card Lançamentos Futuros só aparece ao hover
+- [x] Marcar lançamento futuro (recorrente ou avulso) como pago diretamente do card

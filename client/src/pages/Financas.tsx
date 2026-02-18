@@ -38,6 +38,7 @@ import {
   ShieldCheck,
   Wrench,
   History,
+  CheckCircle2,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -1398,6 +1399,19 @@ export default function Financas() {
     { enabled: !!establishmentId }
   );
 
+  // Mark upcoming as paid mutation
+  const markAsPaidMutation = trpc.finance.markUpcomingAsPaid.useMutation({
+    onSuccess: (result) => {
+      if (result.action === 'updated') {
+        toast.success("Lançamento marcado como pago!");
+      } else {
+        toast.success("Despesa registrada como paga!");
+      }
+      invalidateAll();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
   // Recurring expense history query
   const historyInput = useMemo(
     () => ({
@@ -1458,6 +1472,8 @@ export default function Financas() {
     utils.finance.listRecurring.invalidate();
     utils.finance.getMonthlyComparison.invalidate();
     utils.finance.listGoals.invalidate();
+    utils.finance.upcomingRecurring.invalidate();
+    utils.finance.listDailyRevenue.invalidate();
   }
 
   const goalTarget = goal ? Number(goal.targetProfit) : null;
@@ -2269,7 +2285,34 @@ export default function Financas() {
                                 <span className="text-red-600 dark:text-red-400">{formatCurrency(item.amount)}</span>
                               )}
                             </p>
-                            <p className="text-[10px] text-muted-foreground mt-0.5">{formatDate(item.dueDate)}</p>
+                            <div className="flex items-center justify-between mt-0.5">
+                              <p className="text-[10px] text-muted-foreground">{formatDate(item.dueDate)}</p>
+                              <button
+                                className="text-muted-foreground/50 hover:text-emerald-500 transition-colors p-0.5 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-500/10"
+                                title="Marcar como pago"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (markAsPaidMutation.isPending) return;
+                                  if (!item.categoryId) {
+                                    toast.error("Categoria n\u00e3o encontrada para este lan\u00e7amento.");
+                                    return;
+                                  }
+                                  markAsPaidMutation.mutate({
+                                    establishmentId: establishmentId!,
+                                    recurringId: item.recurringId,
+                                    frequency: item.frequency,
+                                    description: item.description,
+                                    categoryId: item.categoryId,
+                                    amount: item.amount.toFixed(2),
+                                    paymentMethod: (item.paymentMethod as "cash" | "pix" | "card" | "transfer") || "cash",
+                                    dueDate: item.dueDate,
+                                    type: item.type,
+                                  });
+                                }}
+                              >
+                                <CheckCircle2 className={`h-3.5 w-3.5 ${markAsPaidMutation.isPending ? 'animate-spin' : ''}`} />
+                              </button>
+                            </div>
                           </div>
                         </div>
                         {/* Arrow separator */}

@@ -9249,6 +9249,7 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
     categoryName: expenseCategories.name,
     categoryColor: expenseCategories.color,
     amount: recurringExpenses.amount,
+    paymentMethod: recurringExpenses.paymentMethod,
     frequency: recurringExpenses.frequency,
     executionDay: recurringExpenses.executionDay,
     executionMonth: recurringExpenses.executionMonth,
@@ -9270,10 +9271,12 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
   const occurrences: Array<{
     recurringId: number;
     description: string;
+    categoryId: number | null;
     categoryName: string | null;
     categoryColor: string | null;
     amount: number;
     frequency: string;
+    paymentMethod: string;
     dueDate: string; // ISO date string YYYY-MM-DD
     type: string;
   }> = [];
@@ -9286,10 +9289,12 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
       occurrences.push({
         recurringId: item.id,
         description: item.description,
+        categoryId: item.categoryId,
         categoryName: item.categoryName,
         categoryColor: item.categoryColor,
         amount,
         frequency: item.frequency,
+        paymentMethod: item.paymentMethod,
         dueDate: date,
         type: item.type,
       });
@@ -9306,6 +9311,7 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
     categoryName: expenseCategories.name,
     categoryColor: expenseCategories.color,
     amount: expenses.amount,
+    paymentMethod: expenses.paymentMethod,
     date: expenses.date,
   })
     .from(expenses)
@@ -9322,10 +9328,12 @@ export async function getUpcomingRecurringExpenses(establishmentId: number) {
     occurrences.push({
       recurringId: exp.id,
       description: exp.description,
+      categoryId: exp.categoryId,
       categoryName: exp.categoryName,
       categoryColor: exp.categoryColor,
       amount: Number(exp.amount),
       frequency: 'once',
+      paymentMethod: exp.paymentMethod || 'cash',
       dueDate: formatDateISO(expDate),
       type: 'expense',
     });

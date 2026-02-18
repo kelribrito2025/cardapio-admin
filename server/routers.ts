@@ -5448,6 +5448,41 @@ export const appRouter = router({
         return db.getUpcomingRecurringExpenses(input.establishmentId);
       }),
 
+    // Marcar lançamento futuro como pago
+    markUpcomingAsPaid: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        recurringId: z.number(),
+        frequency: z.string(), // 'once' | 'weekly' | 'monthly' | 'yearly'
+        description: z.string(),
+        categoryId: z.number(),
+        amount: z.string(),
+        paymentMethod: z.enum(["cash", "pix", "card", "transfer"]),
+        dueDate: z.string(), // ISO date string
+        type: z.string(), // 'expense' | 'revenue'
+      }))
+      .mutation(async ({ input }) => {
+        if (input.frequency === 'once') {
+          // One-time future expense: update date to today
+          await db.updateExpense(input.recurringId, {
+            date: new Date(),
+          });
+          return { success: true, action: 'updated' };
+        } else {
+          // Recurring: create a new expense entry for this occurrence
+          const id = await db.createExpense({
+            establishmentId: input.establishmentId,
+            categoryId: input.categoryId,
+            description: input.description,
+            amount: input.amount,
+            paymentMethod: input.paymentMethod,
+            date: new Date(input.dueDate),
+            notes: `Pago via lançamento futuro (recorrência #${input.recurringId})`,
+          });
+          return { success: true, action: 'created', expenseId: id };
+        }
+      }),
+
     // Despesas Recorrentes
     listRecurring: protectedProcedure
       .input(z.object({ establishmentId: z.number() }))
