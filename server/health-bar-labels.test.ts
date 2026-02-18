@@ -35,4 +35,16 @@ describe("health bar labels in Indicadores card", () => {
   it("should still have 'Prejuízo' as the left label", () => {
     expect(financasContent).toContain(">Prejuízo<");
   });
+
+  it("should use red color for 'Prejuízo' label", () => {
+    expect(financasContent).toContain('text-red-500">Prejuízo<');
+  });
+
+  it("should use amber color for 'Boa' label", () => {
+    expect(financasContent).toContain('text-amber-500">Boa<');
+  });
+
+  it("should use emerald/green color for 'Excelente' label", () => {
+    expect(financasContent).toContain('text-emerald-500">Excelente<');
+  });
 });
