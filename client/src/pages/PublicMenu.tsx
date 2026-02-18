@@ -6468,14 +6468,14 @@ setOnlinePaymentUrl(null);
       
       {/* Bottom Sheet Cashback no Checkout */}
       {showCashbackCheckoutSheet && (
-        <div className="fixed inset-0 z-[100] flex items-end">
+        <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setShowCashbackCheckoutSheet(false)}
           />
-          <div className="relative w-full bg-white rounded-t-2xl shadow-2xl max-h-[70vh] overflow-y-auto animate-in slide-in-from-bottom duration-300">
+          <div className="relative w-full md:w-[420px] bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[70vh] overflow-y-auto animate-in slide-in-from-bottom duration-300">
             {/* Header */}
-            <div className="sticky top-0 bg-red-500 rounded-t-2xl px-6 py-4 flex items-center justify-between">
+            <div className="sticky top-0 bg-red-500 rounded-t-2xl md:rounded-t-2xl px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
                   <Wallet className="h-5 w-5 text-white" />

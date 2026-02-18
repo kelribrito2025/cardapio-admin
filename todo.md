@@ -7218,3 +7218,4 @@
 - [x] Garantir saldo atualizado antes do envio da mensagem (transação no banco)
 - [x] Formatar valores com 2 casas decimais e vírgula como separador (padrão BR)
 - [x] Testes vitest para notificação de cashback
+- [x] Alterar modal de cashback: dialog centralizado no desktop, bottom sheet apenas no mobile
