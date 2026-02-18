@@ -7192,3 +7192,19 @@
 - [x] Adicionar indicador 'Boa' no meio da barra de saúde financeira
 - [x] Adicionar cores distintas aos rótulos da barra de saúde financeira (Prejuízo=vermelho, Boa=âmbar, Excelente=verde)
 - [x] Animação suave de preenchimento na barra de saúde financeira ao carregar o card de Indicadores
+- [x] Schema DB: tabela cashback_config (percentual, modo aplicação, uso parcial, categorias)
+- [x] Schema DB: tabela cashback_transactions (tipo geração/uso, pedido_id, valor, saldo)
+- [x] Schema DB: campo reward_program_type no estabelecimento (fidelidade ou cashback)
+- [x] Schema DB: campos valor_cashback_utilizado e valor_original nos pedidos (usando cashbackTransactions)
+- [x] Backend: routers de configuração cashback (get/update config)
+- [x] Backend: routers de saldo e movimentações cashback (consulta saldo, histórico)
+- [x] Backend: validação de saldo no backend ao aplicar cashback no pedido
+- [x] Backend: geração automática de cashback ao concluir pedido
+- [x] Admin: seção Programa de Recompensas com radio button exclusivo (Fidelidade/Cashback)
+- [x] Admin: configuração do cashback (percentual, categorias, uso parcial)
+- [x] Menu Público: badge de cashback nos produtos (+X% de cashback)
+- [x] Menu Público: Minha Carteira (saldo, histórico acumulado, histórico utilizado)
+- [x] Menu Público: lógica de login para visualizar saldo cashback
+- [x] Modal Pagamento: opção usar cashback com cálculo em tempo real
+- [x] Modal Pagamento: regras de aplicação (parcial, total, excedente)
+- [x] Testes vitest para cashback

@@ -1512,6 +1512,8 @@ export const appRouter = router({
         loyaltyCardId: z.number().optional(),
         isScheduled: z.boolean().optional(),
         scheduledAt: z.string().optional(),
+        cashbackAmount: z.string().optional(),
+        cashbackCustomerPhone: z.string().optional(),
         items: z.array(z.object({
           productId: z.number(),
           productName: z.string(),
@@ -1527,7 +1529,7 @@ export const appRouter = router({
         })),
       }))
       .mutation(async ({ input }) => {
-        const { items, couponId, loyaltyCardId, isScheduled, scheduledAt, ...orderData } = input;
+        const { items, couponId, loyaltyCardId, isScheduled, scheduledAt, cashbackAmount, cashbackCustomerPhone, ...orderData } = input;
         
         console.log('[CreateOrder] Iniciando criação de pedido:', {
           establishmentId: orderData.establishmentId,
@@ -1647,6 +1649,29 @@ export const appRouter = router({
         // Increment coupon usage if coupon was used
         if (couponId && result) {
           await db.incrementCouponUsage(couponId);
+        }
+        
+        // Processar uso de cashback se foi utilizado
+        if (cashbackAmount && cashbackCustomerPhone && result && parseFloat(cashbackAmount) > 0) {
+          try {
+            const cashbackUsed = parseFloat(cashbackAmount);
+            // Validar saldo no backend
+            const balance = await db.getCashbackBalance(orderData.establishmentId, cashbackCustomerPhone);
+            if (balance && parseFloat(balance.balance) >= cashbackUsed) {
+              await db.debitCashback({
+                establishmentId: orderData.establishmentId,
+                customerPhone: cashbackCustomerPhone,
+                amount: cashbackUsed.toFixed(2),
+                orderId: result.orderId,
+              });
+              console.log('[CreateOrder] Cashback utilizado:', cashbackUsed, 'para pedido:', result.orderId);
+            } else {
+              console.warn('[CreateOrder] Saldo de cashback insuficiente:', balance?.balance, 'necessário:', cashbackUsed);
+            }
+          } catch (error) {
+            console.error('[CreateOrder] Erro ao processar cashback:', error);
+            // Não lançar erro para não impedir o pedido
+          }
         }
         
         // Consumir cupom de fidelidade e resetar cartão se foi usado
@@ -4470,6 +4495,8 @@ export const appRouter = router({
         couponCode: z.string().optional(),
         couponId: z.number().optional(),
         loyaltyCardId: z.number().optional(),
+        cashbackAmount: z.string().optional(),
+        cashbackCustomerPhone: z.string().optional(),
         items: z.array(z.object({
           productId: z.number(),
           productName: z.string(),
@@ -5636,6 +5663,166 @@ export const appRouter = router({
       }))
       .query(async ({ input }) => {
         return db.getPaymentMethodDailyBreakdown(input.establishmentId, input.period ?? 'today', input.customStart, input.customEnd);
+      }),
+  }),
+
+  // ============ CASHBACK ============
+  cashback: router({
+    // Buscar configurações de cashback do estabelecimento (admin)
+    getConfig: protectedProcedure
+      .query(async ({ ctx }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) return null;
+        return {
+          rewardProgramType: establishment.rewardProgramType || 'none',
+          cashbackEnabled: establishment.cashbackEnabled || false,
+          cashbackPercent: establishment.cashbackPercent || '0',
+          cashbackApplyMode: establishment.cashbackApplyMode || 'all',
+          cashbackCategoryIds: establishment.cashbackCategoryIds || [],
+          cashbackAllowPartialUse: establishment.cashbackAllowPartialUse ?? true,
+          loyaltyEnabled: establishment.loyaltyEnabled || false,
+        };
+      }),
+
+    // Salvar configurações de programa de recompensas (admin)
+    saveConfig: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        rewardProgramType: z.enum(['none', 'loyalty', 'cashback']),
+        cashbackPercent: z.string().optional(),
+        cashbackApplyMode: z.enum(['all', 'categories']).optional(),
+        cashbackCategoryIds: z.array(z.number()).optional(),
+        cashbackAllowPartialUse: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { establishmentId, rewardProgramType, ...cashbackSettings } = input;
+        
+        const updateData: any = { rewardProgramType };
+        
+        if (rewardProgramType === 'cashback') {
+          updateData.cashbackEnabled = true;
+          updateData.loyaltyEnabled = false;
+          if (cashbackSettings.cashbackPercent !== undefined) updateData.cashbackPercent = cashbackSettings.cashbackPercent;
+          if (cashbackSettings.cashbackApplyMode !== undefined) updateData.cashbackApplyMode = cashbackSettings.cashbackApplyMode;
+          if (cashbackSettings.cashbackCategoryIds !== undefined) updateData.cashbackCategoryIds = cashbackSettings.cashbackCategoryIds;
+          if (cashbackSettings.cashbackAllowPartialUse !== undefined) updateData.cashbackAllowPartialUse = cashbackSettings.cashbackAllowPartialUse;
+        } else if (rewardProgramType === 'loyalty') {
+          updateData.cashbackEnabled = false;
+          updateData.loyaltyEnabled = true;
+        } else {
+          updateData.cashbackEnabled = false;
+          updateData.loyaltyEnabled = false;
+        }
+        
+        await db.updateEstablishment(establishmentId, updateData);
+        return { success: true };
+      }),
+
+    // Buscar saldo de cashback do cliente (público - requer telefone)
+    getBalance: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        phone: z.string().min(10),
+      }))
+      .query(async ({ input }) => {
+        const balance = await db.getCashbackBalance(input.establishmentId, input.phone);
+        if (!balance) return { balance: '0.00', totalEarned: '0.00', totalUsed: '0.00' };
+        return {
+          balance: balance.balance,
+          totalEarned: balance.totalEarned,
+          totalUsed: balance.totalUsed,
+        };
+      }),
+
+    // Buscar histórico de transações de cashback do cliente (público)
+    getTransactions: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        phone: z.string().min(10),
+        limit: z.number().optional(),
+      }))
+      .query(async ({ input }) => {
+        const transactions = await db.getCashbackTransactions(input.establishmentId, input.phone, input.limit || 50);
+        return transactions.map(tx => ({
+          id: tx.id,
+          type: tx.type,
+          amount: tx.amount,
+          orderNumber: tx.orderNumber,
+          description: tx.description,
+          balanceBefore: tx.balanceBefore,
+          balanceAfter: tx.balanceAfter,
+          createdAt: tx.createdAt,
+        }));
+      }),
+
+    // Verificar se cashback está ativo no estabelecimento (público)
+    isEnabled: publicProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        const establishment = await db.getEstablishmentById(input.establishmentId);
+        return {
+          enabled: establishment?.cashbackEnabled && establishment?.rewardProgramType === 'cashback',
+          percent: establishment?.cashbackPercent || '0',
+          applyMode: establishment?.cashbackApplyMode || 'all',
+          categoryIds: establishment?.cashbackCategoryIds || [],
+          allowPartialUse: establishment?.cashbackAllowPartialUse ?? true,
+        };
+      }),
+
+    // Validar e aplicar cashback no pedido (público)
+    validateUsage: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        phone: z.string().min(10),
+        amount: z.string(), // Valor que o cliente quer usar
+        orderTotal: z.string(), // Total do pedido
+      }))
+      .mutation(async ({ input }) => {
+        const balance = await db.getCashbackBalance(input.establishmentId, input.phone);
+        if (!balance) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Saldo de cashback não encontrado' });
+        }
+        
+        const currentBalance = Number(balance.balance);
+        const requestedAmount = Number(input.amount);
+        const orderTotal = Number(input.orderTotal);
+        
+        // Verificar configurações
+        const establishment = await db.getEstablishmentById(input.establishmentId);
+        if (!establishment?.cashbackEnabled || establishment?.rewardProgramType !== 'cashback') {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Cashback não está ativo' });
+        }
+        
+        if (!establishment.cashbackAllowPartialUse && requestedAmount < currentBalance && requestedAmount < orderTotal) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Uso parcial do saldo não é permitido. Use o saldo total ou não use.' });
+        }
+        
+        // Calcular valor efetivo
+        const effectiveAmount = Math.min(requestedAmount, currentBalance, orderTotal);
+        
+        return {
+          valid: true,
+          effectiveAmount: effectiveAmount.toFixed(2),
+          remainingBalance: (currentBalance - effectiveAmount).toFixed(2),
+          newOrderTotal: (orderTotal - effectiveAmount).toFixed(2),
+        };
+      }),
+
+    // Calcular cashback previsto para itens do carrinho (público)
+    calculatePreview: publicProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        items: z.array(z.object({
+          productId: z.number(),
+          totalPrice: z.string(),
+        })),
+      }))
+      .query(async ({ input }) => {
+        const result = await db.calculateCashbackForOrder(input.establishmentId, input.items);
+        return {
+          cashbackAmount: result.cashbackAmount.toFixed(2),
+          eligibleTotal: result.eligibleTotal.toFixed(2),
+        };
       }),
   }),
 });

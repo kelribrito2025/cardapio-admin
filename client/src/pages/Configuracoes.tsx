@@ -1566,8 +1566,8 @@ export default function Configuracoes() {
             </div>
           </SectionCard>
 
-          {/* Programa de fidelidade */}
-          <SectionCard title="Programa de fidelidade">
+          {/* Programa de Recompensas */}
+          <SectionCard title="Programa de Recompensas">
             <LoyaltySettingsCard establishmentId={establishment?.id || 0} />
           </SectionCard>
 

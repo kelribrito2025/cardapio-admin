@@ -3,7 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, Rocket, CalendarClock } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, Rocket, CalendarClock, Wallet, ArrowUpRight, ArrowDownLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -216,6 +216,17 @@ export default function PublicMenu() {
   const [showCouponAppliedModal, setShowCouponAppliedModal] = useState(false);
   const [appliedCouponInfo, setAppliedCouponInfo] = useState<{ code: string; type: string; value: number } | null>(null);
   const [showCategoriesModal, setShowCategoriesModal] = useState(false);
+  
+  // Estados do sistema de cashback
+  const [showCashbackModal, setShowCashbackModal] = useState(false);
+  const [cashbackStep, setCashbackStep] = useState<'login' | 'register' | 'wallet'>('login');
+  const [cashbackPhone, setCashbackPhone] = useState('');
+  const [cashbackPassword, setCashbackPassword] = useState('');
+  const [cashbackName, setCashbackName] = useState('');
+  const [cashbackError, setCashbackError] = useState('');
+  const [isCashbackLoggedIn, setIsCashbackLoggedIn] = useState(false);
+  const [useCashbackInOrder, setUseCashbackInOrder] = useState(false);
+  const [cashbackAmountToUse, setCashbackAmountToUse] = useState('0');
   const [categorySearch, setCategorySearch] = useState("");
   
   const userOrdersRef = useRef<typeof userOrders>([]);
@@ -278,6 +289,24 @@ export default function PublicMenu() {
   const { data: loyaltyEnabled } = trpc.loyalty.isEnabled.useQuery(
     { establishmentId: data?.establishment?.id || 0 },
     { enabled: !!data?.establishment?.id }
+  );
+  
+  // Query para verificar se cashback está ativo
+  const { data: cashbackEnabled } = trpc.cashback.isEnabled.useQuery(
+    { establishmentId: data?.establishment?.id || 0 },
+    { enabled: !!data?.establishment?.id }
+  );
+  
+  // Query para buscar saldo de cashback do cliente
+  const cashbackBalanceQuery = trpc.cashback.getBalance.useQuery(
+    { establishmentId: data?.establishment?.id || 0, phone: cashbackPhone },
+    { enabled: !!data?.establishment?.id && isCashbackLoggedIn && !!cashbackPhone }
+  );
+  
+  // Query para buscar histórico de transações de cashback
+  const cashbackTransactionsQuery = trpc.cashback.getTransactions.useQuery(
+    { establishmentId: data?.establishment?.id || 0, phone: cashbackPhone, limit: 30 },
+    { enabled: !!data?.establishment?.id && isCashbackLoggedIn && !!cashbackPhone && showCashbackModal && cashbackStep === 'wallet' }
   );
   
   // Mutation para registrar sessão de visualização do cardápio
@@ -452,6 +481,32 @@ export default function PublicMenu() {
     },
   });
 
+  // Mutation para login no cashback (reutiliza o mesmo sistema de login do fidelidade)
+  const cashbackLoginMutation = trpc.loyalty.customerLogin.useMutation({
+    onSuccess: () => {
+      setIsCashbackLoggedIn(true);
+      setCashbackStep('wallet');
+      setCashbackError('');
+      localStorage.setItem('cashbackPhone_' + data?.establishment?.id, cashbackPhone);
+    },
+    onError: (error) => {
+      setCashbackError(error.message);
+    },
+  });
+
+  // Mutation para cadastro no cashback
+  const cashbackRegisterMutation = trpc.loyalty.customerRegister.useMutation({
+    onSuccess: () => {
+      setIsCashbackLoggedIn(true);
+      setCashbackStep('wallet');
+      setCashbackError('');
+      localStorage.setItem('cashbackPhone_' + data?.establishment?.id, cashbackPhone);
+    },
+    onError: (error) => {
+      setCashbackError(error.message);
+    },
+  });
+
   // Manter ref de userOrders sincronizada
   useEffect(() => {
     userOrdersRef.current = userOrders;
@@ -482,6 +537,18 @@ export default function PublicMenu() {
         setLoyaltyPhone(savedPhone);
         setIsLoyaltyLoggedIn(true);
         setLoyaltyStep('card');
+      }
+    }
+  }, [data?.establishment?.id]);
+  
+  // Carregar dados de cashback do localStorage
+  useEffect(() => {
+    if (data?.establishment?.id) {
+      const savedPhone = localStorage.getItem('cashbackPhone_' + data.establishment.id);
+      if (savedPhone) {
+        setCashbackPhone(savedPhone);
+        setIsCashbackLoggedIn(true);
+        setCashbackStep('wallet');
       }
     }
   }, [data?.establishment?.id]);
@@ -1617,7 +1684,7 @@ export default function PublicMenu() {
 
             {/* Navigation Menu - aligned to right edge of cover image */}
             <nav className="hidden md:flex items-center gap-6 pr-4">
-              {loyaltyEnabled?.enabled && (
+              {loyaltyEnabled?.enabled && !cashbackEnabled?.enabled && (
                 <button 
                   className="flex items-center gap-1.5 text-emerald-600 font-medium text-sm hover:text-emerald-700 transition-colors"
                   onClick={() => {
@@ -1626,13 +1693,29 @@ export default function PublicMenu() {
                       setLoyaltyStep('login');
                     } else {
                       setLoyaltyStep('card');
-                      // Recarregar dados do cartão ao abrir o modal
                       loyaltyCardQuery.refetch();
                     }
                   }}
                 >
                   <Gift className="h-4 w-4" />
                   <span>Fidelidade</span>
+                </button>
+              )}
+              {cashbackEnabled?.enabled && (
+                <button 
+                  className="flex items-center gap-1.5 text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors"
+                  onClick={() => {
+                    setShowCashbackModal(true);
+                    if (!isCashbackLoggedIn) {
+                      setCashbackStep('login');
+                    } else {
+                      setCashbackStep('wallet');
+                      cashbackBalanceQuery.refetch();
+                    }
+                  }}
+                >
+                  <Wallet className="h-4 w-4" />
+                  <span>Minha Carteira</span>
                 </button>
               )}
               <button 
@@ -2065,7 +2148,19 @@ export default function PublicMenu() {
                             setProductObservation("");
                           }}
                         >
-                          <ProductCard product={product} formatPrice={formatPrice} />
+                          <ProductCard 
+                            product={product} 
+                            formatPrice={formatPrice}
+                            cashbackPercent={
+                              cashbackEnabled?.enabled && Number(cashbackEnabled?.percent) > 0
+                                ? (cashbackEnabled?.applyMode === 'all' || 
+                                   (cashbackEnabled?.applyMode === 'categories' && 
+                                    cashbackEnabled?.categoryIds?.includes(product.categoryId as number)))
+                                  ? Number(cashbackEnabled.percent)
+                                  : undefined
+                                : undefined
+                            }
+                          />
                         </div>
                       ))}
                     </div>
@@ -3850,6 +3945,77 @@ export default function PublicMenu() {
                 </div>
               </div>
 
+              {/* Seção Usar Cashback */}
+              {cashbackEnabled?.enabled && (
+                <div className="px-6 py-4 border-t border-gray-100">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Wallet className="h-4 w-4 text-blue-500" />
+                    <h3 className="font-semibold text-gray-800 text-sm">Usar Cashback</h3>
+                  </div>
+                  {isCashbackLoggedIn && cashbackBalanceQuery.data && Number(cashbackBalanceQuery.data.balance) > 0 ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between bg-blue-50 rounded-xl p-4">
+                        <div>
+                          <p className="text-sm text-blue-700 font-medium">Saldo disponível</p>
+                          <p className="text-lg font-bold text-blue-800">
+                            R$ {parseFloat(cashbackBalanceQuery.data.balance).toFixed(2).replace('.', ',')}
+                          </p>
+                        </div>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={useCashbackInOrder}
+                            onChange={(e) => {
+                              setUseCashbackInOrder(e.target.checked);
+                              if (e.target.checked) {
+                                // Calcular o valor a usar
+                                const balance = parseFloat(cashbackBalanceQuery.data?.balance || '0');
+                                const subtotal = cart.reduce((sum, item) => {
+                                  const complementsTotal = item.complements.reduce((cSum, c) => cSum + Number(c.price) * (c.quantity || 1), 0);
+                                  return sum + (Number(item.price) + complementsTotal) * item.quantity;
+                                }, 0);
+                                const deliveryFeeVal = deliveryType === 'delivery'
+                                  ? (establishment.deliveryFeeType === 'free' ? 0 : establishment.deliveryFeeType === 'fixed' ? Number(establishment.deliveryFeeFixed || 0) : Number(selectedNeighborhood?.fee || 0))
+                                  : 0;
+                                const couponDiscount = appliedCoupon ? appliedCoupon.discount : 0;
+                                const totalBeforeCashback = Math.max(0, subtotal + deliveryFeeVal - couponDiscount);
+                                const amountToUse = Math.min(balance, totalBeforeCashback);
+                                setCashbackAmountToUse(amountToUse.toFixed(2));
+                              } else {
+                                setCashbackAmountToUse('0');
+                              }
+                            }}
+                            className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+                          />
+                          <span className="text-sm font-medium text-blue-700">Usar saldo</span>
+                        </label>
+                      </div>
+                      {useCashbackInOrder && Number(cashbackAmountToUse) > 0 && (
+                        <div className="flex items-center justify-between text-sm bg-green-50 rounded-xl p-3">
+                          <span className="text-green-700">Desconto cashback</span>
+                          <span className="font-semibold text-green-700">- R$ {parseFloat(cashbackAmountToUse).toFixed(2).replace('.', ',')}</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : isCashbackLoggedIn && cashbackBalanceQuery.data && Number(cashbackBalanceQuery.data.balance) === 0 ? (
+                    <div className="bg-gray-50 rounded-xl p-4 text-center">
+                      <p className="text-sm text-gray-500">Você ainda não possui saldo de cashback.</p>
+                      <p className="text-xs text-gray-400 mt-1">Ganhe {cashbackEnabled.percent}% a cada pedido concluído!</p>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setShowCashbackModal(true);
+                        setCashbackStep('login');
+                      }}
+                      className="w-full py-3 bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium text-sm rounded-xl transition-colors"
+                    >
+                      Entrar para usar seu cashback
+                    </button>
+                  )}
+                </div>
+              )}
+
               {/* Footer */}
               <div className="flex-shrink-0 border-t px-6 py-4">
                 {(() => {
@@ -3999,7 +4165,8 @@ export default function PublicMenu() {
                           : selectedNeighborhood 
                             ? Number(selectedNeighborhood.fee) 
                             : 0;
-                    const total = Math.max(0, subtotal - discount + deliveryFeeValue);
+                    const cashbackDiscount = useCashbackInOrder ? parseFloat(cashbackAmountToUse) : 0;
+                    const total = Math.max(0, subtotal - discount + deliveryFeeValue - cashbackDiscount);
                     return (
                       <>
                         <div className="flex justify-between text-sm">
@@ -4052,6 +4219,15 @@ export default function PublicMenu() {
                               Cupom {appliedCoupon.code}
                             </span>
                             <span className="text-green-600">-{formatPrice(discount)}</span>
+                          </div>
+                        )}
+                        {useCashbackInOrder && cashbackDiscount > 0 && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-blue-600 flex items-center gap-1">
+                              <Wallet className="h-3.5 w-3.5" />
+                              Cashback
+                            </span>
+                            <span className="text-blue-600">-{formatPrice(cashbackDiscount)}</span>
                           </div>
                         )}
                         <div className="flex justify-between font-bold text-lg pt-2">
@@ -4563,7 +4739,8 @@ setOnlinePaymentUrl(null);
                           : selectedNeighborhood 
                             ? Number(selectedNeighborhood.fee) 
                             : 0;
-                    const total = Math.max(0, subtotal - discount + deliveryFeeValue);
+                    const cashbackDisc = useCashbackInOrder ? parseFloat(cashbackAmountToUse) : 0;
+                    const total = Math.max(0, subtotal - discount + deliveryFeeValue - cashbackDisc);
                     
                     // Montar endereço completo
                     const fullAddress = deliveryType === 'delivery' 
@@ -4597,6 +4774,10 @@ setOnlinePaymentUrl(null);
                         couponId: appliedCoupon?.id || undefined,
                         loyaltyCardId: appliedCoupon?.loyaltyCardId || undefined,
                         items: orderItems,
+                        ...(useCashbackInOrder && cashbackDisc > 0 ? {
+                          cashbackAmount: cashbackDisc.toFixed(2),
+                          cashbackCustomerPhone: cashbackPhone,
+                        } : {}),
                       });
                     } else {
                       // Pedido normal (dinheiro, cartão na entrega, pix)
@@ -4616,6 +4797,10 @@ setOnlinePaymentUrl(null);
                          couponCode: appliedCoupon?.code || undefined,
                          couponId: appliedCoupon?.id || undefined,
                          loyaltyCardId: appliedCoupon?.loyaltyCardId || undefined,
+                         ...(useCashbackInOrder && cashbackDisc > 0 ? {
+                           cashbackAmount: cashbackDisc.toFixed(2),
+                           cashbackCustomerPhone: cashbackPhone,
+                         } : {}),
                          items: orderItems,
                          ...(isScheduling && scheduledDate && scheduledTime ? {
                            isScheduled: true,
@@ -6337,6 +6522,106 @@ setOnlinePaymentUrl(null);
         </div>
       )}
       
+      {/* Modal Minha Carteira (Cashback) */}
+      {showCashbackModal && (
+        <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowCashbackModal(false)}
+          />
+          
+          {/* Modal Content */}
+          <div className="relative w-full md:w-[420px] md:max-h-[85vh] bg-white md:rounded-2xl rounded-t-2xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-100" style={{backgroundColor: '#ffffff'}}>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 rounded-xl">
+                  <Wallet className="h-5 w-5 text-blue-600" />
+                </div>
+                <h2 className="text-lg font-bold text-gray-900">Minha Carteira</h2>
+              </div>
+              <button 
+                onClick={() => setShowCashbackModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-4 space-y-4 overflow-y-auto" style={{backgroundColor: '#ffffff'}}>
+              {cashbackStep === 'login' && (
+                <CashbackLoginForm
+                  phone={cashbackPhone}
+                  setPhone={setCashbackPhone}
+                  password={cashbackPassword}
+                  setPassword={setCashbackPassword}
+                  error={cashbackError}
+                  isLoading={cashbackLoginMutation.isPending}
+                  onLogin={() => {
+                    if (cashbackPhone.length >= 10 && cashbackPassword.length === 4) {
+                      cashbackLoginMutation.mutate({
+                        establishmentId: data?.establishment?.id || 0,
+                        phone: cashbackPhone,
+                        password4: cashbackPassword,
+                      });
+                    }
+                  }}
+                  onGoToRegister={() => {
+                    setCashbackStep('register');
+                    setCashbackError('');
+                  }}
+                />
+              )}
+              
+              {cashbackStep === 'register' && (
+                <CashbackRegisterForm
+                  phone={cashbackPhone}
+                  setPhone={setCashbackPhone}
+                  password={cashbackPassword}
+                  setPassword={setCashbackPassword}
+                  name={cashbackName}
+                  setName={setCashbackName}
+                  error={cashbackError}
+                  isLoading={cashbackRegisterMutation.isPending}
+                  onRegister={() => {
+                    if (cashbackPhone.length >= 10 && cashbackPassword.length === 4) {
+                      cashbackRegisterMutation.mutate({
+                        establishmentId: data?.establishment?.id || 0,
+                        phone: cashbackPhone,
+                        password4: cashbackPassword,
+                        name: cashbackName || undefined,
+                      });
+                    }
+                  }}
+                  onGoToLogin={() => {
+                    setCashbackStep('login');
+                    setCashbackError('');
+                  }}
+                />
+              )}
+              
+              {cashbackStep === 'wallet' && isCashbackLoggedIn && (
+                <CashbackWalletView
+                  balance={cashbackBalanceQuery.data}
+                  transactions={cashbackTransactionsQuery.data || []}
+                  isLoading={cashbackBalanceQuery.isLoading}
+                  cashbackPercent={Number(cashbackEnabled?.percent || 0)}
+                  onLogout={() => {
+                    setIsCashbackLoggedIn(false);
+                    setCashbackPhone('');
+                    setCashbackPassword('');
+                    setCashbackStep('login');
+                    localStorage.removeItem('cashbackPhone_' + data?.establishment?.id);
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Modal Bottom Sheet de Confirmação de Cupom Aplicado */}
       {showCouponAppliedModal && appliedCouponInfo && (
         <div 
@@ -6847,7 +7132,7 @@ setOnlinePaymentUrl(null);
               </button>
               
               {/* Fidelidade (se habilitado) */}
-              {loyaltyEnabled?.enabled && (
+              {loyaltyEnabled?.enabled && !cashbackEnabled?.enabled && (
                 <button
                   onClick={() => {
                     setShowMobileMenu(false);
@@ -6867,6 +7152,30 @@ setOnlinePaymentUrl(null);
                   <div className="flex-1 text-left">
                     <span className="font-semibold text-gray-900">Fidelidade</span>
                     <p className="text-xs text-gray-500 mt-0.5">Programa de fidelidade</p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-gray-400" />
+                </button>
+              )}
+              {cashbackEnabled?.enabled && (
+                <button
+                  onClick={() => {
+                    setShowMobileMenu(false);
+                    setShowCashbackModal(true);
+                    if (!isCashbackLoggedIn) {
+                      setCashbackStep('login');
+                    } else {
+                      setCashbackStep('wallet');
+                      cashbackBalanceQuery.refetch();
+                    }
+                  }}
+                  className="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <Wallet className="h-5 w-5 text-blue-500" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <span className="font-semibold text-gray-900">Minha Carteira</span>
+                    <p className="text-xs text-gray-500 mt-0.5">Saldo de cashback</p>
                   </div>
                   <ChevronRight className="h-4 w-4 text-gray-400" />
                 </button>
@@ -6908,6 +7217,7 @@ function ScheduleRow({ day, hours, dayIndex }: { day: string; hours: string; day
 function ProductCard({
   product,
   formatPrice,
+  cashbackPercent,
 }: {
   product: {
     id: number;
@@ -6917,8 +7227,10 @@ function ProductCard({
     images: string[] | null;
     hasStock: boolean;
     outOfStock?: boolean;
+    categoryId?: number | null;
   };
   formatPrice: (price: string | number) => string;
+  cashbackPercent?: number;
 }) {
   const mainImage = product.images?.[0];
   const isUnavailable = product.outOfStock === true;
@@ -6933,9 +7245,14 @@ function ProductCard({
               {product.description}
             </p>
           )}
-          <div className="flex items-center gap-2 mt-1.5">
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
             {Number(product.price) > 0 && (
               <span className={`font-semibold text-sm ${isUnavailable ? 'text-gray-400' : 'text-red-500'}`}>{formatPrice(product.price)}</span>
+            )}
+            {cashbackPercent && cashbackPercent > 0 && Number(product.price) > 0 && !isUnavailable && (
+              <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full">
+                +{cashbackPercent}% cashback
+              </span>
             )}
             {isUnavailable && (
               <span className="text-[10px] text-red-500 font-medium bg-red-50 px-1.5 py-0.5 rounded">
@@ -7997,6 +8314,344 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
 
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+// ============ CASHBACK COMPONENTS ============
+
+function CashbackLoginForm({
+  phone,
+  setPhone,
+  password,
+  setPassword,
+  error,
+  isLoading,
+  onLogin,
+  onGoToRegister,
+}: {
+  phone: string;
+  setPhone: (v: string) => void;
+  password: string;
+  setPassword: (v: string) => void;
+  error: string;
+  isLoading: boolean;
+  onLogin: () => void;
+  onGoToRegister: () => void;
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="text-center">
+        <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3">
+          <Wallet className="h-8 w-8 text-blue-500" />
+        </div>
+        <h3 className="font-bold text-gray-900 text-lg">Acessar Carteira</h3>
+        <p className="text-sm text-gray-500 mt-1">
+          Entre com seu telefone para ver seu saldo de cashback
+        </p>
+      </div>
+      
+      <div className="space-y-3">
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-1">Telefone</label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+            placeholder="(00) 00000-0000"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+            maxLength={11}
+          />
+        </div>
+        
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-1">Senha (4 dígitos)</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value.replace(/\D/g, '').slice(0, 4))}
+            placeholder="••••"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-2xl tracking-[0.5em] text-gray-900"
+            maxLength={4}
+            autoComplete="new-password"
+            name="cashback-password-login"
+          />
+        </div>
+      </div>
+      
+      {error && (
+        <p className="text-sm text-red-500 text-center">{error}</p>
+      )}
+      
+      <button
+        onClick={onLogin}
+        disabled={isLoading || phone.length < 10 || password.length < 4}
+        className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-semibold rounded-xl transition-colors"
+      >
+        {isLoading ? "Entrando..." : "Entrar"}
+      </button>
+      
+      <p className="text-center text-sm text-gray-500">
+        Não tem conta?{" "}
+        <button onClick={onGoToRegister} className="text-blue-600 font-semibold">
+          Cadastre-se
+        </button>
+      </p>
+    </div>
+  );
+}
+
+function CashbackRegisterForm({
+  phone,
+  setPhone,
+  password,
+  setPassword,
+  name,
+  setName,
+  error,
+  isLoading,
+  onRegister,
+  onGoToLogin,
+}: {
+  phone: string;
+  setPhone: (v: string) => void;
+  password: string;
+  setPassword: (v: string) => void;
+  name: string;
+  setName: (v: string) => void;
+  error: string;
+  isLoading: boolean;
+  onRegister: () => void;
+  onGoToLogin: () => void;
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="text-center">
+        <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3">
+          <Wallet className="h-8 w-8 text-blue-500" />
+        </div>
+        <h3 className="font-bold text-gray-900 text-lg">Criar Conta</h3>
+        <p className="text-sm text-gray-500 mt-1">
+          Cadastre-se para começar a acumular cashback
+        </p>
+      </div>
+      
+      <div className="space-y-3">
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-1">Nome (opcional)</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Seu nome"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+          />
+        </div>
+        
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-1">Telefone</label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+            placeholder="(00) 00000-0000"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+            maxLength={11}
+          />
+        </div>
+        
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-1">Senha (4 dígitos)</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value.replace(/\D/g, '').slice(0, 4))}
+            placeholder="••••"
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-2xl tracking-[0.5em] text-gray-900"
+            maxLength={4}
+            autoComplete="new-password"
+            name="cashback-password-register"
+          />
+          <p className="text-xs text-gray-500 mt-1">Use apenas números</p>
+        </div>
+      </div>
+      
+      {error && (
+        <p className="text-sm text-red-500 text-center">{error}</p>
+      )}
+      
+      <button
+        onClick={onRegister}
+        disabled={isLoading || phone.length < 10 || password.length < 4}
+        className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white font-semibold rounded-xl transition-colors"
+      >
+        {isLoading ? "Cadastrando..." : "Cadastrar"}
+      </button>
+      
+      <p className="text-center text-sm text-gray-500">
+        Já tem conta?{" "}
+        <button onClick={onGoToLogin} className="text-blue-600 font-semibold">
+          Entrar
+        </button>
+      </p>
+    </div>
+  );
+}
+
+function CashbackWalletView({
+  balance,
+  transactions,
+  isLoading,
+  cashbackPercent,
+  onLogout,
+}: {
+  balance: { balance: string; totalEarned: string; totalUsed: string } | null | undefined;
+  transactions: Array<{
+    id: number;
+    type: string;
+    amount: string;
+    orderNumber: string | null;
+    description: string | null;
+    balanceBefore: string;
+    balanceAfter: string;
+    createdAt: Date | string;
+  }>;
+  isLoading: boolean;
+  cashbackPercent: number;
+  onLogout: () => void;
+}) {
+  const [activeTab, setActiveTab] = useState<'balance' | 'history'>('balance');
+  
+  const formatCurrency = (value: string | number) => {
+    const num = typeof value === 'string' ? parseFloat(value) : value;
+    return `R$ ${num.toFixed(2).replace('.', ',')}`;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Saldo Card */}
+      <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-5 text-white">
+        <p className="text-blue-100 text-sm font-medium">Saldo disponível</p>
+        <p className="text-3xl font-bold mt-1">
+          {formatCurrency(balance?.balance || '0')}
+        </p>
+        <div className="flex gap-4 mt-3 text-sm">
+          <div>
+            <p className="text-blue-200 text-xs">Total ganho</p>
+            <p className="font-semibold">{formatCurrency(balance?.totalEarned || '0')}</p>
+          </div>
+          <div>
+            <p className="text-blue-200 text-xs">Total usado</p>
+            <p className="font-semibold">{formatCurrency(balance?.totalUsed || '0')}</p>
+          </div>
+        </div>
+        {cashbackPercent > 0 && (
+          <div className="mt-3 bg-white/20 rounded-lg px-3 py-1.5 inline-block">
+            <p className="text-xs font-medium">
+              Você ganha {cashbackPercent}% de cashback a cada pedido
+            </p>
+          </div>
+        )}
+      </div>
+      
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200">
+        <button
+          onClick={() => setActiveTab('balance')}
+          className={cn(
+            "flex-1 py-2.5 text-sm font-medium border-b-2 transition-colors",
+            activeTab === 'balance'
+              ? "border-blue-500 text-blue-600"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+          )}
+        >
+          Resumo
+        </button>
+        <button
+          onClick={() => setActiveTab('history')}
+          className={cn(
+            "flex-1 py-2.5 text-sm font-medium border-b-2 transition-colors",
+            activeTab === 'history'
+              ? "border-blue-500 text-blue-600"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+          )}
+        >
+          Histórico
+        </button>
+      </div>
+      
+      {activeTab === 'balance' && (
+        <div className="space-y-3">
+          <div className="bg-blue-50 rounded-xl p-4">
+            <h4 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
+              <Info className="h-4 w-4 text-blue-500" />
+              Como funciona
+            </h4>
+            <ul className="mt-2 space-y-1.5 text-sm text-gray-600">
+              <li className="flex items-start gap-2">
+                <span className="text-blue-500 mt-0.5">✓</span>
+                A cada pedido concluído, você ganha {cashbackPercent}% de cashback
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-500 mt-0.5">✓</span>
+                O saldo pode ser usado como desconto em pedidos futuros
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-500 mt-0.5">✓</span>
+                Ao finalizar o pedido, marque a opção "Usar cashback"
+              </li>
+            </ul>
+          </div>
+        </div>
+      )}
+      
+      {activeTab === 'history' && (
+        <div className="space-y-2 max-h-64 overflow-y-auto">
+          {transactions.length > 0 ? (
+            transactions.map((tx) => (
+              <div key={tx.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                <div className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                  tx.type === 'credit' ? "bg-green-100" : "bg-red-100"
+                )}>
+                  {tx.type === 'credit' ? (
+                    <ArrowDownLeft className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <ArrowUpRight className="h-4 w-4 text-red-600" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    {tx.description || (tx.type === 'credit' ? 'Cashback recebido' : 'Cashback utilizado')}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {new Date(tx.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  </p>
+                </div>
+                <span className={cn(
+                  "font-semibold text-sm shrink-0",
+                  tx.type === 'credit' ? "text-green-600" : "text-red-600"
+                )}>
+                  {tx.type === 'credit' ? '+' : '-'}{formatCurrency(tx.amount)}
+                </span>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-gray-500 text-center py-6">
+              Nenhuma movimentação ainda
+            </p>
+          )}
         </div>
       )}
     </div>

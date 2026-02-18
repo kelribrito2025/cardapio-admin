@@ -46,7 +46,9 @@ import {
   monthlyGoals, InsertMonthlyGoal, MonthlyGoal,
   recurringExpenses, InsertRecurringExpense, RecurringExpense,
   recurringExpenseHistory, InsertRecurringExpenseHistoryEntry,
-  financialGoals, InsertFinancialGoal, FinancialGoal
+  financialGoals, InsertFinancialGoal, FinancialGoal,
+  cashbackTransactions, InsertCashbackTransaction, CashbackTransaction,
+  cashbackBalances, InsertCashbackBalance, CashbackBalance
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -1823,6 +1825,16 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
         }
       } catch (loyaltyError) {
         console.error('[Fidelidade] Erro ao processar carimbo:', loyaltyError);
+        // Não interrompe o fluxo principal
+      }
+    }
+    
+    // Processar cashback quando o pedido é completado
+    if (status === "completed" && order.customerPhone) {
+      try {
+        await processCashbackForCompletedOrder(id);
+      } catch (cashbackError) {
+        console.error('[Cashback] Erro ao processar cashback:', cashbackError);
         // Não interrompe o fluxo principal
       }
     }
@@ -9572,4 +9584,296 @@ export async function deleteFinancialGoal(id: number, establishmentId: number) {
       eq(financialGoals.establishmentId, establishmentId)
     ));
   return true;
+}
+
+
+// ============ CASHBACK ============
+
+/**
+ * Buscar ou criar saldo de cashback para um cliente em um estabelecimento
+ */
+export async function getCashbackBalance(establishmentId: number, customerPhone: string): Promise<CashbackBalance | null> {
+  const db = await getDb();
+  if (!db) return null;
+  const normalizedPhone = customerPhone.replace(/[^0-9]/g, '');
+  const result = await db.select().from(cashbackBalances)
+    .where(and(
+      eq(cashbackBalances.establishmentId, establishmentId),
+      or(
+        eq(cashbackBalances.customerPhone, normalizedPhone),
+        eq(cashbackBalances.customerPhone, customerPhone)
+      )
+    ))
+    .limit(1);
+  return result[0] || null;
+}
+
+/**
+ * Criar registro de saldo de cashback
+ */
+export async function createCashbackBalance(data: {
+  establishmentId: number;
+  customerPhone: string;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const normalizedPhone = data.customerPhone.replace(/[^0-9]/g, '');
+  const result = await db.insert(cashbackBalances).values({
+    establishmentId: data.establishmentId,
+    customerPhone: normalizedPhone,
+    balance: "0",
+    totalEarned: "0",
+    totalUsed: "0",
+  });
+  return result[0].insertId;
+}
+
+/**
+ * Registrar crédito de cashback (geração após pedido concluído)
+ */
+export async function creditCashback(data: {
+  establishmentId: number;
+  customerPhone: string;
+  amount: string;
+  orderId: number;
+  orderNumber: string;
+}): Promise<CashbackTransaction> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const normalizedPhone = data.customerPhone.replace(/[^0-9]/g, '');
+  
+  // Buscar ou criar saldo
+  let balanceRecord = await getCashbackBalance(data.establishmentId, normalizedPhone);
+  if (!balanceRecord) {
+    await createCashbackBalance({ establishmentId: data.establishmentId, customerPhone: normalizedPhone });
+    balanceRecord = await getCashbackBalance(data.establishmentId, normalizedPhone);
+  }
+  if (!balanceRecord) throw new Error("Failed to create cashback balance");
+  
+  const currentBalance = Number(balanceRecord.balance);
+  const creditAmount = Number(data.amount);
+  const newBalance = currentBalance + creditAmount;
+  
+  // Registrar transação
+  const txResult = await db.insert(cashbackTransactions).values({
+    establishmentId: data.establishmentId,
+    customerPhone: normalizedPhone,
+    type: "credit",
+    amount: data.amount,
+    orderId: data.orderId,
+    orderNumber: data.orderNumber,
+    description: `Cashback do pedido ${data.orderNumber}`,
+    balanceBefore: currentBalance.toFixed(2),
+    balanceAfter: newBalance.toFixed(2),
+  });
+  
+  // Atualizar saldo
+  await db.update(cashbackBalances)
+    .set({
+      balance: newBalance.toFixed(2),
+      totalEarned: sql`${cashbackBalances.totalEarned} + ${creditAmount.toFixed(2)}`,
+    })
+    .where(eq(cashbackBalances.id, balanceRecord.id));
+  
+  // Buscar transação criada
+  const tx = await db.select().from(cashbackTransactions)
+    .where(eq(cashbackTransactions.id, txResult[0].insertId))
+    .limit(1);
+  return tx[0];
+}
+
+/**
+ * Registrar débito de cashback (uso em pedido)
+ */
+export async function debitCashback(data: {
+  establishmentId: number;
+  customerPhone: string;
+  amount: string;
+  orderId?: number;
+  orderNumber?: string;
+}): Promise<CashbackTransaction> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const normalizedPhone = data.customerPhone.replace(/[^0-9]/g, '');
+  
+  // Buscar saldo
+  const balanceRecord = await getCashbackBalance(data.establishmentId, normalizedPhone);
+  if (!balanceRecord) throw new Error("Cashback balance not found");
+  
+  const currentBalance = Number(balanceRecord.balance);
+  const debitAmount = Number(data.amount);
+  
+  if (debitAmount > currentBalance) {
+    throw new Error("Saldo de cashback insuficiente");
+  }
+  
+  const newBalance = currentBalance - debitAmount;
+  
+  // Registrar transação
+  const txResult = await db.insert(cashbackTransactions).values({
+    establishmentId: data.establishmentId,
+    customerPhone: normalizedPhone,
+    type: "debit",
+    amount: data.amount,
+    orderId: data.orderId || null,
+    orderNumber: data.orderNumber || null,
+    description: data.orderNumber ? `Cashback utilizado no pedido ${data.orderNumber}` : "Cashback utilizado",
+    balanceBefore: currentBalance.toFixed(2),
+    balanceAfter: newBalance.toFixed(2),
+  });
+  
+  // Atualizar saldo
+  await db.update(cashbackBalances)
+    .set({
+      balance: newBalance.toFixed(2),
+      totalUsed: sql`${cashbackBalances.totalUsed} + ${debitAmount.toFixed(2)}`,
+    })
+    .where(eq(cashbackBalances.id, balanceRecord.id));
+  
+  // Buscar transação criada
+  const tx = await db.select().from(cashbackTransactions)
+    .where(eq(cashbackTransactions.id, txResult[0].insertId))
+    .limit(1);
+  return tx[0];
+}
+
+/**
+ * Buscar histórico de transações de cashback de um cliente
+ */
+export async function getCashbackTransactions(establishmentId: number, customerPhone: string, limit: number = 50): Promise<CashbackTransaction[]> {
+  const db = await getDb();
+  if (!db) return [];
+  const normalizedPhone = customerPhone.replace(/[^0-9]/g, '');
+  return db.select().from(cashbackTransactions)
+    .where(and(
+      eq(cashbackTransactions.establishmentId, establishmentId),
+      or(
+        eq(cashbackTransactions.customerPhone, normalizedPhone),
+        eq(cashbackTransactions.customerPhone, customerPhone)
+      )
+    ))
+    .orderBy(desc(cashbackTransactions.createdAt))
+    .limit(limit);
+}
+
+/**
+ * Calcular cashback para um pedido baseado nas configurações do estabelecimento
+ */
+export async function calculateCashbackForOrder(
+  establishmentId: number,
+  items: Array<{ productId: number; totalPrice: string }>,
+): Promise<{ cashbackAmount: number; eligibleTotal: number }> {
+  const db = await getDb();
+  if (!db) return { cashbackAmount: 0, eligibleTotal: 0 };
+  
+  // Buscar configurações do estabelecimento
+  const est = await db.select({
+    cashbackEnabled: establishments.cashbackEnabled,
+    cashbackPercent: establishments.cashbackPercent,
+    cashbackApplyMode: establishments.cashbackApplyMode,
+    cashbackCategoryIds: establishments.cashbackCategoryIds,
+    rewardProgramType: establishments.rewardProgramType,
+  }).from(establishments).where(eq(establishments.id, establishmentId)).limit(1);
+  
+  if (!est[0] || !est[0].cashbackEnabled || est[0].rewardProgramType !== 'cashback') {
+    return { cashbackAmount: 0, eligibleTotal: 0 };
+  }
+  
+  const percent = Number(est[0].cashbackPercent) || 0;
+  if (percent <= 0) return { cashbackAmount: 0, eligibleTotal: 0 };
+  
+  let eligibleTotal = 0;
+  
+  if (est[0].cashbackApplyMode === 'all') {
+    // Todos os produtos
+    eligibleTotal = items.reduce((sum, item) => sum + Number(item.totalPrice), 0);
+  } else {
+    // Apenas categorias específicas
+    const allowedCategoryIds = est[0].cashbackCategoryIds || [];
+    if (allowedCategoryIds.length === 0) {
+      return { cashbackAmount: 0, eligibleTotal: 0 };
+    }
+    
+    // Buscar categorias dos produtos
+    for (const item of items) {
+      const product = await db.select({ categoryId: products.categoryId })
+        .from(products)
+        .where(eq(products.id, item.productId))
+        .limit(1);
+      
+      if (product[0] && product[0].categoryId && allowedCategoryIds.includes(product[0].categoryId)) {
+        eligibleTotal += Number(item.totalPrice);
+      }
+    }
+  }
+  
+  const cashbackAmount = Math.round(eligibleTotal * percent) / 100;
+  return { cashbackAmount, eligibleTotal };
+}
+
+/**
+ * Processar cashback após pedido concluído (chamado quando status muda para completed)
+ */
+export async function processCashbackForCompletedOrder(orderId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  try {
+    // Buscar pedido
+    const order = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+    if (!order[0]) return;
+    
+    const orderData = order[0];
+    
+    // Verificar se cashback está ativo
+    const est = await db.select({
+      cashbackEnabled: establishments.cashbackEnabled,
+      cashbackPercent: establishments.cashbackPercent,
+      cashbackApplyMode: establishments.cashbackApplyMode,
+      cashbackCategoryIds: establishments.cashbackCategoryIds,
+      rewardProgramType: establishments.rewardProgramType,
+    }).from(establishments).where(eq(establishments.id, orderData.establishmentId)).limit(1);
+    
+    if (!est[0] || !est[0].cashbackEnabled || est[0].rewardProgramType !== 'cashback') return;
+    
+    // Verificar se já gerou cashback para este pedido
+    const existingTx = await db.select().from(cashbackTransactions)
+      .where(and(
+        eq(cashbackTransactions.orderId, orderId),
+        eq(cashbackTransactions.type, "credit")
+      ))
+      .limit(1);
+    
+    if (existingTx[0]) {
+      console.log(`[Cashback] Cashback já gerado para pedido ${orderId}`);
+      return;
+    }
+    
+    // Buscar itens do pedido
+    const items = await db.select().from(orderItems)
+      .where(eq(orderItems.orderId, orderId));
+    
+    const { cashbackAmount } = await calculateCashbackForOrder(
+      orderData.establishmentId,
+      items.map(i => ({ productId: i.productId, totalPrice: i.totalPrice }))
+    );
+    
+    if (cashbackAmount <= 0) return;
+    
+    // Creditar cashback
+    const customerPhone = orderData.customerPhone;
+    if (!customerPhone) return;
+    
+    await creditCashback({
+      establishmentId: orderData.establishmentId,
+      customerPhone,
+      amount: cashbackAmount.toFixed(2),
+      orderId: orderId,
+      orderNumber: orderData.orderNumber,
+    });
+    
+    console.log(`[Cashback] Creditado R$ ${cashbackAmount.toFixed(2)} para ${customerPhone} (pedido ${orderData.orderNumber})`);
+  } catch (error) {
+    console.error('[Cashback] Erro ao processar cashback:', error);
+  }
 }

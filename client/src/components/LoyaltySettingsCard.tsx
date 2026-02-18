@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Gift, Save } from "lucide-react";
+import { Gift, Save, Coins, CreditCard, AlertTriangle, Check } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -13,96 +13,225 @@ interface LoyaltySettingsCardProps {
 }
 
 export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProps) {
-  const { data: settings, refetch } = trpc.loyalty.getSettings.useQuery();
+  // Loyalty settings
+  const { data: loyaltySettings, refetch: refetchLoyalty } = trpc.loyalty.getSettings.useQuery();
+  // Cashback settings
+  const { data: cashbackConfig, refetch: refetchCashback } = trpc.cashback.getConfig.useQuery();
+  // Categories for cashback
+  const { data: categoriesData } = trpc.category.list.useQuery(
+    { establishmentId },
+    { enabled: !!establishmentId }
+  );
   
-  // Form state
-  const [loyaltyEnabled, setLoyaltyEnabled] = useState(false);
+  // Reward program type state
+  const [rewardType, setRewardType] = useState<"none" | "loyalty" | "cashback">("none");
+  
+  // Loyalty form state
   const [stampsRequired, setStampsRequired] = useState(6);
   const [couponType, setCouponType] = useState<"fixed" | "percentage" | "free_delivery">("fixed");
   const [couponValue, setCouponValue] = useState("10");
   const [minOrderValue, setMinOrderValue] = useState("0");
   
-  // Load settings
-  useEffect(() => {
-    if (settings) {
-      setLoyaltyEnabled(settings.loyaltyEnabled || false);
-      setStampsRequired(settings.loyaltyStampsRequired || 6);
-      setCouponType(settings.loyaltyCouponType || "fixed");
-      setCouponValue(settings.loyaltyCouponValue || "10");
-      setMinOrderValue(settings.loyaltyMinOrderValue || "0");
-    }
-  }, [settings]);
+  // Cashback form state
+  const [cashbackPercent, setCashbackPercent] = useState("5");
+  const [cashbackApplyMode, setCashbackApplyMode] = useState<"all" | "categories">("all");
+  const [cashbackCategoryIds, setCashbackCategoryIds] = useState<number[]>([]);
+  const [cashbackAllowPartialUse, setCashbackAllowPartialUse] = useState(true);
   
-  const saveMutation = trpc.loyalty.saveSettings.useMutation({
+  // Load loyalty settings
+  useEffect(() => {
+    if (loyaltySettings) {
+      setStampsRequired(loyaltySettings.loyaltyStampsRequired || 6);
+      setCouponType(loyaltySettings.loyaltyCouponType || "fixed");
+      setCouponValue(loyaltySettings.loyaltyCouponValue || "10");
+      setMinOrderValue(loyaltySettings.loyaltyMinOrderValue || "0");
+    }
+  }, [loyaltySettings]);
+  
+  // Load cashback settings
+  useEffect(() => {
+    if (cashbackConfig) {
+      setRewardType(cashbackConfig.rewardProgramType as "none" | "loyalty" | "cashback" || "none");
+      setCashbackPercent(cashbackConfig.cashbackPercent || "5");
+      setCashbackApplyMode(cashbackConfig.cashbackApplyMode as "all" | "categories" || "all");
+      setCashbackCategoryIds(cashbackConfig.cashbackCategoryIds as number[] || []);
+      setCashbackAllowPartialUse(cashbackConfig.cashbackAllowPartialUse ?? true);
+    }
+  }, [cashbackConfig]);
+  
+  // Save loyalty mutation
+  const saveLoyaltyMutation = trpc.loyalty.saveSettings.useMutation({
     onSuccess: () => {
-      refetch();
-      toast.success("Configurações de fidelidade salvas com sucesso!");
+      refetchLoyalty();
+      refetchCashback();
     },
     onError: () => {
       toast.error("Erro ao salvar configurações de fidelidade");
     },
   });
   
+  // Save cashback mutation
+  const saveCashbackMutation = trpc.cashback.saveConfig.useMutation({
+    onSuccess: () => {
+      refetchCashback();
+      refetchLoyalty();
+    },
+    onError: () => {
+      toast.error("Erro ao salvar configurações de cashback");
+    },
+  });
+  
   const handleSave = () => {
-    saveMutation.mutate({
+    // Save reward program type + cashback config
+    saveCashbackMutation.mutate({
       establishmentId,
-      loyaltyEnabled,
+      rewardProgramType: rewardType,
+      cashbackPercent,
+      cashbackApplyMode,
+      cashbackCategoryIds,
+      cashbackAllowPartialUse,
+    });
+    
+    // Also save loyalty settings
+    saveLoyaltyMutation.mutate({
+      establishmentId,
+      loyaltyEnabled: rewardType === "loyalty",
       loyaltyStampsRequired: stampsRequired,
       loyaltyCouponType: couponType,
       loyaltyCouponValue: couponValue,
       loyaltyMinOrderValue: minOrderValue,
     });
+    
+    toast.success("Configurações do programa de recompensas salvas!");
+  };
+  
+  const isSaving = saveLoyaltyMutation.isPending || saveCashbackMutation.isPending;
+  
+  const toggleCategory = (catId: number) => {
+    setCashbackCategoryIds(prev => 
+      prev.includes(catId) ? prev.filter(id => id !== catId) : [...prev, catId]
+    );
   };
   
   return (
     <div className="space-y-6">
-      {/* Header with icon */}
+      {/* Header */}
       <div className="flex items-start gap-4">
         <div className="p-3 bg-emerald-100 dark:bg-emerald-900/40 rounded-xl">
           <Gift className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div className="flex-1">
-          <h3 className="font-semibold text-lg">Programa de fidelidade</h3>
+          <h3 className="font-semibold text-lg">Programa de Recompensas</h3>
           <p className="text-sm text-muted-foreground">
-            Configure o programa de fidelidade do seu restaurante
+            Escolha e configure o programa de recompensas do seu restaurante
           </p>
         </div>
       </div>
       
-      {/* Card único com toggle + todos os 4 campos na mesma linha */}
-      <div className="p-4 bg-muted/30 rounded-xl border border-border/50">
-        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-          {/* Toggle Ativar */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div>
-              <p className="font-medium">Ativar Cartão Fidelidade</p>
-              <p className="text-sm text-muted-foreground">
-                Clientes ganham carimbos a cada pedido
-              </p>
+      {/* Aviso de exclusividade */}
+      <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+        <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+        <p className="text-sm text-amber-700 dark:text-amber-300">
+          Você pode utilizar apenas um programa de recompensa por vez.
+        </p>
+      </div>
+      
+      {/* Seleção do programa ativo */}
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold text-muted-foreground">Programa ativo</Label>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Nenhum */}
+          <button
+            type="button"
+            onClick={() => setRewardType("none")}
+            className={cn(
+              "relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200",
+              rewardType === "none"
+                ? "border-gray-500 bg-gray-50 dark:bg-gray-800/50 shadow-sm"
+                : "border-border/50 hover:border-gray-300 dark:hover:border-gray-600"
+            )}
+          >
+            {rewardType === "none" && (
+              <div className="absolute top-2 right-2">
+                <Check className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+              </div>
+            )}
+            <div className={cn(
+              "p-2 rounded-lg",
+              rewardType === "none" ? "bg-gray-200 dark:bg-gray-700" : "bg-muted/50"
+            )}>
+              <AlertTriangle className="h-5 w-5 text-gray-500" />
             </div>
-            <label className="relative inline-flex items-center cursor-pointer shrink-0">
-              <input
-                type="checkbox"
-                checked={loyaltyEnabled}
-                onChange={(e) => setLoyaltyEnabled(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-muted dark:bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:after:bg-gray-300 after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
-            </label>
-          </div>
+            <span className="font-medium text-sm">Nenhum</span>
+            <span className="text-xs text-muted-foreground text-center">Desativado</span>
+          </button>
           
-          {/* Separador vertical em desktop */}
-          <div className="hidden lg:block w-px h-12 bg-border/50" />
+          {/* Cartão Fidelidade */}
+          <button
+            type="button"
+            onClick={() => setRewardType("loyalty")}
+            className={cn(
+              "relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200",
+              rewardType === "loyalty"
+                ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 shadow-sm"
+                : "border-border/50 hover:border-emerald-300 dark:hover:border-emerald-700"
+            )}
+          >
+            {rewardType === "loyalty" && (
+              <div className="absolute top-2 right-2">
+                <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              </div>
+            )}
+            <div className={cn(
+              "p-2 rounded-lg",
+              rewardType === "loyalty" ? "bg-emerald-200 dark:bg-emerald-800" : "bg-muted/50"
+            )}>
+              <CreditCard className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <span className="font-medium text-sm">Cartão Fidelidade</span>
+            <span className="text-xs text-muted-foreground text-center">Carimbos por pedido</span>
+          </button>
           
-          {/* 4 campos em linha */}
-          <div className={cn(
-            "flex flex-col sm:flex-row flex-1 gap-3 transition-all duration-300",
-            !loyaltyEnabled && "opacity-50 pointer-events-none"
-          )}>
+          {/* Cashback */}
+          <button
+            type="button"
+            onClick={() => setRewardType("cashback")}
+            className={cn(
+              "relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200",
+              rewardType === "cashback"
+                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-sm"
+                : "border-border/50 hover:border-blue-300 dark:hover:border-blue-700"
+            )}
+          >
+            {rewardType === "cashback" && (
+              <div className="absolute top-2 right-2">
+                <Check className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              </div>
+            )}
+            <div className={cn(
+              "p-2 rounded-lg",
+              rewardType === "cashback" ? "bg-blue-200 dark:bg-blue-800" : "bg-muted/50"
+            )}>
+              <Coins className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <span className="font-medium text-sm">Cashback</span>
+            <span className="text-xs text-muted-foreground text-center">% de volta por pedido</span>
+          </button>
+        </div>
+      </div>
+      
+      {/* Configurações do Cartão Fidelidade */}
+      {rewardType === "loyalty" && (
+        <div className="p-4 bg-emerald-50/50 dark:bg-emerald-900/10 rounded-xl border border-emerald-200/50 dark:border-emerald-800/30 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+          <h4 className="font-semibold text-sm text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
+            <CreditCard className="h-4 w-4" />
+            Configurações do Cartão Fidelidade
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {/* Carimbos necessários */}
-            <div className="flex-1 min-w-0">
+            <div>
               <Label htmlFor="stampsRequired" className="text-xs font-semibold text-muted-foreground">
-                Carimbos
+                Carimbos necessários
               </Label>
               <Input
                 id="stampsRequired"
@@ -116,7 +245,7 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
             </div>
             
             {/* Tipo de cupom */}
-            <div className="flex-1 min-w-0">
+            <div>
               <Label htmlFor="couponType" className="text-xs font-semibold text-muted-foreground">
                 Tipo de cupom
               </Label>
@@ -132,9 +261,9 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
               </Select>
             </div>
             
-            {/* Valor do desconto (hidden for free_delivery) */}
+            {/* Valor do desconto */}
             {couponType !== "free_delivery" && (
-              <div className="flex-1 min-w-0">
+              <div>
                 <Label htmlFor="couponValue" className="text-xs font-semibold text-muted-foreground">
                   {couponType === "percentage" ? "Desconto (%)" : "Desconto (R$)"}
                 </Label>
@@ -150,8 +279,8 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
               </div>
             )}
             
-            {/* Valor mínimo por pedido */}
-            <div className="flex-1 min-w-0">
+            {/* Valor mínimo */}
+            <div>
               <Label htmlFor="minOrderValue" className="text-xs font-semibold text-muted-foreground">
                 Valor mínimo (R$)
               </Label>
@@ -167,16 +296,148 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
             </div>
           </div>
         </div>
-      </div>
+      )}
+      
+      {/* Configurações do Cashback */}
+      {rewardType === "cashback" && (
+        <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-xl border border-blue-200/50 dark:border-blue-800/30 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+          <h4 className="font-semibold text-sm text-blue-700 dark:text-blue-400 flex items-center gap-2">
+            <Coins className="h-4 w-4" />
+            Configurações do Cashback
+          </h4>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Percentual de cashback */}
+            <div>
+              <Label htmlFor="cashbackPercent" className="text-xs font-semibold text-muted-foreground">
+                Percentual de cashback (%)
+              </Label>
+              <Input
+                id="cashbackPercent"
+                type="number"
+                min={1}
+                max={50}
+                step={1}
+                value={cashbackPercent}
+                onChange={(e) => setCashbackPercent(e.target.value)}
+                className="mt-1 h-9 rounded-lg border-border/50 text-sm"
+                placeholder="5"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Ex: 5% = R$ 5,00 de cashback em um pedido de R$ 100,00
+              </p>
+            </div>
+            
+            {/* Uso parcial */}
+            <div>
+              <Label className="text-xs font-semibold text-muted-foreground">
+                Uso do saldo
+              </Label>
+              <Select 
+                value={cashbackAllowPartialUse ? "partial" : "full"} 
+                onValueChange={(v) => setCashbackAllowPartialUse(v === "partial")}
+              >
+                <SelectTrigger className="mt-1 h-9 rounded-lg border-border/50 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="partial">Permitir uso parcial</SelectItem>
+                  <SelectItem value="full">Exigir uso total</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1">
+                {cashbackAllowPartialUse 
+                  ? "Cliente pode usar qualquer valor do saldo" 
+                  : "Cliente deve usar todo o saldo ou nenhum"}
+              </p>
+            </div>
+          </div>
+          
+          {/* Aplicar cashback em */}
+          <div>
+            <Label className="text-xs font-semibold text-muted-foreground">
+              Aplicar cashback em
+            </Label>
+            <div className="flex gap-3 mt-2">
+              <button
+                type="button"
+                onClick={() => setCashbackApplyMode("all")}
+                className={cn(
+                  "flex-1 px-4 py-2 rounded-lg border text-sm font-medium transition-all",
+                  cashbackApplyMode === "all"
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                    : "border-border/50 text-muted-foreground hover:border-blue-300"
+                )}
+              >
+                Todos os produtos
+              </button>
+              <button
+                type="button"
+                onClick={() => setCashbackApplyMode("categories")}
+                className={cn(
+                  "flex-1 px-4 py-2 rounded-lg border text-sm font-medium transition-all",
+                  cashbackApplyMode === "categories"
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                    : "border-border/50 text-muted-foreground hover:border-blue-300"
+                )}
+              >
+                Categorias específicas
+              </button>
+            </div>
+          </div>
+          
+          {/* Lista de categorias */}
+          {cashbackApplyMode === "categories" && (
+            <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+              <Label className="text-xs font-semibold text-muted-foreground">
+                Selecione as categorias elegíveis
+              </Label>
+              {categoriesData && categoriesData.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-1">
+                  {categoriesData.map((cat: any) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => toggleCategory(cat.id)}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-all",
+                        cashbackCategoryIds.includes(cat.id)
+                          ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                          : "border-border/50 text-muted-foreground hover:border-blue-300"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-4 h-4 rounded border flex items-center justify-center shrink-0",
+                        cashbackCategoryIds.includes(cat.id)
+                          ? "bg-blue-500 border-blue-500"
+                          : "border-gray-300 dark:border-gray-600"
+                      )}>
+                        {cashbackCategoryIds.includes(cat.id) && (
+                          <Check className="h-3 w-3 text-white" />
+                        )}
+                      </div>
+                      <span className="truncate">{cat.name}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">
+                  Nenhuma categoria encontrada. Adicione categorias ao seu cardápio primeiro.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
       
       {/* Save button */}
       <Button 
         onClick={handleSave} 
-        disabled={saveMutation.isPending}
+        disabled={isSaving}
         className="rounded-xl shadow-sm bg-emerald-600 hover:bg-emerald-700"
       >
         <Save className="h-4 w-4 mr-2" />
-        {saveMutation.isPending ? "Salvando..." : "Salvar Configurações"}
+        {isSaving ? "Salvando..." : "Salvar Configurações"}
       </Button>
     </div>
   );

@@ -68,6 +68,14 @@ export const establishments = mysqlTable("establishments", {
   // Controle de abertura manual (fora do horário)
   manuallyOpened: boolean("manuallyOpened").default(false).notNull(),
   manuallyOpenedAt: timestamp("manuallyOpenedAt"),
+  // Programa de Recompensas (exclusivo: fidelidade OU cashback)
+  rewardProgramType: mysqlEnum("rewardProgramType", ["none", "loyalty", "cashback"]).default("none").notNull(),
+  // Cashback
+  cashbackEnabled: boolean("cashbackEnabled").default(false).notNull(),
+  cashbackPercent: decimal("cashbackPercent", { precision: 5, scale: 2 }).default("0"),
+  cashbackApplyMode: mysqlEnum("cashbackApplyMode", ["all", "categories"]).default("all").notNull(),
+  cashbackCategoryIds: json("cashbackCategoryIds").$type<number[]>(),
+  cashbackAllowPartialUse: boolean("cashbackAllowPartialUse").default(true).notNull(),
   // Cartão Fidelidade
   loyaltyEnabled: boolean("loyaltyEnabled").default(false).notNull(),
   loyaltyStampsRequired: int("loyaltyStampsRequired").default(6),
@@ -975,3 +983,38 @@ export const financialGoals = mysqlTable("financialGoals", {
 
 export type FinancialGoal = typeof financialGoals.$inferSelect;
 export type InsertFinancialGoal = typeof financialGoals.$inferInsert;
+
+// ============ CASHBACK ============
+
+// Transações de cashback (geração e uso)
+export const cashbackTransactions = mysqlTable("cashbackTransactions", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  customerPhone: varchar("customerPhone", { length: 30 }).notNull(),
+  type: mysqlEnum("type", ["credit", "debit"]).notNull(), // credit = geração, debit = uso
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(), // Valor do cashback
+  orderId: int("orderId"), // Pedido que gerou ou consumiu o cashback
+  orderNumber: varchar("orderNumber", { length: 50 }),
+  description: varchar("description", { length: 500 }),
+  balanceBefore: decimal("balanceBefore", { precision: 10, scale: 2 }).notNull(),
+  balanceAfter: decimal("balanceAfter", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type CashbackTransaction = typeof cashbackTransactions.$inferSelect;
+export type InsertCashbackTransaction = typeof cashbackTransactions.$inferInsert;
+
+// Saldo de cashback por cliente por estabelecimento
+export const cashbackBalances = mysqlTable("cashbackBalances", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  customerPhone: varchar("customerPhone", { length: 30 }).notNull(),
+  balance: decimal("balance", { precision: 10, scale: 2 }).default("0").notNull(),
+  totalEarned: decimal("totalEarned", { precision: 10, scale: 2 }).default("0").notNull(),
+  totalUsed: decimal("totalUsed", { precision: 10, scale: 2 }).default("0").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type CashbackBalance = typeof cashbackBalances.$inferSelect;
+export type InsertCashbackBalance = typeof cashbackBalances.$inferInsert;
