@@ -172,7 +172,7 @@ function LandingNavbar() {
                   href="/criar-conta"
                   className="text-sm font-semibold text-white bg-red-500 hover:bg-red-600 text-center py-2.5 rounded-xl transition-colors shadow-lg shadow-red-500/25"
                 >
-                  Criar conta grátis
+                  Teste 15 dias grátis
                 </Link>
               </div>
             </div>

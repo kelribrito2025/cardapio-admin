@@ -7129,3 +7129,6 @@
 
 ## Landing: Texto CTA seção Sistema completo
 - [x] Alterar texto do CTA de "Começar agora — é grátis" para "Teste grátis por 15 dias"
+
+## Landing: Texto CTA menu mobile
+- [x] Alterar texto do botão menu mobile de "Criar conta grátis" para "Teste 15 dias grátis"
