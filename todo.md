@@ -7209,3 +7209,4 @@
 - [x] Modal Pagamento: regras de aplicação (parcial, total, excedente)
 - [x] Testes vitest para cashback
 - [x] Reduzir tamanho do container de cashback no modal de entrega/pagamento
+- [x] Mover cashback do modal de entrega para bottom sheet separado acionado por ícone de carteira ao lado do botão Próximo

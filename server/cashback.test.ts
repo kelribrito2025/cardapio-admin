@@ -227,7 +227,7 @@ describe("Cashback Feature", () => {
     });
 
     it("should show login prompt for non-logged users", () => {
-      expect(publicMenuContent).toContain("Entrar para usar seu cashback");
+      expect(publicMenuContent).toContain("Entre para usar seu cashback");
     });
   });
 });
