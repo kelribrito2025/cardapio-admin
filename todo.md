@@ -7174,3 +7174,5 @@
 - [x] Indicador visual de "já pago" nos cards de Lançamentos Futuros (fundo verde claro ou badge Pago)
 - [x] Desfazer pagamento via botão no toast de sucesso
 - [x] Diálogo de confirmação antes de marcar como pago (com opção de ajustar valor/data)
+- [x] Ocultar cards pagos do carrossel de Lançamentos Futuros (não exibir após marcar como pago)
+- [x] Alterar cor do badge "Hoje" para amarelo (mesma cor do ícone do card)
