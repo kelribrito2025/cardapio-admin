@@ -7230,3 +7230,4 @@
 - [x] Bug: preços de complementos multiplicados por 100 na edição do produto (ex: R$3,00 aparece como R$300,00) e no menu público
 - [x] Filtro interativo nos cards de status do estoque (OK, Baixo, Crítico, Em Falta) com toggle e sincronização com select
 - [x] Criar nova variável de template WhatsApp para exibir apenas Total + Forma de pagamento
+- [x] Adicionar barra lateral vermelha nos submenus do menu 'Menu' igual ao WhatsApp

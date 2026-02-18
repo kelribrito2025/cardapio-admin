@@ -636,7 +636,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           "overflow-hidden transition-all duration-200",
                           isExpanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
                         )}>
-                          <div className="ml-4 mt-0.5 space-y-0.5">
+                          <div className="ml-4 mt-0.5 space-y-0.5 border-l-2 border-border/50 pl-1">
                             {item.children.filter((child: any) => {
                               // Ocultar submenu Avaliações quando reviewsEnabled === false
                               if (child.href === '/avaliacoes' && !reviewsEnabled) return false;
@@ -657,10 +657,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                                     "flex items-center gap-2.5 py-2 text-sm font-medium transition-all duration-200 relative",
                                     "pl-3 pr-3",
                                     childActive
-                                      ? "bg-primary/15 text-primary rounded-r-xl -ml-3 pl-6 border-r-4 border-primary"
+                                      ? "bg-primary/10 text-primary border-l-4 border-primary"
                                       : "text-muted-foreground hover:bg-accent hover:text-foreground"
                                   )}
-                                  style={{borderRadius: '12px', paddingLeft: '37px', marginRight: '43px', marginLeft: '-27px'}}
+                                  style={{borderRadius: '8px', paddingLeft: '12px', marginRight: '8px'}}
                                 >
                                   <child.icon className="h-3.5 w-3.5 flex-shrink-0" />
                                   <span className="text-sm flex items-center gap-2">
