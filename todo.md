@@ -7163,3 +7163,5 @@
 - [x] UI: modal de criação/edição de meta (nome + valor alvo)
 - [x] UI: botão de excluir meta ao passar o mouse
 - [x] Testes vitest para CRUD de metas financeiras (6 testes passando)
+- [x] Corrigir badges cortados no card Lançamentos Futuros (adicionar pt-3 ao container)
+- [x] Alterar cor do badge "Hoje" de laranja para verde (bg-emerald-500)

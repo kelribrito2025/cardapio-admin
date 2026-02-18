@@ -2175,7 +2175,7 @@ export default function Financas() {
           const diffDays = Math.floor((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
           
           if (diffDays < 0) return { text: "Atrasado", color: "bg-red-500 text-white" };
-          if (diffDays === 0) return { text: "Hoje", color: "bg-orange-500 text-white" };
+          if (diffDays === 0) return { text: "Hoje", color: "bg-emerald-500 text-white" };
           if (diffDays <= 3) return { text: "Próximo", color: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400" };
           return null;
         };
@@ -2224,7 +2224,7 @@ export default function Financas() {
             ) : (
               <div className="relative">
                 <div 
-                  className="flex items-center gap-3 overflow-x-auto pb-3 scrollbar-thin"
+                  className="flex items-center gap-3 overflow-x-auto pt-3 pb-3 scrollbar-thin"
                   style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(200 200 200) transparent' }}
                 >
                   {upcomingRecurring.slice(0, 12).map((item, index) => {
