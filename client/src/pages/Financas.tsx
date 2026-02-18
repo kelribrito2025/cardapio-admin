@@ -2224,10 +2224,9 @@ export default function Financas() {
                 Nenhum lançamento recorrente programado.
               </div>
             ) : (
-              <div className="relative">
+              <div className="relative hover-scroll-container">
                 <div 
-                  className="flex items-center gap-3 overflow-x-auto pt-3 pb-3 scrollbar-thin"
-                  style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgb(200 200 200) transparent' }}
+                  className="flex items-center gap-3 overflow-x-auto pt-3 pb-3 scrollbar-hide"
                 >
                   {upcomingRecurring.slice(0, 12).map((item, index) => {
                     const badge = getBadge(item.dueDate);

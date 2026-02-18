@@ -254,6 +254,24 @@
     display: none;
   }
 
+  /* Show scrollbar on hover (parent container) */
+  .hover-scroll-container:hover .scrollbar-hide {
+    -ms-overflow-style: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(200 200 200) transparent;
+  }
+  .hover-scroll-container:hover .scrollbar-hide::-webkit-scrollbar {
+    display: block;
+    height: 6px;
+  }
+  .hover-scroll-container:hover .scrollbar-hide::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .hover-scroll-container:hover .scrollbar-hide::-webkit-scrollbar-thumb {
+    background-color: rgb(200 200 200);
+    border-radius: 3px;
+  }
+
   /* Subtle shadow */
   .shadow-subtle {
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04);

@@ -7169,3 +7169,4 @@
 - [x] Clique nos cards de lançamento futuro abre edição da despesa recorrente correspondente
 - [x] Tooltip nos cards truncados de Lançamentos Futuros (exibir nome completo ao hover)
 - [x] Botões Nova meta e Gerenciar categorias lado a lado no card de Indicadores
+- [x] Barra de rolagem horizontal do card Lançamentos Futuros só aparece ao hover
