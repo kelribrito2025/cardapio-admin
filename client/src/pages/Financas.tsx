@@ -2232,9 +2232,27 @@ export default function Financas() {
                     return (
                       <div key={`${item.recurringId}-${item.dueDate}`} className="flex items-center gap-3 flex-shrink-0">
                         {/* Mini card - left colored border */}
-                        <div className={`relative bg-card border border-border/50 rounded-xl p-3.5 min-w-[150px] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border-l-[3px] ${
-                          item.type === 'revenue' ? 'border-l-emerald-500' : 'border-l-red-500'
-                        }`} style={{width: '165px'}}>
+                        <div
+                          className={`relative bg-card border border-border/50 rounded-xl p-3.5 min-w-[150px] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border-l-[3px] cursor-pointer ${
+                            item.type === 'revenue' ? 'border-l-emerald-500' : 'border-l-red-500'
+                          }`}
+                          style={{width: '165px'}}
+                          onClick={() => {
+                            if (item.frequency === 'once') {
+                              // One-time expense: find in expenses and open expense edit modal
+                              toast.info("Este é um lançamento avulso, não uma recorrência.");
+                              return;
+                            }
+                            // Find the full recurring expense data
+                            const fullRecurring = recurringExpenses?.find((r: any) => r.id === item.recurringId);
+                            if (fullRecurring) {
+                              setEditingRecurring(fullRecurring);
+                              setRecurringEditModalOpen(true);
+                            } else {
+                              toast.error("Não foi possível encontrar a recorrência.");
+                            }
+                          }}
+                        >
                           {/* Badge */}
                           {badge && (
                             <span className={`absolute -top-2 right-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${badge.color}`}>

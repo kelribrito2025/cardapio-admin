@@ -7166,3 +7166,4 @@
 - [x] Corrigir badges cortados no card Lançamentos Futuros (adicionar pt-3 ao container)
 - [x] Alterar cor do badge "Hoje" de laranja para verde (bg-emerald-500)
 - [x] Ajustar largura dos mini cards de Lançamentos Futuros de 150px para 165px
+- [x] Clique nos cards de lançamento futuro abre edição da despesa recorrente correspondente
