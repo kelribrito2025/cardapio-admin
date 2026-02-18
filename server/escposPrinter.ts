@@ -66,6 +66,7 @@ interface OrderData {
   address?: string;
   neighborhood?: string;
   paymentMethod: string;
+  changeFor?: number;
   items: OrderItem[];
   subtotal: number;
   deliveryFee: number;
@@ -295,6 +296,15 @@ export function generateEscPosReceipt(order: OrderData): string {
     }
     receipt += COMMANDS.BOLD_OFF;
     receipt += COMMANDS.FONT_NORMAL;
+    
+    // Troco (se pagamento em dinheiro)
+    if (order.paymentMethod === 'cash' && order.changeFor && order.changeFor > order.total) {
+      const change = order.changeFor - order.total;
+      receipt += `Troco para: ${formatPrice(order.changeFor)}\n`;
+      receipt += COMMANDS.BOLD_ON;
+      receipt += `Troco a devolver: ${formatPrice(change)}\n`;
+      receipt += COMMANDS.BOLD_OFF;
+    }
     receipt += '\n';
   }
   

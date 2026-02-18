@@ -637,7 +637,7 @@ export class EscPosGenerator {
         const change = order.changeFor - order.total;
         this.line(`Troco para: ${formatCurrency(order.changeFor)}`);
         this.bold()
-          .line(`Troco: ${formatCurrency(change)}`)
+          .line(`Troco a devolver: ${formatCurrency(change)}`)
           .bold(false);
       } else {
         this.line('Nao precisa de troco');
@@ -865,7 +865,7 @@ export function generatePlainTextReceipt(
       if (order.changeFor && order.changeFor > order.total) {
         const change = order.changeFor - order.total;
         receipt += `Troco para: ${formatCurrency(order.changeFor)}\n`;
-        receipt += `Troco: ${formatCurrency(change)}\n`;
+        receipt += `Troco a devolver: ${formatCurrency(change)}\n`;
       } else {
         receipt += 'Nao precisa de troco\n';
       }

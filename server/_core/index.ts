@@ -551,13 +551,19 @@ function generateReceiptHTML(
       </div>`;
     }    // Seção de troco
     if (order.paymentMethod === 'cash') {
+      const changeAmountNum = order.changeAmount ? parseFloat(order.changeAmount) : 0;
+      const totalNum = parseFloat(order.total) || 0;
+      const trocoDevolver = changeAmountNum > totalNum ? changeAmountNum - totalNum : 0;
       sections += `
       <div style="margin: 8px 0; text-align: center;">
         <div style="border-top: 1px dashed #000; margin-bottom: 8px;"></div>
         <div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: ${baseFontSize}; font-weight: ${baseFontWeight};">
           <img src="/info-icon.svg" style="width: 16px; height: 16px;" alt="info" />
-          <span>Obs: ${order.changeAmount ? `Troco para ${formatCurrency(order.changeAmount)}` : 'Não precisa de troco'}</span>
+          <span>Obs: ${order.changeAmount && changeAmountNum > 0 ? `Troco para ${formatCurrency(order.changeAmount)}` : 'Não precisa de troco'}</span>
         </div>
+        ${trocoDevolver > 0 ? `<div style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: ${baseFontSize}; font-weight: ${headerFontWeight}; margin-top: 4px;">
+          <span>Troco a devolver: ${formatCurrency(trocoDevolver)}</span>
+        </div>` : ''}
         <div style="border-top: 1px dashed #000; margin-top: 8px;"></div>
       </div>`;
     }

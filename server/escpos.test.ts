@@ -196,7 +196,7 @@ describe('ESC/POS Generator', () => {
       
       expect(receipt).toContain('Dinheiro');
       expect(receipt).toContain('Troco para: R$ 100,00');
-      expect(receipt).toContain('Troco: R$ 30,00');
+      expect(receipt).toContain('Troco a devolver: R$ 30,00');
     });
 
     it('should handle discount', () => {

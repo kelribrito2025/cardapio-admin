@@ -7235,3 +7235,5 @@
 - [x] Bug: borda colorida nos submenus do Menu está do lado esquerdo em vez do direito
 - [x] Bug: borda não aparece no menu Pedidos quando selecionado
 - [x] Bug: scroll da sidebar volta ao topo ao clicar num menu
+- [x] Exibir "Troco a devolver" no card Entrega e Pagamento do modal de detalhes do pedido
+- [x] Exibir "Troco a devolver" nos recibos de impressão abaixo da observação do troco

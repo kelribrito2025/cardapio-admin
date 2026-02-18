@@ -897,10 +897,16 @@ export default function Agendados() {
                       <span className="font-medium">{paymentMethodLabels[orderDetails.paymentMethod]?.label || orderDetails.paymentMethod}</span>
                     </div>
                     {orderDetails.paymentMethod === 'cash' && (orderDetails as any).changeAmount && Number((orderDetails as any).changeAmount) > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Troco para:</span>
-                        <span className="font-medium">{formatCurrency((orderDetails as any).changeAmount)}</span>
-                      </div>
+                      <>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Troco para:</span>
+                          <span className="font-medium">{formatCurrency((orderDetails as any).changeAmount)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Troco a devolver:</span>
+                          <span className="font-medium text-emerald-600 dark:text-emerald-400">{formatCurrency(Number((orderDetails as any).changeAmount) - Number(orderDetails.total))}</span>
+                        </div>
+                      </>
                     )}
                     {orderDetails.customerAddress && (
                       <div className="flex justify-between text-sm">

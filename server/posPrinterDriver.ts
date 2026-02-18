@@ -221,6 +221,11 @@ function generateReceiptText(
   
   if (order.paymentMethod === 'cash' && order.changeFor) {
     lines.push(`Troco para: ${formatCurrency(order.changeFor)}`);
+    const changeForNum = typeof order.changeFor === 'string' ? parseFloat(order.changeFor) : order.changeFor;
+    const totalNum = typeof order.total === 'string' ? parseFloat(order.total as string) : Number(order.total);
+    if (changeForNum > totalNum) {
+      lines.push(`Troco a devolver: ${formatCurrency(changeForNum - totalNum)}`);
+    }
   }
   
   // Observações
