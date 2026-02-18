@@ -2234,7 +2234,7 @@ export default function Financas() {
                         {/* Mini card - left colored border */}
                         <div className={`relative bg-card border border-border/50 rounded-xl p-3.5 min-w-[150px] hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border-l-[3px] ${
                           item.type === 'revenue' ? 'border-l-emerald-500' : 'border-l-red-500'
-                        }`}>
+                        }`} style={{width: '165px'}}>
                           {/* Badge */}
                           {badge && (
                             <span className={`absolute -top-2 right-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${badge.color}`}>
