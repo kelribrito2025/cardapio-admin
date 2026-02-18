@@ -1822,7 +1822,7 @@ export default function Financas() {
                     return `R$ ${v}`;
                   }}
                 />
-                <RechartsTooltip content={<ChartTooltipContent />} />
+                <RechartsTooltip content={<ChartTooltipContent />} cursor={false} />
                 <Bar
                   dataKey="receitas"
                   name="Receitas"
