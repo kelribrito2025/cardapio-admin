@@ -7182,3 +7182,4 @@
 - [x] Gráfico de Comparação Mensal deve exibir últimos 6 meses em vez de 4
 - [x] Remover fundo escuro do hover no gráfico de Comparação Mensal (manter apenas tooltip)
 - [x] Card de Indicadores: mostrar mensagem neutra (ex: "Sem movimentação") em vez de "Prejuízo" quando não há registros no período
+- [x] Restaurar fundo do hover no gráfico Comparação Mensal com 60% de transparência

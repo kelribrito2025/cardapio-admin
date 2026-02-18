@@ -1827,7 +1827,7 @@ export default function Financas() {
                     return `R$ ${v}`;
                   }}
                 />
-                <RechartsTooltip content={<ChartTooltipContent />} cursor={false} />
+                <RechartsTooltip content={<ChartTooltipContent />} cursor={{ fill: 'rgba(156, 163, 175, 0.2)' }} />
                 <Bar
                   dataKey="receitas"
                   name="Receitas"
