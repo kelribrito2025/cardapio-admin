@@ -45,7 +45,8 @@ import {
   expenses, InsertExpense, Expense,
   monthlyGoals, InsertMonthlyGoal, MonthlyGoal,
   recurringExpenses, InsertRecurringExpense, RecurringExpense,
-  recurringExpenseHistory, InsertRecurringExpenseHistoryEntry
+  recurringExpenseHistory, InsertRecurringExpenseHistoryEntry,
+  financialGoals, InsertFinancialGoal, FinancialGoal
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -9434,4 +9435,85 @@ function formatDateISO(date: Date): string {
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
+}
+
+
+// --- Metas Financeiras Personalizadas ---
+
+export async function listFinancialGoals(establishmentId: number, month: number, year: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select()
+    .from(financialGoals)
+    .where(and(
+      eq(financialGoals.establishmentId, establishmentId),
+      eq(financialGoals.month, month),
+      eq(financialGoals.year, year)
+    ))
+    .orderBy(asc(financialGoals.sortOrder), asc(financialGoals.id));
+}
+
+export async function createFinancialGoal(data: {
+  establishmentId: number;
+  month: number;
+  year: number;
+  name: string;
+  targetValue: string;
+  type?: "profit" | "revenue" | "savings" | "custom";
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  // Get the max sortOrder for this establishment/month/year
+  const existing = await db.select({ maxSort: sql<number>`COALESCE(MAX(${financialGoals.sortOrder}), -1)` })
+    .from(financialGoals)
+    .where(and(
+      eq(financialGoals.establishmentId, data.establishmentId),
+      eq(financialGoals.month, data.month),
+      eq(financialGoals.year, data.year)
+    ));
+  
+  const nextSort = (existing[0]?.maxSort ?? -1) + 1;
+  
+  const result = await db.insert(financialGoals).values({
+    establishmentId: data.establishmentId,
+    month: data.month,
+    year: data.year,
+    name: data.name,
+    targetValue: data.targetValue,
+    type: data.type || "custom",
+    sortOrder: nextSort,
+  });
+  
+  return result[0].insertId;
+}
+
+export async function updateFinancialGoal(id: number, establishmentId: number, data: {
+  name?: string;
+  targetValue?: string;
+  type?: "profit" | "revenue" | "savings" | "custom";
+}) {
+  const db = await getDb();
+  if (!db) return false;
+  
+  await db.update(financialGoals)
+    .set(data)
+    .where(and(
+      eq(financialGoals.id, id),
+      eq(financialGoals.establishmentId, establishmentId)
+    ));
+  return true;
+}
+
+export async function deleteFinancialGoal(id: number, establishmentId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  
+  await db.delete(financialGoals)
+    .where(and(
+      eq(financialGoals.id, id),
+      eq(financialGoals.establishmentId, establishmentId)
+    ));
+  return true;
 }

@@ -904,6 +904,118 @@ function GoalModal({
   );
 }
 
+// ============ CUSTOM GOAL MODAL ============
+function CustomGoalModal({
+  open,
+  onOpenChange,
+  establishmentId,
+  editingGoal,
+  month,
+  year,
+  onCreateGoal,
+  onUpdateGoal,
+  isCreating,
+  isUpdating,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  establishmentId: number;
+  editingGoal: any;
+  month: number;
+  year: number;
+  onCreateGoal: (data: { establishmentId: number; month: number; year: number; name: string; targetValue: string }) => void;
+  onUpdateGoal: (data: { id: number; establishmentId: number; name: string; targetValue: string }) => void;
+  isCreating: boolean;
+  isUpdating: boolean;
+}) {
+  const [goalName, setGoalName] = useState("");
+  const [targetValue, setTargetValue] = useState("");
+
+  useEffect(() => {
+    if (editingGoal) {
+      setGoalName(editingGoal.name || "");
+      setTargetValue(String(Number(editingGoal.targetValue)) || "");
+    } else {
+      setGoalName("");
+      setTargetValue("");
+    }
+  }, [editingGoal, open]);
+
+  const isLoading = isCreating || isUpdating;
+
+  function handleSubmit() {
+    if (!goalName.trim() || !targetValue) {
+      toast.error("Preencha o nome e o valor da meta.");
+      return;
+    }
+    if (editingGoal) {
+      onUpdateGoal({
+        id: editingGoal.id,
+        establishmentId,
+        name: goalName.trim(),
+        targetValue: String(parseFloat(targetValue)),
+      });
+    } else {
+      onCreateGoal({
+        establishmentId,
+        month,
+        year,
+        name: goalName.trim(),
+        targetValue: String(parseFloat(targetValue)),
+      });
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[400px]">
+        <DialogHeader>
+          <DialogTitle>{editingGoal ? "Editar meta" : "Nova meta"}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-2">
+          <p className="text-sm text-muted-foreground">
+            {editingGoal ? "Edite os dados da meta." : `Crie uma nova meta para ${new Date(year, month - 1).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}.`}
+          </p>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+              Nome da meta *
+            </label>
+            <Input
+              value={goalName}
+              onChange={(e) => setGoalName(e.target.value)}
+              placeholder="Ex: Faturamento, Economia, Investimento"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
+              Valor alvo (R$) *
+            </label>
+            <Input
+              type="number"
+              step="0.01"
+              min="0"
+              value={targetValue}
+              onChange={(e) => setTargetValue(e.target.value)}
+              placeholder="Ex: 15000"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? "Salvando..." : editingGoal ? "Salvar" : "Criar meta"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 // ============ FINANCIAL HEALTH INDICATOR ============
 function FinancialHealthIndicator({
   profit,
@@ -1108,6 +1220,8 @@ export default function Financas() {
   const [revenuePageInput, setRevenuePageInput] = useState("");
   const [historyModalOpen, setHistoryModalOpen] = useState(false);
   const [historyRecurringId, setHistoryRecurringId] = useState<number | null>(null);
+  const [customGoalModalOpen, setCustomGoalModalOpen] = useState(false);
+  const [editingCustomGoal, setEditingCustomGoal] = useState<any>(null);
 
   useEffect(() => {
     if (establishment) setEstablishmentId(establishment.id);
@@ -1180,6 +1294,47 @@ export default function Financas() {
 
   const { data: goal } = trpc.finance.getGoal.useQuery(goalInput, {
     enabled: !!establishmentId,
+  });
+
+  // Custom financial goals (multiple)
+  const customGoalsInput = useMemo(
+    () => ({
+      establishmentId: establishmentId!,
+      month: currentMonth,
+      year: currentYear,
+    }),
+    [establishmentId, currentMonth, currentYear]
+  );
+  const { data: customGoals } = trpc.finance.listGoals.useQuery(customGoalsInput, {
+    enabled: !!establishmentId,
+  });
+
+  const createCustomGoalMutation = trpc.finance.createGoalCustom.useMutation({
+    onSuccess: () => {
+      toast.success("Meta criada com sucesso!");
+      utils.finance.listGoals.invalidate();
+      setCustomGoalModalOpen(false);
+      setEditingCustomGoal(null);
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const updateCustomGoalMutation = trpc.finance.updateGoalCustom.useMutation({
+    onSuccess: () => {
+      toast.success("Meta atualizada!");
+      utils.finance.listGoals.invalidate();
+      setCustomGoalModalOpen(false);
+      setEditingCustomGoal(null);
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const deleteCustomGoalMutation = trpc.finance.deleteGoalCustom.useMutation({
+    onSuccess: () => {
+      toast.success("Meta removida!");
+      utils.finance.listGoals.invalidate();
+    },
+    onError: (err) => toast.error(err.message),
   });
 
   const { data: expensesByCategory } = trpc.finance.expensesByCategory.useQuery(
@@ -1302,6 +1457,7 @@ export default function Financas() {
     utils.finance.expensesByCategory.invalidate();
     utils.finance.listRecurring.invalidate();
     utils.finance.getMonthlyComparison.invalidate();
+    utils.finance.listGoals.invalidate();
   }
 
   const goalTarget = goal ? Number(goal.targetProfit) : null;
@@ -1707,7 +1863,7 @@ export default function Financas() {
 
           {/* Action buttons */}
           <div className="mt-6 space-y-2">
-            {/* Meta button with integrated progress fill */}
+            {/* Meta principal button with integrated progress fill */}
             <div
               className="relative w-full h-10 rounded-md border border-border overflow-hidden cursor-pointer transition-all hover:border-foreground/30"
               onClick={() => setGoalModalOpen(true)}
@@ -1750,6 +1906,75 @@ export default function Financas() {
                 )}
               </div>
             </div>
+
+            {/* Custom goals list */}
+            {customGoals && customGoals.length > 0 && customGoals.map((cGoal) => {
+              const cTarget = Number(cGoal.targetValue);
+              const cProgress = cTarget && summary ? (summary.profit / cTarget) * 100 : 0;
+              const cIconColor = cProgress >= 70 ? 'text-emerald-600' : cProgress >= 30 ? 'text-amber-600' : cProgress >= 10 ? 'text-orange-600' : 'text-red-600';
+              return (
+                <div
+                  key={cGoal.id}
+                  className="relative w-full h-10 rounded-md border border-border overflow-hidden cursor-pointer transition-all hover:border-foreground/30 group"
+                  onClick={() => {
+                    setEditingCustomGoal(cGoal);
+                    setCustomGoalModalOpen(true);
+                  }}
+                >
+                  {/* Progress fill background */}
+                  <div
+                    className="absolute inset-y-0 left-0 transition-all duration-700 ease-out"
+                    style={{
+                      width: `${Math.min(100, Math.max(0, cProgress))}%`,
+                      background: cProgress >= 70
+                        ? 'linear-gradient(90deg, #22c55e, #16a34a)'
+                        : cProgress >= 30
+                        ? 'linear-gradient(90deg, #f59e0b, #eab308)'
+                        : cProgress >= 10
+                        ? 'linear-gradient(90deg, #f97316, #f59e0b)'
+                        : 'linear-gradient(90deg, #ef4444, #f97316)',
+                      opacity: 0.2,
+                    }}
+                  />
+                  {/* Button content */}
+                  <div className="relative flex items-center gap-2 h-full px-3 z-10">
+                    <Target className={`h-4 w-4 shrink-0 ${cIconColor}`} />
+                    <span className="text-sm font-medium truncate">
+                      {cGoal.name}: {formatCurrency(cTarget)}
+                    </span>
+                    <span className={`ml-auto text-xs font-bold ${cIconColor} shrink-0`}>
+                      {cProgress >= 100 ? '✓ Atingida!' : `${Math.round(Math.max(0, cProgress))}%`}
+                    </span>
+                    {/* Delete button on hover */}
+                    <button
+                      className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-red-100 dark:hover:bg-red-500/20 shrink-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm('Remover esta meta?')) {
+                          deleteCustomGoalMutation.mutate({ id: cGoal.id, establishmentId: establishmentId! });
+                        }
+                      }}
+                    >
+                      <Trash2 className="h-3 w-3 text-red-500" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Add new goal button */}
+            <Button
+              variant="outline"
+              className="w-full justify-start gap-2 border-dashed"
+              onClick={() => {
+                setEditingCustomGoal(null);
+                setCustomGoalModalOpen(true);
+              }}
+            >
+              <Plus className="h-4 w-4" />
+              Nova meta
+            </Button>
+
             <Button
               variant="outline"
               className="w-full justify-start gap-2"
@@ -2904,6 +3129,21 @@ export default function Financas() {
             currentGoal={goalTarget}
             month={currentMonth}
             year={currentYear}
+          />
+          <CustomGoalModal
+            open={customGoalModalOpen}
+            onOpenChange={(v) => {
+              setCustomGoalModalOpen(v);
+              if (!v) setEditingCustomGoal(null);
+            }}
+            establishmentId={establishmentId}
+            editingGoal={editingCustomGoal}
+            month={currentMonth}
+            year={currentYear}
+            onCreateGoal={(data) => createCustomGoalMutation.mutate(data)}
+            onUpdateGoal={(data) => updateCustomGoalMutation.mutate(data)}
+            isCreating={createCustomGoalMutation.isPending}
+            isUpdating={updateCustomGoalMutation.isPending}
           />
         </>
       )}

@@ -958,3 +958,20 @@ export const recurringExpenseHistory = mysqlTable("recurringExpenseHistory", {
 
 export type RecurringExpenseHistoryEntry = typeof recurringExpenseHistory.$inferSelect;
 export type InsertRecurringExpenseHistoryEntry = typeof recurringExpenseHistory.$inferInsert;
+
+// Metas financeiras personalizadas (múltiplas por mês)
+export const financialGoals = mysqlTable("financialGoals", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  month: int("month").notNull(), // 1-12
+  year: int("year").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  targetValue: decimal("targetValue", { precision: 10, scale: 2 }).notNull(),
+  type: mysqlEnum("type", ["profit", "revenue", "savings", "custom"]).default("custom").notNull(),
+  sortOrder: int("sortOrder").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type FinancialGoal = typeof financialGoals.$inferSelect;
+export type InsertFinancialGoal = typeof financialGoals.$inferInsert;

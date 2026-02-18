@@ -7154,3 +7154,12 @@
 - [x] Integrar registro de histórico na mutation updateRecurring
 - [x] Criar procedure para listar histórico de uma despesa recorrente
 - [x] Criar UI para visualizar histórico (modal com botão History)
+- [x] Múltiplas metas financeiras no card de Indicadores
+- [x] Tabela financialGoals no schema para metas personalizadas
+- [x] Funções CRUD no db.ts (create, list, update, delete)
+- [x] Procedures tRPC (listGoals, createGoalCustom, updateGoalCustom, deleteGoalCustom)
+- [x] UI: lista de metas customizadas com barra de progresso abaixo da meta principal
+- [x] UI: botão "+ Nova meta" com borda tracejada para criar novas metas
+- [x] UI: modal de criação/edição de meta (nome + valor alvo)
+- [x] UI: botão de excluir meta ao passar o mouse
+- [x] Testes vitest para CRUD de metas financeiras (6 testes passando)

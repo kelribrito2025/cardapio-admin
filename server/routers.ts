@@ -5376,6 +5376,55 @@ export const appRouter = router({
         return { id };
       }),
 
+    // Metas financeiras personalizadas (múltiplas)
+    listGoals: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        month: z.number(),
+        year: z.number(),
+      }))
+      .query(async ({ input }) => {
+        return db.listFinancialGoals(input.establishmentId, input.month, input.year);
+      }),
+
+    createGoalCustom: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        month: z.number(),
+        year: z.number(),
+        name: z.string().min(1),
+        targetValue: z.string(),
+        type: z.enum(["profit", "revenue", "savings", "custom"]).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createFinancialGoal(input);
+        return { id };
+      }),
+
+    updateGoalCustom: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        establishmentId: z.number(),
+        name: z.string().min(1).optional(),
+        targetValue: z.string().optional(),
+        type: z.enum(["profit", "revenue", "savings", "custom"]).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, establishmentId, ...data } = input;
+        await db.updateFinancialGoal(id, establishmentId, data);
+        return { success: true };
+      }),
+
+    deleteGoalCustom: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        establishmentId: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.deleteFinancialGoal(input.id, input.establishmentId);
+        return { success: true };
+      }),
+
     // Receitas diárias (faturamento consolidado por dia)
     listDailyRevenue: protectedProcedure
       .input(z.object({
