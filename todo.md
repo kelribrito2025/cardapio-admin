@@ -7226,3 +7226,4 @@
 - [x] Corrigir espaço em branco na mensagem WhatsApp de pedido finalizado quando cashback está desativado
 - [x] Bug: menu público mostra quantidade de complementos como máximo do grupo em vez do maxQuantity configurado no admin
 - [x] Bug: dessincronização do maxQuantity entre página de Complementos (fonte da verdade) e edição individual do produto
+- [x] Bug: dados existentes dessincronizados - página de Complementos mostra 50 mas produtos individuais continuam com 18

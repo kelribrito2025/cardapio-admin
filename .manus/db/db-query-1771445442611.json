@@ -1,0 +1,226 @@
+{
+  "query": "SELECT cg.id, cg.productId, cg.name, cg.maxQuantity, cg.minQuantity, p.name as productName \nFROM complementGroups cg \nJOIN products p ON p.id = cg.productId \nWHERE p.establishmentId = 60018 AND cg.name = 'Adicionais' \nORDER BY cg.maxQuantity ASC \nLIMIT 30;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.id, cg.productId, cg.name, cg.maxQuantity, cg.minQuantity, p.name as productName \nFROM complementGroups cg \nJOIN products p ON p.id = cg.productId \nWHERE p.establishmentId = 60018 AND cg.name = 'Adicionais' \nORDER BY cg.maxQuantity ASC \nLIMIT 30;",
+  "rows": [
+    {
+      "id": "60117",
+      "productId": "150090",
+      "name": "Adicionais",
+      "maxQuantity": "18",
+      "minQuantity": "0",
+      "productName": "LANCHE DO DIA - Big bacon"
+    },
+    {
+      "id": "60036",
+      "productId": "150034",
+      "name": "Adicionais ",
+      "maxQuantity": "19",
+      "minQuantity": "0",
+      "productName": "Big executivo"
+    },
+    {
+      "id": "180077",
+      "productId": "300059",
+      "name": "Adicionais ",
+      "maxQuantity": "19",
+      "minQuantity": "0",
+      "productName": "Combo 1"
+    },
+    {
+      "id": "60119",
+      "productId": "150091",
+      "name": "Adicionais ",
+      "maxQuantity": "19",
+      "minQuantity": "0",
+      "productName": "LANCHE DO DIA - Big Calabresa"
+    },
+    {
+      "id": "60115",
+      "productId": "150089",
+      "name": "Adicionais ",
+      "maxQuantity": "19",
+      "minQuantity": "0",
+      "productName": "LANCHE DO DIA - Big salada"
+    },
+    {
+      "id": "60113",
+      "productId": "150088",
+      "name": "Adicionais ",
+      "maxQuantity": "19",
+      "minQuantity": "0",
+      "productName": "LANCHE DO DIA - Big frango"
+    },
+    {
+      "id": "60028",
+      "productId": "150030",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Especial de bacon"
+    },
+    {
+      "id": "60038",
+      "productId": "150035",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Big tudo"
+    },
+    {
+      "id": "60020",
+      "productId": "150026",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Big bacon"
+    },
+    {
+      "id": "60022",
+      "productId": "150027",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Big Calabresa"
+    },
+    {
+      "id": "60024",
+      "productId": "150028",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Big vegetariano"
+    },
+    {
+      "id": "60026",
+      "productId": "150029",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Especial de frango"
+    },
+    {
+      "id": "60004",
+      "productId": "150018",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Dog Duplo"
+    },
+    {
+      "id": "60030",
+      "productId": "150031",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Especial de calabresa"
+    },
+    {
+      "id": "60032",
+      "productId": "150032",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Especial egg"
+    },
+    {
+      "id": "60034",
+      "productId": "150033",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Moda da casa"
+    },
+    {
+      "id": "60016",
+      "productId": "150024",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Big frango"
+    },
+    {
+      "id": "60018",
+      "productId": "150025",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Big frango com Catupiry"
+    },
+    {
+      "id": "60040",
+      "productId": "150036",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Big Fraldinha"
+    },
+    {
+      "id": "60042",
+      "productId": "150037",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Big salada"
+    },
+    {
+      "id": "60014",
+      "productId": "150023",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Big burguer"
+    },
+    {
+      "id": "60012",
+      "productId": "150022",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Big Lanche"
+    },
+    {
+      "id": "60010",
+      "productId": "150021",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Dog Calabresa"
+    },
+    {
+      "id": "60008",
+      "productId": "150020",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Dog bacon"
+    },
+    {
+      "id": "60121",
+      "productId": "150092",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "LANCHE DO DIA - Big EGG"
+    },
+    {
+      "id": "60123",
+      "productId": "150093",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Big EGG"
+    },
+    {
+      "id": "60006",
+      "productId": "150019",
+      "name": "Adicionais ",
+      "maxQuantity": "50",
+      "minQuantity": "0",
+      "productName": "Dog frango"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tproductId\tname\tmaxQuantity\tminQuantity\tproductName\n60117\t150090\tAdicionais\t18\t0\tLANCHE DO DIA - Big bacon\n60036\t150034\tAdicionais \t19\t0\tBig executivo\n180077\t300059\tAdicionais \t19\t0\tCombo 1\n60119\t150091\tAdicionais \t19\t0\tLANCHE DO DIA - Big Calabresa\n60115\t150089\tAdicionais \t19\t0\tLANCHE DO DIA - Big salada\n60113\t150088\tAdicionais \t19\t0\tLANCHE DO DIA - Big frango\n60028\t150030\tAdicionais \t50\t0\tEspecial de bacon\n60038\t150035\tAdicionais \t50\t0\tBig tudo\n60020\t150026\tAdicionais \t50\t0\tBig bacon\n60022\t150027\tAdicionais \t50\t0\tBig Calabresa\n60024\t150028\tAdicionais \t50\t0\tBig vegetariano\n60026\t150029\tAdicionais \t50\t0\tEspecial de frango\n60004\t150018\tAdicionais \t50\t0\tDog Duplo\n60030\t150031\tAdicionais \t50\t0\tEspecial de calabresa\n60032\t150032\tAdicionais \t50\t0\tEspecial egg\n60034\t150033\tAdicionais \t50\t0\tModa da casa\n60016\t150024\tAdicionais \t50\t0\tBig frango\n60018\t150025\tAdicionais \t50\t0\tBig frango com Catupiry\n60040\t150036\tAdicionais \t50\t0\tBig Fraldinha\n60042\t150037\tAdicionais \t50\t0\tBig salada\n60014\t150023\tAdicionais \t50\t0\tBig burguer\n60012\t150022\tAdicionais \t50\t0\tBig Lanche\n60010\t150021\tAdicionais \t50\t0\tDog Calabresa\n60008\t150020\tAdicionais \t50\t0\tDog bacon\n60121\t150092\tAdicionais \t50\t0\tLANCHE DO DIA - Big EGG\n60123\t150093\tAdicionais \t50\t0\tBig EGG\n60006\t150019\tAdicionais \t50\t0\tDog frango\n",
+  "stderr": "",
+  "execution_time_ms": 103
+}

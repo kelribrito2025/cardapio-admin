@@ -1112,8 +1112,16 @@ export async function getAllComplementGroupsByEstablishment(establishmentId: num
     items: any[];
   }>();
   
+  // Track groups that need sync (divergent rule values)
+  const groupsByKey = new Map<string, typeof allGroups>();
+  
   for (const group of allGroups) {
     const key = group.name.toLowerCase().trim();
+    if (!groupsByKey.has(key)) {
+      groupsByKey.set(key, []);
+    }
+    groupsByKey.get(key)!.push(group);
+    
     if (uniqueGroups.has(key)) {
       const existing = uniqueGroups.get(key)!;
       if (!existing.groupIds.includes(group.id)) {
@@ -1136,6 +1144,67 @@ export async function getAllComplementGroupsByEstablishment(establishmentId: num
         isActive: group.isActive,
         items: [],
       });
+    }
+  }
+  
+  // Auto-sync: detect and fix divergent rule values
+  // Use the most common value (mode) as the canonical one
+  const groupEntries = Array.from(groupsByKey.entries());
+  for (const [key, groupsForKey] of groupEntries) {
+    if (groupsForKey.length <= 1) continue;
+    
+    const uniqueGroup = uniqueGroups.get(key)!;
+    
+    // Check if maxQuantity, minQuantity, or isRequired differ across groups
+    const maxValues = groupsForKey.map((g: typeof allGroups[0]) => g.maxQuantity);
+    const minValues = groupsForKey.map((g: typeof allGroups[0]) => g.minQuantity);
+    const reqValues = groupsForKey.map((g: typeof allGroups[0]) => g.isRequired);
+    
+    const hasDivergentMax = new Set(maxValues).size > 1;
+    const hasDivergentMin = new Set(minValues).size > 1;
+    const hasDivergentReq = new Set(reqValues).size > 1;
+    
+    if (hasDivergentMax || hasDivergentMin || hasDivergentReq) {
+      // Use the most common value as canonical (mode)
+      const modeOfNumbers = (arr: number[]): number => {
+        const freq: Record<string, number> = {};
+        for (const v of arr) {
+          const k = String(v);
+          freq[k] = (freq[k] || 0) + 1;
+        }
+        let best = arr[0];
+        let bestCount = 0;
+        for (const k of Object.keys(freq)) {
+          if (freq[k] > bestCount) { best = Number(k); bestCount = freq[k]; }
+        }
+        return best;
+      };
+      const modeOfBooleans = (arr: boolean[]): boolean => {
+        const trueCount = arr.filter(v => v).length;
+        return trueCount > arr.length / 2;
+      };
+      
+      const canonicalMax: number = modeOfNumbers(maxValues);
+      const canonicalMin: number = modeOfNumbers(minValues);
+      const canonicalReq: boolean = modeOfBooleans(reqValues);
+      
+      // Update the uniqueGroup with canonical values
+      uniqueGroup.maxQuantity = canonicalMax;
+      uniqueGroup.minQuantity = canonicalMin;
+      uniqueGroup.isRequired = canonicalReq;
+      
+      // Fix divergent groups in DB (fire-and-forget)
+      const divergentIds = groupsForKey
+        .filter((g: typeof allGroups[0]) => g.maxQuantity !== canonicalMax || g.minQuantity !== canonicalMin || g.isRequired !== canonicalReq)
+        .map((g: typeof allGroups[0]) => g.id);
+      
+      if (divergentIds.length > 0) {
+        db.update(complementGroups)
+          .set({ maxQuantity: canonicalMax, minQuantity: canonicalMin, isRequired: canonicalReq })
+          .where(inArray(complementGroups.id, divergentIds))
+          .then(() => console.log(`[Sync] Fixed ${divergentIds.length} divergent groups for "${uniqueGroup.name}"`))
+          .catch((err: unknown) => console.error(`[Sync] Error fixing divergent groups:`, err));
+      }
     }
   }
   
