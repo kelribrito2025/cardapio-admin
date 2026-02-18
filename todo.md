@@ -7238,3 +7238,8 @@
 - [x] Exibir "Troco a devolver" no card Entrega e Pagamento do modal de detalhes do pedido
 - [x] Exibir "Troco a devolver" nos recibos de impressão abaixo da observação do troco
 - [x] Corrigir IDs de estabelecimento para usar sequência baixa (começando em 2) em vez de IDs altos
+- [x] Migrar cardápio completo do Grupo Roxedo (menu.mindi.com.br) para estabelecimento 210002
+- [x] Extrair todas as categorias, produtos, preços, descrições e fotos
+- [x] Extrair todos os grupos de complementos com quantidades mínimas/máximas
+- [x] Extrair todos os itens de complemento com preços e fotos
+- [x] Inserir dados no banco de dados do estabelecimento 210002

@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, name, userId FROM establishments WHERE id = 210002;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, userId FROM establishments WHERE id = 210002;",
+  "rows": [
+    {
+      "id": "210002",
+      "name": "Açai Roxedo",
+      "userId": "1144035"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tuserId\n210002\tAçai Roxedo\t1144035\n",
+  "stderr": "",
+  "execution_time_ms": 93
+}
