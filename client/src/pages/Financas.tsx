@@ -924,6 +924,8 @@ export default function Financas() {
   const [listTab, setListTab] = useState<"gastos" | "receitas" | "recorrentes">("gastos");
   const [revenueSearchTerm, setRevenueSearchTerm] = useState("");
   const [revenuePage, setRevenuePage] = useState(0);
+  const [pageInput, setPageInput] = useState("");
+  const [revenuePageInput, setRevenuePageInput] = useState("");
 
   useEffect(() => {
     if (establishment) setEstablishmentId(establishment.id);
@@ -2143,32 +2145,46 @@ export default function Financas() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/30">
-                <span className="text-sm text-muted-foreground">
-                  {expensesData.total} despesa
-                  {expensesData.total !== 1 ? "s" : ""}
-                </span>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    disabled={page === 0}
-                    onClick={() => setPage((p) => p - 1)}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
+              <div className="flex items-center justify-between bg-muted/30 rounded-lg px-4 py-2.5 mt-4">
+                <p className="text-sm text-muted-foreground">
+                  Página {page + 1} de {totalPages} · Total: {expensesData.total} despesa{expensesData.total !== 1 ? "s" : ""}
+                </p>
+                <div className="flex items-center gap-1">
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs" onClick={() => setPage(0)} disabled={page === 0}>
+                    Primeira
                   </Button>
-                  <span className="text-sm">
-                    {page + 1} / {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    disabled={page >= totalPages - 1}
-                    onClick={() => setPage((p) => p + 1)}
-                  >
-                    <ChevronRight className="h-4 w-4" />
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs" onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0}>
+                    Anterior
+                  </Button>
+                  <div className="flex items-center gap-1.5 mx-1">
+                    <span className="text-xs text-muted-foreground">Página</span>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={totalPages}
+                      value={pageInput || (page + 1)}
+                      onChange={(e) => setPageInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          const val = parseInt(pageInput);
+                          if (val >= 1 && val <= totalPages) setPage(val - 1);
+                          setPageInput("");
+                        }
+                      }}
+                      onBlur={() => {
+                        const val = parseInt(pageInput);
+                        if (val >= 1 && val <= totalPages) setPage(val - 1);
+                        setPageInput("");
+                      }}
+                      className="h-8 w-14 text-center text-xs"
+                    />
+                    <span className="text-xs text-muted-foreground">de {totalPages}</span>
+                  </div>
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs font-semibold" onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}>
+                    Próxima
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs" onClick={() => setPage(totalPages - 1)} disabled={page >= totalPages - 1}>
+                    Última
                   </Button>
                 </div>
               </div>
@@ -2275,17 +2291,46 @@ export default function Financas() {
 
                 {/* Pagination */}
                 {revenueTotalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/30">
-                    <span className="text-sm text-muted-foreground">
-                      {dailyRevenueData.total} dia{dailyRevenueData.total !== 1 ? "s" : ""}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <Button variant="outline" size="icon" className="h-8 w-8" disabled={revenuePage === 0} onClick={() => setRevenuePage((p) => p - 1)}>
-                        <ChevronLeft className="h-4 w-4" />
+                  <div className="flex items-center justify-between bg-muted/30 rounded-lg px-4 py-2.5 mt-4">
+                    <p className="text-sm text-muted-foreground">
+                      Página {revenuePage + 1} de {revenueTotalPages} · Total: {dailyRevenueData.total} dia{dailyRevenueData.total !== 1 ? "s" : ""}
+                    </p>
+                    <div className="flex items-center gap-1">
+                      <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs" onClick={() => setRevenuePage(0)} disabled={revenuePage === 0}>
+                        Primeira
                       </Button>
-                      <span className="text-sm">{revenuePage + 1} / {revenueTotalPages}</span>
-                      <Button variant="outline" size="icon" className="h-8 w-8" disabled={revenuePage >= revenueTotalPages - 1} onClick={() => setRevenuePage((p) => p + 1)}>
-                        <ChevronRight className="h-4 w-4" />
+                      <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs" onClick={() => setRevenuePage((p) => Math.max(0, p - 1))} disabled={revenuePage === 0}>
+                        Anterior
+                      </Button>
+                      <div className="flex items-center gap-1.5 mx-1">
+                        <span className="text-xs text-muted-foreground">Página</span>
+                        <Input
+                          type="number"
+                          min={1}
+                          max={revenueTotalPages}
+                          value={revenuePageInput || (revenuePage + 1)}
+                          onChange={(e) => setRevenuePageInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              const val = parseInt(revenuePageInput);
+                              if (val >= 1 && val <= revenueTotalPages) setRevenuePage(val - 1);
+                              setRevenuePageInput("");
+                            }
+                          }}
+                          onBlur={() => {
+                            const val = parseInt(revenuePageInput);
+                            if (val >= 1 && val <= revenueTotalPages) setRevenuePage(val - 1);
+                            setRevenuePageInput("");
+                          }}
+                          className="h-8 w-14 text-center text-xs"
+                        />
+                        <span className="text-xs text-muted-foreground">de {revenueTotalPages}</span>
+                      </div>
+                      <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs font-semibold" onClick={() => setRevenuePage((p) => Math.min(revenueTotalPages - 1, p + 1))} disabled={revenuePage >= revenueTotalPages - 1}>
+                        Próxima
+                      </Button>
+                      <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs" onClick={() => setRevenuePage(revenueTotalPages - 1)} disabled={revenuePage >= revenueTotalPages - 1}>
+                        Última
                       </Button>
                     </div>
                   </div>

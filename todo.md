@@ -7132,3 +7132,7 @@
 
 ## Landing: Texto CTA menu mobile
 - [x] Alterar texto do botão menu mobile de "Criar conta grátis" para "Teste 15 dias grátis"
+
+## Finanças: Paginação igual Avaliações
+- [x] Analisar modelo de paginação da página de Avaliações
+- [x] Aplicar mesmo modelo de paginação nas listas de Gastos e Receitas (Recorrentes não tem paginação server-side)
