@@ -7249,3 +7249,4 @@
 - [x] Remover template padrão fixo de out_for_delivery e usar apenas o template "Pronto (Delivery)" quando o pedido sai para entrega (on_accepted)
 - [x] Adicionar badges vermelhos "Novo" nos menus: PDV, Mapa de Mesas, Entregadores, Avaliações, Estoque, Finanças, Cupons, Campanhas
 - [x] Adicionar badge "Novo" no menu Dashboard
+- [x] Diferenciar visualmente os títulos das seções (OPERAÇÕES, GESTÃO, FINANCEIRO, MARKETING, SISTEMA) dos itens do menu com cor diferente

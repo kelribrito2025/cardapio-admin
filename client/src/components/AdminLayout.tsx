@@ -522,7 +522,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <div key={section.title} className={sectionIndex > 0 ? "mt-6" : ""} style={{marginBottom: '-5px'}}>
               {/* Título da seção */}
               {!sidebarCollapsed && (
-                <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-3">
+                <h3 className="text-[11px] font-bold text-primary/70 uppercase tracking-wider px-3 mb-3">
                   {section.title}
                 </h3>
               )}
