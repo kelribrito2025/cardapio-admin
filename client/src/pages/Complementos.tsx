@@ -754,6 +754,12 @@ function GroupCard({
     onError: () => toast.error("Erro ao atualizar item"),
   });
 
+  // Separate mutation for reorder that does NOT invalidate on each call
+  const reorderItemMutation = trpc.complement.updateItem.useMutation({
+    // No onSuccess invalidate - we handle it manually after all mutations complete
+    onError: () => toast.error("Erro ao reordenar item"),
+  });
+
   const deleteItemByNameMutation = trpc.complement.deleteItemByName.useMutation({
     onSuccess: () => {
       utils.complement.listAllGroups.invalidate();
@@ -799,11 +805,44 @@ function GroupCard({
       if (oldIndex === -1 || newIndex === -1) return;
 
       const reordered = arrayMove(items, oldIndex, newIndex);
-      reordered.forEach((item: any, idx: number) => {
-        updateItemMutation.mutate({ id: item.id, sortOrder: idx });
-      });
+
+      // Optimistic update: immediately update the cache so UI reflects the new order
+      utils.complement.listAllGroups.setData(
+        { establishmentId },
+        (oldData: any) => {
+          if (!oldData) return oldData;
+          return oldData.map((g: any) => {
+            if (g.name === group.name) {
+              return {
+                ...g,
+                items: reordered.map((item: any, idx: number) => ({
+                  ...item,
+                  sortOrder: idx,
+                })),
+              };
+            }
+            return g;
+          });
+        }
+      );
+
+      // Send all reorder mutations without invalidating, then invalidate once at the end
+      const promises = reordered.map((item: any, idx: number) =>
+        reorderItemMutation.mutateAsync({ id: item.id, sortOrder: idx })
+      );
+
+      Promise.all(promises)
+        .then(() => {
+          // Only invalidate after ALL reorders are done
+          utils.complement.listAllGroups.invalidate();
+        })
+        .catch(() => {
+          // On error, rollback by invalidating to get server state
+          utils.complement.listAllGroups.invalidate();
+          toast.error("Erro ao reordenar complementos");
+        });
     },
-    [group.items, updateItemMutation]
+    [group.items, reorderItemMutation, utils, establishmentId, group.name]
   );
 
   const handleToggleGroupActive = () => {

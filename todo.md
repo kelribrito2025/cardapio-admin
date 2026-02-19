@@ -7266,3 +7266,4 @@
 - [x] Atualizar lógica de criação de pedidos para auto-aceitar quando ativado
 - [x] Adicionar toggle na UI de configurações
 - [x] Escrever testes para a funcionalidade
+- [x] Bug: Drag and drop na página /complementos não persiste a nova posição - complemento volta ao lugar original ao soltar
