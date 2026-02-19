@@ -67,6 +67,7 @@ export default function AddGroupSheet({
   const [isSaving, setIsSaving] = useState(false);
   const [selectedGroupNames, setSelectedGroupNames] = useState<string[]>([]);
   const itemFileInputRef = useRef<HTMLInputElement>(null);
+  const itemNameInputRef = useRef<HTMLInputElement>(null);
 
   // Queries
   const { data: allGroupsData } = trpc.complement.listAllGroups.useQuery(
@@ -137,6 +138,7 @@ export default function AddGroupSheet({
     setNewItemName("");
     setNewItemPrice("");
     setNewItemImage(null);
+    setTimeout(() => itemNameInputRef.current?.focus(), 50);
   };
 
   const handleRemoveItem = (uniqueId: string) => {
@@ -718,8 +720,15 @@ export default function AddGroupSheet({
 
             <div className="flex-1 space-y-2">
               <Input
+                ref={itemNameInputRef}
                 value={newItemName}
                 onChange={(e) => setNewItemName(capitalizeFirst(e.target.value))}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && newItemName.trim()) {
+                    e.preventDefault();
+                    handleAddItem();
+                  }
+                }}
                 placeholder="Nome do complemento"
                 className="h-9 rounded-lg border-border/50 text-sm"
               />
