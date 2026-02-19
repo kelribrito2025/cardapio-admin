@@ -7243,3 +7243,5 @@
 - [x] Extrair todos os grupos de complementos com quantidades mínimas/máximas
 - [x] Extrair todos os itens de complemento com preços e fotos
 - [x] Inserir dados no banco de dados do estabelecimento 210002
+- [x] Gerar imagens profissionais com IA para os produtos do estabelecimento 210002 e associar no banco
+- [x] Gerar imagens profissionais melhoradas baseadas nas fotos originais para os produtos do estabelecimento 210002

@@ -1,0 +1,90 @@
+{
+  "query": "SELECT p.name, c.name as category, p.images FROM products p JOIN categories c ON p.categoryId = c.id WHERE p.establishmentId = 210002 AND p.images IS NOT NULL AND p.images != '[]' ORDER BY c.name, p.name",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.name, c.name as category, p.images FROM products p JOIN categories c ON p.categoryId = c.id WHERE p.establishmentId = 210002 AND p.images IS NOT NULL AND p.images != '[]' ORDER BY c.name, p.name",
+  "rows": [
+    {
+      "name": "Açaí Barca 500ML",
+      "category": "Açaí Barcas",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/PBIwhyigmZlgTKOl.png\"]"
+    },
+    {
+      "name": "Açaí Barca 850ML",
+      "category": "Açaí Barcas",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/cmIfYpjXnYStLBmC.png\"]"
+    },
+    {
+      "name": "450ml - Consumo na loja",
+      "category": "Açaí na Taça",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/DrtbrYDrhLCzWybB.png\"]"
+    },
+    {
+      "name": "Balde 1000ML",
+      "category": "Mocotó Completo",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/mYMfKutsHvINolbQ.png\"]"
+    },
+    {
+      "name": "Balde 500ML",
+      "category": "Mocotó Completo",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/mYMfKutsHvINolbQ.png\"]"
+    },
+    {
+      "name": "Balde 750ML",
+      "category": "Mocotó Completo",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/mYMfKutsHvINolbQ.png\"]"
+    },
+    {
+      "name": "Balde 1000ML",
+      "category": "Mocotó sem acompanhamentos",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/zsGQPCMNMjVSDVxi.png\"]"
+    },
+    {
+      "name": "Balde 500ML",
+      "category": "Mocotó sem acompanhamentos",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/zsGQPCMNMjVSDVxi.png\"]"
+    },
+    {
+      "name": "Balde 750ML",
+      "category": "Mocotó sem acompanhamentos",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/zsGQPCMNMjVSDVxi.png\"]"
+    },
+    {
+      "name": "Açaí 200ML",
+      "category": "Monte o seu Açaí",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/PSDYEuPSedEFsCRC.png\"]"
+    },
+    {
+      "name": "Açaí 300ML",
+      "category": "Monte o seu Açaí",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/PSDYEuPSedEFsCRC.png\"]"
+    },
+    {
+      "name": "Açaí 400ML",
+      "category": "Monte o seu Açaí",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/yxwinvUCMShGMnWh.png\"]"
+    },
+    {
+      "name": "Açaí 500ML",
+      "category": "Monte o seu Açaí",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/yxwinvUCMShGMnWh.png\"]"
+    },
+    {
+      "name": "Arroz - 300G",
+      "category": "Porções extra",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/RUrxcNgznAXQxYLX.png\"]"
+    },
+    {
+      "name": "Farofa - 100G",
+      "category": "Porções extra",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/mSfeTbbckbVEwzON.png\"]"
+    },
+    {
+      "name": "Limão - 100G",
+      "category": "Porções extra",
+      "images": "[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/ugBfyrgbOcJlnFul.png\"]"
+    }
+  ],
+  "messages": [],
+  "stdout": "name\tcategory\timages\nAçaí Barca 500ML\tAçaí Barcas\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/PBIwhyigmZlgTKOl.png\"]\nAçaí Barca 850ML\tAçaí Barcas\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/cmIfYpjXnYStLBmC.png\"]\n450ml - Consumo na loja\tAçaí na Taça\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/DrtbrYDrhLCzWybB.png\"]\nBalde 1000ML\tMocotó Completo\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/mYMfKutsHvINolbQ.png\"]\nBalde 500ML\tMocotó Completo\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/mYMfKutsHvINolbQ.png\"]\nBalde 750ML\tMocotó Completo\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/mYMfKutsHvINolbQ.png\"]\nBalde 1000ML\tMocotó sem acompanhamentos\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/zsGQPCMNMjVSDVxi.png\"]\nBalde 500ML\tMocotó sem acompanhamentos\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/zsGQPCMNMjVSDVxi.png\"]\nBalde 750ML\tMocotó sem acompanhamentos\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/zsGQPCMNMjVSDVxi.png\"]\nAçaí 200ML\tMonte o seu Açaí\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/PSDYEuPSedEFsCRC.png\"]\nAçaí 300ML\tMonte o seu Açaí\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/PSDYEuPSedEFsCRC.png\"]\nAçaí 400ML\tMonte o seu Açaí\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/yxwinvUCMShGMnWh.png\"]\nAçaí 500ML\tMonte o seu Açaí\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/yxwinvUCMShGMnWh.png\"]\nArroz - 300G\tPorções extra\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/RUrxcNgznAXQxYLX.png\"]\nFarofa - 100G\tPorções extra\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/mSfeTbbckbVEwzON.png\"]\nLimão - 100G\tPorções extra\t[\"https://files.manuscdn.com/user_upload_by_module/session_file/310519663232987165/ugBfyrgbOcJlnFul.png\"]\n",
+  "stderr": "",
+  "execution_time_ms": 68
+}
