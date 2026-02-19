@@ -7278,3 +7278,4 @@
 - [x] Feature: Adicionar Enter no campo de preço do complemento no AddGroupSheet e CreateProductSheet para adicionar o complemento e focar no campo de nome
 - [x] Feature: Enter no campo nome do complemento pula para preço; Enter no campo preço adiciona e volta para nome (AddGroupSheet e CreateProductSheet)
 - [x] Feature: Adicionar ícone (i) de informação com tooltip explicando atalho Enter (nome→preço→adicionar) no AddGroupSheet e CreateProductSheet
+- [x] Bug: Complementos com mesmo nome compartilham preço entre grupos diferentes - cada complemento deve ser instância independente por grupo

@@ -1092,7 +1092,8 @@ export async function updateComplementItemsByName(
 
 // ============ GLOBAL COMPLEMENT GROUP MANAGEMENT ============
 
-// Get all unique complement groups across all products of an establishment
+// Get all complement groups across all products of an establishment
+// Each group is independent - no auto-sync between groups with same name
 export async function getAllComplementGroupsByEstablishment(establishmentId: number) {
   const db = await getDb();
   if (!db) return [];
@@ -1105,6 +1106,7 @@ export async function getAllComplementGroupsByEstablishment(establishmentId: num
   if (establishmentProducts.length === 0) return [];
   
   const productIds = establishmentProducts.map(p => p.id);
+  const productMap = new Map(establishmentProducts.map(p => [p.id, p.name]));
   
   // Get all complement groups for these products
   const allGroups = await db.select()
@@ -1114,7 +1116,24 @@ export async function getAllComplementGroupsByEstablishment(establishmentId: num
   
   if (allGroups.length === 0) return [];
   
-  // Group by name to identify unique groups (same group can be in multiple products)
+  // Get all items for all groups
+  const allGroupIds = allGroups.map(g => g.id);
+  const allItems = await db.select()
+    .from(complementItems)
+    .where(inArray(complementItems.groupId, allGroupIds))
+    .orderBy(asc(complementItems.sortOrder));
+  
+  // Build items map by groupId
+  const itemsByGroupId = new Map<number, typeof allItems>();
+  for (const item of allItems) {
+    if (!itemsByGroupId.has(item.groupId)) {
+      itemsByGroupId.set(item.groupId, []);
+    }
+    itemsByGroupId.get(item.groupId)!.push(item);
+  }
+  
+  // Each group is independent - return all groups with their items
+  // Group by name for the /complementos page display (aggregate view)
   const uniqueGroups = new Map<string, {
     name: string;
     groupIds: number[];
@@ -1128,15 +1147,8 @@ export async function getAllComplementGroupsByEstablishment(establishmentId: num
     items: any[];
   }>();
   
-  // Track groups that need sync (divergent rule values)
-  const groupsByKey = new Map<string, typeof allGroups>();
-  
   for (const group of allGroups) {
     const key = group.name.toLowerCase().trim();
-    if (!groupsByKey.has(key)) {
-      groupsByKey.set(key, []);
-    }
-    groupsByKey.get(key)!.push(group);
     
     if (uniqueGroups.has(key)) {
       const existing = uniqueGroups.get(key)!;
@@ -1163,80 +1175,8 @@ export async function getAllComplementGroupsByEstablishment(establishmentId: num
     }
   }
   
-  // Auto-sync: detect and fix divergent rule values
-  // Use the most common value (mode) as the canonical one
-  const groupEntries = Array.from(groupsByKey.entries());
-  for (const [key, groupsForKey] of groupEntries) {
-    if (groupsForKey.length <= 1) continue;
-    
-    const uniqueGroup = uniqueGroups.get(key)!;
-    
-    // Check if maxQuantity, minQuantity, or isRequired differ across groups
-    const maxValues = groupsForKey.map((g: typeof allGroups[0]) => g.maxQuantity);
-    const minValues = groupsForKey.map((g: typeof allGroups[0]) => g.minQuantity);
-    const reqValues = groupsForKey.map((g: typeof allGroups[0]) => g.isRequired);
-    
-    const hasDivergentMax = new Set(maxValues).size > 1;
-    const hasDivergentMin = new Set(minValues).size > 1;
-    const hasDivergentReq = new Set(reqValues).size > 1;
-    
-    if (hasDivergentMax || hasDivergentMin || hasDivergentReq) {
-      // Use the most common value as canonical (mode)
-      const modeOfNumbers = (arr: number[]): number => {
-        const freq: Record<string, number> = {};
-        for (const v of arr) {
-          const k = String(v);
-          freq[k] = (freq[k] || 0) + 1;
-        }
-        let best = arr[0];
-        let bestCount = 0;
-        for (const k of Object.keys(freq)) {
-          if (freq[k] > bestCount) { best = Number(k); bestCount = freq[k]; }
-        }
-        return best;
-      };
-      const modeOfBooleans = (arr: boolean[]): boolean => {
-        const trueCount = arr.filter(v => v).length;
-        return trueCount > arr.length / 2;
-      };
-      
-      const canonicalMax: number = modeOfNumbers(maxValues);
-      const canonicalMin: number = modeOfNumbers(minValues);
-      const canonicalReq: boolean = modeOfBooleans(reqValues);
-      
-      // Update the uniqueGroup with canonical values
-      uniqueGroup.maxQuantity = canonicalMax;
-      uniqueGroup.minQuantity = canonicalMin;
-      uniqueGroup.isRequired = canonicalReq;
-      
-      // Fix divergent groups in DB (fire-and-forget)
-      const divergentIds = groupsForKey
-        .filter((g: typeof allGroups[0]) => g.maxQuantity !== canonicalMax || g.minQuantity !== canonicalMin || g.isRequired !== canonicalReq)
-        .map((g: typeof allGroups[0]) => g.id);
-      
-      if (divergentIds.length > 0) {
-        db.update(complementGroups)
-          .set({ maxQuantity: canonicalMax, minQuantity: canonicalMin, isRequired: canonicalReq })
-          .where(inArray(complementGroups.id, divergentIds))
-          .then(() => console.log(`[Sync] Fixed ${divergentIds.length} divergent groups for "${uniqueGroup.name}"`))
-          .catch((err: unknown) => console.error(`[Sync] Error fixing divergent groups:`, err));
-      }
-    }
-  }
-  
-  // Get all items for all groups
-  const allGroupIds = allGroups.map(g => g.id);
-  const allItems = await db.select()
-    .from(complementItems)
-    .where(inArray(complementItems.groupId, allGroupIds))
-    .orderBy(asc(complementItems.sortOrder));
-  
-  // Assign items to their unique groups (deduplicate by name)
-  // Also track all items by name for price sync
-  const itemsByName = new Map<string, typeof allItems>();
-  
+  // Assign items to their groups (deduplicate by name within the same group-name)
   for (const item of allItems) {
-    // Find which unique group this item belongs to
     const group = allGroups.find(g => g.id === item.groupId);
     if (!group) continue;
     
@@ -1244,14 +1184,7 @@ export async function getAllComplementGroupsByEstablishment(establishmentId: num
     const uniqueGroup = uniqueGroups.get(key);
     if (!uniqueGroup) continue;
     
-    // Track all items by name for price sync
-    const itemKey = item.name.toLowerCase().trim();
-    if (!itemsByName.has(itemKey)) {
-      itemsByName.set(itemKey, []);
-    }
-    itemsByName.get(itemKey)!.push(item);
-    
-    // Check if we already have an item with this name
+    // Check if we already have an item with this name in this group-name aggregate
     const existingItem = uniqueGroup.items.find(
       (i: any) => i.name.toLowerCase().trim() === item.name.toLowerCase().trim()
     );
@@ -1264,55 +1197,6 @@ export async function getAllComplementGroupsByEstablishment(establishmentId: num
       uniqueGroup.complementCount++;
     } else {
       existingItem.usageCount = (existingItem.usageCount || 1) + 1;
-    }
-  }
-  
-  // Auto-sync: detect and fix divergent complement item prices
-  const itemEntries = Array.from(itemsByName.entries());
-  for (const [itemKey, itemsForKey] of itemEntries) {
-    if (itemsForKey.length <= 1) continue;
-    
-    const prices = itemsForKey.map(i => i.price);
-    const uniquePrices = new Set(prices);
-    
-    if (uniquePrices.size > 1) {
-      // Find the most common price (mode)
-      const priceFreq: Record<string, number> = {};
-      for (const p of prices) {
-        priceFreq[p] = (priceFreq[p] || 0) + 1;
-      }
-      let canonicalPrice = prices[0];
-      let bestCount = 0;
-      for (const p of Object.keys(priceFreq)) {
-        if (priceFreq[p] > bestCount) {
-          canonicalPrice = p;
-          bestCount = priceFreq[p];
-        }
-      }
-      
-      // Fix divergent items in DB (fire-and-forget)
-      const divergentIds = itemsForKey
-        .filter(i => i.price !== canonicalPrice)
-        .map(i => i.id);
-      
-      if (divergentIds.length > 0) {
-        console.log(`[Sync] Fixing ${divergentIds.length} divergent prices for "${itemsForKey[0].name}": canonical=${canonicalPrice}, divergent prices: ${Array.from(uniquePrices).join(', ')}`);
-        
-        db.update(complementItems)
-          .set({ price: canonicalPrice })
-          .where(inArray(complementItems.id, divergentIds))
-          .then(() => console.log(`[Sync] Fixed ${divergentIds.length} divergent prices for "${itemsForKey[0].name}"`))
-          .catch((err: unknown) => console.error(`[Sync] Error fixing divergent prices:`, err));
-        
-        // Also update the uniqueGroup items with canonical price
-        for (const [, ug] of Array.from(uniqueGroups.entries())) {
-          for (const ugItem of ug.items) {
-            if (ugItem.name.toLowerCase().trim() === itemKey) {
-              ugItem.price = canonicalPrice;
-            }
-          }
-        }
-      }
     }
   }
   

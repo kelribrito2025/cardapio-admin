@@ -893,27 +893,8 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
-        
-        // Atualizar o grupo individual primeiro
+        // Cada grupo é independente por produto - sem sincronização global
         await db.updateComplementGroup(id, data);
-        
-        // Se minQuantity, maxQuantity ou isRequired foram alterados,
-        // sincronizar com todos os grupos de mesmo nome no estabelecimento
-        const hasRuleChange = data.minQuantity !== undefined || data.maxQuantity !== undefined || data.isRequired !== undefined;
-        if (hasRuleChange) {
-          const group = await db.getComplementGroupById(id);
-          if (group) {
-            const product = await db.getProductById(group.productId);
-            if (product) {
-              const ruleData: { minQuantity?: number; maxQuantity?: number; isRequired?: boolean } = {};
-              if (data.minQuantity !== undefined) ruleData.minQuantity = data.minQuantity;
-              if (data.maxQuantity !== undefined) ruleData.maxQuantity = data.maxQuantity;
-              if (data.isRequired !== undefined) ruleData.isRequired = data.isRequired;
-              await db.updateComplementGroupRulesByName(product.establishmentId, group.name, ruleData);
-            }
-          }
-        }
-        
         return { success: true };
       }),
     
@@ -957,30 +938,8 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
+        // Cada complemento é independente por grupo - sem sincronização global
         await db.updateComplementItem(id, data);
-        
-        // If price changed, sync across all products with the same complement name
-        if (data.price) {
-          try {
-            const item = await db.getComplementItemById(id);
-            if (item) {
-              const group = await db.getComplementGroupById(item.groupId);
-              if (group) {
-                const product = await db.getProductById(group.productId);
-                if (product) {
-                  await db.updateComplementItemsByName(
-                    product.establishmentId,
-                    item.name,
-                    { price: data.price }
-                  );
-                }
-              }
-            }
-          } catch (err) {
-            console.error('[Sync] Error syncing complement price globally:', err);
-          }
-        }
-        
         return { success: true };
       }),
     
