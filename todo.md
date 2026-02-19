@@ -7261,3 +7261,8 @@
 - [x] Criar UI no painel admin (aba API nas configurações de impressora) para gerar/gerenciar API keys
 - [x] Escrever testes para o endpoint da impressora
 - [x] Criar endpoint /api/print/receipt/{orderId}?key={apiKey} com autenticação por API key para app da impressora buscar HTML do recibo
+- [x] Implementar funcionalidade de aceitar pedidos automaticamente (toggle nas configurações do estabelecimento)
+- [x] Adicionar campo autoAcceptOrders no schema do estabelecimento
+- [x] Atualizar lógica de criação de pedidos para auto-aceitar quando ativado
+- [x] Adicionar toggle na UI de configurações
+- [x] Escrever testes para a funcionalidade

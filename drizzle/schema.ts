@@ -118,6 +118,8 @@ export const establishments = mysqlTable("establishments", {
   schedulingMaxDays: int("schedulingMaxDays").default(7).notNull(), // Antecedência máxima em dias (ex: 7 dias)
   schedulingInterval: int("schedulingInterval").default(30).notNull(), // Intervalo entre horários em minutos (15, 30, 60)
   schedulingMoveMinutes: int("schedulingMoveMinutes").default(30).notNull(), // Minutos antes para mover para fila normal
+  // Aceitar pedidos automaticamente
+  autoAcceptOrders: boolean("autoAcceptOrders").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

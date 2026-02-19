@@ -155,6 +155,9 @@ export default function Configuracoes() {
   // SMS settings state
   const [smsEnabled, setSmsEnabled] = useState(false);
   
+  // Auto-accept orders state
+  const [autoAcceptOrders, setAutoAcceptOrders] = useState(false);
+  
   // Note style state
   const [noteStyle, setNoteStyle] = useState("default");
   const [showPreviewForStyle, setShowPreviewForStyle] = useState<string | null>(null);
@@ -331,6 +334,7 @@ export default function Configuracoes() {
       setDeliveryFeeType(establishment.deliveryFeeType || "free");
       setDeliveryFeeFixed(establishment.deliveryFeeFixed || "0");
       setTimezone(establishment.timezone || 'America/Sao_Paulo');
+      setAutoAcceptOrders(establishment.autoAcceptOrders || false);
       setReviewsEnabled(establishment.reviewsEnabled ?? true);
       setFakeReviewCount(Math.min(establishment.fakeReviewCount ?? 250, 250));
       setInitialDataLoaded(true);
@@ -771,6 +775,7 @@ export default function Configuracoes() {
       minimumOrderValue,
       deliveryFeeType,
       deliveryFeeFixed,
+      autoAcceptOrders,
     });
     
     // Salvar taxas por bairro se o tipo for byNeighborhood
@@ -1844,6 +1849,46 @@ export default function Configuracoes() {
               </div>
             </SectionCard>
           </div>
+
+          {/* Aceitar pedidos automaticamente */}
+          <SectionCard title="Pedidos">
+            <div className="space-y-3">
+              <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg border border-border/30">
+                <div className={cn(
+                  "p-2 rounded-lg shrink-0",
+                  autoAcceptOrders ? "bg-emerald-100" : "bg-muted/50"
+                )}>
+                  <Check className={cn("h-5 w-5", autoAcceptOrders ? "text-emerald-600" : "text-muted-foreground")} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <h4 className="font-semibold text-sm">Aceitar pedidos automaticamente</h4>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Pedidos entram direto como "Em preparo" sem precisar aceitar manualmente.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={autoAcceptOrders}
+                      onCheckedChange={(checked) => setAutoAcceptOrders(checked)}
+                    />
+                  </div>
+                  {autoAcceptOrders && (
+                    <div className="mt-2 p-2 bg-emerald-50 rounded border border-emerald-200">
+                      <p className="text-xs text-emerald-700">
+                        <strong>Ativo:</strong> Novos pedidos serão aceitos automaticamente e irão direto para preparo.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-lg shadow-sm h-9">
+                <Save className="h-4 w-4 mr-2" />
+                {isPending ? "Salvando..." : "Salvar"}
+              </Button>
+            </div>
+          </SectionCard>
 
           {/* Informações e entrega + Taxa de entrega lado a lado */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

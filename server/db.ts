@@ -3037,8 +3037,29 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
   const orderNumber = await getNextDailyOrderNumber(data.establishmentId);
   console.log('[DB:createPublicOrder] Order number gerado:', orderNumber);
   
-  // Definir status inicial baseado na configuração de confirmação e agendamento
-   const initialStatus = data.isScheduled ? 'scheduled' : (requiresConfirmation ? 'pending_confirmation' : 'new');
+  // Verificar se aceitar pedidos automaticamente está ativado
+  let autoAccept = false;
+  try {
+    const establishment = await getEstablishmentById(data.establishmentId);
+    if (establishment?.autoAcceptOrders) {
+      autoAccept = true;
+      console.log('[DB:createPublicOrder] Auto-aceitar pedidos está ATIVADO');
+    }
+  } catch (e) {
+    console.log('[DB:createPublicOrder] Erro ao verificar auto-aceitar:', e);
+  }
+  
+  // Definir status inicial baseado na configuração de confirmação, agendamento e auto-aceitar
+  let initialStatus: "scheduled" | "pending_confirmation" | "new" | "preparing" | "ready" | "out_for_delivery" | "completed" | "cancelled";
+  if (data.isScheduled) {
+    initialStatus = 'scheduled';
+  } else if (requiresConfirmation) {
+    initialStatus = 'pending_confirmation';
+  } else if (autoAccept) {
+    initialStatus = 'preparing';
+  } else {
+    initialStatus = 'new';
+  }
   console.log('[DB:createPublicOrder] Status inicial:', initialStatus);
   
   try {
@@ -3077,7 +3098,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
         total: data.total,
         notes: data.notes,
         changeAmount: data.changeAmount,
-        status: "new",
+        status: autoAccept ? "preparing" as const : "new" as const,
         source: "internal" as const, // Origem do pedido para diferenciar do iFood
         createdAt: new Date(),
         items: items.map((item, index) => ({
