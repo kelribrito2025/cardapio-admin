@@ -7276,3 +7276,4 @@
 - [x] Feature: Adicionar Enter + auto-focus no campo de nome do complemento no AddGroupSheet (etapa group-items / "Adicione os complementos")
 - [x] Feature: Adicionar Enter + auto-focus no campo de nome do complemento no CreateProductSheet (etapa group-items) - já estava implementado
 - [x] Feature: Adicionar Enter no campo de preço do complemento no AddGroupSheet e CreateProductSheet para adicionar o complemento e focar no campo de nome
+- [x] Feature: Enter no campo nome do complemento pula para preço; Enter no campo preço adiciona e volta para nome (AddGroupSheet e CreateProductSheet)

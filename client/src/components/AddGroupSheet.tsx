@@ -68,6 +68,7 @@ export default function AddGroupSheet({
   const [selectedGroupNames, setSelectedGroupNames] = useState<string[]>([]);
   const itemFileInputRef = useRef<HTMLInputElement>(null);
   const itemNameInputRef = useRef<HTMLInputElement>(null);
+  const itemPriceInputRef = useRef<HTMLInputElement>(null);
 
   // Queries
   const { data: allGroupsData } = trpc.complement.listAllGroups.useQuery(
@@ -726,7 +727,7 @@ export default function AddGroupSheet({
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && newItemName.trim()) {
                     e.preventDefault();
-                    handleAddItem();
+                    itemPriceInputRef.current?.focus();
                   }
                 }}
                 placeholder="Nome do complemento"
@@ -737,6 +738,7 @@ export default function AddGroupSheet({
                   R$
                 </span>
                 <Input
+                  ref={itemPriceInputRef}
                   type="text"
                   inputMode="numeric"
                   value={newItemPrice}

@@ -100,6 +100,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
   const [uploadingItemImage, setUploadingItemImage] = useState(false);
   const itemFileInputRef = useRef<HTMLInputElement>(null);
   const itemNameInputRef = useRef<HTMLInputElement>(null);
+  const itemPriceInputRef = useRef<HTMLInputElement>(null);
   // Copy group
   const [selectedCopyGroupNames, setSelectedCopyGroupNames] = useState<string[]>([]);
 
@@ -1112,13 +1113,14 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
                     ref={itemNameInputRef}
                     value={newItemName}
                     onChange={(e) => setNewItemName(capitalizeFirst(e.target.value))}
-                    onKeyDown={(e) => { if (e.key === 'Enter' && newItemName.trim()) { e.preventDefault(); handleAddItem(); } }}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && newItemName.trim()) { e.preventDefault(); itemPriceInputRef.current?.focus(); } }}
                     placeholder="Nome do complemento *"
                     className="h-9 rounded-lg border-border/50 text-sm"
                   />
                   <div className="relative">
                     <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">R$</span>
                     <Input
+                      ref={itemPriceInputRef}
                       type="text"
                       inputMode="numeric"
                       value={newItemPrice}
