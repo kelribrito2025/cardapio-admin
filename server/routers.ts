@@ -2112,27 +2112,27 @@ export const appRouter = router({
         // Check if delivery already exists
         const existingDelivery = await db.getDeliveryByOrderId(input.orderId);
         if (existingDelivery) {
-          // Se já foi atribuído (ex: on_accepted), marcar como saiu para entrega e notificar cliente
+          // Se já foi atribuído (ex: on_accepted), marcar como saiu para entrega e enviar template "Pronto (Delivery)" ao cliente
           if (order.deliveryNotified) {
             await db.updateOrderStatus(input.orderId, 'out_for_delivery');
             
-            // Enviar notificação ao cliente sobre saiu para entrega
+            // Enviar notificação ao cliente usando o template "Pronto (Delivery)"
             try {
               if (order.customerPhone) {
                 const config = await db.getWhatsappConfig(establishment.id);
-                if (config && config.status === 'connected' && config.instanceToken && (config.notifyOnOutForDelivery !== false)) {
+                if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
                   const { sendOrderStatusNotification } = await import('./_core/uazapi');
                   const est = await db.getEstablishmentById(order.establishmentId);
                   const orderItems = await db.getOrderItems(order.id);
                   await sendOrderStatusNotification(
                     config.instanceToken,
                     order.customerPhone,
-                    'out_for_delivery',
+                    'ready',
                     {
                       customerName: order.customerName || 'Cliente',
                       orderNumber: order.orderNumber,
                       establishmentName: est?.name || 'Restaurante',
-                      template: config.templateOutForDelivery || null,
+                      template: config.templateReady,
                       deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
                       cancellationReason: null,
                       orderItems: orderItems.map(item => ({
@@ -2150,7 +2150,7 @@ export const appRouter = router({
                 }
               }
             } catch (error) {
-              console.error('[WhatsApp] Erro ao notificar cliente sobre saiu para entrega (on_accepted):', error);
+              console.error('[WhatsApp] Erro ao notificar cliente (Pronto Delivery - on_accepted):', error);
             }
             
             return { action: 'assigned', driverId: existingDelivery.driverId, whatsappSent: true, deliveryId: existingDelivery.id };
