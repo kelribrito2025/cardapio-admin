@@ -7245,3 +7245,4 @@
 - [x] Inserir dados no banco de dados do estabelecimento 210002
 - [x] Gerar imagens profissionais com IA para os produtos do estabelecimento 210002 e associar no banco
 - [x] Gerar imagens profissionais melhoradas baseadas nas fotos originais para os produtos do estabelecimento 210002
+- [x] Bug: notificação WhatsApp "saiu para entrega" ao cliente não é enviada quando driverNotifyTiming=on_accepted (early return no markReadyAndAssign)

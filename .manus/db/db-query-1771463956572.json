@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, orderNumber, status, customerName, customerPhone, deliveryType, deliveryNotified, createdAt FROM orders WHERE establishmentId = 90001 AND (orderNumber = 'P14' OR orderNumber = '#P14' OR orderNumber = '14' OR orderNumber LIKE '%14%') ORDER BY createdAt DESC LIMIT 10",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, status, customerName, customerPhone, deliveryType, deliveryNotified, createdAt FROM orders WHERE establishmentId = 90001 AND (orderNumber = 'P14' OR orderNumber = '#P14' OR orderNumber = '14' OR orderNumber LIKE '%14%') ORDER BY createdAt DESC LIMIT 10",
+  "rows": [
+    {
+      "id": "720026",
+      "orderNumber": "#P14",
+      "status": "completed",
+      "customerName": "Rayana Martins ",
+      "customerPhone": "27996035690",
+      "deliveryType": "delivery",
+      "deliveryNotified": "1",
+      "createdAt": "2026-02-19 00:07:56"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\tcustomerName\tcustomerPhone\tdeliveryType\tdeliveryNotified\tcreatedAt\n720026\t#P14\tcompleted\tRayana Martins \t27996035690\tdelivery\t1\t2026-02-19 00:07:56\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

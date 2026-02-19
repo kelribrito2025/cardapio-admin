@@ -1,0 +1,100 @@
+{
+  "query": "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'orders' ORDER BY ORDINAL_POSITION",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'orders' ORDER BY ORDINAL_POSITION",
+  "rows": [
+    {
+      "COLUMN_NAME": "id"
+    },
+    {
+      "COLUMN_NAME": "establishmentId"
+    },
+    {
+      "COLUMN_NAME": "orderNumber"
+    },
+    {
+      "COLUMN_NAME": "customerName"
+    },
+    {
+      "COLUMN_NAME": "customerPhone"
+    },
+    {
+      "COLUMN_NAME": "customerAddress"
+    },
+    {
+      "COLUMN_NAME": "status"
+    },
+    {
+      "COLUMN_NAME": "deliveryType"
+    },
+    {
+      "COLUMN_NAME": "paymentMethod"
+    },
+    {
+      "COLUMN_NAME": "subtotal"
+    },
+    {
+      "COLUMN_NAME": "deliveryFee"
+    },
+    {
+      "COLUMN_NAME": "total"
+    },
+    {
+      "COLUMN_NAME": "notes"
+    },
+    {
+      "COLUMN_NAME": "createdAt"
+    },
+    {
+      "COLUMN_NAME": "updatedAt"
+    },
+    {
+      "COLUMN_NAME": "completedAt"
+    },
+    {
+      "COLUMN_NAME": "changeAmount"
+    },
+    {
+      "COLUMN_NAME": "discount"
+    },
+    {
+      "COLUMN_NAME": "couponCode"
+    },
+    {
+      "COLUMN_NAME": "cancellationReason"
+    },
+    {
+      "COLUMN_NAME": "source"
+    },
+    {
+      "COLUMN_NAME": "externalId"
+    },
+    {
+      "COLUMN_NAME": "externalDisplayId"
+    },
+    {
+      "COLUMN_NAME": "externalStatus"
+    },
+    {
+      "COLUMN_NAME": "externalData"
+    },
+    {
+      "COLUMN_NAME": "deliveryNotified"
+    },
+    {
+      "COLUMN_NAME": "isScheduled"
+    },
+    {
+      "COLUMN_NAME": "scheduledAt"
+    },
+    {
+      "COLUMN_NAME": "movedToQueue"
+    },
+    {
+      "COLUMN_NAME": "movedToQueueAt"
+    }
+  ],
+  "messages": [],
+  "stdout": "COLUMN_NAME\nid\nestablishmentId\norderNumber\ncustomerName\ncustomerPhone\ncustomerAddress\nstatus\ndeliveryType\npaymentMethod\nsubtotal\ndeliveryFee\ntotal\nnotes\ncreatedAt\nupdatedAt\ncompletedAt\nchangeAmount\ndiscount\ncouponCode\ncancellationReason\nsource\nexternalId\nexternalDisplayId\nexternalStatus\nexternalData\ndeliveryNotified\nisScheduled\nscheduledAt\nmovedToQueue\nmovedToQueueAt\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

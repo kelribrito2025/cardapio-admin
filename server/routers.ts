@@ -2112,9 +2112,47 @@ export const appRouter = router({
         // Check if delivery already exists
         const existingDelivery = await db.getDeliveryByOrderId(input.orderId);
         if (existingDelivery) {
-          // Se já foi atribuído (ex: on_accepted), apenas marcar como pronto sem erro
+          // Se já foi atribuído (ex: on_accepted), marcar como saiu para entrega e notificar cliente
           if (order.deliveryNotified) {
             await db.updateOrderStatus(input.orderId, 'out_for_delivery');
+            
+            // Enviar notificação ao cliente sobre saiu para entrega
+            try {
+              if (order.customerPhone) {
+                const config = await db.getWhatsappConfig(establishment.id);
+                if (config && config.status === 'connected' && config.instanceToken && (config.notifyOnOutForDelivery !== false)) {
+                  const { sendOrderStatusNotification } = await import('./_core/uazapi');
+                  const est = await db.getEstablishmentById(order.establishmentId);
+                  const orderItems = await db.getOrderItems(order.id);
+                  await sendOrderStatusNotification(
+                    config.instanceToken,
+                    order.customerPhone,
+                    'out_for_delivery',
+                    {
+                      customerName: order.customerName || 'Cliente',
+                      orderNumber: order.orderNumber,
+                      establishmentName: est?.name || 'Restaurante',
+                      template: config.templateOutForDelivery || null,
+                      deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
+                      cancellationReason: null,
+                      orderItems: orderItems.map(item => ({
+                        productName: item.productName,
+                        quantity: item.quantity ?? 1,
+                        unitPrice: item.unitPrice,
+                        totalPrice: item.totalPrice,
+                        complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
+                        notes: item.notes,
+                      })),
+                      orderTotal: order.total,
+                      paymentMethod: order.paymentMethod,
+                    }
+                  );
+                }
+              }
+            } catch (error) {
+              console.error('[WhatsApp] Erro ao notificar cliente sobre saiu para entrega (on_accepted):', error);
+            }
+            
             return { action: 'assigned', driverId: existingDelivery.driverId, whatsappSent: true, deliveryId: existingDelivery.id };
           }
           throw new TRPCError({ code: 'CONFLICT', message: 'Pedido já possui entregador atribuído' });
