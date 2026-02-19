@@ -7275,3 +7275,4 @@
 - [x] Fix: Texto no modal "Copiar grupo" deve mostrar "X complemento(s)" em vez de "X item(ns)"
 - [x] Feature: Adicionar Enter + auto-focus no campo de nome do complemento no AddGroupSheet (etapa group-items / "Adicione os complementos")
 - [x] Feature: Adicionar Enter + auto-focus no campo de nome do complemento no CreateProductSheet (etapa group-items) - já estava implementado
+- [x] Feature: Adicionar Enter no campo de preço do complemento no AddGroupSheet e CreateProductSheet para adicionar o complemento e focar no campo de nome

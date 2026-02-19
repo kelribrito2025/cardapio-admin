@@ -743,6 +743,12 @@ export default function AddGroupSheet({
                   onChange={(e) =>
                     setNewItemPrice(formatPriceInputLocal(e.target.value))
                   }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && newItemName.trim()) {
+                      e.preventDefault();
+                      handleAddItem();
+                    }
+                  }}
                   placeholder="0,00"
                   className="h-9 rounded-lg border-border/50 text-sm pl-8 text-right"
                 />
