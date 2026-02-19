@@ -1811,7 +1811,7 @@ export default function PublicMenu() {
                 <div className="relative">
                   {/* Balão estilo bolha com estilo personalizado */}
                   <div className={cn(
-                    "rounded-[20px] px-3 py-1.5 shadow-md max-w-[140px] md:max-w-[160px] overflow-hidden",
+                    "rounded-[20px] px-3 py-1.5 max-w-[140px] md:max-w-[160px] overflow-hidden",
                     (!establishment.noteStyle || establishment.noteStyle === "default") && "bg-white border border-gray-200",
                     establishment.noteStyle === "sunset" && "bg-gradient-to-r from-orange-400 to-pink-500",
                     establishment.noteStyle === "ocean" && "bg-gradient-to-r from-cyan-400 to-blue-500",
@@ -1834,7 +1834,7 @@ export default function PublicMenu() {
                   </div>
                   {/* Bico do balão em formato de balão de pensamento - círculo maior à esquerda, menor à direita */}
                   <div className={cn(
-                    "absolute -bottom-2.5 left-4 w-3.5 h-3.5 rounded-full shadow-sm",
+                    "absolute -bottom-2.5 left-4 w-3.5 h-3.5 rounded-full",
                     (!establishment.noteStyle || establishment.noteStyle === "default") && "bg-white border border-gray-200",
                     establishment.noteStyle === "sunset" && "bg-pink-500",
                     establishment.noteStyle === "ocean" && "bg-blue-500",
@@ -1850,7 +1850,7 @@ export default function PublicMenu() {
                     establishment.noteStyle === "acai" && "bg-purple-900"
                   )}></div>
                   <div className={cn(
-                    "absolute -bottom-5 left-7 w-2 h-2 rounded-full shadow-sm",
+                    "absolute -bottom-5 left-7 w-2 h-2 rounded-full",
                     (!establishment.noteStyle || establishment.noteStyle === "default") && "bg-white border border-gray-200",
                     establishment.noteStyle === "sunset" && "bg-pink-500",
                     establishment.noteStyle === "ocean" && "bg-blue-500",

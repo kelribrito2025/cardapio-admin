@@ -7254,3 +7254,4 @@
 - [x] Backend: procedure para calcular clientes recorrentes (2+ pedidos nos últimos 30 dias por telefone, PDV + menu público)
 - [x] Frontend: card com total, percentual sobre base ativa, indicador comparativo com mês anterior
 - [x] Fix: bordas do banner no menu público com cantos transparentes em vez de corte real (overflow hidden)
+- [x] Fix: bordas do balão de nota no menu público ainda com cantos quadrados/transparentes - aplicar isolamento de camada de renderização
