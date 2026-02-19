@@ -209,7 +209,7 @@ export default function Dashboard() {
           } : undefined}
         />
         <StatCard
-          title="C. Recorrentes"
+          title="C. Fidelizados"
           value={stats?.recurringCustomers ?? 0}
           tooltip={`${stats?.recurringPercentage ?? 0}% da base ativa (2+ pedidos nos últimos 30 dias)`}
           icon={Users}
