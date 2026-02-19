@@ -23,7 +23,9 @@ import {
   Loader2,
   Copy,
   Check,
+  Info,
 } from "lucide-react";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 type CategoryType = "ingredientes" | "especificacoes" | "descartaveis";
 type SubStep = "categories" | "choose" | "group-config" | "group-items" | "copy-group";
@@ -689,7 +691,17 @@ export default function AddGroupSheet({
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-card">
         {/* New item form */}
         <div className="border border-border/50 rounded-xl p-4 bg-muted/10 space-y-3">
-          <h4 className="text-sm font-semibold">Novo complemento</h4>
+          <div className="flex items-center gap-1.5">
+            <h4 className="text-sm font-semibold">Novo complemento</h4>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-[220px] text-center">
+                Pressione Enter no nome para pular ao preço, e Enter no preço para adicionar
+              </TooltipContent>
+            </Tooltip>
+          </div>
 
           <div className="flex items-center gap-3">
             {/* Item image */}
