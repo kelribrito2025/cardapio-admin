@@ -75,7 +75,7 @@ const menuSections = [
   {
     title: "OPERAÇÕES",
     items: [
-      { icon: LayoutDashboard, label: "Dashboard", href: "/", disabled: false },
+      { icon: LayoutDashboard, label: "Dashboard", href: "/", disabled: false, isNew: true },
       { icon: Monitor, label: "PDV", href: "/pdv", disabled: false, isNew: true },
       { icon: Utensils, label: "Mapa de mesas", href: "/mesas", disabled: false, isNew: true },
     ]
