@@ -74,6 +74,52 @@ describe("printer.revokeApiKey", () => {
   });
 });
 
+describe("printer receipt endpoint security", () => {
+  it("rejects requests without API key", async () => {
+    const response = await fetch(
+      `http://localhost:${process.env.PORT || 3000}/api/printer/receipt/1`
+    );
+    expect(response.status).toBe(401);
+    const body = await response.json();
+    expect(body.error).toContain("API key required");
+  });
+
+  it("rejects requests with invalid API key", async () => {
+    const response = await fetch(
+      `http://localhost:${process.env.PORT || 3000}/api/printer/receipt/1?key=invalid`
+    );
+    expect(response.status).toBe(401);
+    const body = await response.json();
+    expect(body.error).toBe("Invalid API key");
+  });
+
+  it("rejects requests with invalid order ID", async () => {
+    const { ctx } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+    const { apiKey } = await caller.printer.generateApiKey({ establishmentId: 1 });
+
+    const response = await fetch(
+      `http://localhost:${process.env.PORT || 3000}/api/printer/receipt/abc?key=${apiKey}`
+    );
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toContain("inv\u00e1lido");
+  });
+
+  it("returns 404 for non-existent order", async () => {
+    const { ctx } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+    const { apiKey } = await caller.printer.generateApiKey({ establishmentId: 1 });
+
+    const response = await fetch(
+      `http://localhost:${process.env.PORT || 3000}/api/printer/receipt/999999999?key=${apiKey}`
+    );
+    expect(response.status).toBe(404);
+    const body = await response.json();
+    expect(body.error).toContain("n\u00e3o encontrado");
+  });
+});
+
 describe("printer.getSettings includes printerApiKey", () => {
   it("returns printerApiKey in settings after generation", async () => {
     const { ctx } = createAuthContext();

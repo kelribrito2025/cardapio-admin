@@ -1,0 +1,25 @@
+{
+  "query": "SELECT id, orderNumber, establishmentId FROM orders WHERE establishmentId = 1 LIMIT 3",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, establishmentId FROM orders WHERE establishmentId = 1 LIMIT 3",
+  "rows": [
+    {
+      "id": "660308",
+      "orderNumber": "#P1",
+      "establishmentId": "1"
+    },
+    {
+      "id": "660309",
+      "orderNumber": "#P2",
+      "establishmentId": "1"
+    },
+    {
+      "id": "660310",
+      "orderNumber": "#P3",
+      "establishmentId": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\testablishmentId\n660308\t#P1\t1\n660309\t#P2\t1\n660310\t#P3\t1\n",
+  "stderr": "",
+  "execution_time_ms": 80
+}

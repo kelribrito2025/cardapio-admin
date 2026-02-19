@@ -2666,6 +2666,98 @@ async function startServer() {
     }
   });
 
+  // Endpoint para buscar recibo de pedido via API key (para app de impressora)
+  // URL: /api/printer/receipt/:orderId?key={printerApiKey}
+  // Também suporta: /api/printer/receipt/:orderId?key={apiKey}&format=text (para ESC/POS)
+  app.get("/api/printer/receipt/:orderId", async (req, res) => {
+    try {
+      const apiKey = req.query.key as string;
+      const format = req.query.format as string; // 'text' para ESC/POS, default HTML
+      
+      if (!apiKey) {
+        res.status(401).json({ error: "API key required. Use ?key=YOUR_API_KEY" });
+        return;
+      }
+      
+      const { getEstablishmentByPrinterApiKey } = await import("../db");
+      const result = await getEstablishmentByPrinterApiKey(apiKey);
+      
+      if (!result) {
+        res.status(401).json({ error: "Invalid API key" });
+        return;
+      }
+      
+      const orderId = parseInt(req.params.orderId);
+      if (isNaN(orderId)) {
+        res.status(400).json({ error: "ID do pedido inv\u00e1lido" });
+        return;
+      }
+      
+      const order = await getOrderById(orderId);
+      if (!order) {
+        res.status(404).json({ error: "Pedido n\u00e3o encontrado" });
+        return;
+      }
+      
+      // Verificar se o pedido pertence ao estabelecimento da API key
+      if (order.establishmentId !== result.establishmentId) {
+        res.status(403).json({ error: "Pedido n\u00e3o pertence a este estabelecimento" });
+        return;
+      }
+      
+      const orderItemsList = await getOrderItems(orderId);
+      const establishment = await getEstablishmentById(order.establishmentId);
+      const settings = await getPrinterSettings(order.establishmentId);
+      
+      // Verificar se deve usar ESC/POS ou HTML
+      const useEscPos = format === 'text' || settings?.htmlPrintEnabled === false;
+      
+      if (useEscPos) {
+        const { generatePlainTextReceipt } = await import('../escpos');
+        
+        const orderData = {
+          orderNumber: order.orderNumber,
+          createdAt: order.createdAt,
+          deliveryType: order.deliveryType as 'delivery' | 'pickup' | 'dine_in',
+          customerName: order.customerName || undefined,
+          customerPhone: order.customerPhone || undefined,
+          address: order.customerAddress || undefined,
+          paymentMethod: order.paymentMethod || undefined,
+          changeFor: order.changeAmount ? parseFloat(order.changeAmount) : undefined,
+          items: orderItemsList.map(item => ({
+            productName: item.productName,
+            quantity: item.quantity,
+            totalPrice: parseFloat(item.totalPrice as any) || 0,
+            notes: item.notes || undefined,
+            complements: item.complements || undefined,
+          })),
+          subtotal: parseFloat(order.subtotal as any) || 0,
+          deliveryFee: order.deliveryFee ? parseFloat(order.deliveryFee as any) : undefined,
+          discount: order.discount ? parseFloat(order.discount as any) : undefined,
+          total: parseFloat(order.total as any) || 0,
+        };
+        
+        const textReceipt = generatePlainTextReceipt(
+          orderData,
+          establishment,
+          (settings?.paperWidth as '58mm' | '80mm') || '80mm'
+        );
+        
+        res.setHeader("Content-Type", "text/plain; charset=utf-8");
+        res.send(textReceipt);
+      } else {
+        const html = generateReceiptHTML(order, orderItemsList, establishment, settings);
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.send(html);
+      }
+      
+      console.log(`[Printer-Receipt] Recibo do pedido ${orderId} enviado para estabelecimento ${result.establishmentId}`);
+    } catch (error) {
+      console.error("[Printer-Receipt] Erro ao gerar recibo:", error);
+      res.status(500).json({ error: "Erro ao gerar recibo" });
+    }
+  });
+
   // iFood Webhook endpoint
   app.post("/api/ifood/webhook", async (req, res) => {
     try {

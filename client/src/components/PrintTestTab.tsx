@@ -1347,7 +1347,8 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
           <p><strong>1.</strong> Gere uma API Key acima e copie a URL SSE.</p>
           <p><strong>2.</strong> No app da impressora, conecte usando a URL SSE como EventSource.</p>
           <p><strong>3.</strong> Escute o evento <code className="bg-muted px-1 rounded">print_order</code> para receber dados do pedido.</p>
-          <p><strong>4.</strong> Use <code className="bg-muted px-1 rounded">/api/print/receipt/{'{'}&lt;orderId&gt;{'}'}</code> para buscar o HTML do recibo.</p>
+          <p><strong>4.</strong> Use <code className="bg-muted px-1 rounded">/api/printer/receipt/{'{'}&lt;orderId&gt;{'}'}?key={'{'}&lt;apiKey&gt;{'}'}</code> para buscar o HTML do recibo.</p>
+          <p><strong>5.</strong> Adicione <code className="bg-muted px-1 rounded">&format=text</code> na URL para receber em formato texto puro (ESC/POS).</p>
           <p className="pt-2 text-amber-600">\u26a0\ufe0f Mantenha a API Key em segredo. Qualquer pessoa com a key pode receber os pedidos do seu estabelecimento.</p>
         </CardContent>
       </Card>
