@@ -1272,7 +1272,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{group.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {group.complementCount || group.items?.length || 0} item(ns) &middot; {group.productCount || 1} produto(s)
+                        {group.complementCount || group.items?.length || 0} complemento(s) &middot; {group.productCount || 1} produto(s)
                       </p>
                     </div>
                     {isSelected && (

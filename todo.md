@@ -7272,3 +7272,4 @@
 - [x] Feature: Após adicionar complemento ao grupo (Enter ou clique), focar automaticamente no campo "Nome do complemento"
 - [x] Feature: Adicionar Enter + auto-focus no modal de grupo de complementos da página /complementos (etapa Configurar grupo)
 - [x] Bug: "Copiar grupo existente" mostra produtos em vez de grupos de complementos, e na conta 150004 não mostra nada
+- [x] Fix: Texto no modal "Copiar grupo" deve mostrar "X complemento(s)" em vez de "X item(ns)"
