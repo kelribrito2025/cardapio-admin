@@ -7247,3 +7247,4 @@
 - [x] Gerar imagens profissionais melhoradas baseadas nas fotos originais para os produtos do estabelecimento 210002
 - [x] Bug: notificação WhatsApp "saiu para entrega" ao cliente não é enviada quando driverNotifyTiming=on_accepted (early return no markReadyAndAssign)
 - [x] Remover template padrão fixo de out_for_delivery e usar apenas o template "Pronto (Delivery)" quando o pedido sai para entrega (on_accepted)
+- [x] Adicionar badges vermelhos "Novo" nos menus: PDV, Mapa de Mesas, Entregadores, Avaliações, Estoque, Finanças, Cupons, Campanhas

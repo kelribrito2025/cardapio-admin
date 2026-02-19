@@ -76,8 +76,8 @@ const menuSections = [
     title: "OPERAÇÕES",
     items: [
       { icon: LayoutDashboard, label: "Dashboard", href: "/", disabled: false },
-      { icon: Monitor, label: "PDV", href: "/pdv", disabled: false },
-      { icon: Utensils, label: "Mapa de mesas", href: "/mesas", disabled: false },
+      { icon: Monitor, label: "PDV", href: "/pdv", disabled: false, isNew: true },
+      { icon: Utensils, label: "Mapa de mesas", href: "/mesas", disabled: false, isNew: true },
     ]
   },
   {
@@ -86,26 +86,26 @@ const menuSections = [
       { icon: ClipboardList, label: "Pedidos", href: "/pedidos", disabled: false, isParent: true, children: [
         { icon: CalendarClock, label: "Agendados", href: "/agendados", disabled: false },
       ] },
-      { icon: Truck, label: "Entregadores", href: "/entregadores", disabled: false },
+      { icon: Truck, label: "Entregadores", href: "/entregadores", disabled: false, isNew: true },
       { icon: BookOpen, label: "Menu", href: "/menu-parent", disabled: false, isParent: true, children: [
         { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo", disabled: false },
         { icon: Layers, label: "Grupos", href: "/complementos", disabled: false },
-        { icon: Star, label: "Avaliações", href: "/avaliacoes", disabled: false, badgeKey: "reviews" },
+        { icon: Star, label: "Avaliações", href: "/avaliacoes", disabled: false, badgeKey: "reviews", isNew: true },
       ]},
-      { icon: Package, label: "Estoque", href: "/estoque", disabled: false },
+      { icon: Package, label: "Estoque", href: "/estoque", disabled: false, isNew: true },
     ]
   },
   {
     title: "FINANCEIRO",
     items: [
-      { icon: BadgeDollarSign, label: "Finanças", href: "/financas", disabled: false },
+      { icon: BadgeDollarSign, label: "Finanças", href: "/financas", disabled: false, isNew: true },
     ]
   },
   {
     title: "MARKETING",
     items: [
-      { icon: Ticket, label: "Cupons", href: "/cupons", disabled: false },
-      { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: false },
+      { icon: Ticket, label: "Cupons", href: "/cupons", disabled: false, isNew: true },
+      { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: false, isNew: true },
     ]
   },
   {
@@ -705,6 +705,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                                         {childBadge > 99 ? "99+" : childBadge}
                                       </span>
                                     )}
+                                    {child.isNew && childBadge === 0 && (
+                                      <span className="text-[9px] font-bold bg-red-500 text-white px-1.5 py-0.5 rounded-full">
+                                        Novo
+                                      </span>
+                                    )}
                                   </span>
                                 </Link>
                               );
@@ -747,6 +752,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                             {outOfStockCount > 9 ? "9+" : outOfStockCount}
                           </span>
                         )}
+                        {item.isNew && sidebarCollapsed && !showOrderBadge && !showStockBadge && (
+                          <span className="absolute -top-1 -right-2 text-[7px] font-bold bg-red-500 text-white px-1 py-0.5 rounded-full leading-none">
+                            N
+                          </span>
+                        )}
                       </div>
                       {!sidebarCollapsed && (
                         <span className={cn(
@@ -773,6 +783,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           {isComingSoon && (
                             <span className="text-[9px] font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded-full">
                               Breve
+                            </span>
+                          )}
+                          {item.isNew && !showOrderBadge && !showStockBadge && !isComingSoon && (
+                            <span className="text-[9px] font-bold bg-red-500 text-white px-1.5 py-0.5 rounded-full">
+                              Novo
                             </span>
                           )}
                         </span>
