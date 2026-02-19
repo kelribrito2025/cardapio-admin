@@ -44,7 +44,7 @@ import {
   Package,
   AlertTriangle,
 } from "lucide-react";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -709,6 +709,7 @@ function GroupCard({
   const [newItemName, setNewItemName] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("0,00");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const itemNameInputRef = useRef<HTMLInputElement>(null);
 
   // Mutations
   const toggleGroupActiveMutation = trpc.complement.toggleGroupActive.useMutation({
@@ -775,10 +776,10 @@ function GroupCard({
       utils.complement.listAllGroups.invalidate();
       utils.complement.listGroups.invalidate();
       utils.product.list.invalidate();
-      setAddingItem(false);
       setNewItemName("");
       setNewItemPrice("0,00");
       toast.success(`Item adicionado em ${data.groupsAffected} produto(s)`);
+      setTimeout(() => itemNameInputRef.current?.focus(), 50);
     },
     onError: () => toast.error("Erro ao adicionar item"),
   });
@@ -1201,6 +1202,7 @@ function GroupCard({
               {addingItem ? (
                 <div className="flex items-center gap-2 mt-3 flex-wrap md:flex-nowrap">
                   <Input
+                    ref={itemNameInputRef}
                     value={newItemName}
                     onChange={(e) => setNewItemName(capitalizeFirst(e.target.value))}
                     placeholder="Nome do complemento"

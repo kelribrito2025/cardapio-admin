@@ -7270,3 +7270,4 @@
 - [ ] Bug: Ativar htmlPrintEnabled nas configurações de impressora não muda o formato do recibo - app continua recebendo texto puro
 - [x] Feature: Adicionar suporte a tecla Enter nos campos de nome/preço do complemento no modal "Escolha seus adicionais" para acionar "Adicionar ao grupo"
 - [x] Feature: Após adicionar complemento ao grupo (Enter ou clique), focar automaticamente no campo "Nome do complemento"
+- [x] Feature: Adicionar Enter + auto-focus no modal de grupo de complementos da página /complementos (etapa Configurar grupo)
