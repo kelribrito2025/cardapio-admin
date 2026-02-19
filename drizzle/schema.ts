@@ -483,6 +483,8 @@ export const printerSettings = mysqlTable("printerSettings", {
   defaultPrintMethod: mysqlEnum("defaultPrintMethod", ["normal", "android"]).default("normal").notNull(), // Método de impressão favorito
   // Modo de impressão HTML vs ESC/POS
   htmlPrintEnabled: boolean("htmlPrintEnabled").default(true).notNull(), // Usar layout HTML (mais flexível) ou ESC/POS (compatível)
+  // API Key para integração com app de impressora externo (sem OAuth)
+  printerApiKey: varchar("printerApiKey", { length: 64 }), // Chave de API para endpoint SSE da impressora
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

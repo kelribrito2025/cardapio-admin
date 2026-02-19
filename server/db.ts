@@ -4988,6 +4988,63 @@ export async function upsertPrinterSettings(data: {
 }
 
 /**
+ * Busca estabelecimento por API key da impressora
+ */
+export async function getEstablishmentByPrinterApiKey(apiKey: string): Promise<{ establishmentId: number } | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select({ establishmentId: printerSettings.establishmentId })
+    .from(printerSettings)
+    .where(eq(printerSettings.printerApiKey, apiKey))
+    .limit(1);
+  
+  return result[0];
+}
+
+/**
+ * Gera e salva uma nova API key para a impressora de um estabelecimento
+ */
+export async function generatePrinterApiKey(establishmentId: number): Promise<string> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Gerar key aleatória de 32 bytes em hex (64 chars)
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let apiKey = 'pk_';
+  for (let i = 0; i < 32; i++) {
+    apiKey += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  
+  const existing = await getPrinterSettings(establishmentId);
+  
+  if (existing) {
+    await db.update(printerSettings)
+      .set({ printerApiKey: apiKey })
+      .where(eq(printerSettings.establishmentId, establishmentId));
+  } else {
+    await db.insert(printerSettings).values({
+      establishmentId,
+      printerApiKey: apiKey,
+    });
+  }
+  
+  return apiKey;
+}
+
+/**
+ * Revoga a API key da impressora de um estabelecimento
+ */
+export async function revokePrinterApiKey(establishmentId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(printerSettings)
+    .set({ printerApiKey: null })
+    .where(eq(printerSettings.establishmentId, establishmentId));
+}
+
+/**
  * Busca a impressora padrão de um estabelecimento
  */
 export async function getDefaultPrinter(establishmentId: number): Promise<Printer | undefined> {

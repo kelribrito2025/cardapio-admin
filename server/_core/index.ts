@@ -8,7 +8,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
-import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, addOrderIdConnectionForMultiple, removeOrderIdConnectionFromMultiple, sendAllOrdersHeartbeat, sendEvent } from "./sse";
+import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, addOrderIdConnectionForMultiple, removeOrderIdConnectionFromMultiple, sendAllOrdersHeartbeat, sendEvent, getConnectionCount } from "./sse";
 import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrdersByIds, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getPrinterSettings, getActivePrinters, getTabById, getTabItems, getTableById } from "../db";
 import { sdk } from "./sdk";
 import { startScheduledCampaignJob } from "../scheduledCampaignJob";
@@ -2563,6 +2563,106 @@ async function startServer() {
     } catch (error) {
       console.error('[WhatsApp Webhook] Erro:', error);
       res.status(200).json({ success: false, error: 'Internal error' });
+    }
+  });
+
+  // ==================== PRINTER APP SSE ENDPOINT (API Key Auth) ====================
+  // Endpoint dedicado para app de impressora se conectar via SSE
+  // Autenticação por API key (sem OAuth), ideal para dispositivos/apps externos
+  // URL: /api/printer/stream?key={printerApiKey}
+  app.get("/api/printer/stream", async (req, res) => {
+    try {
+      const apiKey = req.query.key as string;
+      
+      if (!apiKey) {
+        console.log("[SSE-Printer] Sem API key");
+        res.status(401).json({ error: "API key required. Use ?key=YOUR_API_KEY" });
+        return;
+      }
+      
+      // Buscar estabelecimento pela API key
+      const { getEstablishmentByPrinterApiKey } = await import("../db");
+      const result = await getEstablishmentByPrinterApiKey(apiKey);
+      
+      if (!result) {
+        console.log("[SSE-Printer] API key inv\u00e1lida:", apiKey.substring(0, 8) + "...");
+        res.status(401).json({ error: "Invalid API key" });
+        return;
+      }
+      
+      const { establishmentId } = result;
+      console.log(`[SSE-Printer] Conex\u00e3o autorizada para estabelecimento ${establishmentId} via API key`);
+      
+      // Configurar headers SSE
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+      res.setHeader("X-Accel-Buffering", "no");
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.flushHeaders();
+      
+      // Enviar evento de conex\u00e3o estabelecida
+      res.write(`event: connected\ndata: ${JSON.stringify({ establishmentId, source: "printer_app" })}\n\n`);
+      
+      // Adicionar conex\u00e3o ao pool do estabelecimento (recebe os mesmos eventos: new_order, print_order, etc.)
+      addConnection(establishmentId, res);
+      
+      // Heartbeat a cada 30 segundos
+      const heartbeatInterval = setInterval(() => {
+        try {
+          res.write(`event: heartbeat\ndata: ${JSON.stringify({ timestamp: Date.now() })}\n\n`);
+        } catch (e) {
+          clearInterval(heartbeatInterval);
+        }
+      }, 30000);
+      
+      // Cleanup quando conex\u00e3o fechar
+      req.on("close", () => {
+        clearInterval(heartbeatInterval);
+        removeConnection(establishmentId, res);
+        console.log(`[SSE-Printer] Conex\u00e3o fechada para estabelecimento ${establishmentId}`);
+      });
+      
+    } catch (error) {
+      console.error("[SSE-Printer] Erro ao estabelecer conex\u00e3o:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+  
+  // Endpoint para verificar status da conex\u00e3o da impressora (healthcheck)
+  app.get("/api/printer/status", async (req, res) => {
+    try {
+      const apiKey = req.query.key as string;
+      
+      if (!apiKey) {
+        res.status(401).json({ error: "API key required" });
+        return;
+      }
+      
+      const { getEstablishmentByPrinterApiKey, getPrinterSettings: getPSettings, getEstablishmentById: getEstById } = await import("../db");
+      const result = await getEstablishmentByPrinterApiKey(apiKey);
+      
+      if (!result) {
+        res.status(401).json({ error: "Invalid API key" });
+        return;
+      }
+      
+      const establishment = await getEstById(result.establishmentId);
+      const settings = await getPSettings(result.establishmentId);
+      
+      res.json({
+        ok: true,
+        establishmentId: result.establishmentId,
+        establishmentName: establishment?.name || "Desconhecido",
+        autoPrintEnabled: settings?.autoPrintEnabled || false,
+        printOnNewOrder: settings?.printOnNewOrder || false,
+        paperWidth: settings?.paperWidth || "80mm",
+        htmlPrintEnabled: settings?.htmlPrintEnabled ?? true,
+        activeConnections: getConnectionCount(result.establishmentId),
+      });
+    } catch (error) {
+      console.error("[SSE-Printer] Erro no status:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 

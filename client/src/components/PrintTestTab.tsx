@@ -6,7 +6,7 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Printer, Save, RotateCcw, Smartphone, Loader2, FileText, Settings, Eye, Type, Plus, Pencil, Trash2, Star } from "lucide-react";
+import { Printer, Save, RotateCcw, Smartphone, Loader2, FileText, Settings, Eye, Type, Plus, Pencil, Trash2, Star, Key, Copy, RefreshCw, Unplug } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
@@ -834,7 +834,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       </Card>
 
       <Tabs defaultValue="layout" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="layout" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             <span className="hidden sm:inline">Layout</span>
@@ -846,6 +846,10 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
           <TabsTrigger value="test" className="flex items-center gap-2">
             <Printer className="h-4 w-4" />
             <span className="hidden sm:inline">Teste</span>
+          </TabsTrigger>
+          <TabsTrigger value="api" className="flex items-center gap-2">
+            <Key className="h-4 w-4" />
+            <span className="hidden sm:inline">API</span>
           </TabsTrigger>
         </TabsList>
         
@@ -1181,7 +1185,172 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
 
 
         </TabsContent>
+
+        {/* API Key Tab */}
+        <TabsContent value="api" className="space-y-4 mt-4">
+          <PrinterApiKeySection establishmentId={establishmentId} />
+        </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+// ==================== Printer API Key Section ====================
+function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) {
+  const { data: settings, refetch } = trpc.printer.getSettings.useQuery(
+    { establishmentId },
+    { enabled: !!establishmentId }
+  );
+  
+  const generateMutation = trpc.printer.generateApiKey.useMutation({
+    onSuccess: (data) => {
+      refetch();
+      toast.success("API Key gerada com sucesso!");
+    },
+    onError: () => toast.error("Erro ao gerar API Key"),
+  });
+  
+  const revokeMutation = trpc.printer.revokeApiKey.useMutation({
+    onSuccess: () => {
+      refetch();
+      toast.success("API Key revogada");
+    },
+    onError: () => toast.error("Erro ao revogar API Key"),
+  });
+  
+  const apiKey = (settings as any)?.printerApiKey || null;
+  const baseUrl = window.location.origin;
+  const sseUrl = apiKey ? `${baseUrl}/api/printer/stream?key=${apiKey}` : null;
+  const statusUrl = apiKey ? `${baseUrl}/api/printer/status?key=${apiKey}` : null;
+  
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} copiado!`);
+  };
+  
+  return (
+    <div className="space-y-4">
+      <Card className="shadow-none">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Key className="h-5 w-5" />
+            Integra\u00e7\u00e3o com App de Impressora
+          </CardTitle>
+          <CardDescription>
+            Gere uma API Key para conectar um app de impressora externo ao sistema via SSE (Server-Sent Events). O app receber\u00e1 eventos de novos pedidos em tempo real, sem precisar de login.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {!apiKey ? (
+            <div className="text-center py-6 space-y-3">
+              <Unplug className="h-12 w-12 mx-auto text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">Nenhuma API Key configurada</p>
+              <Button
+                onClick={() => generateMutation.mutate({ establishmentId })}
+                disabled={generateMutation.isPending}
+              >
+                {generateMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Key className="h-4 w-4 mr-2" />
+                )}
+                Gerar API Key
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* API Key */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-muted-foreground">API Key</Label>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 bg-muted px-3 py-2 rounded text-xs font-mono break-all">
+                    {apiKey}
+                  </code>
+                  <Button size="icon" variant="outline" onClick={() => copyToClipboard(apiKey, 'API Key')}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              {/* SSE URL */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-muted-foreground">URL SSE (Stream de Pedidos)</Label>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 bg-muted px-3 py-2 rounded text-xs font-mono break-all">
+                    {sseUrl}
+                  </code>
+                  <Button size="icon" variant="outline" onClick={() => copyToClipboard(sseUrl!, 'URL SSE')}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Status URL */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-muted-foreground">URL de Status (Healthcheck)</Label>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 bg-muted px-3 py-2 rounded text-xs font-mono break-all">
+                    {statusUrl}
+                  </code>
+                  <Button size="icon" variant="outline" onClick={() => copyToClipboard(statusUrl!, 'URL Status')}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Eventos SSE */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-muted-foreground">Eventos SSE Dispon\u00edveis</Label>
+                <div className="bg-muted rounded p-3 space-y-1 text-xs font-mono">
+                  <p><span className="text-green-600 font-bold">connected</span> - Conex\u00e3o estabelecida</p>
+                  <p><span className="text-blue-600 font-bold">new_order</span> - Novo pedido recebido</p>
+                  <p><span className="text-purple-600 font-bold">print_order</span> - Pedido para imprimir</p>
+                  <p><span className="text-orange-600 font-bold">order_update</span> - Atualiza\u00e7\u00e3o de pedido</p>
+                  <p><span className="text-gray-500 font-bold">heartbeat</span> - Keep-alive (a cada 30s)</p>
+                </div>
+              </div>
+              
+              {/* A\u00e7\u00f5es */}
+              <div className="flex gap-3 pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => generateMutation.mutate({ establishmentId })}
+                  disabled={generateMutation.isPending}
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Regenerar Key
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    if (confirm('Tem certeza? O app conectado perder\u00e1 acesso imediatamente.')) {
+                      revokeMutation.mutate({ establishmentId });
+                    }
+                  }}
+                  disabled={revokeMutation.isPending}
+                >
+                  <Unplug className="h-4 w-4 mr-2" />
+                  Revogar Key
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      
+      {/* Documenta\u00e7\u00e3o r\u00e1pida */}
+      <Card className="shadow-none">
+        <CardHeader>
+          <CardTitle className="text-sm">Documenta\u00e7\u00e3o R\u00e1pida</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3 text-xs text-muted-foreground">
+          <p><strong>1.</strong> Gere uma API Key acima e copie a URL SSE.</p>
+          <p><strong>2.</strong> No app da impressora, conecte usando a URL SSE como EventSource.</p>
+          <p><strong>3.</strong> Escute o evento <code className="bg-muted px-1 rounded">print_order</code> para receber dados do pedido.</p>
+          <p><strong>4.</strong> Use <code className="bg-muted px-1 rounded">/api/print/receipt/{'{'}&lt;orderId&gt;{'}'}</code> para buscar o HTML do recibo.</p>
+          <p className="pt-2 text-amber-600">\u26a0\ufe0f Mantenha a API Key em segredo. Qualquer pessoa com a key pode receber os pedidos do seu estabelecimento.</p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

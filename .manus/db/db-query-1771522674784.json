@@ -1,0 +1,42 @@
+{
+  "query": "SELECT id, name FROM establishments;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name FROM establishments;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Burger House Gourmet"
+    },
+    {
+      "id": "30001",
+      "name": "Sushi Haruno"
+    },
+    {
+      "id": "60018",
+      "name": "Big Norte"
+    },
+    {
+      "id": "90001",
+      "name": "Palácio do Açai"
+    },
+    {
+      "id": "150004",
+      "name": "Potim Açai"
+    },
+    {
+      "id": "210001",
+      "name": "Sr. Macarrão"
+    },
+    {
+      "id": "210002",
+      "name": "Açai Roxedo"
+    },
+    {
+      "id": "210003",
+      "name": "Lanche PS"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n1\tBurger House Gourmet\n30001\tSushi Haruno\n60018\tBig Norte\n90001\tPalácio do Açai\n150004\tPotim Açai\n210001\tSr. Macarrão\n210002\tAçai Roxedo\n210003\tLanche PS\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

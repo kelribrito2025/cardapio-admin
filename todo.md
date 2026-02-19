@@ -7255,3 +7255,8 @@
 - [x] Frontend: card com total, percentual sobre base ativa, indicador comparativo com mês anterior
 - [x] Fix: bordas do banner no menu público com cantos transparentes em vez de corte real (overflow hidden)
 - [x] Fix: bordas do balão de nota no menu público ainda com cantos quadrados/transparentes - aplicar isolamento de camada de renderização
+- [x] Investigar e corrigir endpoint SSE /api/sse?establishmentId={id} para conexão do app da impressora
+- [x] Criar endpoint SSE /api/printer/stream com autenticação por API key (sem OAuth) para app da impressora
+- [x] Adicionar campo printerApiKey na tabela printerSettings para armazenar chave de API por estabelecimento
+- [x] Criar UI no painel admin (aba API nas configurações de impressora) para gerar/gerenciar API keys
+- [x] Escrever testes para o endpoint da impressora

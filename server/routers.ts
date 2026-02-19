@@ -2895,6 +2895,7 @@ export const appRouter = router({
           obsFontWeight: 500,
           showDividers: false,
           defaultPrintMethod: 'normal' as const,
+          printerApiKey: null,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -2937,6 +2938,22 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         await db.upsertPrinterSettings(input);
+        return { success: true };
+      }),
+    
+    // Gerar nova API key para integração com app de impressora
+    generateApiKey: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .mutation(async ({ input }) => {
+        const apiKey = await db.generatePrinterApiKey(input.establishmentId);
+        return { apiKey };
+      }),
+    
+    // Revogar API key da impressora
+    revokeApiKey: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.revokePrinterApiKey(input.establishmentId);
         return { success: true };
       }),
     
