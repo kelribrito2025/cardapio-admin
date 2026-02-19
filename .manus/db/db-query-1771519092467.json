@@ -1,0 +1,682 @@
+{
+  "query": "DESCRIBE establishments;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute DESCRIBE establishments;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "userId",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "name",
+      "Type": "varchar(255)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "logo",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "coverImage",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "street",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "number",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "complement",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "neighborhood",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "city",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "state",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "zipCode",
+      "Type": "varchar(20)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "isOpen",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "menuSlug",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "UNI",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "whatsapp",
+      "Type": "varchar(30)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "acceptsCash",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "1",
+      "Extra": ""
+    },
+    {
+      "Field": "acceptsCard",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "1",
+      "Extra": ""
+    },
+    {
+      "Field": "acceptsPix",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "acceptsBoleto",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "allowsDelivery",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "1",
+      "Extra": ""
+    },
+    {
+      "Field": "allowsPickup",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "1",
+      "Extra": ""
+    },
+    {
+      "Field": "allowsDineIn",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "createdAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "updatedAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    },
+    {
+      "Field": "rating",
+      "Type": "decimal(2,1)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "reviewCount",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "instagram",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "pixKey",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "publicNote",
+      "Type": "varchar(100)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "publicNoteCreatedAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "smsEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "noteStyle",
+      "Type": "varchar(50)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "default",
+      "Extra": ""
+    },
+    {
+      "Field": "noteExpiresAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "latitude",
+      "Type": "decimal(10,7)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "longitude",
+      "Type": "decimal(10,7)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "deliveryTimeEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "deliveryTimeMin",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "20",
+      "Extra": ""
+    },
+    {
+      "Field": "deliveryTimeMax",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "60",
+      "Extra": ""
+    },
+    {
+      "Field": "minimumOrderEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "minimumOrderValue",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "deliveryFeeType",
+      "Type": "enum('free','fixed','byNeighborhood')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "free",
+      "Extra": ""
+    },
+    {
+      "Field": "deliveryFeeFixed",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "manuallyClosed",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "manuallyClosedAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "loyaltyEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "loyaltyStampsRequired",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "6",
+      "Extra": ""
+    },
+    {
+      "Field": "loyaltyCouponType",
+      "Type": "enum('fixed','percentage','free_delivery')",
+      "Null": "YES",
+      "Key": "",
+      "Default": "fixed",
+      "Extra": ""
+    },
+    {
+      "Field": "loyaltyCouponValue",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "10.00",
+      "Extra": ""
+    },
+    {
+      "Field": "loyaltyMinOrderValue",
+      "Type": "decimal(10,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0.00",
+      "Extra": ""
+    },
+    {
+      "Field": "email",
+      "Type": "varchar(320)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "cnpj",
+      "Type": "varchar(20)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "responsibleName",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "responsiblePhone",
+      "Type": "varchar(30)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "twoFactorEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "twoFactorEmail",
+      "Type": "varchar(320)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "stripeAccountId",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "onlinePaymentEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "stripeOnboardingComplete",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "planType",
+      "Type": "enum('trial','free','basic','pro','enterprise')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "trial",
+      "Extra": ""
+    },
+    {
+      "Field": "trialStartDate",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "trialDays",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "15",
+      "Extra": ""
+    },
+    {
+      "Field": "timezone",
+      "Type": "varchar(100)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "America/Sao_Paulo",
+      "Extra": ""
+    },
+    {
+      "Field": "manuallyOpened",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "manuallyOpenedAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "stripeCustomerId",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "stripeSubscriptionId",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "billingPeriod",
+      "Type": "enum('monthly','annual')",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "planExpiresAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "planActivatedAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "reviewsEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "1",
+      "Extra": ""
+    },
+    {
+      "Field": "fakeReviewCount",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "355",
+      "Extra": ""
+    },
+    {
+      "Field": "ownerDisplayName",
+      "Type": "varchar(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "driverNotifyTiming",
+      "Type": "enum('on_accepted','on_ready')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "on_ready",
+      "Extra": ""
+    },
+    {
+      "Field": "schedulingEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "schedulingMinAdvance",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "60",
+      "Extra": ""
+    },
+    {
+      "Field": "schedulingMaxDays",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "7",
+      "Extra": ""
+    },
+    {
+      "Field": "schedulingInterval",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "30",
+      "Extra": ""
+    },
+    {
+      "Field": "schedulingMoveMinutes",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "30",
+      "Extra": ""
+    },
+    {
+      "Field": "rewardProgramType",
+      "Type": "enum('none','loyalty','cashback')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "none",
+      "Extra": ""
+    },
+    {
+      "Field": "cashbackEnabled",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "cashbackPercent",
+      "Type": "decimal(5,2)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "0",
+      "Extra": ""
+    },
+    {
+      "Field": "cashbackApplyMode",
+      "Type": "enum('all','categories')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "all",
+      "Extra": ""
+    },
+    {
+      "Field": "cashbackCategoryIds",
+      "Type": "json",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "cashbackAllowPartialUse",
+      "Type": "tinyint(1)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "1",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint(11)\tNO\tPRI\tNULL\tauto_increment\nuserId\tint(11)\tNO\t\tNULL\t\nname\tvarchar(255)\tNO\t\tNULL\t\nlogo\ttext\tYES\t\tNULL\t\ncoverImage\ttext\tYES\t\tNULL\t\nstreet\tvarchar(255)\tYES\t\tNULL\t\nnumber\tvarchar(50)\tYES\t\tNULL\t\ncomplement\tvarchar(255)\tYES\t\tNULL\t\nneighborhood\tvarchar(255)\tYES\t\tNULL\t\ncity\tvarchar(255)\tYES\t\tNULL\t\nstate\tvarchar(100)\tYES\t\tNULL\t\nzipCode\tvarchar(20)\tYES\t\tNULL\t\nisOpen\ttinyint(1)\tNO\t\t0\t\nmenuSlug\tvarchar(100)\tYES\tUNI\tNULL\t\nwhatsapp\tvarchar(30)\tYES\t\tNULL\t\nacceptsCash\ttinyint(1)\tNO\t\t1\t\nacceptsCard\ttinyint(1)\tNO\t\t1\t\nacceptsPix\ttinyint(1)\tNO\t\t0\t\nacceptsBoleto\ttinyint(1)\tNO\t\t0\t\nallowsDelivery\ttinyint(1)\tNO\t\t1\t\nallowsPickup\ttinyint(1)\tNO\t\t1\t\nallowsDineIn\ttinyint(1)\tNO\t\t0\t\ncreatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\nupdatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\nrating\tdecimal(2,1)\tYES\t\t0\t\nreviewCount\tint(11)\tNO\t\t0\t\ninstagram\tvarchar(100)\tYES\t\tNULL\t\npixKey\tvarchar(255)\tYES\t\tNULL\t\npublicNote\tvarchar(100)\tYES\t\tNULL\t\npublicNoteCreatedAt\ttimestamp\tYES\t\tNULL\t\nsmsEnabled\ttinyint(1)\tNO\t\t0\t\nnoteStyle\tvarchar(50)\tYES\t\tdefault\t\nnoteExpiresAt\ttimestamp\tYES\t\tNULL\t\nlatitude\tdecimal(10,7)\tYES\t\tNULL\t\nlongitude\tdecimal(10,7)\tYES\t\tNULL\t\ndeliveryTimeEnabled\ttinyint(1)\tNO\t\t0\t\ndeliveryTimeMin\tint(11)\tYES\t\t20\t\ndeliveryTimeMax\tint(11)\tYES\t\t60\t\nminimumOrderEnabled\ttinyint(1)\tNO\t\t0\t\nminimumOrderValue\tdecimal(10,2)\tYES\t\t0\t\ndeliveryFeeType\tenum('free','fixed','byNeighborhood')\tNO\t\tfree\t\ndeliveryFeeFixed\tdecimal(10,2)\tYES\t\t0\t\nmanuallyClosed\ttinyint(1)\tNO\t\t0\t\nmanuallyClosedAt\ttimestamp\tYES\t\tNULL\t\nloyaltyEnabled\ttinyint(1)\tNO\t\t0\t\nloyaltyStampsRequired\tint(11)\tYES\t\t6\t\nloyaltyCouponType\tenum('fixed','percentage','free_delivery')\tYES\t\tfixed\t\nloyaltyCouponValue\tdecimal(10,2)\tYES\t\t10.00\t\nloyaltyMinOrderValue\tdecimal(10,2)\tYES\t\t0.00\t\nemail\tvarchar(320)\tYES\t\tNULL\t\ncnpj\tvarchar(20)\tYES\t\tNULL\t\nresponsibleName\tvarchar(255)\tYES\t\tNULL\t\nresponsiblePhone\tvarchar(30)\tYES\t\tNULL\t\ntwoFactorEnabled\ttinyint(1)\tNO\t\t0\t\ntwoFactorEmail\tvarchar(320)\tYES\t\tNULL\t\nstripeAccountId\tvarchar(255)\tYES\t\tNULL\t\nonlinePaymentEnabled\ttinyint(1)\tNO\t\t0\t\nstripeOnboardingComplete\ttinyint(1)\tNO\t\t0\t\nplanType\tenum('trial','free','basic','pro','enterprise')\tNO\t\ttrial\t\ntrialStartDate\ttimestamp\tYES\t\tCURRENT_TIMESTAMP\t\ntrialDays\tint(11)\tNO\t\t15\t\ntimezone\tvarchar(100)\tNO\t\tAmerica/Sao_Paulo\t\nmanuallyOpened\ttinyint(1)\tNO\t\t0\t\nmanuallyOpenedAt\ttimestamp\tYES\t\tNULL\t\nstripeCustomerId\tvarchar(255)\tYES\t\tNULL\t\nstripeSubscriptionId\tvarchar(255)\tYES\t\tNULL\t\nbillingPeriod\tenum('monthly','annual')\tYES\t\tNULL\t\nplanExpiresAt\ttimestamp\tYES\t\tNULL\t\nplanActivatedAt\ttimestamp\tYES\t\tNULL\t\nreviewsEnabled\ttinyint(1)\tNO\t\t1\t\nfakeReviewCount\tint(11)\tYES\t\t355\t\nownerDisplayName\tvarchar(11)\tYES\t\tNULL\t\ndriverNotifyTiming\tenum('on_accepted','on_ready')\tNO\t\ton_ready\t\nschedulingEnabled\ttinyint(1)\tNO\t\t0\t\nschedulingMinAdvance\tint(11)\tNO\t\t60\t\nschedulingMaxDays\tint(11)\tNO\t\t7\t\nschedulingInterval\tint(11)\tNO\t\t30\t\nschedulingMoveMinutes\tint(11)\tNO\t\t30\t\nrewardProgramType\tenum('none','loyalty','cashback')\tNO\t\tnone\t\ncashbackEnabled\ttinyint(1)\tNO\t\t0\t\ncashbackPercent\tdecimal(5,2)\tYES\t\t0\t\ncashbackApplyMode\tenum('all','categories')\tNO\t\tall\t\ncashbackCategoryIds\tjson\tYES\t\tNULL\t\ncashbackAllowPartialUse\ttinyint(1)\tNO\t\t1\t\n",
+  "stderr": "",
+  "execution_time_ms": 48
+}

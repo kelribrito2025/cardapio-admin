@@ -1811,7 +1811,7 @@ export default function PublicMenu() {
                 <div className="relative">
                   {/* Balão estilo bolha com estilo personalizado */}
                   <div className={cn(
-                    "rounded-[20px] px-3 py-1.5 shadow-md max-w-[140px] md:max-w-[160px]",
+                    "rounded-[20px] px-3 py-1.5 shadow-md max-w-[140px] md:max-w-[160px] overflow-hidden",
                     (!establishment.noteStyle || establishment.noteStyle === "default") && "bg-white border border-gray-200",
                     establishment.noteStyle === "sunset" && "bg-gradient-to-r from-orange-400 to-pink-500",
                     establishment.noteStyle === "ocean" && "bg-gradient-to-r from-cyan-400 to-blue-500",

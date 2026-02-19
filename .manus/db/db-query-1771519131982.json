@@ -1,0 +1,50 @@
+{
+  "query": "SELECT id, name, menuSlug FROM establishments WHERE menuSlug IS NOT NULL LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, menuSlug FROM establishments WHERE menuSlug IS NOT NULL LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Burger House Gourmet",
+      "menuSlug": "burger-house-gourmet"
+    },
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "menuSlug": "sushi_haruno"
+    },
+    {
+      "id": "60018",
+      "name": "Big Norte",
+      "menuSlug": "big-norte"
+    },
+    {
+      "id": "90001",
+      "name": "Palácio do Açai",
+      "menuSlug": "palacio-do-acai"
+    },
+    {
+      "id": "150004",
+      "name": "Potim Açai",
+      "menuSlug": "potim-acai"
+    },
+    {
+      "id": "210001",
+      "name": "Sr. Macarrão",
+      "menuSlug": "sr-macarrao"
+    },
+    {
+      "id": "210002",
+      "name": "Açai Roxedo",
+      "menuSlug": "acai-roxedo"
+    },
+    {
+      "id": "210003",
+      "name": "Lanche PS",
+      "menuSlug": "lanche-ps"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tmenuSlug\n1\tBurger House Gourmet\tburger-house-gourmet\n30001\tSushi Haruno\tsushi_haruno\n60018\tBig Norte\tbig-norte\n90001\tPalácio do Açai\tpalacio-do-acai\n150004\tPotim Açai\tpotim-acai\n210001\tSr. Macarrão\tsr-macarrao\n210002\tAçai Roxedo\tacai-roxedo\n210003\tLanche PS\tlanche-ps\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

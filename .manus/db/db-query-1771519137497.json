@@ -1,0 +1,52 @@
+{
+  "query": "SELECT id, name, menuSlug, publicNote, noteStyle FROM establishments WHERE menuSlug IS NOT NULL AND publicNote IS NOT NULL LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, menuSlug, publicNote, noteStyle FROM establishments WHERE menuSlug IS NOT NULL AND publicNote IS NOT NULL LIMIT 10;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "menuSlug": "sushi_haruno",
+      "publicNote": "Temos novidades no cardápio 👀",
+      "noteStyle": "fire"
+    },
+    {
+      "id": "60018",
+      "name": "Big Norte",
+      "menuSlug": "big-norte",
+      "publicNote": "Sua fome merece atenção. É só clicar e pedir 🍔",
+      "noteStyle": "fire"
+    },
+    {
+      "id": "90001",
+      "name": "Palácio do Açai",
+      "menuSlug": "palacio-do-acai",
+      "publicNote": "🍧 | Pensou em açaí? Aqui é o melhor lugar",
+      "noteStyle": "acai"
+    },
+    {
+      "id": "150004",
+      "name": "Potim Açai",
+      "menuSlug": "potim-acai",
+      "publicNote": "Obrigado por pedir com a gente ❤️",
+      "noteStyle": "default"
+    },
+    {
+      "id": "210001",
+      "name": "Sr. Macarrão",
+      "menuSlug": "sr-macarrao",
+      "publicNote": "Mais de 1 Milhão de combinações",
+      "noteStyle": "fire"
+    },
+    {
+      "id": "210002",
+      "name": "Açai Roxedo",
+      "menuSlug": "acai-roxedo",
+      "publicNote": "🍧 | Pensou em açaí? Aqui é o melhor lugar",
+      "noteStyle": "acai"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tmenuSlug\tpublicNote\tnoteStyle\n30001\tSushi Haruno\tsushi_haruno\tTemos novidades no cardápio 👀\tfire\n60018\tBig Norte\tbig-norte\tSua fome merece atenção. É só clicar e pedir 🍔\tfire\n90001\tPalácio do Açai\tpalacio-do-acai\t🍧 | Pensou em açaí? Aqui é o melhor lugar\tacai\n150004\tPotim Açai\tpotim-acai\tObrigado por pedir com a gente ❤️\tdefault\n210001\tSr. Macarrão\tsr-macarrao\tMais de 1 Milhão de combinações\tfire\n210002\tAçai Roxedo\tacai-roxedo\t🍧 | Pensou em açaí? Aqui é o melhor lugar\tacai\n",
+  "stderr": "",
+  "execution_time_ms": 63
+}
