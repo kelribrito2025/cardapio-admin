@@ -344,6 +344,13 @@ describe("Dashboard Router", () => {
         revenue: 500,
         avgTicket: 50,
         lowStockCount: 2,
+        ordersChange: 0,
+        revenueChange: 0,
+        avgTicketChange: 0,
+        lowStockChange: 0,
+        recurringCustomers: 5,
+        recurringPercentage: 25,
+        recurringChange: 10,
       };
 
       vi.mocked(db.getDashboardStats).mockResolvedValue(mockStats);

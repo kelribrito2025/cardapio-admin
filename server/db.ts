@@ -2087,7 +2087,91 @@ export async function getDashboardStats(establishmentId: number, period: 'today'
   const lowStockCount = lowStockResult[0]?.count ?? 0;
   const lowStockChange = 0; // Sem comparação temporal para estoque
   
-  return { ordersCount, revenue, avgTicket, lowStockCount, ordersChange, revenueChange, avgTicketChange, lowStockChange };
+  // Clientes recorrentes (2+ pedidos nos últimos 30 dias por telefone)
+  const recurringData = await getRecurringCustomers(establishmentId);
+  
+  return { ordersCount, revenue, avgTicket, lowStockCount, ordersChange, revenueChange, avgTicketChange, lowStockChange, recurringCustomers: recurringData.count, recurringPercentage: recurringData.percentage, recurringChange: recurringData.change };
+}
+
+/**
+ * Calcula clientes recorrentes: clientes com 2+ pedidos nos últimos 30 dias.
+ * Usa o número de telefone como identificador único do cliente.
+ * Considera pedidos de todas as fontes (menu público, PDV, iFood, etc).
+ * Retorna: count (total recorrentes), percentage (% sobre base ativa), change (variação vs mês anterior)
+ */
+export async function getRecurringCustomers(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return { count: 0, percentage: 0, change: 0 };
+
+  const now = new Date();
+  
+  // Últimos 30 dias
+  const thirtyDaysAgo = new Date(now);
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().slice(0, 19).replace('T', ' ');
+  
+  // Período anterior: 60 a 30 dias atrás
+  const sixtyDaysAgo = new Date(now);
+  sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+  const sixtyDaysAgoStr = sixtyDaysAgo.toISOString().slice(0, 19).replace('T', ' ');
+
+  // Clientes recorrentes nos últimos 30 dias (2+ pedidos completados, agrupados por telefone)
+  const currentRecurring = await db.execute(sql`
+    SELECT COUNT(*) as recurringCount FROM (
+      SELECT ${orders.customerPhone}
+      FROM ${orders}
+      WHERE ${orders.establishmentId} = ${establishmentId}
+        AND ${orders.status} = 'completed'
+        AND ${orders.customerPhone} IS NOT NULL
+        AND ${orders.customerPhone} != ''
+        AND ${orders.createdAt} >= ${thirtyDaysAgoStr}
+      GROUP BY ${orders.customerPhone}
+      HAVING COUNT(*) >= 2
+    ) as recurring
+  `);
+
+  // Total de clientes únicos (base ativa) nos últimos 30 dias
+  const activeBase = await db.execute(sql`
+    SELECT COUNT(DISTINCT ${orders.customerPhone}) as activeCount
+    FROM ${orders}
+    WHERE ${orders.establishmentId} = ${establishmentId}
+      AND ${orders.status} = 'completed'
+      AND ${orders.customerPhone} IS NOT NULL
+      AND ${orders.customerPhone} != ''
+      AND ${orders.createdAt} >= ${thirtyDaysAgoStr}
+  `);
+
+  // Clientes recorrentes no período anterior (60 a 30 dias atrás)
+  const prevRecurring = await db.execute(sql`
+    SELECT COUNT(*) as recurringCount FROM (
+      SELECT ${orders.customerPhone}
+      FROM ${orders}
+      WHERE ${orders.establishmentId} = ${establishmentId}
+        AND ${orders.status} = 'completed'
+        AND ${orders.customerPhone} IS NOT NULL
+        AND ${orders.customerPhone} != ''
+        AND ${orders.createdAt} >= ${sixtyDaysAgoStr}
+        AND ${orders.createdAt} < ${thirtyDaysAgoStr}
+      GROUP BY ${orders.customerPhone}
+      HAVING COUNT(*) >= 2
+    ) as recurring
+  `);
+
+  const count = Number((currentRecurring as any)[0]?.[0]?.recurringCount ?? 0);
+  const activeCount = Number((activeBase as any)[0]?.[0]?.activeCount ?? 0);
+  const prevCount = Number((prevRecurring as any)[0]?.[0]?.recurringCount ?? 0);
+  
+  const percentage = activeCount > 0 ? Math.round((count / activeCount) * 100) : 0;
+  
+  // Variação percentual vs período anterior
+  let change = 0;
+  if (prevCount === 0) {
+    change = count > 0 ? 100 : 0;
+  } else {
+    change = Math.round(((count - prevCount) / prevCount) * 100);
+  }
+
+  return { count, percentage, change };
 }
 
 /**

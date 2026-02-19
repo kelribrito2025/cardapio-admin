@@ -7250,3 +7250,6 @@
 - [x] Adicionar badges vermelhos "Novo" nos menus: PDV, Mapa de Mesas, Entregadores, Avaliações, Estoque, Finanças, Cupons, Campanhas
 - [x] Adicionar badge "Novo" no menu Dashboard
 - [x] Diferenciar visualmente os títulos das seções (OPERAÇÕES, GESTÃO, FINANCEIRO, MARKETING, SISTEMA) dos itens do menu com cor diferente
+- [x] Substituir card "Itens em falta" por "Clientes Recorrentes" no Dashboard
+- [x] Backend: procedure para calcular clientes recorrentes (2+ pedidos nos últimos 30 dias por telefone, PDV + menu público)
+- [x] Frontend: card com total, percentual sobre base ativa, indicador comparativo com mês anterior

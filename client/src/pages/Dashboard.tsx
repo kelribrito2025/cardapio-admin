@@ -7,7 +7,7 @@ import {
   ShoppingBag, 
   DollarSign, 
   TrendingUp, 
-  AlertTriangle,
+  Users,
   Clock,
   Package,
   Target
@@ -66,10 +66,6 @@ export default function Dashboard() {
     { enabled: !!establishmentId }
   );
 
-  const { data: lowStock } = trpc.dashboard.lowStock.useQuery(
-    { establishmentId: establishmentId! },
-    { enabled: !!establishmentId }
-  );
 
   const conversionInput = useMemo(() => ({
     establishmentId: establishmentId!,
@@ -161,8 +157,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* KPI Cards - grid com Itens em Falta 25% menor */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_0.75fr] gap-5 mb-6">
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
         <StatCard
           title={period === 'today' ? 'Pedidos Hoje' : period === 'week' ? 'Pedidos da Semana' : 'Pedidos do Mês'}
           value={stats?.ordersCount ?? 0}
@@ -213,11 +209,17 @@ export default function Dashboard() {
           } : undefined}
         />
         <StatCard
-          title="Itens em Falta"
-          value={stats?.lowStockCount ?? 0}
-          icon={AlertTriangle}
+          title="Clientes Recorrentes"
+          value={stats?.recurringCustomers ?? 0}
+          tooltip={`${stats?.recurringPercentage ?? 0}% da base ativa (2+ pedidos nos últimos 30 dias)`}
+          icon={Users}
           loading={statsLoading}
-          variant="amber"
+          variant="primary"
+          trend={stats && stats.recurringChange !== undefined ? {
+            value: stats.recurringChange,
+            isPositive: stats.recurringChange >= 0,
+            label: 'vs mês anterior'
+          } : undefined}
         />
       </div>
 
