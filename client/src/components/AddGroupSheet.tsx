@@ -23,7 +23,6 @@ import {
   Loader2,
   Copy,
   Check,
-  Package,
 } from "lucide-react";
 
 type CategoryType = "ingredientes" | "especificacoes" | "descartaveis";
@@ -66,18 +65,13 @@ export default function AddGroupSheet({
   const [newItemImage, setNewItemImage] = useState<string | null>(null);
   const [uploadingItemImage, setUploadingItemImage] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [copyProductId, setCopyProductId] = useState<number | null>(null);
+  const [selectedGroupNames, setSelectedGroupNames] = useState<string[]>([]);
   const itemFileInputRef = useRef<HTMLInputElement>(null);
 
   // Queries
-  const { data: allProducts } = trpc.product.list.useQuery(
+  const { data: allGroupsData } = trpc.complement.listAllGroups.useQuery(
     { establishmentId },
     { enabled: open && subStep === "copy-group" }
-  );
-
-  const { data: copyGroups } = trpc.complement.listGroups.useQuery(
-    { productId: copyProductId! },
-    { enabled: open && !!copyProductId && subStep === "copy-group" }
   );
 
   // Mutations
@@ -107,7 +101,7 @@ export default function AddGroupSheet({
     setNewItemName("");
     setNewItemPrice("");
     setNewItemImage(null);
-    setCopyProductId(null);
+    setSelectedGroupNames([]);
   }, []);
 
   const handleClose = () => {
@@ -207,13 +201,18 @@ export default function AddGroupSheet({
   };
 
   const handleCopyGroups = async () => {
-    if (!copyGroups || copyGroups.length === 0) {
-      toast.error("Nenhum grupo de complemento encontrado neste produto");
+    if (!allGroupsData || selectedGroupNames.length === 0) {
+      toast.error("Selecione pelo menos um grupo para copiar");
+      return;
+    }
+    const groupsToCopy = allGroupsData.filter((g: any) => selectedGroupNames.includes(g.name));
+    if (groupsToCopy.length === 0) {
+      toast.error("Nenhum grupo selecionado");
       return;
     }
     setIsSaving(true);
     try {
-      for (const g of copyGroups) {
+      for (const g of groupsToCopy) {
         const result = await createGroupMutation.mutateAsync({
           productId,
           name: g.name,
@@ -237,7 +236,7 @@ export default function AddGroupSheet({
       utils.complement.listGroups.invalidate();
       utils.product.list.invalidate();
 
-      toast.success(`${copyGroups.length} grupo(s) copiado(s) com sucesso`);
+      toast.success(`${groupsToCopy.length} grupo(s) copiado(s) com sucesso`);
       onGroupCreated();
       handleClose();
     } catch {
@@ -403,7 +402,7 @@ export default function AddGroupSheet({
             <Button
               variant="outline"
               onClick={() => {
-                setCopyProductId(null);
+                setSelectedGroupNames([]);
                 setSubStep("copy-group");
               }}
               className="w-full rounded-xl h-12 border-dashed text-base"
@@ -434,10 +433,7 @@ export default function AddGroupSheet({
 
   // ---- Render: Copy Group ----
   const renderCopyGroup = () => {
-    const productsList = allProducts && 'products' in allProducts ? (allProducts as any).products : (allProducts || []) as any[];
-    const productsWithComplements = productsList.filter(
-      (p: any) => p.complementCount > 0 && !p.isCombo && p.id !== productId
-    );
+    const availableGroups = (allGroupsData || []) as any[];
 
     return (
       <div className="flex flex-col h-full">
@@ -450,7 +446,7 @@ export default function AddGroupSheet({
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white">Copiar grupo</h2>
-                <p className="text-sm text-white/80">Selecione um produto para copiar</p>
+                <p className="text-sm text-white/80">Selecione os grupos para copiar</p>
               </div>
             </div>
             <button
@@ -464,42 +460,53 @@ export default function AddGroupSheet({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-card">
-          {productsWithComplements.length === 0 ? (
+          {availableGroups.length === 0 ? (
             <div className="text-center py-10">
+              <div className="p-4 bg-muted/30 rounded-2xl mb-4 inline-block">
+                <Layers className="h-10 w-10 text-muted-foreground/40" />
+              </div>
               <p className="text-sm text-muted-foreground">
-                Nenhum produto com complementos encontrado
+                Nenhum grupo de complementos cadastrado
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Crie grupos em outros produtos primeiro
               </p>
             </div>
           ) : (
-            productsWithComplements.map((product: any) => (
-              <div
-                key={product.id}
-                onClick={() => setCopyProductId(product.id)}
-                className={cn(
-                  "flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all border",
-                  copyProductId === product.id
-                    ? "bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-800"
-                    : "bg-card border-border/50 hover:bg-muted/50"
-                )}
-              >
-                <div className="h-10 w-10 rounded-lg bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0">
-                  {product.images && (product.images as string[]).length > 0 ? (
-                    <img src={(product.images as string[])[0]} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <Package className="h-4 w-4 text-muted-foreground" />
+            availableGroups.map((group: any) => {
+              const isSelected = selectedGroupNames.includes(group.name);
+              return (
+                <div
+                  key={group.name}
+                  onClick={() => {
+                    setSelectedGroupNames((prev) =>
+                      isSelected
+                        ? prev.filter((n) => n !== group.name)
+                        : [...prev, group.name]
+                    );
+                  }}
+                  className={cn(
+                    "flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all border",
+                    isSelected
+                      ? "bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-800"
+                      : "bg-card border-border/50 hover:bg-muted/50"
+                  )}
+                >
+                  <div className="h-10 w-10 rounded-lg bg-muted/50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <Layers className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{group.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {group.complementCount || group.items?.length || 0} item(ns) &middot; {group.productCount || 1} produto(s)
+                    </p>
+                  </div>
+                  {isSelected && (
+                    <Check className="h-5 w-5 text-red-500 flex-shrink-0" />
                   )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{product.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {product.complementCount} complemento(s)
-                  </p>
-                </div>
-                {copyProductId === product.id && (
-                  <Check className="h-5 w-5 text-red-500 flex-shrink-0" />
-                )}
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
@@ -509,7 +516,7 @@ export default function AddGroupSheet({
             <Button
               variant="outline"
               onClick={() => {
-                setCopyProductId(null);
+                setSelectedGroupNames([]);
                 setSubStep("choose");
               }}
               className="flex-1 rounded-xl h-11"
@@ -519,7 +526,7 @@ export default function AddGroupSheet({
             </Button>
             <Button
               onClick={handleCopyGroups}
-              disabled={!copyProductId || !copyGroups || isSaving}
+              disabled={selectedGroupNames.length === 0 || isSaving}
               className="flex-1 rounded-xl h-11"
               style={{ backgroundColor: "#db262f", color: "white" }}
             >
@@ -531,7 +538,7 @@ export default function AddGroupSheet({
               ) : (
                 <>
                   <Copy className="h-4 w-4 mr-2" />
-                  Copiar complementos
+                  Copiar {selectedGroupNames.length > 0 ? `(${selectedGroupNames.length})` : ""}
                 </>
               )}
             </Button>
