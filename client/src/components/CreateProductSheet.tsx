@@ -99,6 +99,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
   const [newItemImage, setNewItemImage] = useState<string | null>(null);
   const [uploadingItemImage, setUploadingItemImage] = useState(false);
   const itemFileInputRef = useRef<HTMLInputElement>(null);
+  const itemNameInputRef = useRef<HTMLInputElement>(null);
   // Copy group
   const [copyProductId, setCopyProductId] = useState<number | null>(null);
 
@@ -335,6 +336,8 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
     setNewItemPrice("");
     setNewItemImage(null);
     toast.success("Complemento adicionado");
+    // Focar no campo de nome para facilitar adição contínua
+    setTimeout(() => itemNameInputRef.current?.focus(), 50);
   };
 
   // Remove complement item
@@ -1107,8 +1110,10 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
 
                 <div className="flex-1 space-y-2">
                   <Input
+                    ref={itemNameInputRef}
                     value={newItemName}
                     onChange={(e) => setNewItemName(capitalizeFirst(e.target.value))}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && newItemName.trim()) { e.preventDefault(); handleAddItem(); } }}
                     placeholder="Nome do complemento *"
                     className="h-9 rounded-lg border-border/50 text-sm"
                   />
@@ -1119,6 +1124,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
                       inputMode="numeric"
                       value={newItemPrice}
                       onChange={(e) => setNewItemPrice(formatPriceInputLocal(e.target.value))}
+                      onKeyDown={(e) => { if (e.key === 'Enter' && newItemName.trim()) { e.preventDefault(); handleAddItem(); } }}
                       placeholder="0,00"
                       className="h-9 rounded-lg border-border/50 text-sm pl-8 text-right"
                     />
