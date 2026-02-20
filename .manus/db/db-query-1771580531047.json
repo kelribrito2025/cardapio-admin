@@ -1,0 +1,370 @@
+{
+  "query": "SELECT p.id, p.name, p.description, p.price, p.status, p.sortOrder, c.name as categoryName FROM products p LEFT JOIN categories c ON p.categoryId = c.id WHERE p.establishmentId = 150004 ORDER BY c.sortOrder ASC, p.sortOrder ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.description, p.price, p.status, p.sortOrder, c.name as categoryName FROM products p LEFT JOIN categories c ON p.categoryId = c.id WHERE p.establishmentId = 150004 ORDER BY c.sortOrder ASC, p.sortOrder ASC;",
+  "rows": [
+    {
+      "id": "240025",
+      "name": "300ml",
+      "description": "",
+      "price": "22.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240021",
+      "name": "Tapioca Doce",
+      "description": "",
+      "price": "14.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240020",
+      "name": "Tapioca Salgada",
+      "description": "",
+      "price": "15.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240024",
+      "name": "Pote de açaí 2 litros (PURO)",
+      "description": "",
+      "price": "44.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240023",
+      "name": "Pote de açaí (COM NINHO) 2 litros",
+      "description": "",
+      "price": "46.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240011",
+      "name": "500ml",
+      "description": "",
+      "price": "25.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240022",
+      "name": "Salada de fruta",
+      "description": "Copo 300ml - Frutas (banana, uva, morango, kiwi, manga e maçã)",
+      "price": "14.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240005",
+      "name": "300 ml",
+      "description": "Açaí + 4 complementos",
+      "price": "15.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240014",
+      "name": "Roleta de inverno",
+      "description": "",
+      "price": "30.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240015",
+      "name": "Milk-shake 300ml",
+      "description": "",
+      "price": "16.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240017",
+      "name": "Pote de Sorvete",
+      "description": "",
+      "price": "28.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240019",
+      "name": "Crepioca",
+      "description": "",
+      "price": "15.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240018",
+      "name": "Pote de Sorvete",
+      "description": "",
+      "price": "28.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240012",
+      "name": "750ml",
+      "description": "",
+      "price": "33.00",
+      "status": "active",
+      "sortOrder": "2",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240016",
+      "name": "Milk-shake 500ml",
+      "description": "",
+      "price": "18.00",
+      "status": "active",
+      "sortOrder": "2",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240006",
+      "name": "500ml",
+      "description": "Açaí + 4 complementos",
+      "price": "18.00",
+      "status": "active",
+      "sortOrder": "2",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240007",
+      "name": "750ml",
+      "description": "Açaí + 4 complementos",
+      "price": "25.00",
+      "status": "active",
+      "sortOrder": "3",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240013",
+      "name": "1 litro",
+      "description": "",
+      "price": "45.00",
+      "status": "active",
+      "sortOrder": "3",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240008",
+      "name": "Barca",
+      "description": "Açaí + 6 complementos",
+      "price": "28.00",
+      "status": "active",
+      "sortOrder": "4",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240009",
+      "name": "1 litro",
+      "description": "Açaí + 6 complementos",
+      "price": "35.00",
+      "status": "active",
+      "sortOrder": "5",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "590016",
+      "name": "300 ml",
+      "description": "Açaí + 4 complementos",
+      "price": "15.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "Açai"
+    },
+    {
+      "id": "590021",
+      "name": "500 ml",
+      "description": "Açaí + 4 complementos",
+      "price": "18.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "Açai"
+    },
+    {
+      "id": "590022",
+      "name": "750 ml",
+      "description": "Açaí + 4 complementos",
+      "price": "25.00",
+      "status": "active",
+      "sortOrder": "2",
+      "categoryName": "Açai"
+    },
+    {
+      "id": "590024",
+      "name": "Barca",
+      "description": "Açaí + 6 complementos",
+      "price": "25.00",
+      "status": "active",
+      "sortOrder": "3",
+      "categoryName": "Açai"
+    },
+    {
+      "id": "590025",
+      "name": "1 Litro",
+      "description": "Açaí + 4 complementos",
+      "price": "35.00",
+      "status": "active",
+      "sortOrder": "4",
+      "categoryName": "Açai"
+    },
+    {
+      "id": "590026",
+      "name": "300 ml",
+      "description": "Açaí + 4 complementos",
+      "price": "22.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "Açai Zero"
+    },
+    {
+      "id": "590027",
+      "name": "500 ml",
+      "description": "Açaí + 4 complementos",
+      "price": "25.00",
+      "status": "active",
+      "sortOrder": "1",
+      "categoryName": "Açai Zero"
+    },
+    {
+      "id": "590029",
+      "name": "750 ml",
+      "description": "Açaí + 4 complementos",
+      "price": "33.00",
+      "status": "active",
+      "sortOrder": "2",
+      "categoryName": "Açai Zero"
+    },
+    {
+      "id": "590028",
+      "name": "1 Litro",
+      "description": "Açaí + 4 complementos",
+      "price": "45.00",
+      "status": "active",
+      "sortOrder": "3",
+      "categoryName": "Açai Zero"
+    },
+    {
+      "id": "590030",
+      "name": "Roleta de inverno",
+      "description": "NULL",
+      "price": "30.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "Roleta de Inverno"
+    },
+    {
+      "id": "590031",
+      "name": "Milk-Shake 300ml",
+      "description": "NULL",
+      "price": "16.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "Milk Shake"
+    },
+    {
+      "id": "590032",
+      "name": "Milk-Shake 500ml",
+      "description": "NULL",
+      "price": "18.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "Milk Shake"
+    },
+    {
+      "id": "590033",
+      "name": "Pote de sorvete 1.5L",
+      "description": "NULL",
+      "price": "28.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "Pote de sorvete 1.5 Litros"
+    },
+    {
+      "id": "590034",
+      "name": "Pote de sorvete 1.8L",
+      "description": "NULL",
+      "price": "28.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "Pote de sorvete 1.8 Litros"
+    },
+    {
+      "id": "590036",
+      "name": "Tapioca salgada",
+      "description": "NULL",
+      "price": "15.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "Tapioca salgada"
+    },
+    {
+      "id": "590037",
+      "name": "Tapioca doce",
+      "description": "NULL",
+      "price": "14.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "Tapioca doce"
+    },
+    {
+      "id": "590038",
+      "name": "Salada de fruta",
+      "description": "Copo 300ml Frutas ( banana, uva, morango, kiwi, manga e maçã )",
+      "price": "14.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "Salada de fruta"
+    },
+    {
+      "id": "590035",
+      "name": "Crepioca",
+      "description": "NULL",
+      "price": "15.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "Crepioca"
+    },
+    {
+      "id": "590039",
+      "name": "Pote de açaí (COM NINHO) 2 litros",
+      "description": "Pote de açaí (COM NINHO) 2 litros",
+      "price": "46.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "Pote de açaí 2 litros"
+    },
+    {
+      "id": "590040",
+      "name": "Pote de açaí 2 litros (PURO)",
+      "description": "Pote de açaí 2 litros (PURO)",
+      "price": "44.00",
+      "status": "active",
+      "sortOrder": "0",
+      "categoryName": "Pote de açaí 2 litros"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tdescription\tprice\tstatus\tsortOrder\tcategoryName\n240025\t300ml\t\t22.00\tactive\t0\tNULL\n240021\tTapioca Doce\t\t14.00\tactive\t1\tNULL\n240020\tTapioca Salgada\t\t15.00\tactive\t1\tNULL\n240024\tPote de açaí 2 litros (PURO)\t\t44.00\tactive\t1\tNULL\n240023\tPote de açaí (COM NINHO) 2 litros\t\t46.00\tactive\t1\tNULL\n240011\t500ml\t\t25.00\tactive\t1\tNULL\n240022\tSalada de fruta\tCopo 300ml - Frutas (banana, uva, morango, kiwi, manga e maçã)\t14.00\tactive\t1\tNULL\n240005\t300 ml\tAçaí + 4 complementos\t15.00\tactive\t1\tNULL\n240014\tRoleta de inverno\t\t30.00\tactive\t1\tNULL\n240015\tMilk-shake 300ml\t\t16.00\tactive\t1\tNULL\n240017\tPote de Sorvete\t\t28.00\tactive\t1\tNULL\n240019\tCrepioca\t\t15.00\tactive\t1\tNULL\n240018\tPote de Sorvete\t\t28.00\tactive\t1\tNULL\n240012\t750ml\t\t33.00\tactive\t2\tNULL\n240016\tMilk-shake 500ml\t\t18.00\tactive\t2\tNULL\n240006\t500ml\tAçaí + 4 complementos\t18.00\tactive\t2\tNULL\n240007\t750ml\tAçaí + 4 complementos\t25.00\tactive\t3\tNULL\n240013\t1 litro\t\t45.00\tactive\t3\tNULL\n240008\tBarca\tAçaí + 6 complementos\t28.00\tactive\t4\tNULL\n240009\t1 litro\tAçaí + 6 complementos\t35.00\tactive\t5\tNULL\n590016\t300 ml\tAçaí + 4 complementos\t15.00\tactive\t0\tAçai\n590021\t500 ml\tAçaí + 4 complementos\t18.00\tactive\t1\tAçai\n590022\t750 ml\tAçaí + 4 complementos\t25.00\tactive\t2\tAçai\n590024\tBarca\tAçaí + 6 complementos\t25.00\tactive\t3\tAçai\n590025\t1 Litro\tAçaí + 4 complementos\t35.00\tactive\t4\tAçai\n590026\t300 ml\tAçaí + 4 complementos\t22.00\tactive\t0\tAçai Zero\n590027\t500 ml\tAçaí + 4 complementos\t25.00\tactive\t1\tAçai Zero\n590029\t750 ml\tAçaí + 4 complementos\t33.00\tactive\t2\tAçai Zero\n590028\t1 Litro\tAçaí + 4 complementos\t45.00\tactive\t3\tAçai Zero\n590030\tRoleta de inverno\tNULL\t30.00\tactive\t0\tRoleta de Inverno\n590031\tMilk-Shake 300ml\tNULL\t16.00\tactive\t0\tMilk Shake\n590032\tMilk-Shake 500ml\tNULL\t18.00\tactive\t0\tMilk Shake\n590033\tPote de sorvete 1.5L\tNULL\t28.00\tactive\t0\tPote de sorvete 1.5 Litros\n590034\tPote de sorvete 1.8L\tNULL\t28.00\tactive\t0\tPote de sorvete 1.8 Litros\n590036\tTapioca salgada\tNULL\t15.00\tactive\t0\tTapioca salgada\n590037\tTapioca doce\tNULL\t14.00\tactive\t0\tTapioca doce\n590038\tSalada de fruta\tCopo 300ml Frutas ( banana, uva, morango, kiwi, manga e maçã )\t14.00\tactive\t0\tSalada de fruta\n590035\tCrepioca\tNULL\t15.00\tactive\t0\tCrepioca\n590039\tPote de açaí (COM NINHO) 2 litros\tPote de açaí (COM NINHO) 2 litros\t46.00\tactive\t0\tPote de açaí 2 litros\n590040\tPote de açaí 2 litros (PURO)\tPote de açaí 2 litros (PURO)\t44.00\tactive\t0\tPote de açaí 2 litros\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

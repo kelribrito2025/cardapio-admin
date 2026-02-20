@@ -75,9 +75,9 @@ const menuSections = [
   {
     title: "OPERAÇÕES",
     items: [
-      { icon: LayoutDashboard, label: "Dashboard", href: "/", disabled: false, isNew: true },
-      { icon: Monitor, label: "PDV", href: "/pdv", disabled: false, isNew: true },
-      { icon: Utensils, label: "Mapa de mesas", href: "/mesas", disabled: false, isNew: true },
+      { icon: LayoutDashboard, label: "Dashboard", href: "/", disabled: false },
+      { icon: Monitor, label: "PDV", href: "/pdv", disabled: false },
+      { icon: Utensils, label: "Mapa de mesas", href: "/mesas", disabled: false },
     ]
   },
   {
@@ -86,26 +86,26 @@ const menuSections = [
       { icon: ClipboardList, label: "Pedidos", href: "/pedidos", disabled: false, isParent: true, children: [
         { icon: CalendarClock, label: "Agendados", href: "/agendados", disabled: false },
       ] },
-      { icon: Truck, label: "Entregadores", href: "/entregadores", disabled: false, isNew: true },
+      { icon: Truck, label: "Entregadores", href: "/entregadores", disabled: false },
       { icon: BookOpen, label: "Menu", href: "/menu-parent", disabled: false, isParent: true, children: [
         { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo", disabled: false },
         { icon: Layers, label: "Grupos", href: "/complementos", disabled: false },
-        { icon: Star, label: "Avaliações", href: "/avaliacoes", disabled: false, badgeKey: "reviews", isNew: true },
+        { icon: Star, label: "Avaliações", href: "/avaliacoes", disabled: false, badgeKey: "reviews" },
       ]},
-      { icon: Package, label: "Estoque", href: "/estoque", disabled: false, isNew: true },
+      { icon: Package, label: "Estoque", href: "/estoque", disabled: false },
     ]
   },
   {
     title: "FINANCEIRO",
     items: [
-      { icon: BadgeDollarSign, label: "Finanças", href: "/financas", disabled: false, isNew: true },
+      { icon: BadgeDollarSign, label: "Finanças", href: "/financas", disabled: false },
     ]
   },
   {
     title: "MARKETING",
     items: [
-      { icon: Ticket, label: "Cupons", href: "/cupons", disabled: false, isNew: true },
-      { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: false, isNew: true },
+      { icon: Ticket, label: "Cupons", href: "/cupons", disabled: false },
+      { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: false },
     ]
   },
   {

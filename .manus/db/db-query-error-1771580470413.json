@@ -1,0 +1,8 @@
+{
+  "query": "SELECT p.id, p.name, p.description, p.price, p.isActive, p.sortOrder, c.name as categoryName FROM products p LEFT JOIN categories c ON p.categoryId = c.id WHERE p.establishmentId = 150004 ORDER BY c.sortOrder ASC, p.sortOrder ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.description, p.price, p.isActive, p.sortOrder, c.name as categoryName FROM products p LEFT JOIN categories c ON p.categoryId = c.id WHERE p.establishmentId = 150004 ORDER BY c.sortOrder ASC, p.sortOrder ASC;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'p.isactive' in 'field list'"
+  ]
+}

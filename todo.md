@@ -7310,3 +7310,5 @@
 - [x] Corrigir drag-and-drop no catálogo: item volta para posição original antes de ir para a nova posição (falta update otimístico)
 - [x] Corrigir cursor do campo de preço: ao clicar no campo, cursor deve ir para o final do valor
 - [x] Corrigir campo de preço: ao digitar sobre 0,00, deve substituir o valor em vez de concatenar (ex: 0,00300)
+- [x] Baixar fotos dos produtos do Mindi e fazer upload para S3, atualizar registros no banco de dados (estabelecimento 150004)
+- [x] Remover badge "Novo" do menu lateral (sidebar)

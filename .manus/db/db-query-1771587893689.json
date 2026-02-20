@@ -1,0 +1,250 @@
+{
+  "query": "SELECT p.id, p.name, p.images, c.name as categoryName \nFROM products p \nLEFT JOIN categories c ON p.categoryId = c.id \nWHERE p.establishmentId = 150004 \nORDER BY c.name, p.name",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.images, c.name as categoryName \nFROM products p \nLEFT JOIN categories c ON p.categoryId = c.id \nWHERE p.establishmentId = 150004 \nORDER BY c.name, p.name",
+  "rows": [
+    {
+      "id": "240013",
+      "name": "1 litro",
+      "images": "NULL",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240009",
+      "name": "1 litro",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/A9hjiRxk9DmufE8qvFgnd.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240005",
+      "name": "300 ml",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/Xz9GPNTX4SLuOzHKuJS5p.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240025",
+      "name": "300ml",
+      "images": "NULL",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240011",
+      "name": "500ml",
+      "images": "NULL",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240006",
+      "name": "500ml",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/O5xu20KpmLsw3z9281VmA.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240012",
+      "name": "750ml",
+      "images": "NULL",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240007",
+      "name": "750ml",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/s7_DeM9EXrjSivj5vNcWC.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240008",
+      "name": "Barca",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/pM02kXb9-I5GFAG5UDoNl.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240019",
+      "name": "Crepioca",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/75-bSnW5PPLheLTAM3VLl.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240015",
+      "name": "Milk-shake 300ml",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/FGB20DUi6PR38BjZmiRgo.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240016",
+      "name": "Milk-shake 500ml",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/Oftw0tPE7rHwpob169xkm.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240023",
+      "name": "Pote de açaí (COM NINHO) 2 litros",
+      "images": "NULL",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240024",
+      "name": "Pote de açaí 2 litros (PURO)",
+      "images": "NULL",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240018",
+      "name": "Pote de Sorvete",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/mOim1SxzsULfiBZ50Tuvx.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240017",
+      "name": "Pote de Sorvete",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/eysZwdwftyZJ6yU4JXN2_.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240014",
+      "name": "Roleta de inverno",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/fPC9V42BHa6jWbC5YjWhX.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240022",
+      "name": "Salada de fruta",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/lzycDUL34ndGFNHkG5NQr.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240021",
+      "name": "Tapioca Doce",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/EnbzZ8IQT7rlVbsHFMvBZ.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "240020",
+      "name": "Tapioca Salgada",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/OEx0VeWfalu9L9nfMBS4y.jpeg\"]",
+      "categoryName": "NULL"
+    },
+    {
+      "id": "590025",
+      "name": "1 Litro",
+      "images": "[]",
+      "categoryName": "Açai"
+    },
+    {
+      "id": "590016",
+      "name": "300 ml",
+      "images": "[]",
+      "categoryName": "Açai"
+    },
+    {
+      "id": "590021",
+      "name": "500 ml",
+      "images": "[]",
+      "categoryName": "Açai"
+    },
+    {
+      "id": "590022",
+      "name": "750 ml",
+      "images": "[]",
+      "categoryName": "Açai"
+    },
+    {
+      "id": "590024",
+      "name": "Barca",
+      "images": "[]",
+      "categoryName": "Açai"
+    },
+    {
+      "id": "590028",
+      "name": "1 Litro",
+      "images": "[]",
+      "categoryName": "Açai Zero"
+    },
+    {
+      "id": "590026",
+      "name": "300 ml",
+      "images": "[]",
+      "categoryName": "Açai Zero"
+    },
+    {
+      "id": "590027",
+      "name": "500 ml",
+      "images": "[]",
+      "categoryName": "Açai Zero"
+    },
+    {
+      "id": "590029",
+      "name": "750 ml",
+      "images": "[]",
+      "categoryName": "Açai Zero"
+    },
+    {
+      "id": "590035",
+      "name": "Crepioca",
+      "images": "[]",
+      "categoryName": "Crepioca"
+    },
+    {
+      "id": "590031",
+      "name": "Milk-Shake 300ml",
+      "images": "[]",
+      "categoryName": "Milk-Shake"
+    },
+    {
+      "id": "590032",
+      "name": "Milk-Shake 500ml",
+      "images": "[]",
+      "categoryName": "Milk-Shake"
+    },
+    {
+      "id": "590039",
+      "name": "Pote de açaí (COM NINHO) 2 litros",
+      "images": "[]",
+      "categoryName": "Pote de açaí 2 litros"
+    },
+    {
+      "id": "590040",
+      "name": "Pote de açaí 2 litros (PURO)",
+      "images": "[]",
+      "categoryName": "Pote de açaí 2 litros"
+    },
+    {
+      "id": "590033",
+      "name": "Pote de sorvete 1.5L",
+      "images": "[]",
+      "categoryName": "Pote de sorvete 1.5 Litros"
+    },
+    {
+      "id": "590034",
+      "name": "Pote de sorvete 1.8L",
+      "images": "[]",
+      "categoryName": "Pote de sorvete 1.8 Litros"
+    },
+    {
+      "id": "590030",
+      "name": "Roleta de inverno",
+      "images": "[]",
+      "categoryName": "Roleta de Inverno"
+    },
+    {
+      "id": "590038",
+      "name": "Salada de fruta",
+      "images": "[]",
+      "categoryName": "Salada de fruta"
+    },
+    {
+      "id": "590037",
+      "name": "Tapioca doce",
+      "images": "[]",
+      "categoryName": "Tapioca doce"
+    },
+    {
+      "id": "590036",
+      "name": "Tapioca salgada",
+      "images": "[]",
+      "categoryName": "Tapioca salgada"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\timages\tcategoryName\n240013\t1 litro\tNULL\tNULL\n240009\t1 litro\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/A9hjiRxk9DmufE8qvFgnd.jpeg\"]\tNULL\n240005\t300 ml\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/Xz9GPNTX4SLuOzHKuJS5p.jpeg\"]\tNULL\n240025\t300ml\tNULL\tNULL\n240011\t500ml\tNULL\tNULL\n240006\t500ml\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/O5xu20KpmLsw3z9281VmA.jpeg\"]\tNULL\n240012\t750ml\tNULL\tNULL\n240007\t750ml\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/s7_DeM9EXrjSivj5vNcWC.jpeg\"]\tNULL\n240008\tBarca\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/pM02kXb9-I5GFAG5UDoNl.jpeg\"]\tNULL\n240019\tCrepioca\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/75-bSnW5PPLheLTAM3VLl.jpeg\"]\tNULL\n240015\tMilk-shake 300ml\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/FGB20DUi6PR38BjZmiRgo.jpeg\"]\tNULL\n240016\tMilk-shake 500ml\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/Oftw0tPE7rHwpob169xkm.jpeg\"]\tNULL\n240023\tPote de açaí (COM NINHO) 2 litros\tNULL\tNULL\n240024\tPote de açaí 2 litros (PURO)\tNULL\tNULL\n240018\tPote de Sorvete\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/mOim1SxzsULfiBZ50Tuvx.jpeg\"]\tNULL\n240017\tPote de Sorvete\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/eysZwdwftyZJ6yU4JXN2_.jpeg\"]\tNULL\n240014\tRoleta de inverno\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/fPC9V42BHa6jWbC5YjWhX.jpeg\"]\tNULL\n240022\tSalada de fruta\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/lzycDUL34ndGFNHkG5NQr.jpeg\"]\tNULL\n240021\tTapioca Doce\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/EnbzZ8IQT7rlVbsHFMvBZ.jpeg\"]\tNULL\n240020\tTapioca Salgada\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/OEx0VeWfalu9L9nfMBS4y.jpeg\"]\tNULL\n590025\t1 Litro\t[]\tAçai\n590016\t300 ml\t[]\tAçai\n590021\t500 ml\t[]\tAçai\n590022\t750 ml\t[]\tAçai\n590024\tBarca\t[]\tAçai\n590028\t1 Litro\t[]\tAçai Zero\n590026\t300 ml\t[]\tAçai Zero\n590027\t500 ml\t[]\tAçai Zero\n590029\t750 ml\t[]\tAçai Zero\n590035\tCrepioca\t[]\tCrepioca\n590031\tMilk-Shake 300ml\t[]\tMilk-Shake\n590032\tMilk-Shake 500ml\t[]\tMilk-Shake\n590039\tPote de açaí (COM NINHO) 2 litros\t[]\tPote de açaí 2 litros\n590040\tPote de açaí 2 litros (PURO)\t[]\tPote de açaí 2 litros\n590033\tPote de sorvete 1.5L\t[]\tPote de sorvete 1.5 Litros\n590034\tPote de sorvete 1.8L\t[]\tPote de sorvete 1.8 Litros\n590030\tRoleta de inverno\t[]\tRoleta de Inverno\n590038\tSalada de fruta\t[]\tSalada de fruta\n590037\tTapioca doce\t[]\tTapioca doce\n590036\tTapioca salgada\t[]\tTapioca salgada\n",
+  "stderr": "",
+  "execution_time_ms": 71
+}
