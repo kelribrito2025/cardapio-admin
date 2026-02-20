@@ -7279,3 +7279,8 @@
 - [x] Feature: Enter no campo nome do complemento pula para preço; Enter no campo preço adiciona e volta para nome (AddGroupSheet e CreateProductSheet)
 - [x] Feature: Adicionar ícone (i) de informação com tooltip explicando atalho Enter (nome→preço→adicionar) no AddGroupSheet e CreateProductSheet
 - [x] Bug: Complementos com mesmo nome compartilham preço entre grupos diferentes - cada complemento deve ser instância independente por grupo
+- [x] Validação: Página /complementos (gestão global) - altera templates ou instâncias vinculadas?
+- [x] Validação: Pedidos antigos preservam preço do momento da compra?
+- [x] Validação: Exclusão de complemento de um grupo não impacta outros grupos
+- [x] Validação: Risco de duplicação descontrolada de complementos
+- [x] Remover card "Complementos / Adicionais" da página de edição do produto (ProductForm) - gestão de complementos apenas via /complementos ou inline no catálogo

@@ -18,9 +18,6 @@ import {
   Save,
   ImagePlus,
   X,
-  Plus,
-  Trash2,
-  GripVertical,
   Info,
 } from "lucide-react";
 import {
@@ -28,223 +25,17 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useState, useEffect, useRef, useCallback } from "react";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { useState, useEffect, useRef } from "react";
+
 import { useLocation, useParams } from "wouter";
 import { toast } from "sonner";
 import { cn, capitalizeFirst, formatPriceInput, parsePriceInput } from "@/lib/utils";
 
-interface ComplementGroup {
-  id?: number;
-  name: string;
-  minQuantity: number;
-  maxQuantity: number;
-  isRequired: boolean;
-  items: ComplementItem[];
-}
 
-interface ComplementItem {
-  id?: number;
-  uniqueId: string; // ID único para drag & drop
-  name: string;
-  price: string;
-  imageUrl?: string | null;
-}
 
-// Sortable Complement Group Component
-function SortableComplementGroup({
-  groupIndex,
-  children,
-}: {
-  groupIndex: number;
-  children: React.ReactNode | ((props: { attributes: Record<string, unknown>; listeners: Record<string, unknown> | undefined }) => React.ReactNode);
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: `group-${groupIndex}` });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 1000 : 1,
-  };
 
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={cn(
-        "border border-border/50 rounded-xl p-4 bg-muted/20 overflow-x-auto",
-        isDragging && "shadow-xl ring-2 ring-primary/30"
-      )}
-    >
-      {typeof children === 'function' ? children({ attributes: attributes as unknown as Record<string, unknown>, listeners: listeners as Record<string, unknown> | undefined }) : children}
-    </div>
-  );
-}
 
-// Sortable Complement Item Component
-function SortableComplementItem({
-  item,
-  itemIndex,
-  groupIndex,
-  onUpdate,
-  onRemove,
-  displayPrice,
-  handlePriceChange,
-  onImageUpload,
-  uploadingImage,
-}: {
-  item: ComplementItem;
-  itemIndex: number;
-  groupIndex: number;
-  onUpdate: (groupIndex: number, itemIndex: number, updates: Partial<ComplementItem>) => void;
-  onRemove: (groupIndex: number, itemIndex: number) => void;
-  displayPrice: (value: string) => string;
-  handlePriceChange: (groupIndex: number, itemIndex: number, value: string) => void;
-  onImageUpload: (groupIndex: number, itemIndex: number, file: File) => void;
-  uploadingImage: string | null;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: item.uniqueId });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 1000 : 1,
-  };
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const isUploading = uploadingImage === item.uniqueId;
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onImageUpload(groupIndex, itemIndex, file);
-    }
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={cn(
-        "flex items-center gap-2 p-2 bg-card rounded-lg border border-border/50 overflow-x-auto",
-        isDragging && "shadow-lg"
-      )}
-    >
-      <button
-        type="button"
-        {...attributes}
-        {...listeners}
-        className="cursor-grab active:cursor-grabbing p-0.5 hover:bg-muted rounded-md touch-none"
-      >
-        <GripVertical className="h-3.5 w-3.5 text-muted-foreground/50" />
-      </button>
-      
-      {/* Indicador minimalista de foto */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isUploading}
-            className={cn(
-              "h-8 w-8 rounded-md border border-dashed flex items-center justify-center transition-colors",
-              item.imageUrl 
-                ? "border-green-500 bg-green-50 text-green-600 hover:bg-green-100" 
-                : "border-border/50 bg-muted/30 text-muted-foreground hover:bg-muted/50",
-              isUploading && "opacity-50 cursor-wait"
-            )}
-          >
-            {isUploading ? (
-              <div className="h-3 w-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
-            ) : item.imageUrl ? (
-              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            ) : (
-              <ImagePlus className="h-3.5 w-3.5" />
-            )}
-          </button>
-        </TooltipTrigger>
-        <TooltipContent side="top">
-          {item.imageUrl ? "Foto adicionada - Clique para trocar" : "Adicionar foto"}
-        </TooltipContent>
-      </Tooltip>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        className="hidden"
-      />
-      
-      <Input
-        value={item.name}
-        onChange={(e) =>
-          onUpdate(groupIndex, itemIndex, {
-            name: capitalizeFirst(e.target.value),
-          })
-        }
-        placeholder="Nome do item"
-        className="flex-1 min-w-[120px] h-8 text-sm rounded-md border-border/50"
-      />
-      <div className="relative">
-        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">R$</span>
-        <Input
-          type="text"
-          inputMode="numeric"
-          value={displayPrice(item.price)}
-          onChange={(e) =>
-            handlePriceChange(groupIndex, itemIndex, e.target.value)
-          }
-          placeholder="0,00"
-          className="w-24 h-8 text-sm rounded-md border-border/50 text-right pl-7"
-        />
-      </div>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={() => onRemove(groupIndex, itemIndex)}
-        className="h-8 w-8 rounded-md hover:bg-destructive/10"
-      >
-        <X className="h-3.5 w-3.5 text-muted-foreground" />
-      </Button>
-    </div>
-  );
-}
 
 export default function ProductForm() {
   const [, navigate] = useLocation();
@@ -265,10 +56,9 @@ export default function ProductForm() {
   const [hasStock, setHasStock] = useState(false);
   const [stockQuantity, setStockQuantity] = useState<string>("");
   const [printerId, setPrinterId] = useState<string>("none"); // Setor/Impressora para este produto
-  const [complementGroups, setComplementGroups] = useState<ComplementGroup[]>([]);
 
-  // Preview selections state - para simular seleção do cliente
-  const [previewSelections, setPreviewSelections] = useState<Record<number, number[]>>({});
+
+
 
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -277,73 +67,16 @@ export default function ProductForm() {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // Complement image upload
-  const [uploadingComplementImage, setUploadingComplementImage] = useState<string | null>(null);
+
   
   // Flag para controlar se os dados já foram carregados inicialmente
   // Evita que o useEffect sobrescreva as alterações do usuário ao trocar de aba
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
-  const [initialComplementsLoaded, setInitialComplementsLoaded] = useState(false);
 
-  // Drag & Drop sensors for complement items
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 250,
-        tolerance: 5,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
 
-  // Handle drag end for complement items
-  const handleDragEnd = useCallback((event: DragEndEvent, groupIndex: number) => {
-    const { active, over } = event;
 
-    if (over && active.id !== over.id) {
-      setComplementGroups((groups) => {
-        const newGroups = [...groups];
-        const items = newGroups[groupIndex].items;
-        
-        // Find indices by uniqueId
-        const activeIndex = items.findIndex(item => item.uniqueId === active.id);
-        const overIndex = items.findIndex(item => item.uniqueId === over.id);
-        
-        if (activeIndex !== -1 && overIndex !== -1) {
-          newGroups[groupIndex] = {
-            ...newGroups[groupIndex],
-            items: arrayMove(items, activeIndex, overIndex),
-          };
-        }
-        return newGroups;
-      });
-    }
-  }, []);
 
-  // Handle drag end for complement groups
-  const handleGroupDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
 
-    if (over && active.id !== over.id) {
-      setComplementGroups((groups) => {
-        // Extract group index from id (format: "group-0", "group-1", etc.)
-        const activeIndex = parseInt(String(active.id).replace('group-', ''));
-        const overIndex = parseInt(String(over.id).replace('group-', ''));
-        
-        if (!isNaN(activeIndex) && !isNaN(overIndex)) {
-          return arrayMove(groups, activeIndex, overIndex);
-        }
-        return groups;
-      });
-    }
-  }, []);
 
   useEffect(() => {
     if (establishment) {
@@ -368,10 +101,7 @@ export default function ProductForm() {
     { enabled: isEditing && !!params.id, refetchOnMount: 'always', staleTime: 0 }
   );
 
-  const { data: existingGroups } = trpc.complement.listGroups.useQuery(
-    { productId: Number(params.id) },
-    { enabled: isEditing && !!params.id }
-  );
+
 
   const createMutation = trpc.product.create.useMutation({
     onSuccess: () => {
@@ -385,9 +115,7 @@ export default function ProductForm() {
   });
 
   const updateMutation = trpc.product.update.useMutation({
-    onSuccess: async (_, variables) => {
-      // Salvar complementos após atualizar o produto
-      await saveComplementGroups(variables.id);
+    onSuccess: async () => {
       toast.success("Produto atualizado com sucesso");
       // Permanecer na página de edição
     },
@@ -397,116 +125,9 @@ export default function ProductForm() {
     },
   });
 
-  // Mutations para complementos
-  const createGroupMutation = trpc.complement.createGroup.useMutation();
-  const updateGroupMutation = trpc.complement.updateGroup.useMutation();
-  const deleteGroupMutation = trpc.complement.deleteGroup.useMutation();
-  const createItemMutation = trpc.complement.createItem.useMutation();
-  const updateItemMutation = trpc.complement.updateItem.useMutation();
-  const deleteItemMutation = trpc.complement.deleteItem.useMutation();
 
-  // Função para salvar todos os grupos de complementos
-  const saveComplementGroups = async (productId: number) => {
-    try {
-      // Obter grupos existentes do servidor
-      const existingGroupIds = existingGroups?.map((g: any) => g.id) || [];
-      const currentGroupIds = complementGroups.filter(g => g.id).map(g => g.id!);
-      
-      // Deletar grupos que foram removidos
-      const groupsToDelete = existingGroupIds.filter((id: number) => !currentGroupIds.includes(id));
-      for (const groupId of groupsToDelete) {
-        await deleteGroupMutation.mutateAsync({ id: groupId });
-      }
 
-      // Mapa para armazenar os novos IDs dos grupos criados
-      const newGroupIds: Map<number, number> = new Map();
 
-      // Criar ou atualizar grupos
-      for (let groupIndex = 0; groupIndex < complementGroups.length; groupIndex++) {
-        const group = complementGroups[groupIndex];
-        let groupId = group.id;
-        
-        if (group.id) {
-          // Atualizar grupo existente
-          await updateGroupMutation.mutateAsync({
-            id: group.id,
-            name: group.name,
-            minQuantity: group.minQuantity,
-            maxQuantity: group.maxQuantity,
-            isRequired: group.isRequired,
-          });
-        } else {
-          // Criar novo grupo
-          const result = await createGroupMutation.mutateAsync({
-            productId,
-            name: group.name,
-            minQuantity: group.minQuantity,
-            maxQuantity: group.maxQuantity,
-            isRequired: group.isRequired,
-          });
-          groupId = result.id;
-          // Armazenar o novo ID para atualizar o estado local depois
-          newGroupIds.set(groupIndex, groupId);
-        }
-
-        if (groupId) {
-          // Obter itens existentes do grupo
-          const existingGroup = existingGroups?.find((g: any) => g.id === group.id);
-          const existingItemIds = existingGroup?.items?.map((i: any) => i.id) || [];
-          const currentItemIds = group.items.filter(i => i.id).map(i => i.id!);
-          
-          // Deletar itens que foram removidos
-          const itemsToDelete = existingItemIds.filter((id: number) => !currentItemIds.includes(id));
-          for (const itemId of itemsToDelete) {
-            await deleteItemMutation.mutateAsync({ id: itemId });
-          }
-
-          // Criar ou atualizar itens com sortOrder baseado na posição no array
-          for (let itemIndex = 0; itemIndex < group.items.length; itemIndex++) {
-            const item = group.items[itemIndex];
-            if (item.id) {
-              // Atualizar item existente com sortOrder
-              await updateItemMutation.mutateAsync({
-                id: item.id,
-                name: item.name,
-                price: parsePriceInput(item.price),
-                imageUrl: item.imageUrl,
-                sortOrder: itemIndex,
-              });
-            } else {
-              // Criar novo item com sortOrder
-              await createItemMutation.mutateAsync({
-                groupId,
-                name: item.name,
-                price: parsePriceInput(item.price),
-                imageUrl: item.imageUrl,
-                sortOrder: itemIndex,
-              });
-            }
-          }
-        }
-      }
-
-      // Atualizar o estado local com os novos IDs dos grupos criados
-      if (newGroupIds.size > 0) {
-        setComplementGroups(prevGroups => 
-          prevGroups.map((group, index) => {
-            const newId = newGroupIds.get(index);
-            if (newId) {
-              return { ...group, id: newId };
-            }
-            return group;
-          })
-        );
-      }
-
-      // Invalidar a query para recarregar os dados do servidor
-      await utils.complement.listGroups.invalidate({ productId });
-    } catch (error) {
-      console.error("Erro ao salvar complementos:", error);
-      toast.error("Erro ao salvar complementos");
-    }
-  };
 
   // Load product data when editing - apenas na primeira vez para campos editáveis
   useEffect(() => {
@@ -546,34 +167,7 @@ export default function ProductForm() {
     }
   }, [product?.stockQuantity, product?.hasStock]);
 
-  // Load existing complement groups when editing - apenas na primeira vez
-  useEffect(() => {
-    if (existingGroups && existingGroups.length > 0 && !initialComplementsLoaded) {
-      const formattedGroups = existingGroups.map((group: any) => ({
-        id: group.id,
-        name: group.name,
-        minQuantity: group.minQuantity,
-        maxQuantity: group.maxQuantity,
-        isRequired: group.isRequired,
-        items: group.items?.map((item: any) => {
-          // Normalizar preço do banco (formato americano "10.00") para formato brasileiro ("10,00")
-          // Isso garante que parsePriceInput sempre receba formato consistente ao salvar
-          const rawPrice = String(item.price);
-          const numPrice = parseFloat(rawPrice) || 0;
-          const normalizedPrice = numPrice.toFixed(2).replace('.', ',');
-          return {
-            id: item.id,
-            uniqueId: `existing-${item.id}`, // ID único para drag & drop
-            name: item.name,
-            price: normalizedPrice,
-            imageUrl: item.imageUrl || null,
-          };
-        }) || [],
-      }));
-      setComplementGroups(formattedGroups);
-      setInitialComplementsLoaded(true);
-    }
-  }, [existingGroups, initialComplementsLoaded]);
+
 
   // Nota: Removido bloqueio para usuários sem estabelecimento - agora a página de ProductForm mostra normalmente
 
@@ -678,117 +272,9 @@ export default function ProductForm() {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  // Upload de imagem de complemento
-  const handleComplementImageUpload = async (groupIndex: number, itemIndex: number, file: File) => {
-    const item = complementGroups[groupIndex]?.items[itemIndex];
-    if (!item) return;
-    
-    // Validar tipo de arquivo
-    if (!file.type.startsWith("image/")) {
-      toast.error("Por favor, selecione uma imagem");
-      return;
-    }
-    
-    // Validar tamanho (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Imagem muito grande. Máximo 5MB");
-      return;
-    }
-    
-    setUploadingComplementImage(item.uniqueId);
-    
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = (reader.result as string).split(",")[1];
-      uploadMutation.mutate(
-        {
-          base64,
-          mimeType: file.type,
-          folder: "complements",
-        },
-        {
-          onSuccess: (data) => {
-            updateComplementItem(groupIndex, itemIndex, { imageUrl: data.url });
-            toast.success("Foto do complemento adicionada");
-          },
-          onError: () => {
-            toast.error("Erro ao enviar foto do complemento");
-          },
-          onSettled: () => {
-            setUploadingComplementImage(null);
-          },
-        }
-      );
-    };
-    reader.onerror = () => {
-      toast.error("Erro ao ler arquivo");
-      setUploadingComplementImage(null);
-    };
-    reader.readAsDataURL(file);
-  };
 
-  const addComplementGroup = () => {
-    setComplementGroups([
-      ...complementGroups,
-      {
-        name: "",
-        minQuantity: 0,
-        maxQuantity: 1,
-        isRequired: false,
-        items: [],
-      },
-    ]);
-  };
 
-  const updateComplementGroup = (index: number, updates: Partial<ComplementGroup>) => {
-    const newGroups = [...complementGroups];
-    newGroups[index] = { ...newGroups[index], ...updates };
-    setComplementGroups(newGroups);
-  };
 
-  const removeComplementGroup = (index: number) => {
-    setComplementGroups(complementGroups.filter((_, i) => i !== index));
-  };
-
-  const addComplementItem = (groupIndex: number) => {
-    const newGroups = [...complementGroups];
-    newGroups[groupIndex].items.push({ 
-      uniqueId: `new-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      name: "", 
-      price: "0" 
-    });
-    setComplementGroups(newGroups);
-  };
-
-  const updateComplementItem = (
-    groupIndex: number,
-    itemIndex: number,
-    updates: Partial<ComplementItem>
-  ) => {
-    const newGroups = [...complementGroups];
-    newGroups[groupIndex].items[itemIndex] = {
-      ...newGroups[groupIndex].items[itemIndex],
-      ...updates,
-    };
-    setComplementGroups(newGroups);
-  };
-
-  const removeComplementItem = (groupIndex: number, itemIndex: number) => {
-    const newGroups = [...complementGroups];
-    newGroups[groupIndex].items = newGroups[groupIndex].items.filter(
-      (_, i) => i !== itemIndex
-    );
-    // Ajustar maxQuantity se for maior que a quantidade de itens restantes
-    const remainingItems = newGroups[groupIndex].items.length;
-    if (newGroups[groupIndex].maxQuantity > remainingItems && remainingItems > 0) {
-      newGroups[groupIndex].maxQuantity = remainingItems;
-    }
-    // Ajustar minQuantity se for maior que maxQuantity
-    if (newGroups[groupIndex].minQuantity > newGroups[groupIndex].maxQuantity) {
-      newGroups[groupIndex].minQuantity = newGroups[groupIndex].maxQuantity;
-    }
-    setComplementGroups(newGroups);
-  };
 
   const formatCurrency = (value: string | number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -797,45 +283,7 @@ export default function ProductForm() {
     }).format(Number(value) || 0);
   };
 
-  // Formata preço em centavos (500 -> 5,00)
-  const formatPriceInputLocal = (value: string): string => {
-    // Remove tudo que não é número
-    const numbers = value.replace(/\D/g, "");
-    // Converte para centavos e formata
-    const cents = parseInt(numbers || "0", 10);
-    const reais = cents / 100;
-    // Retorna com vírgula como separador decimal (formato brasileiro)
-    return reais.toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
 
-  // Formata para exibição no input (5.00 -> 5,00 ou 5,00 -> 5,00)
-  const displayPrice = (value: string): string => {
-    // Detecta se o valor já está no formato brasileiro (tem vírgula como separador decimal)
-    // ou no formato americano (tem ponto como separador decimal)
-    let num: number;
-    if (value.includes(',')) {
-      // Formato brasileiro: remove pontos de milhar, troca vírgula por ponto
-      const normalized = value.replace(/\./g, '').replace(',', '.');
-      num = parseFloat(normalized || '0');
-    } else {
-      // Formato americano ou número puro
-      num = parseFloat(value || '0');
-    }
-    return num.toFixed(2).replace(".", ",");
-  };
-
-  // Handler para input de preço com formatação em centavos
-  const handlePriceChange = (
-    groupIndex: number,
-    itemIndex: number,
-    inputValue: string
-  ) => {
-    const formatted = formatPriceInputLocal(inputValue);
-    updateComplementItem(groupIndex, itemIndex, { price: formatted });
-  };
 
   const isPending = createMutation.isPending || updateMutation.isPending;
 
@@ -922,7 +370,7 @@ export default function ProductForm() {
                         inputMode="numeric"
                         value={price}
                         onChange={(e) => {
-                          const formatted = formatPriceInputLocal(e.target.value);
+                          const formatted = formatPriceInput(e.target.value);
                           setPrice(formatted);
                         }}
                         placeholder="0,00"
@@ -1113,178 +561,6 @@ export default function ProductForm() {
                 </div>
             </SectionCard>
 
-            {/* Complements */}
-            <SectionCard 
-              title="Complementos / Adicionais"
-              actions={
-                <Button type="button" variant="outline" size="sm" onClick={addComplementGroup} className="rounded-lg border-border/50 hover:bg-accent text-xs h-8">
-                  <Plus className="h-3.5 w-3.5 mr-1" />
-                  Grupo
-                </Button>
-              }
-            >
-              {complementGroups.length === 0 ? (
-                <div className="text-center py-6">
-                  <div className="p-3 bg-muted/30 rounded-xl inline-block mb-2">
-                    <Plus className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Nenhum grupo de complementos adicionado
-                  </p>
-                </div>
-              ) : (
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleGroupDragEnd}
-                >
-                  <SortableContext
-                    items={complementGroups.map((_, idx) => `group-${idx}`)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <div className="space-y-3">
-                      {complementGroups.map((group, groupIndex) => (
-                        <SortableComplementGroup
-                          key={`group-${groupIndex}`}
-                          groupIndex={groupIndex}
-                        >
-                          {({ attributes, listeners }) => (
-                          <>
-                          <div className="flex items-start justify-between gap-3 flex-1">
-                            <div className="flex-1 space-y-3" style={{marginBottom: '6px'}}>
-                              <div className="flex items-center gap-2">
-                                <button
-                                  type="button"
-                                  {...attributes}
-                                  {...listeners}
-                                  className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded-md touch-none"
-                                >
-                                  <GripVertical className="h-4 w-4 text-muted-foreground/50" />
-                                </button>
-                                <Input
-                                  value={group.name}
-                                  onChange={(e) =>
-                                    updateComplementGroup(groupIndex, { name: capitalizeFirst(e.target.value) })
-                                  }
-                                  placeholder="Nome do grupo, ou pergunta (ex: Adicionais ou Deseja colher?)"
-                                  className="h-9 text-sm rounded-lg border-border/50 focus:ring-2 focus:ring-primary/20 flex-1"
-                                />
-                              </div>
-                              <div className="flex items-center gap-4 flex-wrap">
-                                <div className="flex items-center gap-1.5">
-                                  <Label className="text-[10px] font-semibold text-muted-foreground">Mín:</Label>
-                                  <Input
-                                    type="text"
-                                    inputMode="numeric"
-                                    value={group.minQuantity === 0 || group.minQuantity == null ? '' : String(group.minQuantity)}
-                                    onChange={(e) => {
-                                      const raw = e.target.value.replace(/[^0-9]/g, '');
-                                      if (raw === '') {
-                                        updateComplementGroup(groupIndex, { minQuantity: 0 });
-                                        return;
-                                      }
-                                      const val = Math.min(parseInt(raw, 10), 999);
-                                      updateComplementGroup(groupIndex, { minQuantity: val });
-                                    }}
-                                    placeholder="0"
-                                    className="w-14 h-8 text-sm rounded-md border-border/50"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-1.5">
-                                  <Label className="text-[10px] font-semibold text-muted-foreground">Máx:</Label>
-                                  <Input
-                                    type="text"
-                                    inputMode="numeric"
-                                    value={group.maxQuantity === 0 || group.maxQuantity == null ? '' : String(group.maxQuantity)}
-                                    onChange={(e) => {
-                                      const raw = e.target.value.replace(/[^0-9]/g, '');
-                                      if (raw === '') {
-                                        updateComplementGroup(groupIndex, { maxQuantity: 0 });
-                                        return;
-                                      }
-                                      const val = Math.min(parseInt(raw, 10), 999);
-                                      const maxAllowed = group.items.length || 1;
-                                      updateComplementGroup(groupIndex, { maxQuantity: Math.min(val, maxAllowed) });
-                                    }}
-                                    placeholder="0"
-                                    className="w-14 h-8 text-sm rounded-md border-border/50"
-                                  />
-                                </div>
-                                <label className="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
-                                  <input
-                                    type="checkbox"
-                                    checked={group.isRequired}
-                                    onChange={(e) =>
-                                      updateComplementGroup(groupIndex, {
-                                        isRequired: e.target.checked,
-                                      })
-                                    }
-                                    className="rounded h-3.5 w-3.5 border-border/50"
-                                  />
-                                  Obrigatório
-                                </label>
-                              </div>
-                            </div>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => removeComplementGroup(groupIndex)}
-                              className="rounded-lg h-8 w-8 hover:bg-destructive/10"
-                            >
-                              <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                            </Button>
-                          </div>
-
-                      {/* Items */}
-                      <DndContext
-                        sensors={sensors}
-                        collisionDetection={closestCenter}
-                        onDragEnd={(event) => handleDragEnd(event, groupIndex)}
-                      >
-                        <SortableContext
-                          items={group.items.map((item) => item.uniqueId)}
-                          strategy={verticalListSortingStrategy}
-                        >
-                          <div className="space-y-2 min-w-[400px]">
-                            {group.items.map((item, itemIndex) => (
-                              <SortableComplementItem
-                                key={item.uniqueId}
-                                item={item}
-                                itemIndex={itemIndex}
-                                groupIndex={groupIndex}
-                                onUpdate={updateComplementItem}
-                                onRemove={removeComplementItem}
-                                displayPrice={displayPrice}
-                                handlePriceChange={handlePriceChange}
-                                onImageUpload={handleComplementImageUpload}
-                                uploadingImage={uploadingComplementImage}
-                              />
-                            ))}
-                          </div>
-                        </SortableContext>
-                      </DndContext>
-                          <div className="mt-2">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => addComplementItem(groupIndex)}
-                              className="w-full h-8 text-xs rounded-lg border border-dashed border-border/50 hover:border-primary hover:bg-primary/5"
-                            >
-                              <Plus className="h-3.5 w-3.5 mr-1.5" />
-                              Adicionar item
-                            </Button>
-                          </div>
-                          </>
-                          )}
-                        </SortableComplementGroup>
-                      ))}
-                    </div>
-                  </SortableContext>
-                </DndContext>
-              )}
-            </SectionCard>
           </div>
 
           {/* Preview */}
@@ -1327,128 +603,7 @@ export default function ProductForm() {
                       </p>
                     )}
 
-                    {/* Preview dos Complementos com Interação */}
-                    {complementGroups.length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-border/50 space-y-4 max-h-[400px] overflow-y-auto pr-1">
-                        {complementGroups.map((group, groupIndex) => {
-                          const selectedItems = previewSelections[groupIndex] || [];
-                          const isRadio = group.maxQuantity === 1;
-                          
-                          const handleItemClick = (itemIndex: number) => {
-                            setPreviewSelections(prev => {
-                              const current = prev[groupIndex] || [];
-                              if (isRadio) {
-                                // Radio: seleciona apenas um
-                                return { ...prev, [groupIndex]: [itemIndex] };
-                              } else {
-                                // Checkbox: toggle
-                                if (current.includes(itemIndex)) {
-                                  return { ...prev, [groupIndex]: current.filter(i => i !== itemIndex) };
-                                } else if (current.length < group.maxQuantity) {
-                                  return { ...prev, [groupIndex]: [...current, itemIndex] };
-                                }
-                                return prev;
-                              }
-                            });
-                          };
-                          
-                          return (
-                            <div key={groupIndex} className="space-y-2">
-                              <div className="flex items-center justify-between">
-                                <h5 className="font-semibold text-sm">
-                                  {group.name || "Grupo sem nome"}
-                                </h5>
-                                {group.isRequired && (
-                                  <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">
-                                    Obrigatório
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-[10px] text-muted-foreground">
-                                {group.isRequired 
-                                  ? `Escolha ${group.minQuantity === group.maxQuantity ? group.minQuantity : `${group.minQuantity} a ${group.maxQuantity}`}` 
-                                  : `Máx: ${group.maxQuantity}`}
-                                {selectedItems.length > 0 && ` • ${selectedItems.length} selecionado(s)`}
-                              </p>
-                              <div className="space-y-1">
-                                {group.items.map((item, itemIndex) => {
-                                  const isSelected = selectedItems.includes(itemIndex);
-                                  return (
-                                    <div
-                                      key={itemIndex}
-                                      onClick={() => handleItemClick(itemIndex)}
-                                      className={`flex items-center justify-between py-1.5 px-2 rounded-md cursor-pointer transition-all ${
-                                        isSelected 
-                                          ? 'bg-primary/10 border border-primary/30' 
-                                          : 'bg-muted/30 hover:bg-muted/50 border border-transparent'
-                                      }`}
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        <div className={`w-4 h-4 rounded-${isRadio ? 'full' : 'sm'} border-2 flex items-center justify-center transition-colors ${
-                                          isSelected 
-                                            ? 'border-primary bg-primary' 
-                                            : 'border-muted-foreground/30'
-                                        }`}>
-                                          {isSelected && (
-                                            <div className={`${isRadio ? 'w-2 h-2 rounded-full' : 'w-2.5 h-2.5'} bg-card`} 
-                                              style={!isRadio ? { clipPath: 'polygon(20% 50%, 40% 70%, 80% 30%, 85% 35%, 40% 80%, 15% 55%)' } : {}}
-                                            />
-                                          )}
-                                        </div>
-                                        <span className={`text-xs ${isSelected ? 'font-medium' : ''}`}>
-                                          {item.name || "Item sem nome"}
-                                        </span>
-                                      </div>
-                                      {parseFloat(item.price || "0") > 0 && (
-                                        <span className={`text-xs ${isSelected ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
-                                          + R$ {parseFloat(item.price).toFixed(2).replace('.', ',')}
-                                        </span>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                                {group.items.length === 0 && (
-                                  <p className="text-[10px] text-muted-foreground/50 italic py-1">
-                                    Nenhum item adicionado
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
 
-                    {/* Total Dinâmico */}
-                    {complementGroups.length > 0 && (
-                      <div className="mt-4 pt-3 border-t border-border/50">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-muted-foreground">Total estimado:</span>
-                          <span className="text-lg font-bold text-primary">
-                            {formatCurrency(
-                              (parseFloat(price.replace(',', '.')) || 0) + 
-                              Object.entries(previewSelections).reduce((total, [groupIdx, itemIndices]) => {
-                                const group = complementGroups[parseInt(groupIdx)];
-                                if (!group) return total;
-                                return total + itemIndices.reduce((sum, itemIdx) => {
-                                  const item = group.items[itemIdx];
-                                  return sum + (item ? parseFloat(item.price || "0") : 0);
-                                }, 0);
-                              }, 0)
-                            )}
-                          </span>
-                        </div>
-                        {Object.keys(previewSelections).length > 0 && (
-                          <button
-                            type="button"
-                            onClick={() => setPreviewSelections({})}
-                            className="text-[10px] text-muted-foreground hover:text-primary mt-1 underline"
-                          >
-                            Limpar seleções
-                          </button>
-                        )}
-                      </div>
-                    )}
 
                 </div>
               </SectionCard>
