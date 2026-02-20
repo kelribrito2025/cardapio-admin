@@ -1284,19 +1284,27 @@ export default function InlineComplementsDropdown({
                       <Plus className="h-4 w-4" />
                       Adicionar item
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAddingExclusiveToGroup(group.id);
-                        setAddingItemToGroup(null);
-                        setNewItemName("");
-                        setNewItemPrice("0,00");
-                      }}
-                      className="flex items-center justify-center gap-1.5 text-xs font-medium text-purple-600 hover:text-purple-700 py-2 px-4 rounded-lg border-2 border-dashed border-purple-300 hover:border-purple-400 hover:bg-purple-50 flex-1 transition-all"
-                    >
-                      <Package className="h-4 w-4" />
-                      Adicionar exclusivo
-                    </button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAddingExclusiveToGroup(group.id);
+                            setAddingItemToGroup(null);
+                            setNewItemName("");
+                            setNewItemPrice("0,00");
+                          }}
+                          className="flex items-center justify-center gap-1.5 text-xs font-medium text-purple-600 hover:text-purple-700 py-2 px-4 rounded-lg border-2 border-dashed border-purple-300 hover:border-purple-400 hover:bg-purple-50 flex-1 transition-all"
+                        >
+                          <Package className="h-4 w-4" />
+                          Adicionar exclusivo
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Adiciona um item que só aparecerá neste produto</p>
+                        <p className="text-xs text-muted-foreground">Não será exibido nos outros produtos que usam este grupo</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 )}
               </div>
