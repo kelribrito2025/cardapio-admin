@@ -473,32 +473,7 @@ function SortableInlineItem({
                 </Badge>
               )}
 
-              {isCustomized && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className={cn(
-                      "hidden md:flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border flex-shrink-0",
-                      "bg-amber-100 text-amber-700 border-amber-300",
-                      !item.isActive && "opacity-50"
-                    )} style={{height: '28px'}}>
-                      <Pencil className="h-3 w-3" />
-                      Personalizado
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">Preço diferente do template global</p>
-                    <p className="text-xs text-muted-foreground">Template: R$ {parseFloat(globalTemplatePrice!).toFixed(2).replace('.', ',')}</p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
 
-              {/* Mobile: show personalizado badge inline */}
-              {isCustomized && (
-                <span className={cn("flex md:hidden items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border bg-amber-100 text-amber-700 border-amber-300 flex-shrink-0", !item.isActive && "opacity-50")}>
-                  <Pencil className="h-3 w-3" />
-                  Personalizado
-                </span>
-              )}
             </div>
           )}
         </div>
@@ -543,21 +518,60 @@ function SortableInlineItem({
 
         {/* Price - editable inline with currency mask (hidden if free) */}
         {!isFree && (
-          <div className={cn("relative flex-shrink-0", !item.isActive && "opacity-50")}>
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium pointer-events-none">
-              R$
-            </span>
-            <input
-              type="text"
-              inputMode="numeric"
-              value={formatPriceBR(priceCents)}
-              onChange={handlePriceChange}
-              onBlur={handlePriceBlur}
-              onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-[90px] h-7 pl-7 pr-2 text-sm text-right font-semibold rounded-lg border border-border/60 bg-muted/30 text-foreground focus:outline-none focus:ring-2 focus:ring-border/50 focus:border-border transition-all"
-            />
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className={cn(
+                "relative flex-shrink-0 flex items-center gap-0",
+                !item.isActive && "opacity-50"
+              )}>
+                {/* Personalizado indicator wrapping the price field */}
+                {isCustomized && (
+                  <div className="flex items-center gap-0.5 bg-amber-100 border border-amber-300 rounded-lg pl-1.5 pr-0 py-0 h-7">
+                    <Pencil className="h-3 w-3 text-amber-600 flex-shrink-0" />
+                    <div className="relative">
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium pointer-events-none">
+                        R$
+                      </span>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={formatPriceBR(priceCents)}
+                        onChange={handlePriceChange}
+                        onBlur={handlePriceBlur}
+                        onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-[90px] h-[26px] pl-7 pr-2 text-sm text-right font-semibold rounded-md border-0 bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-amber-300 transition-all"
+                      />
+                    </div>
+                  </div>
+                )}
+                {/* Normal price field (no customization) */}
+                {!isCustomized && (
+                  <div className="relative">
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium pointer-events-none">
+                      R$
+                    </span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={formatPriceBR(priceCents)}
+                      onChange={handlePriceChange}
+                      onBlur={handlePriceBlur}
+                      onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-[90px] h-7 pl-7 pr-2 text-sm text-right font-semibold rounded-lg border border-border/60 bg-muted/30 text-foreground focus:outline-none focus:ring-2 focus:ring-border/50 focus:border-border transition-all"
+                    />
+                  </div>
+                )}
+              </div>
+            </TooltipTrigger>
+            {isCustomized && (
+              <TooltipContent>
+                <p className="text-xs">Preço diferente do template global</p>
+                <p className="text-xs text-muted-foreground">Template: R$ {parseFloat(globalTemplatePrice!).toFixed(2).replace('.', ',')}</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
         )}
 
         {/* Desktop: individual action buttons */}

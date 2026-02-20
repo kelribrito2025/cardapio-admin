@@ -7295,3 +7295,4 @@
 - [x] Adicionar tooltip com preço template ao hover no badge
 - [x] Escrever testes unitários (23 testes passando)
 - [x] Ajustar estilo do badge "Personalizado" para seguir o mesmo modelo visual do badge "GRÁTIS"
+- [x] Mover badge "Personalizado" para envolver a caixa de preço (atrás do campo de preço com ícones)
