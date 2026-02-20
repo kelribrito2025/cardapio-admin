@@ -1064,6 +1064,13 @@ export const appRouter = router({
         return { success: true };
       }),
     
+    // Get global template prices for comparison ("Personalizado" badge)
+    getGlobalTemplatePrices: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getGlobalTemplatePrices(input.establishmentId);
+      }),
+    
     // Add a complement item to all groups with a specific name
     addItemToGroupByName: protectedProcedure
       .input(z.object({

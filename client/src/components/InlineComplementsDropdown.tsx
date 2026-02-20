@@ -291,6 +291,7 @@ function SortableInlineItem({
   isExpanded,
   onToggleExpand,
   isUpdating,
+  globalTemplatePrice,
 }: {
   item: any;
   groupId: number;
@@ -301,6 +302,7 @@ function SortableInlineItem({
   isExpanded: boolean;
   onToggleExpand: () => void;
   isUpdating: boolean;
+  globalTemplatePrice?: string | null;
 }) {
   const {
     attributes,
@@ -329,6 +331,14 @@ function SortableInlineItem({
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(item.name);
   const isFree = item.priceMode === "free";
+
+  // Check if this item's price differs from the global template price
+  const isCustomized = (() => {
+    if (!globalTemplatePrice) return false;
+    const currentPrice = parseFloat(String(item.price || "0"));
+    const templatePrice = parseFloat(globalTemplatePrice);
+    return Math.abs(currentPrice - templatePrice) >= 0.01;
+  })();
 
   useEffect(() => {
     setPriceCents(item.price ? priceToCents(item.price) : 0);
@@ -461,6 +471,23 @@ function SortableInlineItem({
                   <Clock className="h-2.5 w-2.5 mr-0.5" />
                   Horário
                 </Badge>
+              )}
+
+              {isCustomized && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <Badge variant="secondary" className="bg-amber-100 text-amber-700 border-amber-200 text-[9px] px-1 py-0 h-4 flex-shrink-0">
+                        <Pencil className="h-2.5 w-2.5 mr-0.5" />
+                        Personalizado
+                      </Badge>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">Preço diferente do template global</p>
+                    <p className="text-xs text-muted-foreground">Template: R$ {parseFloat(globalTemplatePrice!).toFixed(2).replace('.', ',')}</p>
+                  </TooltipContent>
+                </Tooltip>
               )}
             </div>
           )}
@@ -695,6 +722,12 @@ export default function InlineComplementsDropdown({
   const { data: groups, isLoading, refetch } = trpc.complement.listGroups.useQuery(
     { productId },
     { enabled: isOpen }
+  );
+
+  // Fetch global template prices for "Personalizado" badge comparison
+  const { data: globalTemplatePrices } = trpc.complement.getGlobalTemplatePrices.useQuery(
+    { establishmentId: establishmentId || 0 },
+    { enabled: isOpen && !!establishmentId }
   );
 
   // Mutations
@@ -1026,6 +1059,13 @@ export default function InlineComplementsDropdown({
                             setExpandedItemId((prev) => (prev === item.id ? null : item.id))
                           }
                           isUpdating={updateItemMutation.isPending}
+                          globalTemplatePrice={
+                            globalTemplatePrices
+                              ? globalTemplatePrices[
+                                  `${group.name.toLowerCase().trim()}::${item.name.toLowerCase().trim()}`
+                                ] ?? null
+                              : null
+                          }
                         />
                       ))}
                     </div>

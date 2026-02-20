@@ -7285,3 +7285,12 @@
 - [x] Validação: Risco de duplicação descontrolada de complementos
 - [x] Remover card "Complementos / Adicionais" da página de edição do produto (ProductForm) - gestão de complementos apenas via /complementos ou inline no catálogo
 - [x] Feature: Aviso de impacto na gestão global (/complementos) - exibir "Esta ação afetará X produtos" antes de confirmar edição/exclusão
+- [ ] Feature: Badge "Personalizado" no catálogo quando complemento tem preço diferente do template global (/complementos)
+
+## Badge "Personalizado" no Catálogo
+- [x] Criar query getGlobalTemplatePrices no backend (calcula preço moda por grupo+item)
+- [x] Criar procedure tRPC complement.getGlobalTemplatePrices
+- [x] Adicionar prop globalTemplatePrice ao SortableInlineItem
+- [x] Implementar badge "Personalizado" com cor âmbar e ícone de lápis
+- [x] Adicionar tooltip com preço template ao hover no badge
+- [x] Escrever testes unitários (23 testes passando)

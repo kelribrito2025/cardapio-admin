@@ -1374,6 +1374,80 @@ export async function addComplementItemToGroupByName(
   return groups.length;
 }
 
+// Get global template prices for complements by establishment
+// Returns a map: { "groupName::itemName" => templatePrice }
+// The template price is the most common (mode) price across all instances of the same complement
+export async function getGlobalTemplatePrices(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return {};
+  
+  // Get all products for this establishment
+  const establishmentProducts = await db.select({ id: products.id })
+    .from(products)
+    .where(eq(products.establishmentId, establishmentId));
+  
+  if (establishmentProducts.length === 0) return {};
+  
+  const productIds = establishmentProducts.map(p => p.id);
+  
+  // Get all complement groups for these products
+  const allGroups = await db.select()
+    .from(complementGroups)
+    .where(inArray(complementGroups.productId, productIds));
+  
+  if (allGroups.length === 0) return {};
+  
+  const allGroupIds = allGroups.map(g => g.id);
+  
+  // Get all items
+  const allItems = await db.select()
+    .from(complementItems)
+    .where(inArray(complementItems.groupId, allGroupIds));
+  
+  // Build a map: groupName::itemName => array of prices
+  const priceMap = new Map<string, string[]>();
+  
+  for (const item of allItems) {
+    const group = allGroups.find(g => g.id === item.groupId);
+    if (!group) continue;
+    
+    const key = `${group.name.toLowerCase().trim()}::${item.name.toLowerCase().trim()}`;
+    if (!priceMap.has(key)) {
+      priceMap.set(key, []);
+    }
+    priceMap.get(key)!.push(item.price);
+  }
+  
+  // For each key, find the most common price (mode)
+  const result: Record<string, string> = {};
+  const priceEntries = Array.from(priceMap.entries());
+  for (const [key, prices] of priceEntries) {
+    if (prices.length <= 1) {
+      // Only one instance, it IS the template
+      result[key] = prices[0];
+      continue;
+    }
+    
+    // Find mode (most frequent price)
+    const freq = new Map<string, number>();
+    for (const p of prices) {
+      freq.set(p, (freq.get(p) || 0) + 1);
+    }
+    let modePrice = prices[0];
+    let maxCount = 0;
+    const freqEntries = Array.from(freq.entries());
+    for (const [p, count] of freqEntries) {
+      if (count > maxCount) {
+        maxCount = count;
+        modePrice = p;
+      }
+    }
+    result[key] = modePrice;
+  }
+  
+  return result;
+}
+
 // ============ ORDER FUNCTIONS ============
 export async function getOrdersByEstablishment(
   establishmentId: number,
