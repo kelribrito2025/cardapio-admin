@@ -7312,3 +7312,4 @@
 - [x] Corrigir campo de preço: ao digitar sobre 0,00, deve substituir o valor em vez de concatenar (ex: 0,00300)
 - [x] Baixar fotos dos produtos do Mindi e fazer upload para S3, atualizar registros no banco de dados (estabelecimento 150004)
 - [x] Remover badge "Novo" do menu lateral (sidebar)
+- [x] Corrigir caracteres Unicode escapados nas abas Impressora e API da página de Configurações

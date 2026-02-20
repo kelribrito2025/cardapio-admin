@@ -1234,10 +1234,10 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Key className="h-5 w-5" />
-            Integra\u00e7\u00e3o com App de Impressora
+            Integração com App de Impressora
           </CardTitle>
           <CardDescription>
-            Gere uma API Key para conectar um app de impressora externo ao sistema via SSE (Server-Sent Events). O app receber\u00e1 eventos de novos pedidos em tempo real, sem precisar de login.
+            Gere uma API Key para conectar um app de impressora externo ao sistema via SSE (Server-Sent Events). O app receberá eventos de novos pedidos em tempo real, sem precisar de login.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -1300,17 +1300,17 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
               
               {/* Eventos SSE */}
               <div className="space-y-2">
-                <Label className="text-xs font-medium text-muted-foreground">Eventos SSE Dispon\u00edveis</Label>
+                <Label className="text-xs font-medium text-muted-foreground">Eventos SSE Disponíveis</Label>
                 <div className="bg-muted rounded p-3 space-y-1 text-xs font-mono">
-                  <p><span className="text-green-600 font-bold">connected</span> - Conex\u00e3o estabelecida</p>
+                  <p><span className="text-green-600 font-bold">connected</span> - Conexão estabelecida</p>
                   <p><span className="text-blue-600 font-bold">new_order</span> - Novo pedido recebido</p>
                   <p><span className="text-purple-600 font-bold">print_order</span> - Pedido para imprimir</p>
-                  <p><span className="text-orange-600 font-bold">order_update</span> - Atualiza\u00e7\u00e3o de pedido</p>
+                  <p><span className="text-orange-600 font-bold">order_update</span> - Atualização de pedido</p>
                   <p><span className="text-gray-500 font-bold">heartbeat</span> - Keep-alive (a cada 30s)</p>
                 </div>
               </div>
               
-              {/* A\u00e7\u00f5es */}
+              {/* Ações */}
               <div className="flex gap-3 pt-2">
                 <Button
                   variant="outline"
@@ -1323,7 +1323,7 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
                 <Button
                   variant="destructive"
                   onClick={() => {
-                    if (confirm('Tem certeza? O app conectado perder\u00e1 acesso imediatamente.')) {
+                    if (confirm('Tem certeza? O app conectado perderá acesso imediatamente.')) {
                       revokeMutation.mutate({ establishmentId });
                     }
                   }}
@@ -1338,10 +1338,10 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
         </CardContent>
       </Card>
       
-      {/* Documenta\u00e7\u00e3o r\u00e1pida */}
+      {/* Documentação rápida */}
       <Card className="shadow-none">
         <CardHeader>
-          <CardTitle className="text-sm">Documenta\u00e7\u00e3o R\u00e1pida</CardTitle>
+          <CardTitle className="text-sm">Documentação Rápida</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-xs text-muted-foreground">
           <p><strong>1.</strong> Gere uma API Key acima e copie a URL SSE.</p>
@@ -1349,7 +1349,7 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
           <p><strong>3.</strong> Escute o evento <code className="bg-muted px-1 rounded">print_order</code> para receber dados do pedido.</p>
           <p><strong>4.</strong> Use <code className="bg-muted px-1 rounded">/api/printer/receipt/{'{'}&lt;orderId&gt;{'}'}?key={'{'}&lt;apiKey&gt;{'}'}</code> para buscar o HTML do recibo.</p>
           <p><strong>5.</strong> Adicione <code className="bg-muted px-1 rounded">&format=text</code> na URL para receber em formato texto puro (ESC/POS).</p>
-          <p className="pt-2 text-amber-600">\u26a0\ufe0f Mantenha a API Key em segredo. Qualquer pessoa com a key pode receber os pedidos do seu estabelecimento.</p>
+          <p className="pt-2 text-amber-600">⚠️ Mantenha a API Key em segredo. Qualquer pessoa com a key pode receber os pedidos do seu estabelecimento.</p>
         </CardContent>
       </Card>
     </div>
