@@ -314,6 +314,7 @@ function SortableComplementItem({
   isExpanded,
   onToggleExpand,
   isUpdating,
+  productCount,
 }: {
   item: any;
   establishmentId: number;
@@ -323,7 +324,10 @@ function SortableComplementItem({
   isExpanded: boolean;
   onToggleExpand: () => void;
   isUpdating: boolean;
+  productCount: number;
 }) {
+  const [deleteItemDialogOpen, setDeleteItemDialogOpen] = useState(false);
+  const [toggleItemDialogOpen, setToggleItemDialogOpen] = useState(false);
   const {
     attributes,
     listeners,
@@ -383,6 +387,7 @@ function SortableComplementItem({
   }
 
   return (
+    <>
     <div
       ref={setNodeRef}
       style={style}
@@ -551,7 +556,7 @@ function SortableComplementItem({
             <TooltipTrigger asChild>
               <button
                 type="button"
-                onClick={() => onToggleActive(item.name, !item.isActive)}
+                onClick={() => setToggleItemDialogOpen(true)}
                 className={cn(
                   "p-1 rounded-md transition-colors",
                   item.isActive
@@ -570,7 +575,7 @@ function SortableComplementItem({
             <TooltipTrigger asChild>
               <button
                 type="button"
-                onClick={() => onDeleteByName(item.name)}
+                onClick={() => setDeleteItemDialogOpen(true)}
                 className={cn(
                   "p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors",
                   !item.isActive && "opacity-50"
@@ -649,7 +654,7 @@ function SortableComplementItem({
                   </>
                 )}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onToggleActive(item.name, !item.isActive)}>
+              <DropdownMenuItem onClick={() => setToggleItemDialogOpen(true)}>
                 {item.isActive ? (
                   <>
                     <Pause className="h-3.5 w-3.5 mr-2" />
@@ -664,7 +669,7 @@ function SortableComplementItem({
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => onDeleteByName(item.name)}
+                onClick={() => setDeleteItemDialogOpen(true)}
                 className="text-destructive focus:text-destructive"
               >
                 <Trash2 className="h-3.5 w-3.5 mr-2" />
@@ -686,6 +691,66 @@ function SortableComplementItem({
         </div>
       )}
     </div>
+
+      {/* Delete Item Confirmation Dialog */}
+      <AlertDialog open={deleteItemDialogOpen} onOpenChange={setDeleteItemDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              Excluir "{item.name}"?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação irá excluir o complemento <strong>"{item.name}"</strong> de <strong>{productCount} produto(s)</strong>. Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onDeleteByName(item.name);
+                setDeleteItemDialogOpen(false);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Excluir de todos os produtos
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Toggle Item Active Confirmation Dialog */}
+      <AlertDialog open={toggleItemDialogOpen} onOpenChange={setToggleItemDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              {item.isActive ? (
+                <><Pause className="h-5 w-5 text-orange-500" /> Pausar "{item.name}"?</>
+              ) : (
+                <><Play className="h-5 w-5 text-emerald-500" /> Ativar "{item.name}"?</>
+              )}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {item.isActive
+                ? <>Esta ação irá <strong>pausar</strong> o complemento <strong>"{item.name}"</strong> em <strong>{productCount} produto(s)</strong>. Ele ficará indisponível para os clientes.</>
+                : <>Esta ação irá <strong>ativar</strong> o complemento <strong>"{item.name}"</strong> em <strong>{productCount} produto(s)</strong>. Ele ficará disponível para os clientes.</>}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onToggleActive(item.name, !item.isActive);
+                setToggleItemDialogOpen(false);
+              }}
+              className={item.isActive ? "bg-orange-500 text-white hover:bg-orange-600" : "bg-emerald-500 text-white hover:bg-emerald-600"}
+            >
+              {item.isActive ? "Pausar em todos" : "Ativar em todos"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 
@@ -709,6 +774,7 @@ function GroupCard({
   const [newItemName, setNewItemName] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("0,00");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [toggleGroupDialogOpen, setToggleGroupDialogOpen] = useState(false);
   const itemNameInputRef = useRef<HTMLInputElement>(null);
 
   // Mutations
@@ -1029,7 +1095,7 @@ function GroupCard({
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleToggleGroupActive();
+                      setToggleGroupDialogOpen(true);
                     }}
                     disabled={toggleGroupActiveMutation.isPending}
                   >
@@ -1047,7 +1113,7 @@ function GroupCard({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem className="sm:hidden" onClick={handleToggleGroupActive}>
+                  <DropdownMenuItem className="sm:hidden" onClick={() => setToggleGroupDialogOpen(true)}>
                     {group.isActive ? (
                       <>
                         <Pause className="h-4 w-4 mr-2" />
@@ -1191,6 +1257,7 @@ function GroupCard({
                             setExpandedItemId((prev) => (prev === item.id ? null : item.id))
                           }
                           isUpdating={updateItemMutation.isPending || updateGlobalMutation.isPending}
+                          productCount={group.productCount || 0}
                         />
                       ))}
                     </div>
@@ -1295,6 +1362,38 @@ function GroupCard({
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Excluir grupo
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Toggle Group Active Confirmation Dialog */}
+      <AlertDialog open={toggleGroupDialogOpen} onOpenChange={setToggleGroupDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              {group.isActive ? (
+                <><Pause className="h-5 w-5 text-orange-500" /> Pausar grupo "{group.name}"?</>
+              ) : (
+                <><Play className="h-5 w-5 text-emerald-500" /> Ativar grupo "{group.name}"?</>
+              )}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {group.isActive
+                ? <>Esta ação irá <strong>pausar</strong> o grupo <strong>"{group.name}"</strong> e todos os seus complementos em <strong>{group.productCount} produto(s)</strong>. O grupo ficará indisponível para os clientes.</>
+                : <>Esta ação irá <strong>ativar</strong> o grupo <strong>"{group.name}"</strong> em <strong>{group.productCount} produto(s)</strong>. O grupo ficará disponível para os clientes.</>}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                handleToggleGroupActive();
+                setToggleGroupDialogOpen(false);
+              }}
+              className={group.isActive ? "bg-orange-500 text-white hover:bg-orange-600" : "bg-emerald-500 text-white hover:bg-emerald-600"}
+            >
+              {group.isActive ? "Pausar em todos os produtos" : "Ativar em todos os produtos"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

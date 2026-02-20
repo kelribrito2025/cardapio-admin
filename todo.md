@@ -7284,3 +7284,4 @@
 - [x] Validação: Exclusão de complemento de um grupo não impacta outros grupos
 - [x] Validação: Risco de duplicação descontrolada de complementos
 - [x] Remover card "Complementos / Adicionais" da página de edição do produto (ProductForm) - gestão de complementos apenas via /complementos ou inline no catálogo
+- [x] Feature: Aviso de impacto na gestão global (/complementos) - exibir "Esta ação afetará X produtos" antes de confirmar edição/exclusão
