@@ -475,10 +475,20 @@ function SortableInlineItem({
               )}
 
               {item.exclusiveProductId && (
-                <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200 text-[9px] px-1 py-0 h-4 flex-shrink-0">
-                  <Package className="h-2.5 w-2.5 mr-0.5" />
-                  Exclusivo
-                </Badge>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200 text-[9px] px-1 py-0 h-4 flex-shrink-0 cursor-help">
+                        <Package className="h-2.5 w-2.5 mr-0.5" />
+                        Exclusivo
+                      </Badge>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">Este item só aparece neste produto</p>
+                    <p className="text-xs text-muted-foreground">Não será exibido nos outros produtos que usam este grupo</p>
+                  </TooltipContent>
+                </Tooltip>
               )}
 
             </div>

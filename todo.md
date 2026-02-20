@@ -7305,3 +7305,4 @@
 - [x] Mover botão "Adicionar item exclusivo" da /complementos para /catalogo (InlineComplementsDropdown)
 - [x] Remover botão "Adicionar item exclusivo" da /complementos
 - [x] Escrever testes unitários (30 testes passando)
+- [x] Adicionar tooltip no badge "Exclusivo" informando que o item só aparece neste produto

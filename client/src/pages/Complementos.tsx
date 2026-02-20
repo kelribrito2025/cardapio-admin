@@ -489,7 +489,8 @@ function SortableComplementItem({
                     </span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Só aparece em: <strong>{item.exclusiveProductName}</strong></p>
+                    <p className="text-xs">Este item só aparece em: <strong>{item.exclusiveProductName}</strong></p>
+                    <p className="text-xs text-muted-foreground">Não será exibido nos outros produtos que usam este grupo</p>
                   </TooltipContent>
                 </Tooltip>
               )}
