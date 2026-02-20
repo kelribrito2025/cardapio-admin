@@ -28,6 +28,7 @@ function generateReceiptHTML(
     return `R$ ${num.toFixed(2).replace('.', ',')}`;
   };
   
+  const timezone = establishment?.timezone || 'America/Sao_Paulo';
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
     return d.toLocaleString('pt-BR', { 
@@ -35,7 +36,8 @@ function generateReceiptHTML(
       month: '2-digit', 
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone: timezone
     });
   };
   
@@ -631,6 +633,7 @@ function generateSectorReceiptHTML(
     return `R$ ${num.toFixed(2).replace('.', ',')}`;
   };
   
+  const timezone = establishment?.timezone || 'America/Sao_Paulo';
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
     return d.toLocaleString('pt-BR', { 
@@ -638,7 +641,8 @@ function generateSectorReceiptHTML(
       month: '2-digit', 
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone: timezone
     });
   };
   
@@ -861,6 +865,7 @@ function generateTabReceiptHTML(
     return `R$ ${num.toFixed(2).replace('.', ',')}`;
   };
   
+  const timezone = establishment?.timezone || 'America/Sao_Paulo';
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
     return d.toLocaleString('pt-BR', { 
@@ -868,7 +873,8 @@ function generateTabReceiptHTML(
       month: '2-digit', 
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone: timezone
     });
   };
   

@@ -401,6 +401,7 @@ export class EscPosGenerator {
       return `R$ ${num.toFixed(2).replace('.', ',')}`;
     };
 
+    const timezone = establishment?.timezone || 'America/Sao_Paulo';
     const formatDate = (date: Date | string) => {
       const d = new Date(date);
       return d.toLocaleString('pt-BR', {
@@ -408,7 +409,8 @@ export class EscPosGenerator {
         month: '2-digit',
         year: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        timeZone: timezone
       });
     };
 
@@ -697,6 +699,7 @@ export function generatePlainTextReceipt(
     return `R$ ${num.toFixed(2).replace('.', ',')}`;
   };
 
+  const timezone = establishment?.timezone || 'America/Sao_Paulo';
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
     return d.toLocaleString('pt-BR', {
@@ -704,7 +707,8 @@ export function generatePlainTextReceipt(
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone: timezone
     });
   };
 

@@ -61,14 +61,15 @@ function formatCurrency(value: number | string | null): string {
 /**
  * Formata data para exibição
  */
-function formatDate(date: Date | string): string {
+function formatDate(date: Date | string, timezone?: string): string {
   const d = new Date(date);
   return d.toLocaleString('pt-BR', { 
     day: '2-digit', 
     month: '2-digit', 
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    timeZone: timezone || 'America/Sao_Paulo'
   });
 }
 
@@ -111,7 +112,7 @@ function generateReceiptText(
   lines.push('');
   lines.push(doubleDivider());
   lines.push(center(`PEDIDO #${order.orderNumber}`));
-  lines.push(center(formatDate(order.createdAt)));
+  lines.push(center(formatDate(order.createdAt, (establishment as any)?.timezone)));
   lines.push(center(order.deliveryType === 'delivery' ? '*** ENTREGA ***' : '*** RETIRADA ***'));
   lines.push(doubleDivider());
   
@@ -343,7 +344,7 @@ export async function testPOSPrinterConnection(
       'Sua impressora esta funcionando',
       'corretamente.',
       '',
-      `Data: ${formatDate(new Date())}`,
+      `Data: ${formatDate(new Date(), 'America/Sao_Paulo')}`,
       '',
       '================================',
       '',

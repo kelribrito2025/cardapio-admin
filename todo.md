@@ -7314,3 +7314,4 @@
 - [x] Remover badge "Novo" do menu lateral (sidebar)
 - [x] Corrigir caracteres Unicode escapados nas abas Impressora e API da página de Configurações
 - [x] Corrigir card de Pedidos em Configurações > Atendimento: estado ativo/desativado não atualiza visualmente após salvar (precisa recarregar a página)
+- [x] Corrigir horário na impressão de recibos: horário não corresponde ao horário exato do pedido (problema de fuso horário)
