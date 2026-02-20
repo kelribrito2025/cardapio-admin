@@ -86,6 +86,7 @@ import { OnlinePaymentTab } from "@/components/OnlinePaymentTab";
 import { SUPPORTED_TIMEZONES } from "../../../shared/const";
 
 export default function Configuracoes() {
+  const utils = trpc.useUtils();
   const { data: establishment, refetch } = trpc.establishment.get.useQuery();
   const { data: businessHoursData, refetch: refetchBusinessHours } = trpc.establishment.getBusinessHours.useQuery(
     { establishmentId: establishment?.id || 0 },
@@ -405,15 +406,22 @@ export default function Configuracoes() {
   const createMutation = trpc.establishment.create.useMutation({
     onSuccess: () => {
       setInitialDataLoaded(false);
-      refetch();
+      utils.establishment.get.invalidate();
       toast.success("Estabelecimento criado com sucesso");
     },
     onError: () => toast.error("Erro ao criar estabelecimento"),
   });
 
   const updateMutation = trpc.establishment.update.useMutation({
-    onSuccess: () => {
-      setInitialDataLoaded(false);
+    onSuccess: (_data, variables) => {
+      // Optimistic cache update: merge the sent variables into the cached establishment data
+      // This avoids the race condition of setInitialDataLoaded(false) + refetch() where
+      // the useEffect would run with stale data before refetch completes
+      utils.establishment.get.setData(undefined, (old) => {
+        if (!old) return old;
+        return { ...old, ...variables };
+      });
+      // Also refetch in background to ensure full server sync
       refetch();
       toast.success("Configurações salvas com sucesso");
     },
@@ -429,7 +437,7 @@ export default function Configuracoes() {
   const saveNoteMutation = trpc.establishment.savePublicNote.useMutation({
     onSuccess: () => {
       setInitialDataLoaded(false);
-      refetch();
+      utils.establishment.get.invalidate();
       toast.success("Nota salva com sucesso! Ela ficará visível por 24 horas.");
     },
     onError: () => toast.error("Erro ao salvar nota"),
@@ -438,7 +446,7 @@ export default function Configuracoes() {
   const removeNoteMutation = trpc.establishment.removePublicNote.useMutation({
     onSuccess: () => {
       setInitialDataLoaded(false);
-      refetch();
+      utils.establishment.get.invalidate();
       setPublicNote("");
       setPublicNoteCreatedAt(null);
       toast.success("Nota removida com sucesso");
@@ -1597,8 +1605,6 @@ export default function Configuracoes() {
                       }, {
                         onSuccess: () => {
                           toast.success(checked ? "Avaliações ativadas" : "Avaliações desativadas");
-                          setInitialDataLoaded(false);
-                          refetch();
                         },
                       });
                     }
@@ -1649,8 +1655,6 @@ export default function Configuracoes() {
                             }, {
                               onSuccess: () => {
                                 toast.success("Quantidade atualizada");
-                                setInitialDataLoaded(false);
-                                refetch();
                               },
                             });
                           }

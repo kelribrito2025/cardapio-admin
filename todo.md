@@ -7313,3 +7313,4 @@
 - [x] Baixar fotos dos produtos do Mindi e fazer upload para S3, atualizar registros no banco de dados (estabelecimento 150004)
 - [x] Remover badge "Novo" do menu lateral (sidebar)
 - [x] Corrigir caracteres Unicode escapados nas abas Impressora e API da página de Configurações
+- [x] Corrigir card de Pedidos em Configurações > Atendimento: estado ativo/desativado não atualiza visualmente após salvar (precisa recarregar a página)
