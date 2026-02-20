@@ -476,11 +476,13 @@ function SortableInlineItem({
               {isCustomized && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span>
-                      <Badge variant="secondary" className="bg-amber-100 text-amber-700 border-amber-200 text-[9px] px-1 py-0 h-4 flex-shrink-0">
-                        <Pencil className="h-2.5 w-2.5 mr-0.5" />
-                        Personalizado
-                      </Badge>
+                    <span className={cn(
+                      "hidden md:flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border flex-shrink-0",
+                      "bg-amber-100 text-amber-700 border-amber-300",
+                      !item.isActive && "opacity-50"
+                    )} style={{height: '28px'}}>
+                      <Pencil className="h-3 w-3" />
+                      Personalizado
                     </span>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -488,6 +490,14 @@ function SortableInlineItem({
                     <p className="text-xs text-muted-foreground">Template: R$ {parseFloat(globalTemplatePrice!).toFixed(2).replace('.', ',')}</p>
                   </TooltipContent>
                 </Tooltip>
+              )}
+
+              {/* Mobile: show personalizado badge inline */}
+              {isCustomized && (
+                <span className={cn("flex md:hidden items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border bg-amber-100 text-amber-700 border-amber-300 flex-shrink-0", !item.isActive && "opacity-50")}>
+                  <Pencil className="h-3 w-3" />
+                  Personalizado
+                </span>
               )}
             </div>
           )}

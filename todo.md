@@ -7294,3 +7294,4 @@
 - [x] Implementar badge "Personalizado" com cor âmbar e ícone de lápis
 - [x] Adicionar tooltip com preço template ao hover no badge
 - [x] Escrever testes unitários (23 testes passando)
+- [x] Ajustar estilo do badge "Personalizado" para seguir o mesmo modelo visual do badge "GRÁTIS"
