@@ -7307,3 +7307,4 @@
 - [x] Escrever testes unitários (30 testes passando)
 - [x] Adicionar tooltip no badge "Exclusivo" informando que o item só aparece neste produto
 - [x] Adicionar tooltip no botão "Adicionar exclusivo" no catálogo informando que o item só aparecerá neste produto
+- [x] Corrigir drag-and-drop no catálogo: item volta para posição original antes de ir para a nova posição (falta update otimístico)

@@ -883,11 +883,26 @@ export default function InlineComplementsDropdown({
       if (oldIndex === -1 || newIndex === -1) return;
 
       const reordered = arrayMove(items, oldIndex, newIndex);
+
+      // Optimistically update the cache so the UI reflects the new order immediately
+      utils.complement.listGroups.setData({ productId }, (prev: any) => {
+        if (!prev) return prev;
+        return prev.map((g: any) => {
+          if (g.id !== groupId) return g;
+          const updatedItems = reordered.map((item: any, idx: number) => ({
+            ...item,
+            sortOrder: idx,
+          }));
+          return { ...g, items: updatedItems };
+        });
+      });
+
+      // Then persist to server
       reordered.forEach((item, idx) => {
         updateItemMutation.mutate({ id: item.id, sortOrder: idx });
       });
     },
-    [updateItemMutation]
+    [updateItemMutation, utils, productId]
   );
 
   const handleCreateGroup = () => {
