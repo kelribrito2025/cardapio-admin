@@ -555,6 +555,7 @@ function SortableInlineItem({
                         value={formatPriceBR(priceCents)}
                         onChange={handlePriceChange}
                         onBlur={handlePriceBlur}
+                        onFocus={(e) => { requestAnimationFrame(() => { const len = e.target.value.length; e.target.setSelectionRange(len, len); }); }}
                         onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                         onClick={(e) => e.stopPropagation()}
                         className="w-[90px] h-[26px] pl-7 pr-2 text-sm text-right font-semibold rounded-md border-0 bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-amber-300 transition-all"
@@ -574,6 +575,7 @@ function SortableInlineItem({
                       value={formatPriceBR(priceCents)}
                       onChange={handlePriceChange}
                       onBlur={handlePriceBlur}
+                      onFocus={(e) => { requestAnimationFrame(() => { const len = e.target.value.length; e.target.setSelectionRange(len, len); }); }}
                       onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                       onClick={(e) => e.stopPropagation()}
                       className="w-[90px] h-7 pl-7 pr-2 text-sm text-right font-semibold rounded-lg border border-border/60 bg-muted/30 text-foreground focus:outline-none focus:ring-2 focus:ring-border/50 focus:border-border transition-all"
@@ -754,7 +756,22 @@ export default function InlineComplementsDropdown({
   const [addingItemToGroup, setAddingItemToGroup] = useState<number | null>(null);
   const [addingExclusiveToGroup, setAddingExclusiveToGroup] = useState<number | null>(null);
   const [newItemName, setNewItemName] = useState("");
-  const [newItemPrice, setNewItemPrice] = useState("0,00");
+  const [newItemPriceCents, setNewItemPriceCents] = useState(0);
+  const formatNewItemPrice = (cents: number) => {
+    const str = String(cents).padStart(3, '0');
+    return `${str.slice(0, -2)},${str.slice(-2)}`;
+  };
+  const handleNewItemPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    const cents = parseInt(raw, 10) || 0;
+    setNewItemPriceCents(cents);
+  };
+  const handlePriceFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    requestAnimationFrame(() => {
+      const len = e.target.value.length;
+      e.target.setSelectionRange(len, len);
+    });
+  };
   const [expandedItemId, setExpandedItemId] = useState<number | null>(null);
   const [editingGroupId, setEditingGroupId] = useState<number | null>(null);
   const [editedGroupName, setEditedGroupName] = useState("");
@@ -801,7 +818,7 @@ export default function InlineComplementsDropdown({
       utils.product.list.invalidate();
       setAddingItemToGroup(null);
       setNewItemName("");
-      setNewItemPrice("0,00");
+      setNewItemPriceCents(0);
       toast.success("Item adicionado");
     },
     onError: () => toast.error("Erro ao adicionar item"),
@@ -845,7 +862,7 @@ export default function InlineComplementsDropdown({
       utils.product.list.invalidate();
       utils.complement.listAllGroups.invalidate();
       setNewItemName("");
-      setNewItemPrice("0,00");
+      setNewItemPriceCents(0);
       toast.success("Item exclusivo adicionado");
     },
     onError: (error: { message: string }) => toast.error("Erro: " + error.message),
@@ -918,9 +935,8 @@ export default function InlineComplementsDropdown({
 
   const handleCreateItem = (groupId: number) => {
     if (!newItemName.trim()) return;
-    const cleaned = newItemPrice.replace(/[^\d,]/g, "").replace(",", ".");
-    const num = parseFloat(cleaned);
-    const finalPrice = isNaN(num) ? "0" : num.toFixed(2);
+    const finalPrice = (newItemPriceCents / 100).toFixed(2);
+
     createItemMutation.mutate({
       groupId,
       name: newItemName.trim(),
@@ -931,9 +947,7 @@ export default function InlineComplementsDropdown({
 
   const handleCreateExclusiveItem = (groupName: string) => {
     if (!newItemName.trim() || !establishmentId) return;
-    const cleaned = newItemPrice.replace(/[^\d,]/g, "").replace(",", ".");
-    const num = parseFloat(cleaned);
-    const finalPrice = isNaN(num) ? "0" : num.toFixed(2);
+    const finalPrice = (newItemPriceCents / 100).toFixed(2);
     addExclusiveItemMutation.mutate({
       establishmentId,
       productId,
@@ -1179,7 +1193,7 @@ export default function InlineComplementsDropdown({
                         if (e.key === "Escape") {
                           setAddingItemToGroup(null);
                           setNewItemName("");
-                          setNewItemPrice("0,00");
+                          setNewItemPriceCents(0);
                         }
                       }}
                     />
@@ -1190,8 +1204,9 @@ export default function InlineComplementsDropdown({
                       <Input
                         type="text"
                         inputMode="numeric"
-                        value={newItemPrice}
-                        onChange={(e) => setNewItemPrice(e.target.value)}
+                        value={formatNewItemPrice(newItemPriceCents)}
+                        onChange={handleNewItemPriceChange}
+                        onFocus={handlePriceFocus}
                         className="w-20 h-7 text-sm rounded-md text-right pl-7"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") handleCreateItem(group.id);
@@ -1217,7 +1232,7 @@ export default function InlineComplementsDropdown({
                       onClick={() => {
                         setAddingItemToGroup(null);
                         setNewItemName("");
-                        setNewItemPrice("0,00");
+                        setNewItemPriceCents(0);
                       }}
                     >
                       <X className="h-3 w-3" />
@@ -1240,7 +1255,7 @@ export default function InlineComplementsDropdown({
                         if (e.key === "Escape") {
                           setAddingExclusiveToGroup(null);
                           setNewItemName("");
-                          setNewItemPrice("0,00");
+                          setNewItemPriceCents(0);
                         }
                       }}
                     />
@@ -1251,8 +1266,9 @@ export default function InlineComplementsDropdown({
                       <Input
                         type="text"
                         inputMode="numeric"
-                        value={newItemPrice}
-                        onChange={(e) => setNewItemPrice(e.target.value)}
+                        value={formatNewItemPrice(newItemPriceCents)}
+                        onChange={handleNewItemPriceChange}
+                        onFocus={handlePriceFocus}
                         className="w-20 h-7 text-sm rounded-md text-right pl-7 border-purple-300 focus-visible:ring-purple-300"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") handleCreateExclusiveItem(group.name);
@@ -1278,7 +1294,7 @@ export default function InlineComplementsDropdown({
                       onClick={() => {
                         setAddingExclusiveToGroup(null);
                         setNewItemName("");
-                        setNewItemPrice("0,00");
+                        setNewItemPriceCents(0);
                       }}
                     >
                       <X className="h-3 w-3" />
@@ -1292,7 +1308,7 @@ export default function InlineComplementsDropdown({
                         setAddingItemToGroup(group.id);
                         setAddingExclusiveToGroup(null);
                         setNewItemName("");
-                        setNewItemPrice("0,00");
+                        setNewItemPriceCents(0);
                       }}
                       className="flex items-center justify-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 py-2 px-4 rounded-lg border-2 border-dashed border-primary/40 hover:border-primary/60 hover:bg-primary/5 flex-1 transition-all"
                     >
@@ -1307,7 +1323,7 @@ export default function InlineComplementsDropdown({
                             setAddingExclusiveToGroup(group.id);
                             setAddingItemToGroup(null);
                             setNewItemName("");
-                            setNewItemPrice("0,00");
+                            setNewItemPriceCents(0);
                           }}
                           className="flex items-center justify-center gap-1.5 text-xs font-medium text-purple-600 hover:text-purple-700 py-2 px-4 rounded-lg border-2 border-dashed border-purple-300 hover:border-purple-400 hover:bg-purple-50 flex-1 transition-all"
                         >

@@ -7308,3 +7308,5 @@
 - [x] Adicionar tooltip no badge "Exclusivo" informando que o item só aparece neste produto
 - [x] Adicionar tooltip no botão "Adicionar exclusivo" no catálogo informando que o item só aparecerá neste produto
 - [x] Corrigir drag-and-drop no catálogo: item volta para posição original antes de ir para a nova posição (falta update otimístico)
+- [x] Corrigir cursor do campo de preço: ao clicar no campo, cursor deve ir para o final do valor
+- [x] Corrigir campo de preço: ao digitar sobre 0,00, deve substituir o valor em vez de concatenar (ex: 0,00300)
