@@ -17,6 +17,7 @@ import {
   Pencil,
   Check,
   MoreVertical,
+  Package,
 } from "lucide-react";
 import {
   Tooltip,
@@ -473,6 +474,12 @@ function SortableInlineItem({
                 </Badge>
               )}
 
+              {item.exclusiveProductId && (
+                <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200 text-[9px] px-1 py-0 h-4 flex-shrink-0">
+                  <Package className="h-2.5 w-2.5 mr-0.5" />
+                  Exclusivo
+                </Badge>
+              )}
 
             </div>
           )}
@@ -735,6 +742,7 @@ export default function InlineComplementsDropdown({
   const utils = trpc.useUtils();
   const [addingGroupName, setAddingGroupName] = useState("");
   const [addingItemToGroup, setAddingItemToGroup] = useState<number | null>(null);
+  const [addingExclusiveToGroup, setAddingExclusiveToGroup] = useState<number | null>(null);
   const [newItemName, setNewItemName] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("0,00");
   const [expandedItemId, setExpandedItemId] = useState<number | null>(null);
@@ -821,6 +829,28 @@ export default function InlineComplementsDropdown({
     onError: () => toast.error("Erro ao atualizar grupo"),
   });
 
+  const addExclusiveItemMutation = trpc.complement.addExclusiveItem.useMutation({
+    onSuccess: () => {
+      refetch();
+      utils.product.list.invalidate();
+      utils.complement.listAllGroups.invalidate();
+      setNewItemName("");
+      setNewItemPrice("0,00");
+      toast.success("Item exclusivo adicionado");
+    },
+    onError: (error: { message: string }) => toast.error("Erro: " + error.message),
+  });
+
+  const removeExclusiveItemMutation = trpc.complement.removeExclusiveItem.useMutation({
+    onSuccess: () => {
+      refetch();
+      utils.product.list.invalidate();
+      utils.complement.listAllGroups.invalidate();
+      toast.success("Item exclusivo removido");
+    },
+    onError: () => toast.error("Erro ao remover item exclusivo"),
+  });
+
   // DnD sensors
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -871,6 +901,20 @@ export default function InlineComplementsDropdown({
       name: newItemName.trim(),
       price: finalPrice,
       sortOrder: 999,
+    });
+  };
+
+  const handleCreateExclusiveItem = (groupName: string) => {
+    if (!newItemName.trim() || !establishmentId) return;
+    const cleaned = newItemPrice.replace(/[^\d,]/g, "").replace(",", ".");
+    const num = parseFloat(cleaned);
+    const finalPrice = isNaN(num) ? "0" : num.toFixed(2);
+    addExclusiveItemMutation.mutate({
+      establishmentId,
+      productId,
+      groupName,
+      name: newItemName.trim(),
+      price: finalPrice,
     });
   };
 
@@ -1154,19 +1198,96 @@ export default function InlineComplementsDropdown({
                       <X className="h-3 w-3" />
                     </Button>
                   </div>
+                ) : addingExclusiveToGroup === group.id ? (
+                  <div className="flex items-center gap-2 mt-2 flex-wrap md:flex-nowrap">
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <Package className="h-3.5 w-3.5 text-purple-600" />
+                      <span className="text-[10px] text-purple-600 font-medium">Exclusivo</span>
+                    </div>
+                    <Input
+                      value={newItemName}
+                      onChange={(e) => setNewItemName(capitalizeFirst(e.target.value))}
+                      placeholder="Nome do item exclusivo"
+                      className="flex-1 min-w-[120px] h-7 text-sm rounded-md border-purple-300 focus-visible:ring-purple-300"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleCreateExclusiveItem(group.name);
+                        if (e.key === "Escape") {
+                          setAddingExclusiveToGroup(null);
+                          setNewItemName("");
+                          setNewItemPrice("0,00");
+                        }
+                      }}
+                    />
+                    <div className="relative">
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">
+                        R$
+                      </span>
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        value={newItemPrice}
+                        onChange={(e) => setNewItemPrice(e.target.value)}
+                        className="w-20 h-7 text-sm rounded-md text-right pl-7 border-purple-300 focus-visible:ring-purple-300"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleCreateExclusiveItem(group.name);
+                        }}
+                      />
+                    </div>
+                    <Button
+                      size="sm"
+                      className="h-7 text-xs rounded-md px-2 bg-purple-600 hover:bg-purple-700 text-white"
+                      onClick={() => handleCreateExclusiveItem(group.name)}
+                      disabled={!newItemName.trim() || addExclusiveItemMutation.isPending}
+                    >
+                      {addExclusiveItemMutation.isPending ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        "Salvar"
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 text-xs rounded-md px-2"
+                      onClick={() => {
+                        setAddingExclusiveToGroup(null);
+                        setNewItemName("");
+                        setNewItemPrice("0,00");
+                      }}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAddingItemToGroup(group.id);
-                      setNewItemName("");
-                      setNewItemPrice("0,00");
-                    }}
-                    className="flex items-center justify-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 mt-3 py-2 px-4 rounded-lg border-2 border-dashed border-primary/40 hover:border-primary/60 hover:bg-primary/5 w-full transition-all"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Adicionar item
-                  </button>
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddingItemToGroup(group.id);
+                        setAddingExclusiveToGroup(null);
+                        setNewItemName("");
+                        setNewItemPrice("0,00");
+                      }}
+                      className="flex items-center justify-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 py-2 px-4 rounded-lg border-2 border-dashed border-primary/40 hover:border-primary/60 hover:bg-primary/5 flex-1 transition-all"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Adicionar item
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddingExclusiveToGroup(group.id);
+                        setAddingItemToGroup(null);
+                        setNewItemName("");
+                        setNewItemPrice("0,00");
+                      }}
+                      className="flex items-center justify-center gap-1.5 text-xs font-medium text-purple-600 hover:text-purple-700 py-2 px-4 rounded-lg border-2 border-dashed border-purple-300 hover:border-purple-400 hover:bg-purple-50 flex-1 transition-all"
+                    >
+                      <Package className="h-4 w-4" />
+                      Adicionar exclusivo
+                    </button>
+                  </div>
                 )}
               </div>
             );

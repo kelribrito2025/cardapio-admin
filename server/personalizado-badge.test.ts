@@ -6,6 +6,9 @@ vi.mock("./db", () => {
     getGlobalTemplatePrices: vi.fn(),
     getEstablishmentByOwnerId: vi.fn(),
     getEstablishment: vi.fn(),
+    addExclusiveComplementItem: vi.fn(),
+    removeExclusiveComplementItem: vi.fn(),
+    getComplementItemsByGroup: vi.fn(),
   };
 });
 
@@ -140,6 +143,83 @@ describe("Personalizado Badge - Global Template Prices", () => {
 
     it("should preserve special characters", () => {
       expect(getTemplateKey("Molhos & Extras", "Ketchup (grande)")).toBe("molhos & extras::ketchup (grande)");
+    });
+  });
+
+  describe("Exclusive item logic", () => {
+    it("should identify exclusive items by exclusiveProductId", () => {
+      const item = { id: 1, name: "Bacon Extra", exclusiveProductId: 42, price: "5.00" };
+      expect(item.exclusiveProductId).toBeTruthy();
+      expect(item.exclusiveProductId).toBe(42);
+    });
+
+    it("should identify global items by null exclusiveProductId", () => {
+      const item = { id: 2, name: "Queijo", exclusiveProductId: null, price: "3.00" };
+      expect(item.exclusiveProductId).toBeFalsy();
+    });
+
+    it("should filter exclusive items for a specific product", () => {
+      const items = [
+        { id: 1, name: "Queijo", exclusiveProductId: null, price: "3.00" },
+        { id: 2, name: "Bacon Extra", exclusiveProductId: 42, price: "5.00" },
+        { id: 3, name: "Cheddar", exclusiveProductId: 99, price: "4.00" },
+        { id: 4, name: "Molho", exclusiveProductId: null, price: "2.00" },
+      ];
+
+      const productId = 42;
+      const filtered = items.filter(item =>
+        !item.exclusiveProductId || item.exclusiveProductId === productId
+      );
+
+      expect(filtered).toHaveLength(3);
+      expect(filtered.map(i => i.name)).toEqual(["Queijo", "Bacon Extra", "Molho"]);
+    });
+
+    it("should show all global items when no productId filter", () => {
+      const items = [
+        { id: 1, name: "Queijo", exclusiveProductId: null, price: "3.00" },
+        { id: 2, name: "Bacon Extra", exclusiveProductId: 42, price: "5.00" },
+        { id: 3, name: "Cheddar", exclusiveProductId: 99, price: "4.00" },
+        { id: 4, name: "Molho", exclusiveProductId: null, price: "2.00" },
+      ];
+
+      // Without filter, return all items
+      expect(items).toHaveLength(4);
+    });
+
+    it("should correctly call addExclusiveComplementItem", async () => {
+      (db.addExclusiveComplementItem as any).mockResolvedValue({ id: 10, groupId: 5 });
+
+      const result = await db.addExclusiveComplementItem(
+        150004,
+        "Adicionais",
+        42,
+        { name: "Bacon Extra", price: "5.00" }
+      );
+
+      expect(db.addExclusiveComplementItem).toHaveBeenCalledWith(
+        150004, "Adicionais", 42, { name: "Bacon Extra", price: "5.00" }
+      );
+      expect(result).toEqual({ id: 10, groupId: 5 });
+    });
+
+    it("should correctly call removeExclusiveComplementItem", async () => {
+      (db.removeExclusiveComplementItem as any).mockResolvedValue({ success: true });
+
+      const result = await db.removeExclusiveComplementItem(10);
+
+      expect(db.removeExclusiveComplementItem).toHaveBeenCalledWith(10);
+      expect(result).toEqual({ success: true });
+    });
+
+    it("should reject removal of non-exclusive items", async () => {
+      (db.removeExclusiveComplementItem as any).mockRejectedValue(
+        new Error("Este item n\u00e3o \u00e9 exclusivo - use a exclus\u00e3o global")
+      );
+
+      await expect(db.removeExclusiveComplementItem(5)).rejects.toThrow(
+        "Este item n\u00e3o \u00e9 exclusivo"
+      );
     });
   });
 

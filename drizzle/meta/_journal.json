@@ -687,6 +687,13 @@
       "when": 1771526575447,
       "tag": "0097_deep_boom_boom",
       "breakpoints": true
+    },
+    {
+      "idx": 98,
+      "version": "5",
+      "when": 1771550730874,
+      "tag": "0098_ancient_lake",
+      "breakpoints": true
     }
   ]
 }

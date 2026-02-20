@@ -310,6 +310,7 @@ function SortableComplementItem({
   establishmentId,
   onToggleActive,
   onDeleteByName,
+  onDeleteExclusive,
   onUpdateItem,
   isExpanded,
   onToggleExpand,
@@ -320,6 +321,7 @@ function SortableComplementItem({
   establishmentId: number;
   onToggleActive: (name: string, isActive: boolean) => void;
   onDeleteByName: (name: string) => void;
+  onDeleteExclusive?: (itemId: number) => void;
   onUpdateItem: (id: number, data: any) => void;
   isExpanded: boolean;
   onToggleExpand: () => void;
@@ -355,6 +357,7 @@ function SortableComplementItem({
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(item.name);
   const isFree = item.priceMode === "free";
+  const isExclusive = !!item.isExclusive;
 
   useEffect(() => {
     setPriceCents(item.price ? priceToCents(item.price) : 0);
@@ -477,6 +480,19 @@ function SortableComplementItem({
                 Editar
               </button>
               {/* Badges */}
+              {isExclusive && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="flex items-center gap-0.5 bg-purple-100 text-purple-700 border border-purple-300 rounded-md px-1.5 py-0 h-4 text-[9px] font-medium flex-shrink-0 cursor-help">
+                      <Package className="h-2.5 w-2.5" />
+                      Exclusivo
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Só aparece em: <strong>{item.exclusiveProductName}</strong></p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
               {item.badgeText && (
                 <Badge variant="secondary" className="bg-red-100 text-red-600 border-red-200 animate-pulse text-[9px] px-1 py-0 h-4 flex-shrink-0">
                   {item.badgeText}
@@ -701,19 +717,25 @@ function SortableComplementItem({
               Excluir "{item.name}"?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação irá excluir o complemento <strong>"{item.name}"</strong> de <strong>{productCount} produto(s)</strong>. Esta ação não pode ser desfeita.
+              {isExclusive
+                ? <>Esta ação irá excluir o complemento exclusivo <strong>"{item.name}"</strong> do produto <strong>"{item.exclusiveProductName}"</strong>. Esta ação não pode ser desfeita.</>
+                : <>Esta ação irá excluir o complemento <strong>"{item.name}"</strong> de <strong>{productCount} produto(s)</strong>. Esta ação não pode ser desfeita.</>}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                onDeleteByName(item.name);
+                if (isExclusive && onDeleteExclusive) {
+                  onDeleteExclusive(item.id);
+                } else {
+                  onDeleteByName(item.name);
+                }
                 setDeleteItemDialogOpen(false);
               }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Excluir de todos os produtos
+              {isExclusive ? "Excluir item exclusivo" : "Excluir de todos os produtos"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -771,11 +793,26 @@ function GroupCard({
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(group.name);
   const [addingItem, setAddingItem] = useState(false);
+  const [addingExclusiveItem, setAddingExclusiveItem] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("0,00");
+  const [exclusiveProductId, setExclusiveProductId] = useState<number | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [toggleGroupDialogOpen, setToggleGroupDialogOpen] = useState(false);
   const itemNameInputRef = useRef<HTMLInputElement>(null);
+  const exclusiveItemNameInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch products for this group to show in exclusive item selector
+  const { data: productsList } = trpc.product.list.useQuery(
+    { establishmentId },
+    { enabled: addingExclusiveItem }
+  );
+
+  // Filter products that use this group
+  const productsWithGroup = useMemo(() => {
+    if (!productsList?.products) return [];
+    return productsList.products.filter((p: any) => group.productIds?.includes(p.id));
+  }, [productsList, group.productIds]);
 
   // Mutations
   const toggleGroupActiveMutation = trpc.complement.toggleGroupActive.useMutation({
@@ -848,6 +885,29 @@ function GroupCard({
       setTimeout(() => itemNameInputRef.current?.focus(), 50);
     },
     onError: () => toast.error("Erro ao adicionar item"),
+  });
+
+  const addExclusiveItemMutation = trpc.complement.addExclusiveItem.useMutation({
+    onSuccess: () => {
+      utils.complement.listAllGroups.invalidate();
+      utils.complement.listGroups.invalidate();
+      utils.product.list.invalidate();
+      setNewItemName("");
+      setNewItemPrice("0,00");
+      toast.success("Item exclusivo adicionado");
+      setTimeout(() => exclusiveItemNameInputRef.current?.focus(), 50);
+    },
+    onError: (error: { message: string }) => toast.error("Erro ao adicionar item exclusivo: " + error.message),
+  });
+
+  const removeExclusiveItemMutation = trpc.complement.removeExclusiveItem.useMutation({
+    onSuccess: () => {
+      utils.complement.listAllGroups.invalidate();
+      utils.complement.listGroups.invalidate();
+      utils.product.list.invalidate();
+      toast.success("Item exclusivo removido");
+    },
+    onError: () => toast.error("Erro ao remover item exclusivo"),
   });
 
   // DnD sensors
@@ -985,6 +1045,24 @@ function GroupCard({
       name: newItemName.trim(),
       price: finalPrice,
     });
+  };
+
+  const handleAddExclusiveItem = () => {
+    if (!newItemName.trim() || !exclusiveProductId) return;
+    const cleaned = newItemPrice.replace(/[^\d,]/g, "").replace(",", ".");
+    const num = parseFloat(cleaned);
+    const finalPrice = isNaN(num) ? "0" : num.toFixed(2);
+    addExclusiveItemMutation.mutate({
+      establishmentId,
+      groupName: group.name,
+      productId: exclusiveProductId,
+      name: newItemName.trim(),
+      price: finalPrice,
+    });
+  };
+
+  const handleDeleteExclusiveItem = (itemId: number) => {
+    removeExclusiveItemMutation.mutate({ itemId });
   };
 
   const items = group.items || [];
@@ -1235,7 +1313,13 @@ function GroupCard({
                           establishmentId={establishmentId}
                           onToggleActive={handleToggleItemActive}
                           onDeleteByName={handleDeleteItemByName}
+                          onDeleteExclusive={handleDeleteExclusiveItem}
                           onUpdateItem={(id, data) => {
+                            // If it's an exclusive item, update individually (not globally)
+                            if (item.isExclusive) {
+                              updateItemMutation.mutate({ id, ...data });
+                              return;
+                            }
                             // If updating by name globally (price, priceMode, etc)
                             if (data.priceMode !== undefined || data.price !== undefined) {
                               // Update globally via updateGlobal

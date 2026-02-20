@@ -7296,3 +7296,12 @@
 - [x] Escrever testes unitários (23 testes passando)
 - [x] Ajustar estilo do badge "Personalizado" para seguir o mesmo modelo visual do badge "GRÁTIS"
 - [x] Mover badge "Personalizado" para envolver a caixa de preço (atrás do campo de preço com ícones)
+
+## Itens Exclusivos por Produto (Complementos)
+- [x] Adicionar coluna exclusiveProductId (nullable) na tabela complementItems
+- [x] Criar procedures backend para gerenciar itens exclusivos (CRUD)
+- [x] Atualizar página /complementos com badge "Exclusivo" (visualização)
+- [x] Atualizar página /catalogo para mostrar badge "Exclusivo" nos itens exclusivos
+- [x] Mover botão "Adicionar item exclusivo" da /complementos para /catalogo (InlineComplementsDropdown)
+- [x] Remover botão "Adicionar item exclusivo" da /complementos
+- [x] Escrever testes unitários (30 testes passando)

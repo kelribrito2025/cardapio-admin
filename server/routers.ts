@@ -841,7 +841,7 @@ export const appRouter = router({
           const complementGroupsData = await db.getComplementGroupsByProduct(input.productId);
           const complementGroupsWithItems = await Promise.all(
             complementGroupsData.map(async (group) => {
-              const items = await db.getComplementItemsByGroup(group.id);
+              const items = await db.getComplementItemsByGroup(group.id, input.productId);
               return { ...group, items };
             })
           );
@@ -854,7 +854,7 @@ export const appRouter = router({
         const groups = await db.getComplementGroupsByProduct(input.productId);
         const groupsWithItems = await Promise.all(
           groups.map(async (group) => {
-            const items = await db.getComplementItemsByGroup(group.id);
+            const items = await db.getComplementItemsByGroup(group.id, input.productId);
             return {
               ...group,
               items,
@@ -1086,6 +1086,33 @@ export const appRouter = router({
           { name: input.name, price: input.price }
         );
         return { success: true, groupsAffected: count };
+      }),
+
+    // Add an exclusive item to a specific product within a group
+    addExclusiveItem: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        groupName: z.string(),
+        productId: z.number(),
+        name: z.string().min(1),
+        price: z.string().default("0"),
+      }))
+      .mutation(async ({ input }) => {
+        const result = await db.addExclusiveComplementItem(
+          input.establishmentId,
+          input.groupName,
+          input.productId,
+          { name: input.name, price: input.price }
+        );
+        return { success: true, ...result };
+      }),
+
+    // Remove an exclusive item
+    removeExclusiveItem: protectedProcedure
+      .input(z.object({ itemId: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.removeExclusiveComplementItem(input.itemId);
+        return { success: true };
       }),
   }),
 

@@ -198,6 +198,8 @@ export const complementItems = mysqlTable("complementItems", {
   availableDays: json("availableDays").$type<number[]>(), // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb
   availableHours: json("availableHours").$type<{ day: number; startTime: string; endTime: string }[]>(), // Horários por dia
   badgeText: varchar("badgeText", { length: 50 }), // Texto do badge customizável (ex: "Novo", "Novidade", "Promoção")
+  // Item exclusivo por produto: quando preenchido, o item só aparece neste produto
+  exclusiveProductId: int("exclusiveProductId"), // null = global (aparece em todos), preenchido = só neste produto
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

@@ -916,13 +916,22 @@ export async function getComplementGroupsByProduct(productId: number) {
   return groupsWithItems;
 }
 
-export async function getComplementItemsByGroup(groupId: number) {
+export async function getComplementItemsByGroup(groupId: number, forProductId?: number) {
   const db = await getDb();
   if (!db) return [];
   
-  return db.select().from(complementItems)
+  const allItems = await db.select().from(complementItems)
     .where(eq(complementItems.groupId, groupId))
     .orderBy(asc(complementItems.sortOrder));
+  
+  // If forProductId is provided, filter out exclusive items that belong to other products
+  if (forProductId) {
+    return allItems.filter(item => 
+      !item.exclusiveProductId || item.exclusiveProductId === forProductId
+    );
+  }
+  
+  return allItems;
 }
 
 export async function createComplementGroup(data: InsertComplementGroup) {
@@ -1176,6 +1185,7 @@ export async function getAllComplementGroupsByEstablishment(establishmentId: num
   }
   
   // Assign items to their groups (deduplicate by name within the same group-name)
+  // Exclusive items are NOT deduplicated - they appear individually with product info
   for (const item of allItems) {
     const group = allGroups.find(g => g.id === item.groupId);
     if (!group) continue;
@@ -1184,15 +1194,29 @@ export async function getAllComplementGroupsByEstablishment(establishmentId: num
     const uniqueGroup = uniqueGroups.get(key);
     if (!uniqueGroup) continue;
     
-    // Check if we already have an item with this name in this group-name aggregate
+    // Exclusive items always appear individually (not deduplicated)
+    if (item.exclusiveProductId) {
+      uniqueGroup.items.push({
+        ...item,
+        usageCount: 1,
+        isExclusive: true,
+        exclusiveProductName: productMap.get(item.exclusiveProductId) || 'Produto',
+      });
+      uniqueGroup.complementCount++;
+      continue;
+    }
+    
+    // Check if we already have a global item with this name in this group-name aggregate
     const existingItem = uniqueGroup.items.find(
-      (i: any) => i.name.toLowerCase().trim() === item.name.toLowerCase().trim()
+      (i: any) => i.name.toLowerCase().trim() === item.name.toLowerCase().trim() && !i.isExclusive
     );
     
     if (!existingItem) {
       uniqueGroup.items.push({
         ...item,
         usageCount: 1,
+        isExclusive: false,
+        exclusiveProductName: null,
       });
       uniqueGroup.complementCount++;
     } else {
@@ -1372,6 +1396,60 @@ export async function addComplementItemToGroupByName(
   }
   
   return groups.length;
+}
+
+// Add an exclusive complement item to a specific product within a group
+export async function addExclusiveComplementItem(
+  establishmentId: number,
+  groupName: string,
+  productId: number,
+  itemData: { name: string; price: string; sortOrder?: number }
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Find the group for this specific product
+  const group = await db.select({ id: complementGroups.id })
+    .from(complementGroups)
+    .where(
+      and(
+        eq(complementGroups.productId, productId),
+        eq(complementGroups.name, groupName)
+      )
+    )
+    .limit(1);
+  
+  if (group.length === 0) {
+    throw new Error(`Grupo "${groupName}" não encontrado para este produto`);
+  }
+  
+  // Insert the item with exclusiveProductId set
+  const result = await db.insert(complementItems).values({
+    groupId: group[0].id,
+    name: itemData.name,
+    price: itemData.price,
+    sortOrder: itemData.sortOrder ?? 999,
+    exclusiveProductId: productId,
+  });
+  
+  return { id: Number(result[0].insertId), groupId: group[0].id };
+}
+
+// Remove an exclusive complement item
+export async function removeExclusiveComplementItem(itemId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Verify it's actually an exclusive item
+  const item = await db.select().from(complementItems)
+    .where(eq(complementItems.id, itemId))
+    .limit(1);
+  
+  if (item.length === 0) throw new Error("Item não encontrado");
+  if (!item[0].exclusiveProductId) throw new Error("Este item não é exclusivo - use a exclusão global");
+  
+  await db.delete(complementItems).where(eq(complementItems.id, itemId));
+  return { success: true };
 }
 
 // Get global template prices for complements by establishment
