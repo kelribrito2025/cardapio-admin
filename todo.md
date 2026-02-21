@@ -7359,3 +7359,8 @@
 - [x] Criar categoria Preço Único com 6 itens
 - [x] Criar categoria Linguiças com 6 itens
 - [x] Todos os itens devem ter foto, preço e descrição do cardápio original
+- [x] Regenerar todas as 36 fotos dos produtos do Imperial Casa de Carnes com IA
+- [x] Estilo profissional de churrasco: carne sobre tábua de madeira, fundo rústico
+- [x] Upload das imagens geradas para S3 e atualizar registros no banco
+- [ ] Reformular logo do Imperial Casa de Carnes com estilo mais profissional (manter elementos originais)
+- [ ] Reformular foto de capa do Imperial Casa de Carnes com estilo mais profissional de açougue/churrasco

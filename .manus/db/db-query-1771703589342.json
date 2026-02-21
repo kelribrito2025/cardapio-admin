@@ -1,0 +1,226 @@
+{
+  "query": "SELECT p.id, p.name, c.name as category_name, p.images FROM products p JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = 210004 ORDER BY c.sortOrder, p.sortOrder",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, c.name as category_name, p.images FROM products p JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = 210004 ORDER BY c.sortOrder, p.sortOrder",
+  "rows": [
+    {
+      "id": "620002",
+      "name": "Combo de Frango",
+      "category_name": "Semanal",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-2625708195?v=1771412917642\"]"
+    },
+    {
+      "id": "620003",
+      "name": "Kit Semanal 1",
+      "category_name": "Semanal",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-653614118?v=1768954400225\"]"
+    },
+    {
+      "id": "620004",
+      "name": "Kit Semanal 5",
+      "category_name": "Semanal",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-3260192710?v=1768954401786\"]"
+    },
+    {
+      "id": "620005",
+      "name": "Acém em Tirinhas (500g)",
+      "category_name": "Kit Semanal Personalizado",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5696905679?v=1768954466284\"]"
+    },
+    {
+      "id": "620006",
+      "name": "Alcatrinha Bife (500g)",
+      "category_name": "Kit Semanal Personalizado",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5786262563?v=1768954427563\"]"
+    },
+    {
+      "id": "620007",
+      "name": "Contra-filé Bife (500g)",
+      "category_name": "Kit Semanal Personalizado",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4799593461?v=1768954417342\"]"
+    },
+    {
+      "id": "620008",
+      "name": "Coxão Mole Bife (500g)",
+      "category_name": "Kit Semanal Personalizado",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-6807309640?v=1768954417701\"]"
+    },
+    {
+      "id": "620009",
+      "name": "Filé de Peito Bife (500g)",
+      "category_name": "Kit Semanal Personalizado",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5166731708?v=1768954420375\"]"
+    },
+    {
+      "id": "620010",
+      "name": "Patinho Bife (500g)",
+      "category_name": "Kit Semanal Personalizado",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4472030469?v=1768954418330\"]"
+    },
+    {
+      "id": "620011",
+      "name": "Carvão 2,5kg",
+      "category_name": "Carvão",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4403293602?v=1768954416983\"]"
+    },
+    {
+      "id": "620012",
+      "name": "Carvão 5kg",
+      "category_name": "Carvão",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4290659659?v=1768954419357\"]"
+    },
+    {
+      "id": "620013",
+      "name": "Pão de Alho Caseiro",
+      "category_name": "Carvão",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-2322381681?v=1768954420742\"]"
+    },
+    {
+      "id": "620014",
+      "name": "Alcatra",
+      "category_name": "Carne de Primeira",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4403293602?v=1768954416983\"]"
+    },
+    {
+      "id": "620015",
+      "name": "Alcatrinha",
+      "category_name": "Carne de Primeira",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4290659659?v=1768954419357\"]"
+    },
+    {
+      "id": "620016",
+      "name": "Contra-filé",
+      "category_name": "Carne de Primeira",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4799593461?v=1768954417342\"]"
+    },
+    {
+      "id": "620017",
+      "name": "Coxão Mole",
+      "category_name": "Carne de Primeira",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-6807309640?v=1768954417701\"]"
+    },
+    {
+      "id": "620018",
+      "name": "Filé Mignon",
+      "category_name": "Carne de Primeira",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5166731708?v=1768954420375\"]"
+    },
+    {
+      "id": "620019",
+      "name": "Picanha",
+      "category_name": "Carne de Primeira",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-9573624844?v=1768954420011\"]"
+    },
+    {
+      "id": "620020",
+      "name": "Acém",
+      "category_name": "Carne de Segunda",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5411060696?v=1768954421420\"]"
+    },
+    {
+      "id": "620021",
+      "name": "Capa do Contra-filé",
+      "category_name": "Carne de Segunda",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-6663238716?v=1768954422307\"]"
+    },
+    {
+      "id": "620022",
+      "name": "Capa do Coxão Mole",
+      "category_name": "Carne de Segunda",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-7888337452?v=1768954422618\"]"
+    },
+    {
+      "id": "620023",
+      "name": "Lombão",
+      "category_name": "Carne de Segunda",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-3535343077?v=1768954423348\"]"
+    },
+    {
+      "id": "620024",
+      "name": "Maçã do Peito",
+      "category_name": "Carne de Segunda",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-8411539558?v=1768954421945\"]"
+    },
+    {
+      "id": "620025",
+      "name": "Músculo",
+      "category_name": "Carne de Segunda",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-1909153315?v=1768954422944\"]"
+    },
+    {
+      "id": "620026",
+      "name": "Acém para Panela (500g)",
+      "category_name": "Preço Único",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-3652640214?v=1768954425140\"]"
+    },
+    {
+      "id": "620027",
+      "name": "Alcatra Bife (500g)",
+      "category_name": "Preço Único",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-1489002610?v=1768954426879\"]"
+    },
+    {
+      "id": "620028",
+      "name": "Coxão Mole Bife (500g)",
+      "category_name": "Preço Único",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-6807309640?v=1768954417701\"]"
+    },
+    {
+      "id": "620029",
+      "name": "Filé de Peito Bife (500g)",
+      "category_name": "Preço Único",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5166731708?v=1768954420375\"]"
+    },
+    {
+      "id": "620030",
+      "name": "Linguiça Toscana (500g)",
+      "category_name": "Preço Único",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-1909153315?v=1768954422944\"]"
+    },
+    {
+      "id": "620031",
+      "name": "Costela Gaúcha para Panela (500g)",
+      "category_name": "Preço Único",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-8411539558?v=1768954421945\"]"
+    },
+    {
+      "id": "620032",
+      "name": "Linguiça de Costela",
+      "category_name": "Linguiças",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-1909153315?v=1768954422944\"]"
+    },
+    {
+      "id": "620033",
+      "name": "Linguiça Pura",
+      "category_name": "Linguiças",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-3535343077?v=1768954423348\"]"
+    },
+    {
+      "id": "620034",
+      "name": "Linguiça Super Frango (Fininha)",
+      "category_name": "Linguiças",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-2322381681?v=1768954420742\"]"
+    },
+    {
+      "id": "620035",
+      "name": "Linguiça Toscana",
+      "category_name": "Linguiças",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-7888337452?v=1768954422618\"]"
+    },
+    {
+      "id": "620036",
+      "name": "Linguiça de Costela (700g)",
+      "category_name": "Linguiças",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-6663238716?v=1768954422307\"]"
+    },
+    {
+      "id": "620037",
+      "name": "Linguiça Pernil Apimentada (700g)",
+      "category_name": "Linguiças",
+      "images": "[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5411060696?v=1768954421420\"]"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcategory_name\timages\n620002\tCombo de Frango\tSemanal\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-2625708195?v=1771412917642\"]\n620003\tKit Semanal 1\tSemanal\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-653614118?v=1768954400225\"]\n620004\tKit Semanal 5\tSemanal\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-3260192710?v=1768954401786\"]\n620005\tAcém em Tirinhas (500g)\tKit Semanal Personalizado\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5696905679?v=1768954466284\"]\n620006\tAlcatrinha Bife (500g)\tKit Semanal Personalizado\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5786262563?v=1768954427563\"]\n620007\tContra-filé Bife (500g)\tKit Semanal Personalizado\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4799593461?v=1768954417342\"]\n620008\tCoxão Mole Bife (500g)\tKit Semanal Personalizado\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-6807309640?v=1768954417701\"]\n620009\tFilé de Peito Bife (500g)\tKit Semanal Personalizado\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5166731708?v=1768954420375\"]\n620010\tPatinho Bife (500g)\tKit Semanal Personalizado\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4472030469?v=1768954418330\"]\n620011\tCarvão 2,5kg\tCarvão\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4403293602?v=1768954416983\"]\n620012\tCarvão 5kg\tCarvão\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4290659659?v=1768954419357\"]\n620013\tPão de Alho Caseiro\tCarvão\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-2322381681?v=1768954420742\"]\n620014\tAlcatra\tCarne de Primeira\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4403293602?v=1768954416983\"]\n620015\tAlcatrinha\tCarne de Primeira\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4290659659?v=1768954419357\"]\n620016\tContra-filé\tCarne de Primeira\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-4799593461?v=1768954417342\"]\n620017\tCoxão Mole\tCarne de Primeira\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-6807309640?v=1768954417701\"]\n620018\tFilé Mignon\tCarne de Primeira\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5166731708?v=1768954420375\"]\n620019\tPicanha\tCarne de Primeira\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-9573624844?v=1768954420011\"]\n620020\tAcém\tCarne de Segunda\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5411060696?v=1768954421420\"]\n620021\tCapa do Contra-filé\tCarne de Segunda\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-6663238716?v=1768954422307\"]\n620022\tCapa do Coxão Mole\tCarne de Segunda\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-7888337452?v=1768954422618\"]\n620023\tLombão\tCarne de Segunda\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-3535343077?v=1768954423348\"]\n620024\tMaçã do Peito\tCarne de Segunda\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-8411539558?v=1768954421945\"]\n620025\tMúsculo\tCarne de Segunda\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-1909153315?v=1768954422944\"]\n620026\tAcém para Panela (500g)\tPreço Único\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-3652640214?v=1768954425140\"]\n620027\tAlcatra Bife (500g)\tPreço Único\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-1489002610?v=1768954426879\"]\n620028\tCoxão Mole Bife (500g)\tPreço Único\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-6807309640?v=1768954417701\"]\n620029\tFilé de Peito Bife (500g)\tPreço Único\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5166731708?v=1768954420375\"]\n620030\tLinguiça Toscana (500g)\tPreço Único\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-1909153315?v=1768954422944\"]\n620031\tCostela Gaúcha para Panela (500g)\tPreço Único\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-8411539558?v=1768954421945\"]\n620032\tLinguiça de Costela\tLinguiças\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-1909153315?v=1768954422944\"]\n620033\tLinguiça Pura\tLinguiças\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-3535343077?v=1768954423348\"]\n620034\tLinguiça Super Frango (Fininha)\tLinguiças\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-2322381681?v=1768954420742\"]\n620035\tLinguiça Toscana\tLinguiças\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-7888337452?v=1768954422618\"]\n620036\tLinguiça de Costela (700g)\tLinguiças\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-6663238716?v=1768954422307\"]\n620037\tLinguiça Pernil Apimentada (700g)\tLinguiças\t[\"https://d34gyq4l8no8gs.cloudfront.net/imagens/produtos/Imperialcasadecarnes-435-5411060696?v=1768954421420\"]\n",
+  "stderr": "",
+  "execution_time_ms": 349
+}
