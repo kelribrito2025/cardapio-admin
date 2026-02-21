@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useLocation, useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import AdminPanelLayout from "@/components/AdminPanelLayout";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,7 +20,6 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -164,19 +162,11 @@ export default function AdminRestauranteDetalhe() {
   }
 
   const planColors: Record<string, string> = {
-    trial: "bg-blue-100 text-blue-700",
-    free: "bg-gray-100 text-gray-700",
-    basic: "bg-green-100 text-green-700",
-    pro: "bg-purple-100 text-purple-700",
-    enterprise: "bg-indigo-100 text-indigo-700",
-  };
-
-  const subscriptionStatusMap: Record<string, string> = {
-    trial: "trial",
-    active: "active",
-    expiring_soon: "active",
-    expired: "cancelled",
-    not_trial: "active",
+    trial: "bg-blue-50 text-blue-700 border border-blue-200/50",
+    free: "bg-gray-50 text-gray-700 border border-gray-200/50",
+    basic: "bg-emerald-50 text-emerald-700 border border-emerald-200/50",
+    pro: "bg-purple-50 text-purple-700 border border-purple-200/50",
+    enterprise: "bg-indigo-50 text-indigo-700 border border-indigo-200/50",
   };
 
   const currentSubscriptionStatus = (() => {
@@ -187,13 +177,6 @@ export default function AdminRestauranteDetalhe() {
     if (restaurant.manuallyClosed) return "suspended";
     return "active";
   })();
-
-  const subscriptionStatusLabels: Record<string, string> = {
-    trial: "Período de Teste",
-    active: "Ativo",
-    suspended: "Suspenso",
-    cancelled: "Cancelado",
-  };
 
   const startDate = restaurant.trialStartDate
     ? new Date(restaurant.trialStartDate).toLocaleDateString("pt-BR")
@@ -208,29 +191,41 @@ export default function AdminRestauranteDetalhe() {
     setEditingContact(true);
   };
 
+  const tabs = [
+    { id: "cobranca", label: "Cobrança", icon: CreditCard },
+    { id: "contato", label: "Contato", icon: null },
+    { id: "historico", label: "Histórico", icon: History },
+    { id: "administradores", label: "Administradores", icon: null },
+    { id: "comunicacoes", label: "Comunicações", icon: MessageSquare },
+  ];
+
   return (
     <AdminPanelLayout>
-      <div className="space-y-6">
+      <div className="space-y-5">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="flex items-center gap-3 flex-1">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/admin/restaurantes")} className="shrink-0">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-foreground">{restaurant.name}</h1>
-                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${planColors[restaurant.planType] || "bg-muted text-foreground"}`}>
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <button
+              onClick={() => navigate("/admin/restaurantes")}
+              className="h-9 w-9 rounded-lg flex items-center justify-center hover:bg-card transition-colors shrink-0"
+            >
+              <ArrowLeft className="h-5 w-5 text-muted-foreground" />
+            </button>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-2xl font-bold text-foreground truncate">{restaurant.name}</h1>
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold shrink-0 ${planColors[restaurant.planType] || "bg-muted text-foreground"}`}>
                   {restaurant.planLabel}
                 </span>
               </div>
               <p className="text-sm text-muted-foreground">/{restaurant.menuSlug || restaurant.id}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-2 shrink-0">
             {restaurant.menuSlug && (
               <Button
                 variant="outline"
+                className="rounded-xl border-border/50"
                 onClick={() => window.open(`/menu/${restaurant.menuSlug}`, "_blank")}
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
@@ -238,7 +233,7 @@ export default function AdminRestauranteDetalhe() {
               </Button>
             )}
             <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
               disabled={impersonateMutation.isPending}
               onClick={() => impersonateMutation.mutate({ id: restaurant.id })}
             >
@@ -252,398 +247,434 @@ export default function AdminRestauranteDetalhe() {
           </div>
         </div>
 
-        {/* 4 Info Cards */}
+        {/* 4 Info Cards - Same style as dashboard StatCards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Mensalidade */}
-          <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                <CreditCard className="h-5 w-5 text-blue-500" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Mensalidade</p>
-                <p className="text-lg font-bold text-foreground">
-                  {restaurant.planPrice > 0
-                    ? `R$ ${restaurant.planPrice.toFixed(2).replace(".", ",")}`
-                    : "Grátis"}
+          <div className="bg-card rounded-xl border border-border/50 border-t-4 border-t-blue-500">
+            <div className="px-5 py-5 flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
+                  Mensalidade
                 </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span className="text-2xl font-bold tracking-tight">
+                    {restaurant.planPrice > 0
+                      ? `R$ ${restaurant.planPrice.toFixed(2).replace(".", ",")}`
+                      : "Grátis"}
+                  </span>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+              <div className="p-2.5 rounded-lg shrink-0 bg-blue-100">
+                <CreditCard className="h-5 w-5 text-blue-600" />
+              </div>
+            </div>
+          </div>
 
           {/* Início */}
-          <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                <Calendar className="h-5 w-5 text-blue-500" />
+          <div className="bg-card rounded-xl border border-border/50 border-t-4 border-t-blue-500">
+            <div className="px-5 py-5 flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
+                  Início
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span className="text-2xl font-bold tracking-tight">{startDate}</span>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Início</p>
-                <p className="text-lg font-bold text-foreground">{startDate}</p>
+              <div className="p-2.5 rounded-lg shrink-0 bg-blue-100">
+                <Calendar className="h-5 w-5 text-blue-600" />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Admins */}
-          <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                <Users className="h-5 w-5 text-blue-500" />
+          <div className="bg-card rounded-xl border border-border/50 border-t-4 border-t-blue-500">
+            <div className="px-5 py-5 flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
+                  Admins
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span className="text-2xl font-bold tracking-tight">{restaurant.adminCount}</span>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Admins</p>
-                <p className="text-lg font-bold text-foreground">{restaurant.adminCount}</p>
+              <div className="p-2.5 rounded-lg shrink-0 bg-blue-100">
+                <Users className="h-5 w-5 text-blue-600" />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Loja */}
-          <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                <Store className="h-5 w-5 text-blue-500" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Loja</p>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                    !restaurant.manuallyClosed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+          <div className="bg-card rounded-xl border border-border/50 border-t-4 border-t-blue-500">
+            <div className="px-5 py-5 flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
+                  Loja
+                </p>
+                <div className="flex items-center gap-1.5 mt-2">
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border tracking-wide ${
+                    !restaurant.manuallyClosed
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200/50"
+                      : "bg-red-50 text-red-700 border-red-200/50"
                   }`}>
                     {!restaurant.manuallyClosed ? "Ativa" : "Inativa"}
                   </span>
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                    restaurant.isOpen ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border tracking-wide ${
+                    restaurant.isOpen
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200/50"
+                      : "bg-gray-50 text-gray-600 border-gray-200/50"
                   }`}>
                     {restaurant.isOpen ? "Aberta" : "Fechada"}
                   </span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+              <div className="p-2.5 rounded-lg shrink-0 bg-blue-100">
+                <Store className="h-5 w-5 text-blue-600" />
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-transparent border-b rounded-none w-full justify-start gap-0 h-auto p-0">
-            <TabsTrigger
-              value="cobranca"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-2.5 text-sm"
-            >
-              <CreditCard className="h-4 w-4 mr-1.5" />
-              Cobrança
-            </TabsTrigger>
-            <TabsTrigger
-              value="contato"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-2.5 text-sm"
-            >
-              Contato
-            </TabsTrigger>
-            <TabsTrigger
-              value="historico"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-2.5 text-sm"
-            >
-              <History className="h-4 w-4 mr-1.5" />
-              Histórico
-            </TabsTrigger>
-            <TabsTrigger
-              value="administradores"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-2.5 text-sm"
-            >
-              Administradores
-            </TabsTrigger>
-            <TabsTrigger
-              value="comunicacoes"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-2.5 text-sm"
-            >
-              <MessageSquare className="h-4 w-4 mr-1.5" />
-              Comunicações
-            </TabsTrigger>
-          </TabsList>
+        {/* Tabs - underline style matching dashboard */}
+        <div>
+          <div className="border-b border-border/50">
+            <div className="flex gap-0 overflow-x-auto">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                    activeTab === tab.id
+                      ? "border-foreground text-foreground"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                  }`}
+                >
+                  {tab.icon && <tab.icon className="h-4 w-4" />}
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
-          {/* Tab: Cobrança */}
-          <TabsContent value="cobranca" className="mt-4">
-            <Card>
-              <CardContent className="p-6 space-y-6">
-                <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-                  <CreditCard className="h-5 w-5" />
-                  Cobrança
-                </h3>
-
-                {/* Alert: no payment configured */}
-                <div className="flex items-center gap-3 p-4 rounded-lg border border-red-200 bg-red-50">
-                  <AlertCircle className="h-5 w-5 text-red-500 shrink-0" />
-                  <p className="text-sm text-red-600">
-                    O Mercado Pago não está configurado. Configure em <strong>Configurações → Mercado Pago</strong> para gerar cobranças automáticas.
-                  </p>
+          {/* Tab Content */}
+          <div className="mt-4">
+            {/* Tab: Cobrança */}
+            {activeTab === "cobranca" && (
+              <div className="bg-card rounded-xl border border-border/50">
+                <div className="flex items-center justify-between px-6 py-3 border-b border-border/50" style={{height: '46px'}}>
+                  <h3 className="font-semibold text-base flex items-center gap-2">
+                    <CreditCard className="h-4 w-4" />
+                    Cobrança
+                  </h3>
                 </div>
+                <div className="p-6 space-y-6">
+                  {/* Alert: no payment configured */}
+                  <div className="flex items-center gap-3 p-4 rounded-xl border border-red-200/50 bg-red-50">
+                    <AlertCircle className="h-5 w-5 text-red-500 shrink-0" />
+                    <p className="text-sm text-red-600">
+                      O Mercado Pago não está configurado. Configure em <strong>Configurações → Mercado Pago</strong> para gerar cobranças automáticas.
+                    </p>
+                  </div>
 
-                {/* Subscription Status */}
-                <div className="space-y-2">
-                  <Label className="text-sm text-muted-foreground">Gerenciar Status Manualmente</Label>
-                  <Select
-                    value={currentSubscriptionStatus}
-                    onValueChange={(val) => {
-                      updateStatusMutation.mutate({
-                        id: restaurant.id,
-                        status: val as any,
-                      });
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="trial">Período de Teste</SelectItem>
-                      <SelectItem value="active">Ativo</SelectItem>
-                      <SelectItem value="suspended">Suspenso</SelectItem>
-                      <SelectItem value="cancelled">Cancelado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                  {/* Subscription Status */}
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Gerenciar Status Manualmente</Label>
+                    <Select
+                      value={currentSubscriptionStatus}
+                      onValueChange={(val) => {
+                        updateStatusMutation.mutate({
+                          id: restaurant.id,
+                          status: val as any,
+                        });
+                      }}
+                    >
+                      <SelectTrigger className="rounded-xl">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="trial">Período de Teste</SelectItem>
+                        <SelectItem value="active">Ativo</SelectItem>
+                        <SelectItem value="suspended">Suspenso</SelectItem>
+                        <SelectItem value="cancelled">Cancelado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                {/* Admin Actions */}
-                <div className="space-y-3 pt-2 border-t">
-                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Ações Administrativas</h4>
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setChangePlanOpen(true)}
-                    >
-                      <Pencil className="h-3.5 w-3.5 mr-1.5" /> Alterar plano
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => toggleMenuMutation.mutate({ id: restaurant.id, isOpen: !restaurant.isOpen })}
-                    >
-                      {restaurant.isOpen ? (
-                        <><Lock className="h-3.5 w-3.5 mr-1.5" /> Bloquear menu</>
-                      ) : (
-                        <><Unlock className="h-3.5 w-3.5 mr-1.5" /> Reabrir menu</>
+                  {/* Admin Actions */}
+                  <div className="space-y-3 pt-4 border-t border-border/50">
+                    <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Ações Administrativas</h4>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl border-border/50"
+                        onClick={() => setChangePlanOpen(true)}
+                      >
+                        <Pencil className="h-3.5 w-3.5 mr-1.5" /> Alterar plano
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl border-border/50"
+                        onClick={() => toggleMenuMutation.mutate({ id: restaurant.id, isOpen: !restaurant.isOpen })}
+                      >
+                        {restaurant.isOpen ? (
+                          <><Lock className="h-3.5 w-3.5 mr-1.5" /> Bloquear menu</>
+                        ) : (
+                          <><Unlock className="h-3.5 w-3.5 mr-1.5" /> Reabrir menu</>
+                        )}
+                      </Button>
+                      {restaurant.planType === "trial" && (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="rounded-xl border-border/50"
+                            onClick={() => setExtendTrialOpen(true)}
+                          >
+                            <Timer className="h-3.5 w-3.5 mr-1.5" /> Estender trial
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="rounded-xl border-border/50"
+                            onClick={() => setConfirmAction("resetTrial")}
+                          >
+                            <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Resetar trial
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="rounded-xl border-border/50 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => setConfirmAction("forceExpire")}
+                          >
+                            <Zap className="h-3.5 w-3.5 mr-1.5" /> Forçar expiração
+                          </Button>
+                        </>
                       )}
-                    </Button>
-                    {restaurant.planType === "trial" && (
-                      <>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setExtendTrialOpen(true)}
-                        >
-                          <Timer className="h-3.5 w-3.5 mr-1.5" /> Estender trial
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setConfirmAction("resetTrial")}
-                        >
-                          <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Resetar trial
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          onClick={() => setConfirmAction("forceExpire")}
-                        >
-                          <Zap className="h-3.5 w-3.5 mr-1.5" /> Forçar expiração
-                        </Button>
-                      </>
-                    )}
+                    </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+            )}
 
-          {/* Tab: Contato */}
-          <TabsContent value="contato" className="mt-4">
-            <Card>
-              <CardContent className="p-6 space-y-6">
-                <div className="flex items-center justify-between">
+            {/* Tab: Contato */}
+            {activeTab === "contato" && (
+              <div className="bg-card rounded-xl border border-border/50">
+                <div className="flex items-center justify-between px-6 py-3 border-b border-border/50" style={{height: '46px'}}>
                   <div>
-                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-                      <User className="h-5 w-5" />
+                    <h3 className="font-semibold text-base flex items-center gap-2">
+                      <User className="h-4 w-4" />
                       Dados de Contato
                     </h3>
-                    <p className="text-sm text-muted-foreground mt-0.5">Informações do responsável pelo restaurante</p>
                   </div>
                   {!editingContact && (
-                    <Button variant="outline" size="sm" onClick={handleStartEditContact}>
+                    <Button variant="outline" size="sm" className="rounded-xl border-border/50" onClick={handleStartEditContact}>
                       <Pencil className="h-3.5 w-3.5 mr-1.5" /> Editar
                     </Button>
                   )}
                 </div>
+                <div className="p-6">
+                  <p className="text-sm text-muted-foreground mb-5">Informações do responsável pelo restaurante</p>
 
-                {editingContact ? (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {editingContact ? (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label className="flex items-center gap-1.5 text-sm">
+                            <User className="h-3.5 w-3.5" /> Nome do Proprietário
+                          </Label>
+                          <Input
+                            className="rounded-xl"
+                            value={contactName}
+                            onChange={(e) => setContactName(e.target.value)}
+                            placeholder="João da Silva"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="flex items-center gap-1.5 text-sm">
+                            <Phone className="h-3.5 w-3.5" /> Telefone / WhatsApp
+                          </Label>
+                          <Input
+                            className="rounded-xl"
+                            value={contactPhone}
+                            onChange={(e) => setContactPhone(e.target.value)}
+                            placeholder="(35) 99999-9999"
+                          />
+                        </div>
+                      </div>
                       <div className="space-y-2">
-                        <Label className="flex items-center gap-1.5">
+                        <Label className="flex items-center gap-1.5 text-sm">
+                          <Mail className="h-3.5 w-3.5" /> E-mail de Contato
+                        </Label>
+                        <Input
+                          className="rounded-xl"
+                          value={contactEmail}
+                          onChange={(e) => setContactEmail(e.target.value)}
+                          placeholder="contato@restaurante.com"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          E-mail para comunicações (pode ser diferente do e-mail de cobrança)
+                        </p>
+                      </div>
+                      <div className="flex gap-2 pt-2">
+                        <Button
+                          variant="outline"
+                          className="rounded-xl"
+                          onClick={() => setEditingContact(false)}
+                        >
+                          Cancelar
+                        </Button>
+                        <Button
+                          className="rounded-xl"
+                          disabled={updateContactMutation.isPending}
+                          onClick={() => updateContactMutation.mutate({
+                            id: restaurant.id,
+                            responsibleName: contactName,
+                            responsiblePhone: contactPhone,
+                            email: contactEmail,
+                          })}
+                        >
+                          {updateContactMutation.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          ) : null}
+                          Salvar
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className="space-y-1.5">
+                        <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
                           <User className="h-3.5 w-3.5" /> Nome do Proprietário
                         </Label>
-                        <Input
-                          value={contactName}
-                          onChange={(e) => setContactName(e.target.value)}
-                          placeholder="João da Silva"
-                        />
+                        <p className="text-sm font-medium text-foreground border border-border/50 rounded-xl px-3 py-2.5 bg-muted/30">
+                          {restaurant.responsibleName || restaurant.owner?.name || "—"}
+                        </p>
                       </div>
-                      <div className="space-y-2">
-                        <Label className="flex items-center gap-1.5">
+                      <div className="space-y-1.5">
+                        <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
                           <Phone className="h-3.5 w-3.5" /> Telefone / WhatsApp
                         </Label>
-                        <Input
-                          value={contactPhone}
-                          onChange={(e) => setContactPhone(e.target.value)}
-                          placeholder="(35) 99999-9999"
-                        />
+                        <p className="text-sm font-medium text-foreground border border-border/50 rounded-xl px-3 py-2.5 bg-muted/30">
+                          {restaurant.responsiblePhone || restaurant.whatsapp || "—"}
+                        </p>
+                      </div>
+                      <div className="space-y-1.5 md:col-span-2">
+                        <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                          <Mail className="h-3.5 w-3.5" /> E-mail de Contato
+                        </Label>
+                        <p className="text-sm font-medium text-foreground border border-border/50 rounded-xl px-3 py-2.5 bg-muted/30">
+                          {restaurant.email || restaurant.owner?.email || "—"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          E-mail para comunicações (pode ser diferente do e-mail de cobrança)
+                        </p>
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label className="flex items-center gap-1.5">
-                        <Mail className="h-3.5 w-3.5" /> E-mail de Contato
-                      </Label>
-                      <Input
-                        value={contactEmail}
-                        onChange={(e) => setContactEmail(e.target.value)}
-                        placeholder="contato@restaurante.com"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        E-mail para comunicações (pode ser diferente do e-mail de cobrança)
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => setEditingContact(false)}
-                      >
-                        Cancelar
-                      </Button>
-                      <Button
-                        disabled={updateContactMutation.isPending}
-                        onClick={() => updateContactMutation.mutate({
-                          id: restaurant.id,
-                          responsibleName: contactName,
-                          responsiblePhone: contactPhone,
-                          email: contactEmail,
-                        })}
-                      >
-                        {updateContactMutation.isPending ? (
-                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        ) : null}
-                        Salvar
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
-                        <User className="h-3.5 w-3.5" /> Nome do Proprietário
-                      </Label>
-                      <p className="text-sm font-medium text-foreground border rounded-md px-3 py-2 bg-muted/30">
-                        {restaurant.responsibleName || restaurant.owner?.name || "—"}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
-                        <Phone className="h-3.5 w-3.5" /> Telefone / WhatsApp
-                      </Label>
-                      <p className="text-sm font-medium text-foreground border rounded-md px-3 py-2 bg-muted/30">
-                        {restaurant.responsiblePhone || restaurant.whatsapp || "—"}
-                      </p>
-                    </div>
-                    <div className="space-y-1 md:col-span-2">
-                      <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
-                        <Mail className="h-3.5 w-3.5" /> E-mail de Contato
-                      </Label>
-                      <p className="text-sm font-medium text-foreground border rounded-md px-3 py-2 bg-muted/30">
-                        {restaurant.email || restaurant.owner?.email || "—"}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        E-mail para comunicações (pode ser diferente do e-mail de cobrança)
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Tab: Histórico */}
-          <TabsContent value="historico" className="mt-4">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-foreground mb-6">Histórico de Pagamentos</h3>
-                <div className="flex items-center justify-center py-12 text-muted-foreground">
-                  <p>Nenhum pagamento registrado</p>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+            )}
 
-          {/* Tab: Administradores */}
-          <TabsContent value="administradores" className="mt-4">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-6">
+            {/* Tab: Histórico */}
+            {activeTab === "historico" && (
+              <div className="bg-card rounded-xl border border-border/50">
+                <div className="flex items-center justify-between px-6 py-3 border-b border-border/50" style={{height: '46px'}}>
+                  <h3 className="font-semibold text-base">Histórico de Pagamentos</h3>
+                </div>
+                <div className="p-6">
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <div className="p-5 bg-muted/50 rounded-2xl mb-6">
+                      <History className="h-12 w-12 text-muted-foreground/70" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum pagamento registrado</h3>
+                    <p className="text-sm text-muted-foreground max-w-sm">
+                      Os pagamentos realizados por este restaurante aparecerão aqui.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tab: Administradores */}
+            {activeTab === "administradores" && (
+              <div className="bg-card rounded-xl border border-border/50">
+                <div className="flex items-center justify-between px-6 py-3 border-b border-border/50" style={{height: '46px'}}>
                   <div>
-                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-                      <Users className="h-5 w-5" />
+                    <h3 className="font-semibold text-base flex items-center gap-2">
+                      <Users className="h-4 w-4" />
                       Administradores
                     </h3>
-                    <p className="text-sm text-muted-foreground mt-0.5">Gerencie quem pode acessar o painel do restaurante</p>
                   </div>
                   <Button
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
+                    size="sm"
                     onClick={() => toast.info("Funcionalidade em breve")}
                   >
-                    <UserPlus className="h-4 w-4 mr-2" /> Novo Admin
+                    <UserPlus className="h-4 w-4 mr-1.5" /> Novo Admin
                   </Button>
                 </div>
+                <div className="p-6">
+                  <p className="text-sm text-muted-foreground mb-4">Gerencie quem pode acessar o painel do restaurante</p>
 
-                {restaurant.owner ? (
-                  <div className="border rounded-lg divide-y">
-                    <div className="flex items-center gap-4 p-4">
-                      <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                        <User className="h-5 w-5 text-blue-600" />
+                  {restaurant.owner ? (
+                    <div className="border border-border/50 rounded-xl divide-y divide-border/50">
+                      <div className="flex items-center gap-4 p-4">
+                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                          <User className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-foreground truncate">{restaurant.owner.name || "Sem nome"}</p>
+                          <p className="text-sm text-muted-foreground truncate">{restaurant.owner.email || "—"}</p>
+                        </div>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border bg-blue-50 text-blue-700 border-blue-200/50 shrink-0">
+                          Proprietário
+                        </span>
                       </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground">{restaurant.owner.name || "Sem nome"}</p>
-                        <p className="text-sm text-muted-foreground">{restaurant.owner.email || "—"}</p>
-                      </div>
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-                        Proprietário
-                      </span>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                    <Users className="h-12 w-12 mb-3 opacity-40" />
-                    <p className="font-medium">Nenhum administrador cadastrado</p>
-                    <p className="text-sm mt-1">Crie um administrador para permitir o acesso ao painel.</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Tab: Comunicações */}
-          <TabsContent value="comunicacoes" className="mt-4">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-foreground flex items-center gap-2 mb-6">
-                  <MessageSquare className="h-5 w-5" />
-                  Comunicações
-                </h3>
-                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                  <MessageSquare className="h-12 w-12 mb-3 opacity-40" />
-                  <p className="font-medium">Nenhuma comunicação enviada</p>
-                  <p className="text-sm mt-1">As comunicações com este restaurante aparecerão aqui.</p>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <div className="p-5 bg-muted/50 rounded-2xl mb-6">
+                        <Users className="h-12 w-12 text-muted-foreground/70" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum administrador cadastrado</h3>
+                      <p className="text-sm text-muted-foreground max-w-sm">
+                        Crie um administrador para permitir o acesso ao painel.
+                      </p>
+                    </div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+              </div>
+            )}
+
+            {/* Tab: Comunicações */}
+            {activeTab === "comunicacoes" && (
+              <div className="bg-card rounded-xl border border-border/50">
+                <div className="flex items-center justify-between px-6 py-3 border-b border-border/50" style={{height: '46px'}}>
+                  <h3 className="font-semibold text-base flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4" />
+                    Comunicações
+                  </h3>
+                </div>
+                <div className="p-6">
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <div className="p-5 bg-muted/50 rounded-2xl mb-6">
+                      <MessageSquare className="h-12 w-12 text-muted-foreground/70" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Nenhuma comunicação enviada</h3>
+                    <p className="text-sm text-muted-foreground max-w-sm">
+                      As comunicações com este restaurante aparecerão aqui.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Change Plan Dialog */}
@@ -654,7 +685,7 @@ export default function AdminRestauranteDetalhe() {
             <DialogDescription>Alterar o plano de {restaurant.name}</DialogDescription>
           </DialogHeader>
           <Select value={newPlan} onValueChange={setNewPlan}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="trial">Trial (resetar)</SelectItem>
               <SelectItem value="basic">Essencial</SelectItem>
@@ -663,9 +694,9 @@ export default function AdminRestauranteDetalhe() {
             </SelectContent>
           </Select>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setChangePlanOpen(false)}>Cancelar</Button>
+            <Button variant="outline" className="rounded-xl" onClick={() => setChangePlanOpen(false)}>Cancelar</Button>
             <Button
-              className="bg-red-500 hover:bg-red-600"
+              className="bg-red-500 hover:bg-red-600 rounded-xl"
               disabled={changePlanMutation.isPending}
               onClick={() => changePlanMutation.mutate({ id: restaurant.id, planType: newPlan as any })}
             >
@@ -685,6 +716,7 @@ export default function AdminRestauranteDetalhe() {
           <div className="space-y-2">
             <Label>Dias extras</Label>
             <Input
+              className="rounded-xl"
               type="number"
               min="1"
               max="90"
@@ -693,9 +725,9 @@ export default function AdminRestauranteDetalhe() {
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setExtendTrialOpen(false)}>Cancelar</Button>
+            <Button variant="outline" className="rounded-xl" onClick={() => setExtendTrialOpen(false)}>Cancelar</Button>
             <Button
-              className="bg-red-500 hover:bg-red-600"
+              className="bg-red-500 hover:bg-red-600 rounded-xl"
               disabled={extendTrialMutation.isPending}
               onClick={() => extendTrialMutation.mutate({ id: restaurant.id, extraDays: parseInt(extraDays) || 7 })}
             >
@@ -716,9 +748,9 @@ export default function AdminRestauranteDetalhe() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmAction(null)}>Cancelar</Button>
+            <Button variant="outline" className="rounded-xl" onClick={() => setConfirmAction(null)}>Cancelar</Button>
             <Button
-              className="bg-red-500 hover:bg-red-600"
+              className="bg-red-500 hover:bg-red-600 rounded-xl"
               onClick={() => {
                 if (confirmAction === "resetTrial") {
                   resetTrialMutation.mutate({ id: restaurant.id });

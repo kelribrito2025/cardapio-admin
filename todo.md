@@ -7326,3 +7326,9 @@
 - [x] Tab Comunicações: placeholder para futuras comunicações
 - [x] Funcionalidade de impersonação: acessar painel do restaurante sem email/senha
 - [x] Manter ações administrativas existentes (bloquear, reabrir menu, resetar trial, etc.)
+
+## Correção visual da página /admin detalhes do restaurante
+- [x] Igualar cor de fundo do /admin com a dashboard do restaurante
+- [x] Remover sombras dos cards do /admin (igualar ao estilo da dashboard)
+- [x] Igualar estilo das tabs do /admin com as tabs da dashboard
+- [x] Igualar tipografia e espaçamentos do /admin com a dashboard
