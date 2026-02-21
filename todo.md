@@ -7336,3 +7336,4 @@
 ## Aplicar estilo visual consistente no /admin Dashboard e Relatórios
 - [x] Aplicar estilo visual da página de detalhes na Dashboard do /admin (cards, tipografia, espaçamentos)
 - [x] Aplicar estilo visual da página de detalhes na página de Relatórios do /admin
+- [x] Aplicar estilo visual da lista de estoque na página /admin/restaurantes

@@ -1,10 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useLocation, useSearch } from "wouter";
 import { trpc } from "@/lib/trpc";
 import AdminPanelLayout from "@/components/AdminPanelLayout";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import {
   Search,
   Store,
@@ -34,13 +42,15 @@ import {
   ChevronRight,
   Globe,
   GlobeLock,
-  Calendar,
-  Crown,
-  Clock,
-  AlertTriangle,
-  ExternalLink,
-  Timer,
+  MoreHorizontal,
+  Filter,
   Zap,
+  Timer,
+  Crown,
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
+  Clock,
 } from "lucide-react";
 
 type PlanFilter = "all" | "trial" | "active_trial" | "basic" | "pro" | "enterprise" | "expired" | "paid";
@@ -56,27 +66,47 @@ const planFilterLabels: Record<PlanFilter, string> = {
   paid: "Pagos",
 };
 
-const planBadge = (planType: string, trialStatus: string) => {
+const planBadgeConfig: Record<string, { label: string; color: string; bgColor: string; borderColor: string; icon: React.ReactNode }> = {
+  trial: { label: "Trial", color: "text-blue-700", bgColor: "bg-blue-50", borderColor: "border-blue-200", icon: <Timer className="h-3.5 w-3.5" /> },
+  expired: { label: "Expirado", color: "text-red-700", bgColor: "bg-red-50", borderColor: "border-red-200", icon: <XCircle className="h-3.5 w-3.5" /> },
+  expiring_soon: { label: "Expirando", color: "text-amber-700", bgColor: "bg-amber-50", borderColor: "border-amber-200", icon: <AlertTriangle className="h-3.5 w-3.5" /> },
+  basic: { label: "Essencial", color: "text-green-700", bgColor: "bg-green-50", borderColor: "border-green-200", icon: <CheckCircle className="h-3.5 w-3.5" /> },
+  pro: { label: "Pro", color: "text-purple-700", bgColor: "bg-purple-50", borderColor: "border-purple-200", icon: <Zap className="h-3.5 w-3.5" /> },
+  enterprise: { label: "Enterprise", color: "text-indigo-700", bgColor: "bg-indigo-50", borderColor: "border-indigo-200", icon: <Crown className="h-3.5 w-3.5" /> },
+};
+
+function getPlanBadge(planType: string, trialStatus: string) {
   if (planType === "trial") {
     if (trialStatus === "expired") {
-      return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Expirado</span>;
+      const cfg = planBadgeConfig.expired;
+      return (
+        <Badge variant="outline" className={`${cfg.bgColor} ${cfg.color} ${cfg.borderColor} gap-1`}>
+          {cfg.icon} {cfg.label}
+        </Badge>
+      );
     }
     if (trialStatus === "expiring_soon") {
-      return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">Expirando</span>;
+      const cfg = planBadgeConfig.expiring_soon;
+      return (
+        <Badge variant="outline" className={`${cfg.bgColor} ${cfg.color} ${cfg.borderColor} gap-1`}>
+          {cfg.icon} {cfg.label}
+        </Badge>
+      );
     }
-    return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">Trial</span>;
+    const cfg = planBadgeConfig.trial;
+    return (
+      <Badge variant="outline" className={`${cfg.bgColor} ${cfg.color} ${cfg.borderColor} gap-1`}>
+        {cfg.icon} {cfg.label}
+      </Badge>
+    );
   }
-  const colors: Record<string, string> = {
-    basic: "bg-green-100 text-green-700",
-    pro: "bg-purple-100 text-purple-700",
-    enterprise: "bg-indigo-100 text-indigo-700",
-  };
+  const cfg = planBadgeConfig[planType] || planBadgeConfig.basic;
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors[planType] || "bg-muted text-foreground"}`}>
-      {planType.charAt(0).toUpperCase() + planType.slice(1)}
-    </span>
+    <Badge variant="outline" className={`${cfg.bgColor} ${cfg.color} ${cfg.borderColor} gap-1`}>
+      {cfg.icon} {cfg.label}
+    </Badge>
   );
-};
+}
 
 export default function AdminRestaurantes() {
   const [, navigate] = useLocation();
@@ -86,18 +116,15 @@ export default function AdminRestaurantes() {
   const [search, setSearch] = useState("");
   const [planFilter, setPlanFilter] = useState<PlanFilter>(urlFilter as PlanFilter);
   const [page, setPage] = useState(1);
-  const [selectedRestaurant, setSelectedRestaurant] = useState<number | null>(null);
   const [changePlanDialog, setChangePlanDialog] = useState<{ id: number; name: string } | null>(null);
   const [newPlan, setNewPlan] = useState<string>("basic");
   const [confirmDialog, setConfirmDialog] = useState<{ id: number; name: string; action: string } | null>(null);
 
-  // Map "paid" filter to query filter
   const queryFilter = planFilter === "paid" ? undefined : planFilter;
-  const querySearch = search.trim() || undefined;
 
   const { data, isLoading, refetch } = trpc.admin.restaurants.list.useQuery({
-    search: querySearch,
-    planFilter: planFilter === "paid" ? "basic" : queryFilter, // Will be handled below
+    search: search.trim() || undefined,
+    planFilter: planFilter === "paid" ? "basic" : queryFilter,
     page,
     limit: 20,
   });
@@ -141,192 +168,285 @@ export default function AdminRestaurantes() {
     <AdminPanelLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Restaurantes</h1>
-          <p className="text-sm text-muted-foreground">Gerenciar todos os restaurantes da plataforma</p>
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-blue-100 rounded-lg">
+            <Store className="h-6 w-6 text-blue-600" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Restaurantes</h1>
+            <p className="text-sm text-muted-foreground">Gerenciar todos os restaurantes da plataforma</p>
+          </div>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
+        {/* Busca e Filtros */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div className="relative flex-1 w-full sm:max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Buscar por nome ou email..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="pl-10"
+              className="pl-9 h-9 text-sm rounded-lg"
             />
           </div>
-          <Select value={planFilter} onValueChange={(v) => { setPlanFilter(v as PlanFilter); setPage(1); }}>
-            <SelectTrigger className="w-full sm:w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(planFilterLabels).map(([key, label]) => (
-                <SelectItem key={key} value={key}>{label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2">
+            <Filter size={16} className="text-muted-foreground" />
+            <Select value={planFilter} onValueChange={(v) => { setPlanFilter(v as PlanFilter); setPage(1); }}>
+              <SelectTrigger className="w-[160px] h-9 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(planFilterLabels).map(([key, label]) => (
+                  <SelectItem key={key} value={key}>{label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Table */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          </div>
+        ) : !data?.restaurants.length ? (
+          <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+              <Store className="h-10 w-10 mb-3 opacity-40" />
+              <p className="font-medium">Nenhum restaurante encontrado</p>
+              <p className="text-sm mt-1">Tente ajustar os filtros de busca</p>
+            </div>
           </div>
         ) : (
-          <Card>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border/50 bg-gray-50/50">
-                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Restaurante</th>
-                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground hidden md:table-cell">Email</th>
-                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Plano</th>
-                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground hidden lg:table-cell">Trial</th>
-                      <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Menu</th>
-                      <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data?.restaurants.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} className="text-center py-12 text-muted-foreground">
-                          <Store className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                          Nenhum restaurante encontrado
-                        </td>
-                      </tr>
-                    ) : (
-                      data?.restaurants.map((r) => (
-                        <tr key={r.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-3">
-                              {r.logo ? (
-                                <img src={r.logo} alt="" className="w-8 h-8 rounded-lg object-cover" />
+          <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border/50 bg-muted/30">
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Restaurante</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Email</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Plano</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Trial</th>
+                    <th className="text-center p-4 text-sm font-medium text-muted-foreground">Menu</th>
+                    <th className="text-right p-4 text-sm font-medium text-muted-foreground">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.restaurants.map((r) => (
+                    <tr
+                      key={r.id}
+                      className="border-b border-border/30 hover:bg-muted/20 transition-colors cursor-pointer"
+                      onClick={() => navigate(`/admin/restaurantes/${r.id}`)}
+                    >
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          {r.logo ? (
+                            <img src={r.logo} alt="" className="w-10 h-10 rounded-full object-cover" />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                              <Store className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-medium">{r.name}</p>
+                            <p className="text-xs text-muted-foreground">{r.city}{r.state ? `, ${r.state}` : ""}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <span className="text-sm text-muted-foreground">{r.email || "—"}</span>
+                      </td>
+                      <td className="p-4">
+                        {getPlanBadge(r.planType, r.trialStatus)}
+                      </td>
+                      <td className="p-4">
+                        {r.planType === "trial" ? (
+                          r.trialStatus === "expired" ? (
+                            <span className="text-sm text-red-500 font-medium">Expirado</span>
+                          ) : r.trialStatus === "expiring_soon" ? (
+                            <span className="text-sm text-amber-500 font-medium">{r.daysRemaining}d restantes</span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">{r.daysRemaining}d restantes</span>
+                          )
+                        ) : (
+                          <span className="text-sm text-muted-foreground">—</span>
+                        )}
+                      </td>
+                      <td className="p-4 text-center">
+                        {r.isOpen ? (
+                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 gap-1">
+                            <Globe className="h-3.5 w-3.5" /> Ativo
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-muted text-muted-foreground border-border gap-1">
+                            <GlobeLock className="h-3.5 w-3.5" /> Inativo
+                          </Badge>
+                        )}
+                      </td>
+                      <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => navigate(`/admin/restaurantes/${r.id}`)}>
+                              <Eye className="h-4 w-4 mr-2" />
+                              Ver detalhes
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setChangePlanDialog({ id: r.id, name: r.name })}>
+                              <Pencil className="h-4 w-4 mr-2" />
+                              Alterar plano
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => toggleMenuMutation.mutate({ id: r.id, isOpen: !r.isOpen })}>
+                              {r.isOpen ? (
+                                <><Lock className="h-4 w-4 mr-2 text-orange-600" /> Bloquear menu</>
                               ) : (
-                                <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-                                  <Store className="h-4 w-4 text-muted-foreground" />
-                                </div>
+                                <><Unlock className="h-4 w-4 mr-2 text-green-600" /> Desbloquear menu</>
                               )}
-                              <div>
-                                <p className="font-medium text-foreground truncate max-w-[200px]">{r.name}</p>
-                                <p className="text-xs text-muted-foreground">{r.city}{r.state ? `, ${r.state}` : ""}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 hidden md:table-cell">
-                            <span className="text-muted-foreground text-xs">{r.email || "—"}</span>
-                          </td>
-                          <td className="px-4 py-3">
-                            {planBadge(r.planType, r.trialStatus)}
-                          </td>
-                          <td className="px-4 py-3 hidden lg:table-cell">
-                            {r.planType === "trial" ? (
-                              <div className="flex items-center gap-1.5">
-                                {r.trialStatus === "expired" ? (
-                                  <span className="text-xs text-red-500 font-medium">Expirado</span>
-                                ) : r.trialStatus === "expiring_soon" ? (
-                                  <span className="text-xs text-amber-500 font-medium">{r.daysRemaining}d restantes</span>
-                                ) : (
-                                  <span className="text-xs text-muted-foreground">{r.daysRemaining}d restantes</span>
-                                )}
-                              </div>
-                            ) : (
-                              <span className="text-xs text-muted-foreground">—</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-center">
-                            {r.isOpen ? (
-                              <span className="inline-flex items-center gap-1 text-xs text-green-600">
-                                <Globe className="h-3.5 w-3.5" /> Ativo
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                                <GlobeLock className="h-3.5 w-3.5" /> Inativo
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center justify-end gap-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                                title="Ver detalhes"
-                                onClick={() => navigate(`/admin/restaurantes/${r.id}`)}
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                                title="Alterar plano"
-                                onClick={() => setChangePlanDialog({ id: r.id, name: r.name })}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                                title={r.isOpen ? "Bloquear menu" : "Desbloquear menu"}
-                                onClick={() => toggleMenuMutation.mutate({ id: r.id, isOpen: !r.isOpen })}
-                              >
-                                {r.isOpen ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-                              </Button>
-                              {r.planType === "trial" && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-8 w-8 p-0"
-                                  title="Resetar trial"
-                                  onClick={() => setConfirmDialog({ id: r.id, name: r.name, action: "resetTrial" })}
+                            </DropdownMenuItem>
+                            {r.planType === "trial" && (
+                              <>
+                                <DropdownMenuItem onClick={() => setConfirmDialog({ id: r.id, name: r.name, action: "resetTrial" })}>
+                                  <RotateCcw className="h-4 w-4 mr-2 text-blue-600" />
+                                  Resetar trial
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => setConfirmDialog({ id: r.id, name: r.name, action: "forceExpire" })}
+                                  className="text-red-600 focus:text-red-600"
                                 >
-                                  <RotateCcw className="h-4 w-4" />
-                                </Button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                                  <XCircle className="h-4 w-4 mr-2" />
+                                  Expirar trial
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-border/50">
-                  <span className="text-xs text-muted-foreground">
-                    {data?.total ?? 0} restaurantes encontrados
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={page <= 1}
-                      onClick={() => setPage(page - 1)}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <span className="text-xs text-muted-foreground">
-                      {page} / {totalPages}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={page >= totalPages}
-                      onClick={() => setPage(page + 1)}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-border/30">
+              {data.restaurants.map((r) => (
+                <div
+                  key={r.id}
+                  className="p-4 hover:bg-muted/20 transition-colors"
+                  onClick={() => navigate(`/admin/restaurantes/${r.id}`)}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      {r.logo ? (
+                        <img src={r.logo} alt="" className="w-10 h-10 rounded-full object-cover" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                          <Store className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-medium text-sm">{r.name}</p>
+                        <p className="text-xs text-muted-foreground">{r.city}{r.state ? `, ${r.state}` : ""}</p>
+                      </div>
+                    </div>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => navigate(`/admin/restaurantes/${r.id}`)}>
+                            <Eye className="h-4 w-4 mr-2" />
+                            Ver detalhes
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setChangePlanDialog({ id: r.id, name: r.name })}>
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Alterar plano
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => toggleMenuMutation.mutate({ id: r.id, isOpen: !r.isOpen })}>
+                            {r.isOpen ? (
+                              <><Lock className="h-4 w-4 mr-2 text-orange-600" /> Bloquear menu</>
+                            ) : (
+                              <><Unlock className="h-4 w-4 mr-2 text-green-600" /> Desbloquear menu</>
+                            )}
+                          </DropdownMenuItem>
+                          {r.planType === "trial" && (
+                            <DropdownMenuItem onClick={() => setConfirmDialog({ id: r.id, name: r.name, action: "resetTrial" })}>
+                              <RotateCcw className="h-4 w-4 mr-2 text-blue-600" />
+                              Resetar trial
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {getPlanBadge(r.planType, r.trialStatus)}
+                    {r.isOpen ? (
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 gap-1 text-xs">
+                        <Globe className="h-3 w-3" /> Ativo
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="bg-muted text-muted-foreground border-border gap-1 text-xs">
+                        <GlobeLock className="h-3 w-3" /> Inativo
+                      </Badge>
+                    )}
+                    {r.planType === "trial" && r.daysRemaining !== undefined && (
+                      <span className={cn(
+                        "text-xs font-medium",
+                        r.trialStatus === "expired" ? "text-red-500" :
+                        r.trialStatus === "expiring_soon" ? "text-amber-500" : "text-muted-foreground"
+                      )}>
+                        {r.trialStatus === "expired" ? "Expirado" : `${r.daysRemaining}d restantes`}
+                      </span>
+                    )}
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-4 py-3 border-t border-border/50">
+                <span className="text-xs text-muted-foreground">
+                  {data?.total ?? 0} restaurantes encontrados
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 rounded-lg"
+                    disabled={page <= 1}
+                    onClick={() => setPage(page - 1)}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-xs text-muted-foreground">
+                    {page} / {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 rounded-lg"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage(page + 1)}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
