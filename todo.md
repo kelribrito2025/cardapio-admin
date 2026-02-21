@@ -7362,5 +7362,5 @@
 - [x] Regenerar todas as 36 fotos dos produtos do Imperial Casa de Carnes com IA
 - [x] Estilo profissional de churrasco: carne sobre tábua de madeira, fundo rústico
 - [x] Upload das imagens geradas para S3 e atualizar registros no banco
-- [ ] Reformular logo do Imperial Casa de Carnes com estilo mais profissional (manter elementos originais)
-- [ ] Reformular foto de capa do Imperial Casa de Carnes com estilo mais profissional de açougue/churrasco
+- [x] Reformular logo do Imperial Casa de Carnes com estilo mais profissional (manter elementos originais)
+- [x] Reformular foto de capa do Imperial Casa de Carnes com estilo mais profissional de açougue/churrasco
