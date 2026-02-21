@@ -160,6 +160,15 @@ describe("imageProcessor", () => {
       expect(result.originalSize).toBe(input.length);
       expect(result.size).toBe(result.buffer.length);
     });
+
+    it("also generates blur placeholder for single version", async () => {
+      const input = await createTestImage(800, 600);
+      const result = await processSingleImage(input);
+
+      expect(result.blurDataUrl).toBeDefined();
+      expect(result.blurDataUrl).toMatch(/^data:image\/webp;base64,/);
+      expect(result.blurDataUrl.length).toBeLessThan(1024);
+    });
   });
 });
 
@@ -202,6 +211,26 @@ describe("imageUtils", () => {
 
     it("returns empty string for null", () => {
       expect(getOptimizedImageUrl(null)).toBe("");
+    });
+  });
+
+  describe("srcset generation (getThumbUrl for responsive)", () => {
+    it("can generate valid srcset string from main URL", () => {
+      const mainUrl = "https://files.example.com/products/abc123.webp";
+      const thumbUrl = getThumbUrl(mainUrl);
+      const srcset = `${thumbUrl} 400w, ${mainUrl} 1200w`;
+
+      expect(srcset).toBe(
+        "https://files.example.com/products/abc123_thumb.webp 400w, https://files.example.com/products/abc123.webp 1200w"
+      );
+    });
+
+    it("returns same URL for both when image is not WebP (no srcset benefit)", () => {
+      const mainUrl = "https://files.example.com/products/old.png";
+      const thumbUrl = getThumbUrl(mainUrl);
+
+      // Both are the same, so srcset would have identical entries
+      expect(thumbUrl).toBe(mainUrl);
     });
   });
 });

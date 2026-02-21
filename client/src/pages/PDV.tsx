@@ -1010,11 +1010,13 @@ export default function PDV() {
                       <div className="h-28 bg-gradient-to-br from-red-500 to-red-600 relative overflow-hidden">
                         {product.images?.[0] ? (
                           <BlurImage
-                            src={getThumbUrl(product.images[0])}
+                            src={product.images[0]}
                             blurDataUrl={(product as any).blurPlaceholder}
                             alt={product.name}
                             containerClassName="w-full h-full"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            responsive
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">

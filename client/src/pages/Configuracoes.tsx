@@ -870,15 +870,15 @@ export default function Configuracoes() {
 
         if (cropType === "logo") {
           setLogo(result.url);
-          // Auto-save after logo upload
+          // Auto-save after logo upload with blur placeholder
           if (establishment) {
-            updateMutation.mutate({ id: establishment.id, logo: result.url });
+            updateMutation.mutate({ id: establishment.id, logo: result.url, logoBlur: result.blurDataUrl || null });
           }
         } else {
           setCoverImage(result.url);
-          // Auto-save after cover upload
+          // Auto-save after cover upload with blur placeholder
           if (establishment) {
-            updateMutation.mutate({ id: establishment.id, coverImage: result.url });
+            updateMutation.mutate({ id: establishment.id, coverImage: result.url, coverBlur: result.blurDataUrl || null });
           }
         }
       };

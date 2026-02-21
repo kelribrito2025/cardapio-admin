@@ -122,7 +122,7 @@ export async function processSingleImage(
   inputBuffer: Buffer,
   maxWidth = MAIN_MAX_WIDTH,
   quality = MAIN_QUALITY
-): Promise<{ buffer: Buffer; width: number; height: number; size: number; originalSize: number }> {
+): Promise<{ buffer: Buffer; blurDataUrl: string; width: number; height: number; size: number; originalSize: number }> {
   const originalSize = inputBuffer.length;
   const metadata = await sharp(inputBuffer).metadata();
   const originalWidth = metadata.width || maxWidth;
@@ -138,9 +138,11 @@ export async function processSingleImage(
     .toBuffer();
 
   const meta = await sharp(buffer).metadata();
+  const blurDataUrl = await generateBlurPlaceholder(inputBuffer);
 
   return {
     buffer,
+    blurDataUrl,
     width: meta.width || 0,
     height: meta.height || 0,
     size: buffer.length,

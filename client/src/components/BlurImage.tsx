@@ -1,8 +1,9 @@
-import { useState, useCallback, ImgHTMLAttributes } from "react";
+import { useState, useCallback, useMemo, ImgHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
+import { getThumbUrl } from "../../../shared/imageUtils";
 
-interface BlurImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "onLoad" | "onError"> {
-  /** URL da imagem principal */
+interface BlurImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "onLoad" | "onError" | "srcSet"> {
+  /** URL da imagem principal (1200px) */
   src: string;
   /** Placeholder blur em base64 data URI (data:image/webp;base64,...) */
   blurDataUrl?: string | null;
@@ -12,14 +13,21 @@ interface BlurImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "onLo
   containerClassName?: string;
   /** Fallback quando não há imagem */
   fallback?: React.ReactNode;
+  /**
+   * Ativar srcset responsivo: serve thumb (400px) em mobile e main (1200px) em desktop.
+   * Desativado por padrão para imagens que não precisam de responsividade (logos, ícones).
+   */
+  responsive?: boolean;
 }
 
 /**
- * Componente de imagem com lazy loading e placeholder blur.
+ * Componente de imagem com lazy loading, placeholder blur e srcset responsivo.
  * 
- * Mostra o placeholder blur (~20px base64 inline) enquanto a imagem
- * principal carrega, com transição suave de opacidade.
- * Se não houver blurDataUrl, mostra um fundo cinza com pulse animation.
+ * Funcionalidades:
+ * - Placeholder blur (~20px base64 inline) enquanto a imagem carrega
+ * - Transição suave de opacidade ao carregar
+ * - srcset automático: thumb (400w) para mobile, main (1200w) para desktop
+ * - Fallback com pulse animation quando não há blur
  */
 export function BlurImage({
   src,
@@ -28,6 +36,8 @@ export function BlurImage({
   className,
   containerClassName,
   fallback,
+  responsive = false,
+  sizes,
   ...imgProps
 }: BlurImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -40,6 +50,20 @@ export function BlurImage({
   const handleError = useCallback(() => {
     setHasError(true);
   }, []);
+
+  // Gerar srcset e sizes para imagens responsivas
+  const srcSetProps = useMemo(() => {
+    if (!responsive || !src) return {};
+
+    const thumbUrl = getThumbUrl(src);
+    // Só gerar srcset se o thumb for diferente do main (imagem otimizada .webp)
+    if (thumbUrl === src) return {};
+
+    return {
+      srcSet: `${thumbUrl} 400w, ${src} 1200w`,
+      sizes: sizes || "(max-width: 640px) 400px, 1200px",
+    };
+  }, [responsive, src, sizes]);
 
   if (!src || hasError) {
     if (fallback) return <>{fallback}</>;
@@ -69,7 +93,7 @@ export function BlurImage({
         <div className="absolute inset-0 bg-muted animate-pulse" />
       )}
 
-      {/* Imagem principal com lazy loading */}
+      {/* Imagem principal com lazy loading e srcset responsivo */}
       <img
         src={src}
         alt={alt}
@@ -82,6 +106,7 @@ export function BlurImage({
           isLoaded ? "opacity-100" : "opacity-0",
           className
         )}
+        {...srcSetProps}
         {...imgProps}
       />
     </div>

@@ -216,11 +216,13 @@ function SortableProductItem({
             )}>
             {product.images && product.images.length > 0 ? (
               <BlurImage
-                src={getThumbUrl(product.images[0])}
+                src={product.images[0]}
                 blurDataUrl={product.blurPlaceholder}
                 alt={product.name}
                 containerClassName="h-full w-full"
                 className="h-full w-full object-cover"
+                responsive
+                sizes="48px"
               />
             ) : (
               <UtensilsCrossed className="h-5 w-5 text-white animate-placeholder-pulse" />

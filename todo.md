@@ -7380,3 +7380,9 @@
 - [x] Configurar Cache-Control headers no S3 para cache de longo prazo
 - [x] Migrar imagens existentes para gerar placeholders blur
 - [x] Escrever testes para o pipeline de blur placeholder
+- [x] Adicionar campos blurPlaceholder para capa e logo na tabela establishments
+- [x] Atualizar pipeline de upload para gerar blur placeholder em capas e logos
+- [x] Implementar suporte a srcset no componente BlurImage (thumb para mobile, main para desktop)
+- [x] Migrar imagens existentes de capa/logo para gerar blur placeholders
+- [x] Medir impacto de performance no carregamento do menu público
+- [x] Escrever testes para as novas funcionalidades

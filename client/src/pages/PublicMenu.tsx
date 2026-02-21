@@ -1759,9 +1759,11 @@ export default function PublicMenu() {
       <div className="max-w-7xl mx-auto px-4 pt-4">
         <div className="relative h-36 md:h-48 lg:h-56 rounded-2xl overflow-hidden bg-gray-200">
           {establishment.coverImage ? (
-            <img
+            <BlurImage
               src={establishment.coverImage}
+              blurDataUrl={establishment.coverBlur}
               alt="Capa do restaurante"
+              containerClassName="w-full h-full"
               className="w-full h-full object-cover"
             />
           ) : (
@@ -1872,10 +1874,12 @@ export default function PublicMenu() {
             )}
             
             {establishment.logo ? (
-              <img
+              <BlurImage
                 src={establishment.logo}
+                blurDataUrl={establishment.logoBlur}
                 alt={establishment.name}
-                className="h-28 w-28 md:h-36 md:w-36 rounded-full object-cover border-4 border-white shadow-lg bg-white"
+                containerClassName="h-28 w-28 md:h-36 md:w-36 rounded-full border-4 border-white shadow-lg bg-white overflow-hidden"
+                className="w-full h-full object-cover"
               />
             ) : (
               <div className="h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center border-4 border-white shadow-lg">
@@ -7327,11 +7331,13 @@ function ProductCard({
         <div className="w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
           {mainImage ? (
             <BlurImage
-              src={getThumbUrl(mainImage)}
+              src={mainImage}
               blurDataUrl={product.blurPlaceholder}
               alt={product.name}
               containerClassName="w-full h-full"
               className="w-full h-full object-cover rounded-r-lg"
+              responsive
+              sizes="(max-width: 640px) 80px, 96px"
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center rounded-r-lg">

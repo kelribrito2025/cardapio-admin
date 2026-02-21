@@ -5,7 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import { mindiStoragePut } from "./mindiStorage";
-import { processImage, processSingleImage } from "./imageProcessor";
+import { processImage, processSingleImage, generateBlurPlaceholder } from "./imageProcessor";
 import { nanoid } from "nanoid";
 import bcrypt from "bcryptjs";
 import { ENV } from "./_core/env";
@@ -161,7 +161,9 @@ export const appRouter = router({
       .input(z.object({
         name: z.string().min(1),
         logo: z.string().optional(),
+        logoBlur: z.string().nullable().optional(),
         coverImage: z.string().optional(),
+        coverBlur: z.string().nullable().optional(),
         street: z.string().optional(),
         number: z.string().optional(),
         complement: z.string().optional(),
@@ -254,7 +256,9 @@ export const appRouter = router({
         id: z.number(),
         name: z.string().min(1).optional(),
         logo: z.string().nullable().optional(),
+        logoBlur: z.string().nullable().optional(),
         coverImage: z.string().nullable().optional(),
+        coverBlur: z.string().nullable().optional(),
         street: z.string().nullable().optional(),
         number: z.string().nullable().optional(),
         complement: z.string().nullable().optional(),
@@ -2731,11 +2735,12 @@ export const appRouter = router({
         const id = nanoid();
 
         if (singleVersion) {
-          // Logos, capas, QR codes — apenas uma versão otimizada
+          // Logos, capas, QR codes — apenas uma versão otimizada + blur placeholder
           const processed = await processSingleImage(buffer);
+          const blurDataUrl = await generateBlurPlaceholder(buffer);
           const fileName = `${folder}/${id}.webp`;
           const { url } = await mindiStoragePut(fileName, processed.buffer, "image/webp");
-          return { url };
+          return { url, blurDataUrl };
         }
 
         // Produtos — gerar main (1200px) + thumb (400px) + blur placeholder
