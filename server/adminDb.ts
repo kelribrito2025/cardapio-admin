@@ -106,7 +106,8 @@ export async function getAdminRestaurantsList(filters?: {
     conditions.push(
       or(
         like(establishments.name, `%${filters.search}%`),
-        like(establishments.email, `%${filters.search}%`)
+        like(establishments.email, `%${filters.search}%`),
+        like(users.email, `%${filters.search}%`)
       )
     );
   }
@@ -132,18 +133,19 @@ export async function getAdminRestaurantsList(filters?: {
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-  // Get total count
+  // Get total count (join with users for email search fallback)
   const [totalResult] = await db
     .select({ count: count() })
     .from(establishments)
+    .leftJoin(users, eq(establishments.userId, users.id))
     .where(whereClause);
 
-  // Get restaurants with user info
+  // Get restaurants with user info (join with users to get email fallback)
   const restaurants = await db
     .select({
       id: establishments.id,
       name: establishments.name,
-      email: establishments.email,
+      email: sql<string | null>`COALESCE(${establishments.email}, ${users.email})`.as('email'),
       logo: establishments.logo,
       menuSlug: establishments.menuSlug,
       isOpen: establishments.isOpen,
@@ -158,6 +160,7 @@ export async function getAdminRestaurantsList(filters?: {
       state: establishments.state,
     })
     .from(establishments)
+    .leftJoin(users, eq(establishments.userId, users.id))
     .where(whereClause)
     .orderBy(desc(establishments.createdAt))
     .limit(limit)

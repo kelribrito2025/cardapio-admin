@@ -1,0 +1,31 @@
+{
+  "query": "SELECT e.id, e.name, COALESCE(e.email, 'NULL') as est_email, COALESCE(u.email, 'NULL') as user_email, e.userId FROM establishments e LEFT JOIN users u ON e.userId = u.id WHERE e.name LIKE '%Big%' OR e.name LIKE '%Lanche%' OR e.name LIKE '%roxe%' OR e.name LIKE '%Roxe%'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT e.id, e.name, COALESCE(e.email, 'NULL') as est_email, COALESCE(u.email, 'NULL') as user_email, e.userId FROM establishments e LEFT JOIN users u ON e.userId = u.id WHERE e.name LIKE '%Big%' OR e.name LIKE '%Lanche%' OR e.name LIKE '%roxe%' OR e.name LIKE '%Roxe%'",
+  "rows": [
+    {
+      "id": "60018",
+      "name": "Big Norte",
+      "est_email": "NULL",
+      "user_email": "big@lanches.com.br",
+      "userId": "550919"
+    },
+    {
+      "id": "210002",
+      "name": "Açai Roxedo",
+      "est_email": "NULL",
+      "user_email": "grupo@roxedo.com",
+      "userId": "1144035"
+    },
+    {
+      "id": "210003",
+      "name": "Lanche PS",
+      "est_email": "NULL",
+      "user_email": "rafamex.mex@gmail.com",
+      "userId": "1170607"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\test_email\tuser_email\tuserId\n60018\tBig Norte\tNULL\tbig@lanches.com.br\t550919\n210002\tAçai Roxedo\tNULL\tgrupo@roxedo.com\t1144035\n210003\tLanche PS\tNULL\trafamex.mex@gmail.com\t1170607\n",
+  "stderr": "",
+  "execution_time_ms": 372
+}

@@ -1,0 +1,31 @@
+{
+  "query": "SELECT e.id, e.name, e.email, u.email as user_email, u.name as user_name FROM establishments e LEFT JOIN users u ON e.userId = u.id WHERE e.name LIKE '%Big Norte%' OR e.name LIKE '%Lanche%' OR e.name LIKE '%Roxedo%' OR e.name LIKE '%roxedo%' OR e.name LIKE '%big%' OR e.name LIKE '%lanche%'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT e.id, e.name, e.email, u.email as user_email, u.name as user_name FROM establishments e LEFT JOIN users u ON e.userId = u.id WHERE e.name LIKE '%Big Norte%' OR e.name LIKE '%Lanche%' OR e.name LIKE '%Roxedo%' OR e.name LIKE '%roxedo%' OR e.name LIKE '%big%' OR e.name LIKE '%lanche%'",
+  "rows": [
+    {
+      "id": "60018",
+      "name": "Big Norte",
+      "email": "NULL",
+      "user_email": "big@lanches.com.br",
+      "user_name": "Jéssica"
+    },
+    {
+      "id": "210002",
+      "name": "Açai Roxedo",
+      "email": "NULL",
+      "user_email": "grupo@roxedo.com",
+      "user_name": "grupo"
+    },
+    {
+      "id": "210003",
+      "name": "Lanche PS",
+      "email": "NULL",
+      "user_email": "rafamex.mex@gmail.com",
+      "user_name": "rafamex.mex"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tuser_email\tuser_name\n60018\tBig Norte\tNULL\tbig@lanches.com.br\tJéssica\n210002\tAçai Roxedo\tNULL\tgrupo@roxedo.com\tgrupo\n210003\tLanche PS\tNULL\trafamex.mex@gmail.com\trafamex.mex\n",
+  "stderr": "",
+  "execution_time_ms": 402
+}
