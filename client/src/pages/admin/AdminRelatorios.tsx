@@ -12,6 +12,10 @@ import {
   Users,
   Loader2,
   Info,
+  PieChart as PieChartIcon,
+  Layers,
+  Receipt,
+  UserX,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
@@ -112,108 +116,114 @@ export default function AdminRelatorios() {
       {/* Middle Row: Donut Chart + Details */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Donut Chart */}
-        <div className="bg-card rounded-xl border border-border/50">
-          <div className="px-6 py-3 border-b border-border/50" style={{height: '46px'}}>
-            <h2 className="font-semibold text-base">
-              Distribuição por Status
-            </h2>
-          </div>
-          <div className="p-6">
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={donutData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={70}
-                    outerRadius={110}
-                    paddingAngle={3}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {donutData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value: number, name: string) => [value, name]}
-                    contentStyle={{
-                      borderRadius: "12px",
-                      border: "1px solid #e5e7eb",
-                      boxShadow: "none",
-                      fontSize: "13px",
-                    }}
-                  />
-                  <Legend
-                    verticalAlign="bottom"
-                    height={36}
-                    formatter={(value: string) => {
-                      const item = donutData.find((d) => d.name === value);
-                      return (
-                        <span className="text-sm text-muted-foreground">
-                          {value}: <span className="font-semibold">{item?.value ?? 0}</span>
-                        </span>
-                      );
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+        <div className="bg-card rounded-xl border border-border/50 p-5">
+          {/* Header estilo Acessos ao Cardápio */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+              <PieChartIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
+            <div className="min-w-0">
+              <h3 className="text-base font-semibold text-foreground">Distribuição por Status</h3>
+              <p className="text-xs text-muted-foreground">Proporção de restaurantes por situação atual</p>
+            </div>
+          </div>
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={donutData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={70}
+                  outerRadius={110}
+                  paddingAngle={3}
+                  dataKey="value"
+                  stroke="none"
+                >
+                  {donutData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value: number, name: string) => [value, name]}
+                  contentStyle={{
+                    borderRadius: "12px",
+                    border: "1px solid #e5e7eb",
+                    boxShadow: "none",
+                    fontSize: "13px",
+                  }}
+                />
+                <Legend
+                  verticalAlign="bottom"
+                  height={36}
+                  formatter={(value: string) => {
+                    const item = donutData.find((d) => d.name === value);
+                    return (
+                      <span className="text-sm text-muted-foreground">
+                        {value}: <span className="font-semibold">{item?.value ?? 0}</span>
+                      </span>
+                    );
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
         {/* Plan Distribution Details */}
-        <div className="bg-card rounded-xl border border-border/50">
-          <div className="px-6 py-3 border-b border-border/50" style={{height: '46px'}}>
-            <h2 className="font-semibold text-base">
-              Detalhes por Plano
-            </h2>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              <PlanRow
-                label="Essencial"
-                count={data.planDistribution?.basic ?? 0}
-                price="R$ 29/mês"
-                color="#3b82f6"
-                total={data.totalRestaurants}
-              />
-              <PlanRow
-                label="Pro"
-                count={data.planDistribution?.pro ?? 0}
-                price="R$ 59/mês"
-                color="#8b5cf6"
-                total={data.totalRestaurants}
-              />
-              <PlanRow
-                label="Enterprise"
-                count={data.planDistribution?.enterprise ?? 0}
-                price="R$ 99/mês"
-                color="#f59e0b"
-                total={data.totalRestaurants}
-              />
-              <PlanRow
-                label="Trial Ativo"
-                count={data.activeTrials}
-                price="Gratuito"
-                color="#22c55e"
-                total={data.totalRestaurants}
-              />
-              <PlanRow
-                label="Trial Expirado"
-                count={data.expiredTrials}
-                price="Bloqueado"
-                color="#ef4444"
-                total={data.totalRestaurants}
-              />
+        <div className="bg-card rounded-xl border border-border/50 p-5">
+          {/* Header estilo Acessos ao Cardápio */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+              <Layers className="h-5 w-5 text-violet-600 dark:text-violet-400" />
             </div>
+            <div className="min-w-0">
+              <h3 className="text-base font-semibold text-foreground">Detalhes por Plano</h3>
+              <p className="text-xs text-muted-foreground">Distribuição de restaurantes por tipo de plano</p>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <PlanRow
+              label="Essencial"
+              count={data.planDistribution?.basic ?? 0}
+              price="R$ 29/mês"
+              color="#3b82f6"
+              total={data.totalRestaurants}
+            />
+            <PlanRow
+              label="Pro"
+              count={data.planDistribution?.pro ?? 0}
+              price="R$ 59/mês"
+              color="#8b5cf6"
+              total={data.totalRestaurants}
+            />
+            <PlanRow
+              label="Enterprise"
+              count={data.planDistribution?.enterprise ?? 0}
+              price="R$ 99/mês"
+              color="#f59e0b"
+              total={data.totalRestaurants}
+            />
+            <PlanRow
+              label="Trial Ativo"
+              count={data.activeTrials}
+              price="Gratuito"
+              color="#22c55e"
+              total={data.totalRestaurants}
+            />
+            <PlanRow
+              label="Trial Expirado"
+              count={data.expiredTrials}
+              price="Bloqueado"
+              color="#ef4444"
+              total={data.totalRestaurants}
+            />
+          </div>
 
-            <div className="mt-6 pt-4 border-t border-border/50">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Total</span>
-                <span className="font-bold text-foreground">{data.totalRestaurants} restaurantes</span>
-              </div>
+          <div className="mt-6 pt-4 border-t border-border/50">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Total</span>
+              <span className="font-bold text-foreground">{data.totalRestaurants} restaurantes</span>
             </div>
           </div>
         </div>
@@ -225,16 +235,25 @@ export default function AdminRelatorios() {
           title="Receita Anual Projetada"
           value={formatCurrency(data.annualRevenue)}
           subtitle="Baseado nos restaurantes ativos atuais"
+          icon={DollarSign}
+          iconBg="bg-emerald-100 dark:bg-emerald-500/15"
+          iconColor="text-emerald-600 dark:text-emerald-400"
         />
         <MetricCard
           title="Ticket Médio"
           value={formatCurrency(data.ticketMedio)}
           subtitle="Por restaurante ativo"
+          icon={Receipt}
+          iconBg="bg-amber-100 dark:bg-amber-500/15"
+          iconColor="text-amber-600 dark:text-amber-400"
         />
         <MetricCard
           title="Churn Rate"
           value={`${data.churnRate}%`}
           subtitle="Restaurantes suspensos/cancelados"
+          icon={UserX}
+          iconBg="bg-red-100 dark:bg-red-500/15"
+          iconColor="text-red-600 dark:text-red-400"
         />
       </div>
     </div>
@@ -357,18 +376,30 @@ function MetricCard({
   title,
   value,
   subtitle,
+  icon: Icon,
+  iconBg,
+  iconColor,
 }: {
   title: string;
   value: string;
   subtitle: string;
+  icon: any;
+  iconBg: string;
+  iconColor: string;
 }) {
   return (
-    <div className="bg-card rounded-xl border border-border/50">
-      <div className="px-5 py-5">
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{title}</p>
-        <p className="text-2xl font-bold text-foreground mt-1">{value}</p>
-        <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
+    <div className="bg-card rounded-xl border border-border/50 p-5">
+      {/* Header estilo Acessos ao Cardápio */}
+      <div className="flex items-center gap-3 mb-4">
+        <div className={`h-10 w-10 rounded-xl ${iconBg} flex items-center justify-center flex-shrink-0`} style={{borderRadius: '12px'}}>
+          <Icon className={`h-5 w-5 ${iconColor}`} />
+        </div>
+        <div className="min-w-0">
+          <h3 className="text-base font-semibold text-foreground">{title}</h3>
+          <p className="text-xs text-muted-foreground">{subtitle}</p>
+        </div>
       </div>
+      <p className="text-2xl font-bold text-foreground">{value}</p>
     </div>
   );
 }
@@ -388,25 +419,35 @@ function PlanRow({
 }) {
   const percentage = total > 0 ? (count / total) * 100 : 0;
 
+  // Map color hex to Tailwind bar classes
+  const colorBarMap: Record<string, string> = {
+    '#3b82f6': 'bg-blue-500',
+    '#8b5cf6': 'bg-violet-500',
+    '#f59e0b': 'bg-amber-500',
+    '#22c55e': 'bg-emerald-500',
+    '#ef4444': 'bg-red-500',
+  };
+  const barClass = colorBarMap[color] || 'bg-gray-500';
+
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between text-sm">
+    <div className="group relative">
+      <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-2">
           <div
             className="w-3 h-3 rounded-full flex-shrink-0"
             style={{ backgroundColor: color }}
           />
-          <span className="font-medium text-foreground">{label}</span>
+          <span className="text-sm font-medium text-foreground">{label}</span>
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs text-muted-foreground">{price}</span>
-          <span className="font-semibold text-foreground w-6 text-right">{count}</span>
+          <span className="text-sm font-semibold text-foreground w-6 text-right">{count}</span>
         </div>
       </div>
-      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+      <div className="h-3 bg-muted rounded-full overflow-hidden">
         <div
-          className="h-full rounded-full transition-all duration-500"
-          style={{ width: `${percentage}%`, backgroundColor: color }}
+          className={`h-full rounded-full transition-all duration-500 ${barClass}`}
+          style={{ width: `${Math.max(percentage > 0 ? 3 : 0, percentage)}%` }}
         />
       </div>
     </div>

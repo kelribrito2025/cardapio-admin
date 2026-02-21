@@ -7346,3 +7346,5 @@
 - [x] Corrigir altura dos cards na página /admin/relatorios (igualar à altura dos cards da dashboard)
 - [x] Sincronizar campo email dos 3 restaurantes (Big Norte, Lanche PS, Açaí Roxedo) copiando email do users para establishments
 - [x] Adicionar ícone de info (i) com tooltip nos 4 KPI cards da página /admin/relatorios
+- [x] Ajustar headers dos cards Distribuição por Status, Detalhes por Plano, Receita Anual Projetada, Ticket Médio, Churn Rate no /admin/relatorios para seguir o estilo do card Acessos ao Cardápio (ícone + descrição abaixo)
+- [x] Ajustar barras coloridas do card Detalhes por Plano no /admin/relatorios para seguir o estilo do card Faturamento por canal da página de Finanças
