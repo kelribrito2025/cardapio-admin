@@ -170,7 +170,7 @@ export default function AdminPanelLayout({ children }: AdminPanelLayoutProps) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 lg:p-6 overflow-auto">
+        <main className="flex-1 p-4 lg:p-6 overflow-auto" style={{backgroundColor: '#f9fafb'}}>
           {children}
         </main>
       </div>
