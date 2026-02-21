@@ -680,6 +680,7 @@ export const appRouter = router({
         description: z.string().optional(),
         price: z.string(),
         images: z.array(z.string()).optional(),
+        blurPlaceholder: z.string().nullable().optional(),
         status: z.enum(["active", "paused", "archived"]).optional(),
         stockQuantity: z.number().nullable().optional(),
         hasStock: z.boolean().optional(),
@@ -713,6 +714,7 @@ export const appRouter = router({
         description: z.string().nullable().optional(),
         price: z.string().optional(),
         images: z.array(z.string()).nullable().optional(),
+        blurPlaceholder: z.string().nullable().optional(),
         status: z.enum(["active", "paused", "archived"]).optional(),
         stockQuantity: z.number().nullable().optional(),
         hasStock: z.boolean().optional(),
@@ -2736,7 +2738,7 @@ export const appRouter = router({
           return { url };
         }
 
-        // Produtos — gerar main (1200px) + thumb (400px)
+        // Produtos — gerar main (1200px) + thumb (400px) + blur placeholder
         const processed = await processImage(buffer);
         const mainFileName = `${folder}/${id}.webp`;
         const thumbFileName = `${folder}/${id}_thumb.webp`;
@@ -2746,7 +2748,7 @@ export const appRouter = router({
           mindiStoragePut(thumbFileName, processed.thumbBuffer, "image/webp"),
         ]);
 
-        return { url: mainResult.url, thumbUrl: thumbResult.url };
+        return { url: mainResult.url, thumbUrl: thumbResult.url, blurDataUrl: processed.blurDataUrl };
       }),
   }),
 

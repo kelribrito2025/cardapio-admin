@@ -694,6 +694,13 @@
       "when": 1771550730874,
       "tag": "0098_ancient_lake",
       "breakpoints": true
+    },
+    {
+      "idx": 99,
+      "version": "5",
+      "when": 1771712847298,
+      "tag": "0099_wild_iron_patriot",
+      "breakpoints": true
     }
   ]
 }

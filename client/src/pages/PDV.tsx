@@ -1,6 +1,7 @@
 import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/lib/trpc";
 import { getThumbUrl } from "../../../shared/imageUtils";
+import { BlurImage } from "@/components/BlurImage";
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
@@ -1008,10 +1009,11 @@ export default function PDV() {
                       {/* Imagem */}
                       <div className="h-28 bg-gradient-to-br from-red-500 to-red-600 relative overflow-hidden">
                         {product.images?.[0] ? (
-                          <img
+                          <BlurImage
                             src={getThumbUrl(product.images[0])}
+                            blurDataUrl={(product as any).blurPlaceholder}
                             alt={product.name}
-                            loading="lazy"
+                            containerClassName="w-full h-full"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         ) : (

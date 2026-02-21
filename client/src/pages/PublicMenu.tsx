@@ -1,6 +1,7 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { getThumbUrl } from "../../../shared/imageUtils";
+import { BlurImage } from "@/components/BlurImage";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
@@ -7286,6 +7287,7 @@ function ProductCard({
     description: string | null;
     price: string;
     images: string[] | null;
+    blurPlaceholder?: string | null;
     hasStock: boolean;
     outOfStock?: boolean;
     categoryId?: number | null;
@@ -7324,11 +7326,11 @@ function ProductCard({
         </div>
         <div className="w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
           {mainImage ? (
-            <img
+            <BlurImage
               src={getThumbUrl(mainImage)}
+              blurDataUrl={product.blurPlaceholder}
               alt={product.name}
-              loading="lazy"
-              decoding="async"
+              containerClassName="w-full h-full"
               className="w-full h-full object-cover rounded-r-lg"
             />
           ) : (

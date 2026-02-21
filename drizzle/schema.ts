@@ -151,6 +151,7 @@ export const products = mysqlTable("products", {
   description: text("description"),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   images: json("images").$type<string[]>(),
+  blurPlaceholder: text("blurPlaceholder"),
   status: mysqlEnum("status", ["active", "paused", "archived"]).default("active").notNull(),
   stockQuantity: int("stockQuantity"),
   hasStock: boolean("hasStock").default(false).notNull(),

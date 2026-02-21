@@ -2,6 +2,7 @@ import { AdminLayout } from "@/components/AdminLayout";
 import { PageHeader, StatusBadge, EmptyState, SectionCard } from "@/components/shared";
 import { trpc } from "@/lib/trpc";
 import { getThumbUrl } from "../../../shared/imageUtils";
+import { BlurImage } from "@/components/BlurImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -214,10 +215,11 @@ function SortableProductItem({
                 : "bg-gradient-to-br from-gray-400 to-gray-500 grayscale"
             )}>
             {product.images && product.images.length > 0 ? (
-              <img
+              <BlurImage
                 src={getThumbUrl(product.images[0])}
+                blurDataUrl={product.blurPlaceholder}
                 alt={product.name}
-                loading="lazy"
+                containerClassName="h-full w-full"
                 className="h-full w-full object-cover"
               />
             ) : (

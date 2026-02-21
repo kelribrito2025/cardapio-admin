@@ -7372,3 +7372,11 @@
 - [x] Atualizar componentes frontend para usar thumb em listagens e principal em detalhe
 - [x] Criar script de migração para otimizar todas as imagens existentes de todos os estabelecimentos (334.8MB → 13.3MB, redução de 96%)
 - [x] Escrever testes para o pipeline de processamento de imagens (17 testes passaram)
+- [x] Implementar lazy loading com placeholder blur (~20px base64 inline) nas imagens de produtos
+- [x] Gerar blurhash/placeholder no imageProcessor durante o upload
+- [x] Armazenar placeholder base64 no banco de dados (campo blurPlaceholder nos produtos)
+- [x] Criar componente BlurImage para exibir placeholder enquanto imagem carrega
+- [x] Integrar BlurImage nas páginas de listagem (Catalogo, PDV, PublicMenu)
+- [x] Configurar Cache-Control headers no S3 para cache de longo prazo
+- [x] Migrar imagens existentes para gerar placeholders blur
+- [x] Escrever testes para o pipeline de blur placeholder

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import sharp from "sharp";
-import { processImage, processSingleImage } from "./imageProcessor";
+import { processImage, processSingleImage, generateBlurPlaceholder } from "./imageProcessor";
 import { getThumbUrl, getOptimizedImageUrl } from "../shared/imageUtils";
 
 // Helper: create a test PNG buffer of given dimensions
@@ -83,6 +83,54 @@ describe("imageProcessor", () => {
       const result = await processImage(input);
 
       expect(result.originalSize).toBe(input.length);
+    });
+
+    it("generates a blur placeholder as base64 data URI", async () => {
+      const input = await createTestImage(800, 600);
+      const result = await processImage(input);
+
+      expect(result.blurDataUrl).toBeDefined();
+      expect(result.blurDataUrl).toMatch(/^data:image\/webp;base64,/);
+    });
+
+    it("blur placeholder is very small (<1KB)", async () => {
+      const input = await createTestImage(2000, 1500);
+      const result = await processImage(input);
+
+      // base64 data URI should be well under 1KB
+      expect(result.blurDataUrl.length).toBeLessThan(1024);
+    });
+  });
+
+  describe("generateBlurPlaceholder", () => {
+    it("returns a valid base64 data URI", async () => {
+      const input = await createTestImage(800, 600);
+      const blurDataUrl = await generateBlurPlaceholder(input);
+
+      expect(blurDataUrl).toMatch(/^data:image\/webp;base64,/);
+    });
+
+    it("generates a very small placeholder (<500 bytes)", async () => {
+      const input = await createTestImage(2000, 1500);
+      const blurDataUrl = await generateBlurPlaceholder(input);
+
+      // The base64 string itself should be very small
+      expect(blurDataUrl.length).toBeLessThan(500);
+    });
+
+    it("works with small images without enlarging", async () => {
+      const input = await createTestImage(10, 10);
+      const blurDataUrl = await generateBlurPlaceholder(input);
+
+      expect(blurDataUrl).toMatch(/^data:image\/webp;base64,/);
+    });
+
+    it("is deterministic for the same input", async () => {
+      const input = await createTestImage(400, 300);
+      const blur1 = await generateBlurPlaceholder(input);
+      const blur2 = await generateBlurPlaceholder(input);
+
+      expect(blur1).toBe(blur2);
     });
   });
 

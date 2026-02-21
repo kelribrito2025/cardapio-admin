@@ -15,6 +15,8 @@ export interface ProcessedImage {
   mainBuffer: Buffer;
   /** Buffer da miniatura (max 400px) */
   thumbBuffer: Buffer;
+  /** Placeholder blur em base64 data URI (~20px, <1KB) */
+  blurDataUrl: string;
   /** Largura da imagem principal */
   mainWidth: number;
   /** Altura da imagem principal */
@@ -33,8 +35,10 @@ export interface ProcessedImage {
 
 const MAIN_MAX_WIDTH = 1200;
 const THUMB_MAX_WIDTH = 400;
+const BLUR_WIDTH = 20;
 const MAIN_QUALITY = 80;
 const THUMB_QUALITY = 75;
+const BLUR_QUALITY = 30;
 
 /**
  * Processa um buffer de imagem e gera duas versões otimizadas em WebP.
@@ -75,9 +79,13 @@ export async function processImage(inputBuffer: Buffer): Promise<ProcessedImage>
   const thumbBuffer = await thumbPipeline.toBuffer();
   const thumbMeta = await sharp(thumbBuffer).metadata();
 
+  // Gerar placeholder blur (~20px, base64 inline)
+  const blurDataUrl = await generateBlurPlaceholder(inputBuffer);
+
   return {
     mainBuffer,
     thumbBuffer,
+    blurDataUrl,
     mainWidth: mainMeta.width || 0,
     mainHeight: mainMeta.height || 0,
     thumbWidth: thumbMeta.width || 0,
@@ -89,13 +97,27 @@ export async function processImage(inputBuffer: Buffer): Promise<ProcessedImage>
 }
 
 /**
- * Processa apenas uma versão da imagem (para logos, capas, etc.)
+ * Gera um placeholder blur de ~20px como data URI base64.
+ * Resultado é tipicamente <500 bytes, ideal para inline no HTML/JSON.
  * 
  * @param inputBuffer - Buffer da imagem original
- * @param maxWidth - Largura máxima (default: 1200)
- * @param quality - Qualidade WebP (default: 80)
- * @returns Buffer processado em WebP
+ * @returns Data URI base64 (ex: "data:image/webp;base64,...")
  */
+export async function generateBlurPlaceholder(inputBuffer: Buffer): Promise<string> {
+  const blurBuffer = await sharp(inputBuffer)
+    .rotate()
+    .resize({
+      width: BLUR_WIDTH,
+      withoutEnlargement: true,
+      fit: "inside",
+    })
+    .blur(2)
+    .webp({ quality: BLUR_QUALITY })
+    .toBuffer();
+
+  return `data:image/webp;base64,${blurBuffer.toString("base64")}`;
+}
+
 export async function processSingleImage(
   inputBuffer: Buffer,
   maxWidth = MAIN_MAX_WIDTH,

@@ -51,13 +51,20 @@ export async function mindiStoragePut(
   // Converter string para Buffer se necessário
   const body = typeof data === 'string' ? Buffer.from(data) : data;
 
+  // Determinar Cache-Control baseado no tipo de conteúdo
+  // Imagens: cache longo (1 ano) pois usamos nomes únicos com hash
+  // Outros: cache moderado (1 dia)
+  const isImage = contentType.startsWith("image/");
+  const cacheControl = isImage
+    ? "public, max-age=31536000, immutable"
+    : "public, max-age=86400";
+
   const command = new PutObjectCommand({
     Bucket: ENV.mindiS3Bucket,
     Key: key,
     Body: body,
     ContentType: contentType,
-    // ACL público para leitura (requer bucket configurado para ACLs)
-    // Se o bucket não suportar ACLs, remova esta linha e use política de bucket
+    CacheControl: cacheControl,
   });
 
   await s3Client.send(command);
