@@ -243,12 +243,38 @@ export async function getAdminRestaurantDetail(id: number) {
     }
   }
 
+  // Count admins (users that have an establishment with same userId)
+  const adminCount = owner ? 1 : 0;
+
+  // Plan price mapping
+  const planPriceMap: Record<string, number> = {
+    trial: 0,
+    free: 0,
+    basic: 79.90,
+    pro: 149.90,
+    enterprise: 299.90,
+  };
+  const planPrice = planPriceMap[restaurant.planType] ?? 0;
+
+  // Plan labels
+  const planLabelMap: Record<string, string> = {
+    trial: "Teste",
+    free: "Gratuito",
+    basic: "Essencial",
+    pro: "Pro",
+    enterprise: "Enterprise",
+  };
+  const planLabel = planLabelMap[restaurant.planType] ?? restaurant.planType;
+
   return {
     ...restaurant,
     owner: owner || null,
     trialStatus,
     daysRemaining,
     expirationDate,
+    adminCount,
+    planPrice,
+    planLabel,
   };
 }
 
@@ -421,6 +447,100 @@ export async function seedAdminUser(email: string, passwordHash: string, name: s
   const created = await getAdminByEmail(email);
   console.log("[Seed] Admin user created:", email);
   return created;
+}
+
+// ============ ADMIN IMPERSONATION ============
+
+export async function getRestaurantOwnerOpenId(establishmentId: number): Promise<string | null> {
+  const db = await getDb();
+  if (!db) return null;
+
+  const [restaurant] = await db
+    .select({ userId: establishments.userId })
+    .from(establishments)
+    .where(eq(establishments.id, establishmentId))
+    .limit(1);
+
+  if (!restaurant) return null;
+
+  const [owner] = await db
+    .select({ openId: users.openId })
+    .from(users)
+    .where(eq(users.id, restaurant.userId))
+    .limit(1);
+
+  return owner?.openId || null;
+}
+
+// ============ ADMIN UPDATE SUBSCRIPTION STATUS ============
+
+export async function adminUpdateSubscriptionStatus(
+  establishmentId: number,
+  status: "trial" | "active" | "suspended" | "cancelled"
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const planMap: Record<string, string> = {
+    trial: "trial",
+    active: "basic",
+    suspended: "trial",
+    cancelled: "trial",
+  };
+
+  const updates: Record<string, any> = {};
+
+  if (status === "trial") {
+    updates.planType = "trial";
+    updates.trialStartDate = new Date();
+    updates.trialDays = 15;
+  } else if (status === "active") {
+    // Keep current planType if already paid, otherwise set to basic
+    const [est] = await db.select({ planType: establishments.planType }).from(establishments).where(eq(establishments.id, establishmentId)).limit(1);
+    if (est && ["basic", "pro", "enterprise"].includes(est.planType)) {
+      // Already on a paid plan, just ensure it's active
+      updates.isOpen = true;
+      updates.manuallyClosed = false;
+    } else {
+      updates.planType = "basic";
+      updates.trialStartDate = null;
+      updates.isOpen = true;
+      updates.manuallyClosed = false;
+    }
+  } else if (status === "suspended") {
+    updates.isOpen = false;
+    updates.manuallyClosed = true;
+    updates.manuallyClosedAt = new Date();
+  } else if (status === "cancelled") {
+    updates.planType = "trial";
+    updates.isOpen = false;
+    updates.manuallyClosed = true;
+    updates.manuallyClosedAt = new Date();
+    // Set trial to already expired
+    updates.trialStartDate = new Date(Date.now() - 16 * 24 * 60 * 60 * 1000);
+    updates.trialDays = 15;
+  }
+
+  await db.update(establishments).set(updates).where(eq(establishments.id, establishmentId));
+}
+
+// ============ ADMIN UPDATE CONTACT ============
+
+export async function adminUpdateContact(
+  establishmentId: number,
+  data: { responsibleName?: string; responsiblePhone?: string; email?: string }
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const updates: Record<string, any> = {};
+  if (data.responsibleName !== undefined) updates.responsibleName = data.responsibleName;
+  if (data.responsiblePhone !== undefined) updates.responsiblePhone = data.responsiblePhone;
+  if (data.email !== undefined) updates.email = data.email;
+
+  if (Object.keys(updates).length > 0) {
+    await db.update(establishments).set(updates).where(eq(establishments.id, establishmentId));
+  }
 }
 
 // ============ ADMIN REPORTS ============

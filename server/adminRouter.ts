@@ -11,6 +11,8 @@ import jwt from "jsonwebtoken";
 import { ENV } from "./_core/env";
 import { getSessionCookieOptions } from "./_core/cookies";
 import * as adminDb from "./adminDb";
+import { sdk } from "./_core/sdk";
+import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 
 const ADMIN_COOKIE_NAME = "admin_session";
 const ADMIN_JWT_SECRET = ENV.cookieSecret + "_admin";
@@ -181,6 +183,51 @@ export const adminRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await adminDb.adminForceExpireTrial(input.id);
+        return { success: true };
+      }),
+
+    impersonate: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const ownerOpenId = await adminDb.getRestaurantOwnerOpenId(input.id);
+        if (!ownerOpenId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Proprietário não encontrado para este restaurante." });
+        }
+
+        const sessionToken = await sdk.createSessionToken(ownerOpenId, {
+          name: "Admin Impersonation",
+          expiresInMs: 4 * 60 * 60 * 1000, // 4 hours
+        });
+
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, sessionToken, {
+          ...cookieOptions,
+          maxAge: 4 * 60 * 60 * 1000,
+        });
+
+        return { success: true };
+      }),
+
+    updateSubscriptionStatus: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        status: z.enum(["trial", "active", "suspended", "cancelled"]),
+      }))
+      .mutation(async ({ input }) => {
+        await adminDb.adminUpdateSubscriptionStatus(input.id, input.status);
+        return { success: true };
+      }),
+
+    updateContact: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        responsibleName: z.string().optional(),
+        responsiblePhone: z.string().optional(),
+        email: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await adminDb.adminUpdateContact(id, data);
         return { success: true };
       }),
   }),

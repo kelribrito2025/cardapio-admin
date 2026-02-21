@@ -7315,3 +7315,14 @@
 - [x] Corrigir caracteres Unicode escapados nas abas Impressora e API da página de Configurações
 - [x] Corrigir card de Pedidos em Configurações > Atendimento: estado ativo/desativado não atualiza visualmente após salvar (precisa recarregar a página)
 - [x] Corrigir horário na impressão de recibos: horário não corresponde ao horário exato do pedido (problema de fuso horário)
+
+## Redesign página de detalhes do restaurante (/admin)
+- [x] Header: nome + badge status + slug + botões "Ver Cardápio" e "Acessar Painel" (impersonação)
+- [x] 4 Cards informativos: Mensalidade, Data de Início, Admins, Loja (Ativa/Aberta)
+- [x] Tab Cobrança: gerenciar status manualmente (Período de Teste, Ativo, Suspenso, Cancelado)
+- [x] Tab Contato: nome do proprietário, telefone/WhatsApp, e-mail de contato
+- [x] Tab Histórico: histórico de pagamentos
+- [x] Tab Administradores: listar/criar admins do restaurante
+- [x] Tab Comunicações: placeholder para futuras comunicações
+- [x] Funcionalidade de impersonação: acessar painel do restaurante sem email/senha
+- [x] Manter ações administrativas existentes (bloquear, reabrir menu, resetar trial, etc.)
