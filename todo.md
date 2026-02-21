@@ -7341,3 +7341,4 @@
 - [x] Corrigir login do /admin: toast mostra "Login realizado" mas navegação não acontece no primeiro clique
 - [x] Corrigir login do /admin: toast mostra "Login realizado" mas navegação não acontece no primeiro clique
 - [x] Adicionar ícones no header das páginas Dashboard, Planos e Relatórios do /admin (igual à página de Restaurantes)
+- [x] Igualar filtro de período da Dashboard do /admin ao estilo da Dashboard do restaurante

@@ -86,14 +86,14 @@ export default function AdminDashboard() {
           </div>
 
           {/* Period Filter */}
-          <div className="flex bg-card rounded-xl border border-border/50 p-1">
+          <div className="flex items-center gap-1 bg-muted rounded-xl p-1">
             {(Object.keys(periodLabels) as Period[]).map((p) => (
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                   period === p
-                    ? "bg-red-500 text-white"
+                    ? "bg-card text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
