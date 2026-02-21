@@ -282,21 +282,23 @@ function KPICard({
 
   return (
     <div
-      className={`bg-card rounded-xl border border-border/50 border-t-4 ${c.border} p-5`}
+      className={`bg-card rounded-xl border border-border/50 border-t-4 ${c.border}`}
     >
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          {title}
-        </span>
-        <div className={`p-2.5 rounded-lg ${c.bg}`}>
+      <div className="px-5 py-5 flex items-start justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
+            {title}
+          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className={`w-2 h-2 rounded-full ${c.dot}`} />
+            <span className="text-2xl font-bold tracking-tight">{value}</span>
+          </div>
+          {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
+        </div>
+        <div className={`p-2.5 rounded-lg shrink-0 ${c.bg}`}>
           <Icon className={`h-5 w-5 ${c.icon}`} />
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <span className={`w-2 h-2 rounded-full ${c.dot}`} />
-        <p className="text-2xl font-bold text-foreground">{value}</p>
-      </div>
-      <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
     </div>
   );
 }
@@ -311,10 +313,12 @@ function MetricCard({
   subtitle: string;
 }) {
   return (
-    <div className="bg-card rounded-xl border border-border/50 p-5">
-      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">{title}</p>
-      <p className="text-2xl font-bold text-foreground">{value}</p>
-      <p className="text-xs text-muted-foreground mt-2">{subtitle}</p>
+    <div className="bg-card rounded-xl border border-border/50">
+      <div className="px-5 py-5">
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{title}</p>
+        <p className="text-2xl font-bold text-foreground mt-1">{value}</p>
+        <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
+      </div>
     </div>
   );
 }
