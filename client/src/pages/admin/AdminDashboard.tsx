@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import AdminPanelLayout from "@/components/AdminPanelLayout";
 import {
+  LayoutDashboard,
   UserPlus,
   Clock,
   CreditCard,
@@ -74,9 +75,14 @@ export default function AdminDashboard() {
       <div className="space-y-5">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-sm text-muted-foreground">Visão geral da plataforma</p>
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-red-100 rounded-lg">
+              <LayoutDashboard className="h-6 w-6 text-red-600" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
+              <p className="text-sm text-muted-foreground">Visão geral da plataforma</p>
+            </div>
           </div>
 
           {/* Period Filter */}

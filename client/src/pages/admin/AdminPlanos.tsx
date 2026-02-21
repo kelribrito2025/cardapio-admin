@@ -77,9 +77,14 @@ export default function AdminPlanos() {
     <AdminPanelLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Planos & Assinaturas</h1>
-          <p className="text-sm text-muted-foreground">Gerenciar planos disponíveis na plataforma</p>
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-emerald-100 rounded-lg">
+            <CreditCard className="h-6 w-6 text-emerald-600" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Planos & Assinaturas</h1>
+            <p className="text-sm text-muted-foreground">Gerenciar planos disponíveis na plataforma</p>
+          </div>
         </div>
 
         {/* Plans Grid */}

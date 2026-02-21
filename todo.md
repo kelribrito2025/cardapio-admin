@@ -7340,3 +7340,4 @@
 - [x] Aplicar estilo visual consistente na página /admin Trials
 - [x] Corrigir login do /admin: toast mostra "Login realizado" mas navegação não acontece no primeiro clique
 - [x] Corrigir login do /admin: toast mostra "Login realizado" mas navegação não acontece no primeiro clique
+- [x] Adicionar ícones no header das páginas Dashboard, Planos e Relatórios do /admin (igual à página de Restaurantes)

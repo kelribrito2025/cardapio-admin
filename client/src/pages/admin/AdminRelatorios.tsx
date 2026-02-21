@@ -5,6 +5,7 @@
 import { trpc } from "@/lib/trpc";
 import AdminPanelLayout from "@/components/AdminPanelLayout";
 import {
+  BarChart3,
   Building2,
   DollarSign,
   TrendingUp,
@@ -58,11 +59,16 @@ export default function AdminRelatorios() {
     <AdminPanelLayout>
     <div className="space-y-5">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Relatórios</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Visão geral da plataforma e métricas de negócio
-        </p>
+      <div className="flex items-center gap-3">
+        <div className="p-2.5 bg-purple-100 rounded-lg">
+          <BarChart3 className="h-6 w-6 text-purple-600" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold text-foreground">Relatórios</h1>
+          <p className="text-sm text-muted-foreground">
+            Visão geral da plataforma e métricas de negócio
+          </p>
+        </div>
       </div>
 
       {/* KPI Cards - Top Row */}
