@@ -82,7 +82,6 @@ export default function AdminRelatorios() {
         <KPICard
           title="Total de Restaurantes"
           value={data.totalRestaurants.toString()}
-          subtitle="Cadastrados na plataforma"
           icon={Building2}
           color="blue"
           tooltip="Cadastrados na plataforma"
@@ -90,7 +89,6 @@ export default function AdminRelatorios() {
         <KPICard
           title="Receita Mensal"
           value={formatCurrency(data.monthlyRevenue)}
-          subtitle="Baseada nos planos ativos"
           icon={DollarSign}
           color="green"
           tooltip="Soma dos valores dos planos ativos"
@@ -98,18 +96,16 @@ export default function AdminRelatorios() {
         <KPICard
           title="Taxa de Conversão"
           value={`${data.conversionRate}%`}
-          subtitle="Trial → Plano pago"
           icon={TrendingUp}
           color="orange"
-          tooltip="Percentual de trials convertidos em plano pago"
+          tooltip="Trial → Plano pago"
         />
         <KPICard
           title="Restaurantes Ativos"
           value={data.activeRestaurants.toString()}
-          subtitle="Com plano pago"
           icon={Users}
           color="purple"
-          tooltip="Com plano ativo"
+          tooltip="Com plano pago"
         />
       </div>
 
@@ -312,7 +308,7 @@ function KPICard({
 }: {
   title: string;
   value: string;
-  subtitle: string;
+  subtitle?: string;
   icon: any;
   color: "blue" | "green" | "orange" | "purple";
   tooltip?: string;
