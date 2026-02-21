@@ -7332,3 +7332,7 @@
 - [x] Remover sombras dos cards do /admin (igualar ao estilo da dashboard)
 - [x] Igualar estilo das tabs do /admin com as tabs da dashboard
 - [x] Igualar tipografia e espaçamentos do /admin com a dashboard
+
+## Aplicar estilo visual consistente no /admin Dashboard e Relatórios
+- [x] Aplicar estilo visual da página de detalhes na Dashboard do /admin (cards, tipografia, espaçamentos)
+- [x] Aplicar estilo visual da página de detalhes na página de Relatórios do /admin

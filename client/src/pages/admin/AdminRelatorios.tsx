@@ -56,7 +56,7 @@ export default function AdminRelatorios() {
 
   return (
     <AdminPanelLayout>
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">Relatórios</h1>
@@ -100,100 +100,108 @@ export default function AdminRelatorios() {
       {/* Middle Row: Donut Chart + Details */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Donut Chart */}
-        <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-foreground mb-6">
-            Distribuição por Status
-          </h2>
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={donutData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={70}
-                  outerRadius={110}
-                  paddingAngle={3}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {donutData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value: number, name: string) => [value, name]}
-                  contentStyle={{
-                    borderRadius: "12px",
-                    border: "1px solid #e5e7eb",
-                    boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
-                    fontSize: "13px",
-                  }}
-                />
-                <Legend
-                  verticalAlign="bottom"
-                  height={36}
-                  formatter={(value: string, entry: any) => {
-                    const item = donutData.find((d) => d.name === value);
-                    return (
-                      <span className="text-sm text-muted-foreground">
-                        {value}: <span className="font-semibold">{item?.value ?? 0}</span>
-                      </span>
-                    );
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+        <div className="bg-card rounded-xl border border-border/50">
+          <div className="px-6 py-3 border-b border-border/50" style={{height: '46px'}}>
+            <h2 className="font-semibold text-base">
+              Distribuição por Status
+            </h2>
+          </div>
+          <div className="p-6">
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={donutData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={70}
+                    outerRadius={110}
+                    paddingAngle={3}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {donutData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number, name: string) => [value, name]}
+                    contentStyle={{
+                      borderRadius: "12px",
+                      border: "1px solid #e5e7eb",
+                      boxShadow: "none",
+                      fontSize: "13px",
+                    }}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    height={36}
+                    formatter={(value: string) => {
+                      const item = donutData.find((d) => d.name === value);
+                      return (
+                        <span className="text-sm text-muted-foreground">
+                          {value}: <span className="font-semibold">{item?.value ?? 0}</span>
+                        </span>
+                      );
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
 
         {/* Plan Distribution Details */}
-        <div className="bg-card rounded-2xl border border-border/50 p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-foreground mb-6">
-            Detalhes por Plano
-          </h2>
-          <div className="space-y-4">
-            <PlanRow
-              label="Essencial"
-              count={data.planDistribution?.basic ?? 0}
-              price="R$ 29/mês"
-              color="#3b82f6"
-              total={data.totalRestaurants}
-            />
-            <PlanRow
-              label="Pro"
-              count={data.planDistribution?.pro ?? 0}
-              price="R$ 59/mês"
-              color="#8b5cf6"
-              total={data.totalRestaurants}
-            />
-            <PlanRow
-              label="Enterprise"
-              count={data.planDistribution?.enterprise ?? 0}
-              price="R$ 99/mês"
-              color="#f59e0b"
-              total={data.totalRestaurants}
-            />
-            <PlanRow
-              label="Trial Ativo"
-              count={data.activeTrials}
-              price="Gratuito"
-              color="#22c55e"
-              total={data.totalRestaurants}
-            />
-            <PlanRow
-              label="Trial Expirado"
-              count={data.expiredTrials}
-              price="Bloqueado"
-              color="#ef4444"
-              total={data.totalRestaurants}
-            />
+        <div className="bg-card rounded-xl border border-border/50">
+          <div className="px-6 py-3 border-b border-border/50" style={{height: '46px'}}>
+            <h2 className="font-semibold text-base">
+              Detalhes por Plano
+            </h2>
           </div>
+          <div className="p-6">
+            <div className="space-y-4">
+              <PlanRow
+                label="Essencial"
+                count={data.planDistribution?.basic ?? 0}
+                price="R$ 29/mês"
+                color="#3b82f6"
+                total={data.totalRestaurants}
+              />
+              <PlanRow
+                label="Pro"
+                count={data.planDistribution?.pro ?? 0}
+                price="R$ 59/mês"
+                color="#8b5cf6"
+                total={data.totalRestaurants}
+              />
+              <PlanRow
+                label="Enterprise"
+                count={data.planDistribution?.enterprise ?? 0}
+                price="R$ 99/mês"
+                color="#f59e0b"
+                total={data.totalRestaurants}
+              />
+              <PlanRow
+                label="Trial Ativo"
+                count={data.activeTrials}
+                price="Gratuito"
+                color="#22c55e"
+                total={data.totalRestaurants}
+              />
+              <PlanRow
+                label="Trial Expirado"
+                count={data.expiredTrials}
+                price="Bloqueado"
+                color="#ef4444"
+                total={data.totalRestaurants}
+              />
+            </div>
 
-          <div className="mt-6 pt-4 border-t border-border/50">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Total</span>
-              <span className="font-bold text-foreground">{data.totalRestaurants} restaurantes</span>
+            <div className="mt-6 pt-4 border-t border-border/50">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Total</span>
+                <span className="font-bold text-foreground">{data.totalRestaurants} restaurantes</span>
+              </div>
             </div>
           </div>
         </div>
@@ -239,24 +247,28 @@ function KPICard({
 }) {
   const colorMap = {
     blue: {
-      bg: "bg-blue-50",
-      icon: "text-blue-500",
+      bg: "bg-blue-100",
+      icon: "text-blue-600",
       border: "border-t-blue-500",
+      dot: "bg-blue-500",
     },
     green: {
-      bg: "bg-green-50",
-      icon: "text-green-500",
-      border: "border-t-green-500",
+      bg: "bg-emerald-100",
+      icon: "text-emerald-600",
+      border: "border-t-emerald-500",
+      dot: "bg-emerald-500",
     },
     orange: {
-      bg: "bg-orange-50",
-      icon: "text-orange-500",
+      bg: "bg-orange-100",
+      icon: "text-orange-600",
       border: "border-t-orange-500",
+      dot: "bg-orange-500",
     },
     purple: {
-      bg: "bg-purple-50",
-      icon: "text-purple-500",
+      bg: "bg-purple-100",
+      icon: "text-purple-600",
       border: "border-t-purple-500",
+      dot: "bg-purple-500",
     },
   };
 
@@ -264,17 +276,20 @@ function KPICard({
 
   return (
     <div
-      className={`bg-card rounded-2xl border border-border/50 border-t-4 ${c.border} p-5 shadow-sm`}
+      className={`bg-card rounded-xl border border-border/50 border-t-4 ${c.border} p-5`}
     >
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
           {title}
         </span>
-        <div className={`w-9 h-9 rounded-xl ${c.bg} flex items-center justify-center`}>
+        <div className={`p-2.5 rounded-lg ${c.bg}`}>
           <Icon className={`h-5 w-5 ${c.icon}`} />
         </div>
       </div>
-      <p className="text-2xl font-bold text-foreground">{value}</p>
+      <div className="flex items-center gap-2">
+        <span className={`w-2 h-2 rounded-full ${c.dot}`} />
+        <p className="text-2xl font-bold text-foreground">{value}</p>
+      </div>
       <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
     </div>
   );
@@ -290,8 +305,8 @@ function MetricCard({
   subtitle: string;
 }) {
   return (
-    <div className="bg-card rounded-2xl border border-border/50 p-5 shadow-sm">
-      <p className="text-sm font-medium text-muted-foreground mb-1">{title}</p>
+    <div className="bg-card rounded-xl border border-border/50 p-5">
+      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">{title}</p>
       <p className="text-2xl font-bold text-foreground">{value}</p>
       <p className="text-xs text-muted-foreground mt-2">{subtitle}</p>
     </div>
