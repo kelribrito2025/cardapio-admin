@@ -7338,3 +7338,5 @@
 - [x] Aplicar estilo visual da página de detalhes na página de Relatórios do /admin
 - [x] Aplicar estilo visual da lista de estoque na página /admin/restaurantes
 - [x] Aplicar estilo visual consistente na página /admin Trials
+- [x] Corrigir login do /admin: toast mostra "Login realizado" mas navegação não acontece no primeiro clique
+- [x] Corrigir login do /admin: toast mostra "Login realizado" mas navegação não acontece no primeiro clique

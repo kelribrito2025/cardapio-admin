@@ -14,6 +14,7 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { forceTheme } = useTheme();
+  const utils = trpc.useUtils();
 
   // Forçar tema light no /admin/login - nunca herdar dark mode
   useEffect(() => {
@@ -24,7 +25,10 @@ export default function AdminLogin() {
   }, [forceTheme]);
 
   const loginMutation = trpc.admin.auth.login.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Invalidar o cache do admin.auth.me ANTES de navegar
+      // para que o AdminPanelLayout refaça a query com o novo cookie
+      await utils.admin.auth.me.invalidate();
       toast.success("Login realizado com sucesso!");
       navigate("/admin");
     },
