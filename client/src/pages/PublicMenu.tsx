@@ -1,5 +1,6 @@
 import { useParams } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { getThumbUrl } from "../../../shared/imageUtils";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
@@ -7324,7 +7325,7 @@ function ProductCard({
         <div className="w-20 h-20 md:w-24 md:h-24 flex-shrink-0">
           {mainImage ? (
             <img
-              src={mainImage}
+              src={getThumbUrl(mainImage)}
               alt={product.name}
               loading="lazy"
               decoding="async"

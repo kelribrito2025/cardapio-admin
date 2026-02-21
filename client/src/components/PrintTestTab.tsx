@@ -970,6 +970,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
                             const result = await uploadImageMutation.mutateAsync({
                               base64,
                               mimeType: file.type,
+                              singleVersion: true,
                             });
                             setQrCodeUrl(result.url);
                             toast.success("QR Code carregado!");

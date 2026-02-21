@@ -5,6 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import { mindiStoragePut } from "./mindiStorage";
+import { processImage, processSingleImage } from "./imageProcessor";
 import { nanoid } from "nanoid";
 import bcrypt from "bcryptjs";
 import { ENV } from "./_core/env";
@@ -2720,21 +2721,32 @@ export const appRouter = router({
         base64: z.string(),
         mimeType: z.string(),
         folder: z.string().optional(),
+        singleVersion: z.boolean().optional(),
       }))
       .mutation(async ({ input }) => {
-        const { base64, mimeType, folder = "products" } = input;
-        
-        // Extract extension from mime type
-        const ext = mimeType.split("/")[1] || "jpg";
-        const fileName = `${folder}/${nanoid()}.${ext}`;
-        
-        // Convert base64 to buffer
+        const { base64, mimeType, folder = "products", singleVersion = false } = input;
         const buffer = Buffer.from(base64, "base64");
-        
-        // Upload to S3 (bucket próprio do usuário)
-        const { url } = await mindiStoragePut(fileName, buffer, mimeType);
-        
-        return { url };
+        const id = nanoid();
+
+        if (singleVersion) {
+          // Logos, capas, QR codes — apenas uma versão otimizada
+          const processed = await processSingleImage(buffer);
+          const fileName = `${folder}/${id}.webp`;
+          const { url } = await mindiStoragePut(fileName, processed.buffer, "image/webp");
+          return { url };
+        }
+
+        // Produtos — gerar main (1200px) + thumb (400px)
+        const processed = await processImage(buffer);
+        const mainFileName = `${folder}/${id}.webp`;
+        const thumbFileName = `${folder}/${id}_thumb.webp`;
+
+        const [mainResult, thumbResult] = await Promise.all([
+          mindiStoragePut(mainFileName, processed.mainBuffer, "image/webp"),
+          mindiStoragePut(thumbFileName, processed.thumbBuffer, "image/webp"),
+        ]);
+
+        return { url: mainResult.url, thumbUrl: thumbResult.url };
       }),
   }),
 

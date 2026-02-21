@@ -1,5 +1,6 @@
 import { AdminLayout } from "@/components/AdminLayout";
 import { trpc } from "@/lib/trpc";
+import { getThumbUrl } from "../../../shared/imageUtils";
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
@@ -1008,8 +1009,9 @@ export default function PDV() {
                       <div className="h-28 bg-gradient-to-br from-red-500 to-red-600 relative overflow-hidden">
                         {product.images?.[0] ? (
                           <img
-                            src={product.images[0]}
+                            src={getThumbUrl(product.images[0])}
                             alt={product.name}
+                            loading="lazy"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         ) : (

@@ -860,8 +860,9 @@ export default function Configuracoes() {
         
         const result = await uploadMutation.mutateAsync({
           base64,
-          mimeType: "image/jpeg",
+          mimeType: "image/webp",
           folder: "establishments",
+          singleVersion: true,
         });
 
         toast.dismiss("upload");

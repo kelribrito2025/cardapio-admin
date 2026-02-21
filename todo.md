@@ -7364,3 +7364,11 @@
 - [x] Upload das imagens geradas para S3 e atualizar registros no banco
 - [x] Reformular logo do Imperial Casa de Carnes com estilo mais profissional (manter elementos originais)
 - [x] Reformular foto de capa do Imperial Casa de Carnes com estilo mais profissional de açougue/churrasco
+- [x] Diagnóstico do pipeline de imagens: verificar compressão, redimensionamento, formato e tamanho médio
+- [x] Instalar sharp como dependência do servidor
+- [x] Criar módulo server/imageProcessor.ts para redimensionamento e conversão WebP
+- [x] Atualizar rota upload.image para gerar duas versões (thumb 400px + principal 1200px) em WebP q75-80
+- [x] Adicionar validação no frontend (dimensões máximas, limite de tamanho de ficheiro)
+- [x] Atualizar componentes frontend para usar thumb em listagens e principal em detalhe
+- [x] Criar script de migração para otimizar todas as imagens existentes de todos os estabelecimentos (334.8MB → 13.3MB, redução de 96%)
+- [x] Escrever testes para o pipeline de processamento de imagens (17 testes passaram)

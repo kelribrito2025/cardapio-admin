@@ -1,6 +1,7 @@
 import { AdminLayout } from "@/components/AdminLayout";
 import { PageHeader, StatusBadge, EmptyState, SectionCard } from "@/components/shared";
 import { trpc } from "@/lib/trpc";
+import { getThumbUrl } from "../../../shared/imageUtils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -214,8 +215,9 @@ function SortableProductItem({
             )}>
             {product.images && product.images.length > 0 ? (
               <img
-                src={product.images[0]}
+                src={getThumbUrl(product.images[0])}
                 alt={product.name}
+                loading="lazy"
                 className="h-full w-full object-cover"
               />
             ) : (

@@ -49,6 +49,7 @@ async function getCroppedImg(
 
   const data = ctx.getImageData(0, 0, safeArea, safeArea);
 
+  // Recortar na resolução original
   canvas.width = pixelCrop.width;
   canvas.height = pixelCrop.height;
 
@@ -57,6 +58,26 @@ async function getCroppedImg(
     Math.round(0 - safeArea / 2 + image.width * 0.5 - pixelCrop.x),
     Math.round(0 - safeArea / 2 + image.height * 0.5 - pixelCrop.y)
   );
+
+  // Limitar a 1200px de largura no cliente (pré-otimização)
+  const MAX_CLIENT_WIDTH = 1200;
+  if (canvas.width > MAX_CLIENT_WIDTH) {
+    const scale = MAX_CLIENT_WIDTH / canvas.width;
+    const resizedCanvas = document.createElement("canvas");
+    resizedCanvas.width = MAX_CLIENT_WIDTH;
+    resizedCanvas.height = Math.round(canvas.height * scale);
+    const resizedCtx = resizedCanvas.getContext("2d");
+    if (resizedCtx) {
+      resizedCtx.drawImage(canvas, 0, 0, resizedCanvas.width, resizedCanvas.height);
+      return new Promise((resolve, reject) => {
+        resizedCanvas.toBlob(
+          (blob) => blob ? resolve(blob) : reject(new Error("Canvas is empty")),
+          "image/webp",
+          0.85
+        );
+      });
+    }
+  }
 
   return new Promise((resolve, reject) => {
     canvas.toBlob(
@@ -67,8 +88,8 @@ async function getCroppedImg(
           reject(new Error("Canvas is empty"));
         }
       },
-      "image/jpeg",
-      0.9
+      "image/webp",
+      0.85
     );
   });
 }
