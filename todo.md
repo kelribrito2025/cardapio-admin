@@ -7349,3 +7349,13 @@
 - [x] Ajustar headers dos cards Distribuição por Status, Detalhes por Plano, Receita Anual Projetada, Ticket Médio, Churn Rate no /admin/relatorios para seguir o estilo do card Acessos ao Cardápio (ícone + descrição abaixo)
 - [x] Ajustar barras coloridas do card Detalhes por Plano no /admin/relatorios para seguir o estilo do card Faturamento por canal da página de Finanças
 - [x] Remover textos de subtítulo dos 4 KPI cards no /admin/relatorios (info já está nos tooltips)
+- [x] Criar conta demo para Imperial Casa de Carnes (imperial@demo.com / 12345678)
+- [x] Configurar estabelecimento com foto de capa, perfil, endereço, horários, redes sociais
+- [x] Criar categoria Semanal com 3 itens do cardápio original
+- [x] Criar categoria Kit Semanal Personalizado com 6 itens
+- [x] Criar categoria Carvão com 3 itens
+- [x] Criar categoria Carne de Primeira com 6 itens
+- [x] Criar categoria Carne de Segunda com 6 itens
+- [x] Criar categoria Preço Único com 6 itens
+- [x] Criar categoria Linguiças com 6 itens
+- [x] Todos os itens devem ter foto, preço e descrição do cardápio original
