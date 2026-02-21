@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useLocation, useSearch } from "wouter";
 import { trpc } from "@/lib/trpc";
 import AdminPanelLayout from "@/components/AdminPanelLayout";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +19,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -32,6 +39,9 @@ import {
   Loader2,
   Store,
   Eye,
+  MoreHorizontal,
+  XCircle,
+  CheckCircle,
 } from "lucide-react";
 
 type TrialFilter = "all" | "active" | "expiring_3days" | "expiring_1day" | "expired";
@@ -44,23 +54,27 @@ const filterLabels: Record<TrialFilter, string> = {
   expired: "Expirados",
 };
 
-const statusBadge = (status: string) => {
-  const styles: Record<string, string> = {
-    active: "bg-green-100 text-green-700",
-    expiring_soon: "bg-amber-100 text-amber-700",
-    expired: "bg-red-100 text-red-700",
-  };
-  const labels: Record<string, string> = {
-    active: "Ativo",
-    expiring_soon: "Expirando",
-    expired: "Expirado",
-  };
+function getStatusBadge(status: string) {
+  if (status === "expired") {
+    return (
+      <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 gap-1">
+        <XCircle className="h-3.5 w-3.5" /> Expirado
+      </Badge>
+    );
+  }
+  if (status === "expiring_soon") {
+    return (
+      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 gap-1">
+        <AlertTriangle className="h-3.5 w-3.5" /> Expirando
+      </Badge>
+    );
+  }
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${styles[status] || "bg-muted text-foreground"}`}>
-      {labels[status] || status}
-    </span>
+    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 gap-1">
+      <CheckCircle className="h-3.5 w-3.5" /> Ativo
+    </Badge>
   );
-};
+}
 
 export default function AdminTrials() {
   const [, navigate] = useLocation();
@@ -98,13 +112,18 @@ export default function AdminTrials() {
     onError: (err) => toast.error(err.message),
   });
 
+  const expiredCount = trials?.filter((t: any) => t.status === "expired").length || 0;
+
   return (
     <AdminPanelLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-blue-100 rounded-lg">
+            <Timer className="h-6 w-6 text-blue-600" />
+          </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Trials</h1>
+            <h1 className="text-xl font-bold text-foreground">Trials</h1>
             <p className="text-sm text-muted-foreground">Gerenciar períodos de avaliação</p>
           </div>
         </div>
@@ -115,131 +134,195 @@ export default function AdminTrials() {
             <button
               key={key}
               onClick={() => setFilter(key)}
-              className={`px-4 py-2 text-sm font-medium rounded-xl transition-colors ${
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                 filter === key
                   ? "bg-red-500 text-white"
-                  : "bg-card text-muted-foreground border border-border hover:bg-muted/50"
+                  : "bg-card text-muted-foreground border border-border/50 hover:bg-muted/50"
               }`}
             >
               {label}
-              {key === "expired" && trials && (
+              {key === "expired" && expiredCount > 0 && (
                 <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-xs bg-red-600 text-white">
-                  {trials.filter((t: any) => t.status === "expired").length}
+                  {expiredCount}
                 </span>
               )}
             </button>
           ))}
         </div>
 
-        {/* Trials List */}
+        {/* Trials Table */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          </div>
+        ) : !trials || trials.length === 0 ? (
+          <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+              <Clock className="h-10 w-10 mb-3 opacity-40" />
+              <p className="font-medium">Nenhum trial encontrado</p>
+              <p className="text-sm mt-1">Tente ajustar os filtros</p>
+            </div>
           </div>
         ) : (
-          <Card>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border/50 bg-gray-50/50">
-                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Restaurante</th>
-                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground hidden md:table-cell">Email</th>
-                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Status</th>
-                      <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Tempo Restante</th>
-                      <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {!trials || trials.length === 0 ? (
-                      <tr>
-                        <td colSpan={5} className="text-center py-12 text-muted-foreground">
-                          <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                          Nenhum trial encontrado
-                        </td>
-                      </tr>
-                    ) : (
-                      trials.map((t: any) => (
-                        <tr key={t.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                          <td className="px-4 py-3">
-                            <p className="font-medium text-foreground">{t.name}</p>
-                          </td>
-                          <td className="px-4 py-3 hidden md:table-cell">
-                            <span className="text-muted-foreground text-xs">{t.email || "—"}</span>
-                          </td>
-                          <td className="px-4 py-3">
-                            {statusBadge(t.status)}
-                          </td>
-                          <td className="px-4 py-3">
-                            {t.status === "expired" ? (
-                              <span className="text-red-500 font-semibold">Expirado</span>
-                            ) : t.daysRemaining > 1 ? (
-                              <span className={`font-medium ${t.daysRemaining <= 3 ? "text-amber-500" : "text-foreground"}`}>
-                                {t.daysRemaining} dias
-                              </span>
-                            ) : (
-                              <span className="text-amber-500 font-medium">{t.hoursRemaining}h</span>
+          <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border/50 bg-muted/30">
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Restaurante</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Email</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Tempo Restante</th>
+                    <th className="text-right p-4 text-sm font-medium text-muted-foreground">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {trials.map((t: any) => (
+                    <tr
+                      key={t.id}
+                      className="border-b border-border/30 hover:bg-muted/20 transition-colors cursor-pointer"
+                      onClick={() => navigate(`/admin/restaurantes/${t.id}`)}
+                    >
+                      <td className="p-4">
+                        <p className="font-medium">{t.name}</p>
+                      </td>
+                      <td className="p-4">
+                        <span className="text-sm text-muted-foreground">{t.email || "—"}</span>
+                      </td>
+                      <td className="p-4">
+                        {getStatusBadge(t.status)}
+                      </td>
+                      <td className="p-4">
+                        {t.status === "expired" ? (
+                          <span className="text-sm text-red-500 font-medium">Expirado</span>
+                        ) : t.daysRemaining > 1 ? (
+                          <span className={`text-sm font-medium ${t.daysRemaining <= 3 ? "text-amber-500" : "text-muted-foreground"}`}>
+                            {t.daysRemaining} dias
+                          </span>
+                        ) : (
+                          <span className="text-sm text-amber-500 font-medium">{t.hoursRemaining}h</span>
+                        )}
+                      </td>
+                      <td className="p-4 text-right" onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => navigate(`/admin/restaurantes/${t.id}`)}>
+                              <Eye className="h-4 w-4 mr-2" />
+                              Ver detalhes
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => setActionDialog({ id: t.id, name: t.name, action: "extend" })}>
+                              <Timer className="h-4 w-4 mr-2 text-blue-600" />
+                              Estender trial
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setActionDialog({ id: t.id, name: t.name, action: "convert" })}>
+                              <CreditCard className="h-4 w-4 mr-2 text-green-600" />
+                              Converter para pago
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setActionDialog({ id: t.id, name: t.name, action: "reset" })}>
+                              <RotateCcw className="h-4 w-4 mr-2 text-blue-600" />
+                              Resetar trial
+                            </DropdownMenuItem>
+                            {t.status !== "expired" && (
+                              <DropdownMenuItem
+                                onClick={() => setActionDialog({ id: t.id, name: t.name, action: "forceExpire" })}
+                                className="text-red-600 focus:text-red-600"
+                              >
+                                <Zap className="h-4 w-4 mr-2" />
+                                Forçar expiração
+                              </DropdownMenuItem>
                             )}
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center justify-end gap-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                                title="Ver detalhes"
-                                onClick={() => navigate(`/admin/restaurantes/${t.id}`)}
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                                title="Estender trial"
-                                onClick={() => setActionDialog({ id: t.id, name: t.name, action: "extend" })}
-                              >
-                                <Timer className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                                title="Converter para pago"
-                                onClick={() => setActionDialog({ id: t.id, name: t.name, action: "convert" })}
-                              >
-                                <CreditCard className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                                title="Resetar trial"
-                                onClick={() => setActionDialog({ id: t.id, name: t.name, action: "reset" })}
-                              >
-                                <RotateCcw className="h-4 w-4" />
-                              </Button>
-                              {t.status !== "expired" && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-8 w-8 p-0 text-red-500"
-                                  title="Forçar expiração"
-                                  onClick={() => setActionDialog({ id: t.id, name: t.name, action: "forceExpire" })}
-                                >
-                                  <Zap className="h-4 w-4" />
-                                </Button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-border/30">
+              {trials.map((t: any) => (
+                <div
+                  key={t.id}
+                  className="p-4 hover:bg-muted/20 transition-colors"
+                  onClick={() => navigate(`/admin/restaurantes/${t.id}`)}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="font-medium text-sm">{t.name}</p>
+                      <p className="text-xs text-muted-foreground">{t.email || "—"}</p>
+                    </div>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => navigate(`/admin/restaurantes/${t.id}`)}>
+                            <Eye className="h-4 w-4 mr-2" />
+                            Ver detalhes
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => setActionDialog({ id: t.id, name: t.name, action: "extend" })}>
+                            <Timer className="h-4 w-4 mr-2 text-blue-600" />
+                            Estender trial
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setActionDialog({ id: t.id, name: t.name, action: "convert" })}>
+                            <CreditCard className="h-4 w-4 mr-2 text-green-600" />
+                            Converter para pago
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setActionDialog({ id: t.id, name: t.name, action: "reset" })}>
+                            <RotateCcw className="h-4 w-4 mr-2 text-blue-600" />
+                            Resetar trial
+                          </DropdownMenuItem>
+                          {t.status !== "expired" && (
+                            <DropdownMenuItem
+                              onClick={() => setActionDialog({ id: t.id, name: t.name, action: "forceExpire" })}
+                              className="text-red-600 focus:text-red-600"
+                            >
+                              <Zap className="h-4 w-4 mr-2" />
+                              Forçar expiração
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {getStatusBadge(t.status)}
+                    {t.status === "expired" ? (
+                      <span className="text-xs text-red-500 font-medium">Expirado</span>
+                    ) : t.daysRemaining > 1 ? (
+                      <span className={`text-xs font-medium ${t.daysRemaining <= 3 ? "text-amber-500" : "text-muted-foreground"}`}>
+                        {t.daysRemaining} dias restantes
+                      </span>
+                    ) : (
+                      <span className="text-xs text-amber-500 font-medium">{t.hoursRemaining}h restantes</span>
                     )}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer count */}
+            <div className="px-4 py-3 border-t border-border/50">
+              <span className="text-xs text-muted-foreground">
+                {trials.length} trial{trials.length !== 1 ? "s" : ""} encontrado{trials.length !== 1 ? "s" : ""}
+              </span>
+            </div>
+          </div>
         )}
       </div>
 
