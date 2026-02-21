@@ -1,0 +1,25 @@
+{
+  "query": "SELECT id, name, email FROM establishments WHERE id IN (60018, 210002, 210003)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, email FROM establishments WHERE id IN (60018, 210002, 210003)",
+  "rows": [
+    {
+      "id": "60018",
+      "name": "Big Norte",
+      "email": "big@lanches.com.br"
+    },
+    {
+      "id": "210002",
+      "name": "Açai Roxedo",
+      "email": "grupo@roxedo.com"
+    },
+    {
+      "id": "210003",
+      "name": "Lanche PS",
+      "email": "rafamex.mex@gmail.com"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\n60018\tBig Norte\tbig@lanches.com.br\n210002\tAçai Roxedo\tgrupo@roxedo.com\n210003\tLanche PS\trafamex.mex@gmail.com\n",
+  "stderr": "",
+  "execution_time_ms": 385
+}

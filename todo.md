@@ -7344,3 +7344,5 @@
 - [x] Igualar filtro de período da Dashboard do /admin ao estilo da Dashboard do restaurante
 - [x] Corrigir emails não aparecendo para alguns restaurantes na lista do /admin (Big Norte, Lanche PS, Açaí Roxedo)
 - [x] Corrigir altura dos cards na página /admin/relatorios (igualar à altura dos cards da dashboard)
+- [x] Sincronizar campo email dos 3 restaurantes (Big Norte, Lanche PS, Açaí Roxedo) copiando email do users para establishments
+- [x] Adicionar ícone de info (i) com tooltip nos 4 KPI cards da página /admin/relatorios

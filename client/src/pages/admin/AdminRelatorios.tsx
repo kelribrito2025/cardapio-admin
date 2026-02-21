@@ -11,7 +11,9 @@ import {
   TrendingUp,
   Users,
   Loader2,
+  Info,
 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 
 export default function AdminRelatorios() {
@@ -79,6 +81,7 @@ export default function AdminRelatorios() {
           subtitle="Cadastrados na plataforma"
           icon={Building2}
           color="blue"
+          tooltip="Cadastrados na plataforma"
         />
         <KPICard
           title="Receita Mensal"
@@ -86,6 +89,7 @@ export default function AdminRelatorios() {
           subtitle="Baseada nos planos ativos"
           icon={DollarSign}
           color="green"
+          tooltip="Soma dos valores dos planos ativos"
         />
         <KPICard
           title="Taxa de Conversão"
@@ -93,6 +97,7 @@ export default function AdminRelatorios() {
           subtitle="Trial → Plano pago"
           icon={TrendingUp}
           color="orange"
+          tooltip="Percentual de trials convertidos em plano pago"
         />
         <KPICard
           title="Restaurantes Ativos"
@@ -100,6 +105,7 @@ export default function AdminRelatorios() {
           subtitle="Com plano pago"
           icon={Users}
           color="purple"
+          tooltip="Com plano ativo"
         />
       </div>
 
@@ -238,18 +244,59 @@ export default function AdminRelatorios() {
 
 // ============ Sub-components ============
 
+function InfoTooltip({ text }: { text: string }) {
+  const [show, setShow] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!show) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setShow(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [show]);
+
+  return (
+    <div className="relative inline-flex" ref={ref}>
+      <button
+        type="button"
+        className="text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        onClick={() => setShow((prev) => !prev)}
+        aria-label="Informação"
+      >
+        <Info className="h-3.5 w-3.5" />
+      </button>
+      {show && (
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50">
+          <div className="bg-foreground text-background text-xs rounded-lg px-3 py-1.5 whitespace-nowrap shadow-lg">
+            {text}
+            <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[5px] border-t-foreground" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function KPICard({
   title,
   value,
   subtitle,
   icon: Icon,
   color,
+  tooltip,
 }: {
   title: string;
   value: string;
   subtitle: string;
   icon: any;
   color: "blue" | "green" | "orange" | "purple";
+  tooltip?: string;
 }) {
   const colorMap = {
     blue: {
@@ -286,9 +333,12 @@ function KPICard({
     >
       <div className="px-5 py-5 flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
-            {title}
-          </p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
+              {title}
+            </p>
+            {tooltip && <InfoTooltip text={tooltip} />}
+          </div>
           <div className="flex items-center gap-2 mt-1">
             <span className={`w-2 h-2 rounded-full ${c.dot}`} />
             <span className="text-2xl font-bold tracking-tight">{value}</span>
