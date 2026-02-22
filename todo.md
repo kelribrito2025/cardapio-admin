@@ -7436,3 +7436,10 @@
 - [x] Corrigir página BotWhatsApp para usar AdminLayout com sidebar
 - [x] Ajustar espaçamentos e visual da página para seguir o padrão do sistema
 - [x] Criar API Key de teste e validar todos os 11 endpoints com curl (11/11 passaram)
+
+## Bug: Notificação de entregador ao aceitar pedido envia para todos
+- [x] Investigar fluxo de notificação ao aceitar pedido vs marcar como pronto
+- [x] Corrigir backend: retornar lista de entregadores em vez de broadcast quando on_accepted e 2+ entregadores
+- [x] Corrigir frontend: interceptar resposta e mostrar modal de seleção de entregador no aceite
+- [x] Usar mutation correta (driver.assignToOrder) no modal quando contexto é aceite
+- [x] Testar e verificar a correção (0 erros TypeScript, servidor OK)

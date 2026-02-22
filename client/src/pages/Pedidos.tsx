@@ -490,7 +490,16 @@ export default function Pedidos() {
     onSettled: () => {
       utils.orders.list.invalidate();
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (result: any, variables) => {
+      // Interceptar resposta de múltiplos entregadores no aceite (on_accepted)
+      if (result?.action === 'choose_driver_on_accept' && result?.drivers?.length > 0) {
+        setDriverModalOrderId(result.orderId);
+        setDriverModalDrivers(result.drivers);
+        setDriverModalContext('accept');
+        setDriverModalOpen(true);
+        toast.info("Selecione o entregador para este pedido");
+        return;
+      }
       const statusLabels: Record<string, string> = {
         preparing: "Pedido aceito e em preparo!",
         ready: "Pedido pronto para entrega!",
@@ -855,6 +864,24 @@ export default function Pedidos() {
   const [driverModalOrderId, setDriverModalOrderId] = useState<number | null>(null);
   const [driverModalDrivers, setDriverModalDrivers] = useState<Array<{ id: number; name: string; whatsapp: string }>>([]);
   const [assigningDriverId, setAssigningDriverId] = useState<number | null>(null);
+  // Context: 'accept' = modal opened on order accept (on_accepted), 'ready' = modal opened on mark ready
+  const [driverModalContext, setDriverModalContext] = useState<'accept' | 'ready'>('ready');
+
+  // Mutation for assigning driver on accept (doesn't change order status)
+  const assignDriverOnAcceptMutation = trpc.driver.assignToOrder.useMutation({
+    onSuccess: (result) => {
+      toast.success("Entregador atribuído!" + (result.whatsappSent ? " Notificação enviada via WhatsApp." : ""));
+      setDriverModalOpen(false);
+      setDriverModalOrderId(null);
+      setAssigningDriverId(null);
+      setDriverModalContext('ready');
+      utils.orders.list.invalidate();
+    },
+    onError: (err) => {
+      toast.error(err.message || "Erro ao atribuir entregador");
+      setAssigningDriverId(null);
+    },
+  });
 
   // Smart driver assignment mutation
   const markReadyAndAssignMutation = trpc.orders.markReadyAndAssign.useMutation({
@@ -2319,10 +2346,19 @@ export default function Pedidos() {
                 onClick={() => {
                   if (!driverModalOrderId) return;
                   setAssigningDriverId(driver.id);
-                  markReadyAndAssignMutation.mutate({
-                    orderId: driverModalOrderId,
-                    driverId: driver.id,
-                  });
+                  if (driverModalContext === 'accept') {
+                    // Fluxo de aceite: apenas atribuir entregador sem mudar status
+                    assignDriverOnAcceptMutation.mutate({
+                      orderId: driverModalOrderId,
+                      driverId: driver.id,
+                    });
+                  } else {
+                    // Fluxo de pronto: marcar como pronto e atribuir
+                    markReadyAndAssignMutation.mutate({
+                      orderId: driverModalOrderId,
+                      driverId: driver.id,
+                    });
+                  }
                 }}
                 className={cn(
                   "w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left",

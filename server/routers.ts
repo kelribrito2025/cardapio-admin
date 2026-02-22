@@ -2065,22 +2065,18 @@ export const appRouter = router({
                     console.log(`[Driver Notify] Entregador ${driver.name} acionado automaticamente (on_accepted) para pedido ${order.orderNumber}`);
                   }
                 } else if (activeDrivers.length > 1) {
-                  // Múltiplos entregadores: notificar todos (broadcast)
-                  const config = await db.getWhatsappConfig(estId);
-                  if (config && config.instanceToken && config.status === 'connected') {
-                    const deliveryFee = parseFloat(order.deliveryFee || '0');
-                    const message = buildDriverDeliveryMessage(order, deliveryFee);
-                    const { sendTextMessage } = await import('./_core/uazapi');
-                    for (const driver of activeDrivers) {
-                      try {
-                        await sendTextMessage(config.instanceToken, driver.whatsapp, message);
-                      } catch (e) {
-                        console.error(`[Driver Notify] Erro ao notificar entregador ${driver.name}:`, e);
-                      }
-                    }
-                  }
-                  await db.markOrderDeliveryNotified(input.id);
-                  console.log(`[Driver Notify] ${activeDrivers.length} entregadores notificados (on_accepted) para pedido ${order.orderNumber}`);
+                  // Múltiplos entregadores: retornar lista para seleção no frontend (não fazer broadcast)
+                  console.log(`[Driver Notify] ${activeDrivers.length} entregadores disponíveis (on_accepted) para pedido ${order.orderNumber} - aguardando seleção`);
+                  return {
+                    success: true,
+                    action: 'choose_driver_on_accept',
+                    orderId: input.id,
+                    drivers: activeDrivers.map(d => ({
+                      id: d.id,
+                      name: d.name,
+                      whatsapp: d.whatsapp,
+                    })),
+                  };
                 }
               }
             }
