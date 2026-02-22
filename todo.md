@@ -7409,3 +7409,12 @@
 - [x] Analisar componente BlurImage e lógica de thumbnail
 - [x] Corrigir o problema identificado
 - [x] Testar e verificar a correção
+
+## Conversão de imagens legadas e geração automática de thumbnails
+
+- [x] Identificar todas as imagens em formato PNG/JPEG no S3 referenciadas no banco
+- [x] Criar script para converter imagens legadas para WebP otimizado + gerar thumbnails (todas já estavam em WebP)
+- [x] Executar conversão em todos os estabelecimentos e atualizar URLs no banco (0 imagens legacy encontradas)
+- [x] Integrar geração automática de thumbnail no fluxo de upload de imagens (singleVersion agora gera thumb)
+- [x] Escrever testes para a lógica de geração automática de thumbnails (15 testes)
+- [x] Verificar funcionamento end-to-end (90 testes passando, servidor OK)

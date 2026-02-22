@@ -2735,12 +2735,21 @@ export const appRouter = router({
         const id = nanoid();
 
         if (singleVersion) {
-          // Logos, capas, QR codes — apenas uma versão otimizada + blur placeholder
+          // Logos, capas, QR codes — versão otimizada + thumbnail + blur placeholder
           const processed = await processSingleImage(buffer);
           const blurDataUrl = await generateBlurPlaceholder(buffer);
-          const fileName = `${folder}/${id}.webp`;
-          const { url } = await mindiStoragePut(fileName, processed.buffer, "image/webp");
-          return { url, blurDataUrl };
+          const mainFileName = `${folder}/${id}.webp`;
+          const thumbFileName = `${folder}/${id}_thumb.webp`;
+
+          // Gerar thumbnail (400px) para uso em listagens/srcset
+          const thumbBuffer = await processSingleImage(buffer, 400, 75);
+
+          const [mainResult] = await Promise.all([
+            mindiStoragePut(mainFileName, processed.buffer, "image/webp"),
+            mindiStoragePut(thumbFileName, thumbBuffer.buffer, "image/webp"),
+          ]);
+
+          return { url: mainResult.url, blurDataUrl };
         }
 
         // Produtos — gerar main (1200px) + thumb (400px) + blur placeholder
