@@ -7431,3 +7431,8 @@
 - [x] 1.8 Criar página admin "Bot WhatsApp" para gerenciar API Keys
 - [x] 1.9 Escrever testes para todos os endpoints do bot API (35 testes)
 - [x] 1.10 Verificar funcionamento end-to-end
+
+## Bug: Página Bot WhatsApp sem layout correto
+- [x] Corrigir página BotWhatsApp para usar AdminLayout com sidebar
+- [x] Ajustar espaçamentos e visual da página para seguir o padrão do sistema
+- [x] Criar API Key de teste e validar todos os 11 endpoints com curl (11/11 passaram)

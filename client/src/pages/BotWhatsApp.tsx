@@ -50,6 +50,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AdminLayout } from "@/components/AdminLayout";
 
 export default function BotWhatsApp() {
   const [newKeyName, setNewKeyName] = useState("");
@@ -130,9 +131,10 @@ export default function BotWhatsApp() {
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
 
   return (
-    <div className="space-y-6">
+    <AdminLayout>
+      <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
             <Bot className="h-7 w-7 text-primary" />
@@ -418,5 +420,6 @@ export default function BotWhatsApp() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+    </AdminLayout>
   );
 }
