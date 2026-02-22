@@ -7386,3 +7386,10 @@
 - [x] Migrar imagens existentes de capa/logo para gerar blur placeholders
 - [x] Medir impacto de performance no carregamento do menu público
 - [x] Escrever testes para as novas funcionalidades
+- [x] Criar job de conversão automática em background para imagens PNG/JPG → WebP
+- [x] Detectar imagens legacy em todas as tabelas (products, establishments, complements, combos)
+- [x] Converter imagens para WebP com duas versões (thumb 400px + principal 1200px)
+- [x] Gerar blur placeholder para imagens convertidas
+- [x] Integrar job no startup do servidor com execução automática
+- [x] Adicionar endpoint admin para trigger manual da conversão
+- [x] Escrever testes para o job de conversão

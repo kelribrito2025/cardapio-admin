@@ -276,6 +276,28 @@ export const adminRouter = router({
         return { success: true };
       }),
   }),
+
+  // ============ IMAGE CONVERSION ============
+  images: router({
+    /** Conta imagens legacy sem converter */
+    countLegacy: adminProcedure
+      .query(async () => {
+        const { countLegacyImages } = await import("./imageConversionJob");
+        return countLegacyImages();
+      }),
+
+    /** Executa o job de conversão de imagens legacy para WebP */
+    convertLegacy: adminProcedure
+      .mutation(async () => {
+        const { runImageConversionJob } = await import("./imageConversionJob");
+        const logs: string[] = [];
+        const stats = await runImageConversionJob((msg) => {
+          logs.push(msg);
+          console.log(`[ImageConversion] ${msg}`);
+        });
+        return { stats, logs };
+      }),
+  }),
 });
 
 export type AdminRouter = typeof adminRouter;
