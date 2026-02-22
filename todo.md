@@ -7418,3 +7418,16 @@
 - [x] Integrar geração automática de thumbnail no fluxo de upload de imagens (singleVersion agora gera thumb)
 - [x] Escrever testes para a lógica de geração automática de thumbnails (15 testes)
 - [x] Verificar funcionamento end-to-end (90 testes passando, servidor OK)
+
+## Fase 1 — Bot API para Integração n8n/WhatsApp
+
+- [x] 1.1 Criar tabela botApiKeys no schema Drizzle (id, key, establishmentId, name, createdAt, active)
+- [x] 1.2 Criar middleware de autenticação que valida API Key e injeta establishmentId
+- [x] 1.3 Criar botApiRouter.ts com endpoints GET de consulta (establishment, menu, search, products, stock, delivery-fees)
+- [x] 1.4 Criar endpoint POST /api/bot/coupons/validate
+- [x] 1.5 Criar endpoint POST /api/bot/orders com validação completa (estoque, complementos, valor mínimo, horário)
+- [x] 1.6 Criar endpoint GET /api/bot/orders (consulta por telefone e por orderId)
+- [x] 1.7 Criar endpoints admin para gerar/revogar API Keys (CRUD via tRPC)
+- [x] 1.8 Criar página admin "Bot WhatsApp" para gerenciar API Keys
+- [x] 1.9 Escrever testes para todos os endpoints do bot API (35 testes)
+- [x] 1.10 Verificar funcionamento end-to-end

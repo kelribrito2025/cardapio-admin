@@ -17,6 +17,8 @@ import { ifoodRouter } from "./ifoodRouter";
 import { adminRouter } from "./adminRouter";
 
 import { buildDriverDeliveryMessage } from './driverMessage';
+import { botApiKeys } from '../drizzle/schema';
+import crypto from 'crypto';
 
 export const appRouter = router({
   system: systemRouter,
@@ -5963,6 +5965,70 @@ export const appRouter = router({
           cashbackAmount: result.cashbackAmount.toFixed(2),
           eligibleTotal: result.eligibleTotal.toFixed(2),
         };
+      }),
+  }),
+
+  // ============ BOT API KEYS MANAGEMENT ============
+  botApiKeys: router({
+    list: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        const dbInstance = await db.getDb();
+        if (!dbInstance) return [];
+        return dbInstance.select().from(botApiKeys)
+          .where(eq(botApiKeys.establishmentId, input.establishmentId))
+          .orderBy(botApiKeys.createdAt);
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        name: z.string().min(1, "Nome é obrigatório"),
+      }))
+      .mutation(async ({ input }) => {
+        const dbInstance = await db.getDb();
+        if (!dbInstance) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB indisponível' });
+        const apiKey = `bot_${crypto.randomBytes(32).toString('hex')}`;
+        const result = await dbInstance.insert(botApiKeys).values({
+          establishmentId: input.establishmentId,
+          name: input.name,
+          apiKey,
+          isActive: true,
+          requestCount: 0,
+        });
+        return { id: result[0].insertId, apiKey, name: input.name };
+      }),
+
+    toggleActive: protectedProcedure
+      .input(z.object({ id: z.number(), isActive: z.boolean() }))
+      .mutation(async ({ input }) => {
+        const dbInstance = await db.getDb();
+        if (!dbInstance) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB indisponível' });
+        await dbInstance.update(botApiKeys)
+          .set({ isActive: input.isActive })
+          .where(eq(botApiKeys.id, input.id));
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const dbInstance = await db.getDb();
+        if (!dbInstance) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB indisponível' });
+        await dbInstance.delete(botApiKeys)
+          .where(eq(botApiKeys.id, input.id));
+        return { success: true };
+      }),
+
+    rename: protectedProcedure
+      .input(z.object({ id: z.number(), name: z.string().min(1) }))
+      .mutation(async ({ input }) => {
+        const dbInstance = await db.getDb();
+        if (!dbInstance) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB indisponível' });
+        await dbInstance.update(botApiKeys)
+          .set({ name: input.name })
+          .where(eq(botApiKeys.id, input.id));
+        return { success: true };
       }),
   }),
 });

@@ -38,6 +38,7 @@ import {
   Truck,
   CalendarClock,
   BadgeDollarSign,
+  Bot,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -111,6 +112,7 @@ const menuSections = [
   {
     title: "SISTEMA",
     items: [
+      { icon: Bot, label: "Bot WhatsApp", href: "/bot-whatsapp", disabled: false },
       { icon: Settings, label: "Configurações", href: "/configuracoes", disabled: false },
     ]
   },

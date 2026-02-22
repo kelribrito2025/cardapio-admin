@@ -14,6 +14,7 @@ import { sdk } from "./sdk";
 import { startScheduledCampaignJob } from "../scheduledCampaignJob";
 import { startScheduledOrdersJob } from "../scheduledOrdersJob";
 import { startRecurringExpensesJob } from "../recurringExpensesJob";
+import { createBotApiRouter } from "../botApiRouter";
 
 // Função para gerar HTML do recibo otimizado para impressora térmica
 // OTIMIZADO para melhor legibilidade em impressoras ESC POS 58mm/80mm
@@ -2794,6 +2795,9 @@ async function startServer() {
       res.status(200).json({ success: false, error: 'Internal error' });
     }
   });
+
+  // Bot API (REST endpoints para integração n8n / WhatsApp bots)
+  app.use("/api/bot", createBotApiRouter());
 
   // tRPC API
   app.use(

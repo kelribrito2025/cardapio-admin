@@ -1027,3 +1027,22 @@ export const cashbackBalances = mysqlTable("cashbackBalances", {
 
 export type CashbackBalance = typeof cashbackBalances.$inferSelect;
 export type InsertCashbackBalance = typeof cashbackBalances.$inferInsert;
+
+
+// ============ BOT API ============
+
+// API Keys para integração com bots externos (n8n, WhatsApp, etc.)
+export const botApiKeys = mysqlTable("botApiKeys", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(), // Nome descritivo (ex: "n8n WhatsApp Bot")
+  apiKey: varchar("apiKey", { length: 64 }).notNull().unique(), // Chave de API (hash SHA-256)
+  isActive: boolean("isActive").default(true).notNull(),
+  lastUsedAt: timestamp("lastUsedAt"), // Último uso da chave
+  requestCount: int("requestCount").default(0).notNull(), // Contador de requisições
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BotApiKey = typeof botApiKeys.$inferSelect;
+export type InsertBotApiKey = typeof botApiKeys.$inferInsert;

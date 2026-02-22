@@ -32,6 +32,7 @@ import Entregadores from "./pages/Entregadores";
 import Agendados from "./pages/Agendados";
 import Financas from "./pages/Financas";
 import EntregadorDetalhes from "./pages/EntregadorDetalhes";
+import BotWhatsApp from "./pages/BotWhatsApp";
 import { GlobalPDVHandle } from "./components/GlobalPDVHandle";
 
 // Admin Pages (Super Admin)
@@ -84,6 +85,7 @@ function AdminRoutes() {
         <Route path="/entregadores/:id" component={EntregadorDetalhes} />
         <Route path="/conta-seguranca" component={AccountSecurity} />
         <Route path="/ajuda" component={Ajuda} />
+        <Route path="/bot-whatsapp" component={BotWhatsApp} />
         
         
         <Route path="/404" component={NotFound} />
