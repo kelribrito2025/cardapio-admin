@@ -7398,3 +7398,14 @@
 - [x] Implementar modo de remoção efetiva das imagens órfãs
 - [x] Integrar como endpoint admin para trigger via painel
 - [x] Escrever testes para a lógica de detecção de órfãs
+
+
+## Bug: Imagens não carregam na listagem do menu público (estabelecimento 60018 - Big Norte)
+
+- [x] Investigar por que algumas imagens não aparecem na listagem mas carregam ao clicar no produto
+- [x] Verificar URLs de TODAS as imagens e thumbnails dos produtos do estabelecimento 60018
+- [x] Gerar thumbnails faltantes para todos os produtos afetados
+- [x] Adicionar fallback no BlurImage para quando thumbnail não existir
+- [x] Analisar componente BlurImage e lógica de thumbnail
+- [x] Corrigir o problema identificado
+- [x] Testar e verificar a correção

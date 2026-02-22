@@ -27,6 +27,7 @@ interface BlurImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "onLo
  * - Placeholder blur (~20px base64 inline) enquanto a imagem carrega
  * - Transição suave de opacidade ao carregar
  * - srcset automático: thumb (400w) para mobile, main (1200w) para desktop
+ * - Fallback automático para imagem principal se thumbnail falhar (403/404)
  * - Fallback com pulse animation quando não há blur
  */
 export function BlurImage({
@@ -42,17 +43,26 @@ export function BlurImage({
 }: BlurImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [thumbFailed, setThumbFailed] = useState(false);
 
   const handleLoad = useCallback(() => {
     setIsLoaded(true);
   }, []);
 
   const handleError = useCallback(() => {
+    // Se estamos usando srcset responsivo e o thumb pode ter falhado,
+    // tentar novamente sem srcset (apenas imagem principal)
+    if (responsive && !thumbFailed) {
+      setThumbFailed(true);
+      return;
+    }
     setHasError(true);
-  }, []);
+  }, [responsive, thumbFailed]);
 
   // Gerar srcset e sizes para imagens responsivas
   const srcSetProps = useMemo(() => {
+    // Se o thumb falhou, não usar srcset - apenas a imagem principal
+    if (thumbFailed) return {};
     if (!responsive || !src) return {};
 
     const thumbUrl = getThumbUrl(src);
@@ -63,7 +73,7 @@ export function BlurImage({
       srcSet: `${thumbUrl} 400w, ${src} 1200w`,
       sizes: sizes || "(max-width: 640px) 400px, 1200px",
     };
-  }, [responsive, src, sizes]);
+  }, [responsive, src, sizes, thumbFailed]);
 
   if (!src || hasError) {
     if (fallback) return <>{fallback}</>;
@@ -95,6 +105,7 @@ export function BlurImage({
 
       {/* Imagem principal com lazy loading e srcset responsivo */}
       <img
+        key={thumbFailed ? "fallback" : "srcset"}
         src={src}
         alt={alt}
         loading="lazy"

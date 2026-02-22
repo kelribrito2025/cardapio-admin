@@ -1,0 +1,130 @@
+{
+  "query": "SELECT p.id, p.name, p.images, p.blurPlaceholder FROM products p JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = 60018 ORDER BY c.sortOrder, p.sortOrder LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.images, p.blurPlaceholder FROM products p JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = 60018 ORDER BY c.sortOrder, p.sortOrder LIMIT 20;",
+  "rows": [
+    {
+      "id": "150088",
+      "name": "LANCHE DO DIA - Big frango",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TCmZw259k4CFS9x_mdAcA.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAAAQBQCdASoUABQAPxFss1AsJaSisBgMAYAiCWQAwq88ANIJLjdeJA0lVdQtAEwiVMfgAP7r/0Q7gUV6NxsRucRNXLc8d8ePIYxZKw5U7Txxofm9k51w9/XarZfvlryIAAA="
+    },
+    {
+      "id": "150090",
+      "name": "LANCHE DO DIA - Big bacon",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/098WDHEWz1hpY31RedHHU.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASoUABQAPw1qr1AsJaQit/VYAYAhiWIAnTMvwTd8D8Jxinng600yP9gA/txlhwuxhY9/l8NCJ3JqXhvrX9Chxcyt/KcJ7aMW4tVS86tJ2eeFZHzbdDraxEAiMFjG0AAA"
+    },
+    {
+      "id": "150089",
+      "name": "LANCHE DO DIA - Big salada",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/U6n5PQxNzWZ2RHovLlppc.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAwBACdASoUABQAPwlsrlArpaQit/VYAXAhCWIAyJgPSu5J9B7RYvaVepAA/u6gs5R04+/wTGPDo/Ft8TTL+WXzsoPXfyQ5ag6sHslcWWs3Z5Tw6oGz63FABm4AAA=="
+    },
+    {
+      "id": "150092",
+      "name": "LANCHE DO DIA - Big EGG",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/C02Bm-NZ_T3QVhQr_aDQ_.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAACwAwCdASoUABQAPwVwsFArpqUisAwBcCCJQBAAAPgZlv21uAB0gAD+7qFWSZTbosDEDD1oNpEP2fbu1KuR06ZJI4KcNkeYQjYdJ9aURCTryyf9XL0AAA=="
+    },
+    {
+      "id": "150091",
+      "name": "LANCHE DO DIA - Big Calabresa",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/5E153yjF3RdDccmrvWbDe.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBACdASoUABQAPwlwrVArpqQit/VYAXAhCUAX5wHops4Wgdh3p4ntAAD+7p8KsXAWkTgZkr6cSosqzXQqNcJp/3jGxiy+9jDI7SLvBN+1nj9ZaUwRO8lAgNpj/t+FdiQHgAAA"
+    },
+    {
+      "id": "150018",
+      "name": "Dog Duplo",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/I5GIZXkPslNtswbceb3hW.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADwBACdASoUABQAPxFwslAsJiSisBgMAYAiCUAYVfXgGkEfSrcx0oU/OBEas3MHDAAA/u6hVkplufwDnEdcivrcSVOGC7BlHz+pVBrJ7qZ2EHGzEOvSDYp9ELzuUmWpsioXpwAA"
+    },
+    {
+      "id": "150019",
+      "name": "Dog frango",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/cky3p3WJbf-IXK49PMoXX.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwBACdASoUABQAPxFssVCsJaSisBgMAYAiCWIArDMvwUZnI6zmWmlV9vw1botsZgAA/uv4kmyj2iGfg45gW7bHx3XQR10q+K67pbC0dNHUJ8k2twXEfWqQO+2Ecwpy5VE0AA=="
+    },
+    {
+      "id": "150020",
+      "name": "Dog bacon",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TwCjPZvFo40KJcs4v1TCN.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADwBACdASoUABQAPxFss1AsJaSjMBgMAYAiCUAXZfQAGkIrySN9a1GmpbWfW7P70owA/u6hOP1UxrSGhFWg6EUX+KHeuidKflI0wlIYVIj54Mbz2bZVf1jyBe6mRWbJMC5Lc8AA"
+    },
+    {
+      "id": "150021",
+      "name": "Dog Calabresa",
+      "images": "NULL",
+      "blurPlaceholder": "NULL"
+    },
+    {
+      "id": "150022",
+      "name": "Big Lanche",
+      "images": "NULL",
+      "blurPlaceholder": "NULL"
+    },
+    {
+      "id": "150023",
+      "name": "Big burguer",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/VY9PnsykQ1YiMhRlCKBjx.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAADQBACdASoUABQAPxFys1MsJiSisBgIAYAiCUAXYAHpczN3uSpLcqTCDmQl2gHigAD+6fVfERnGICYP0JGxniN2bxUz9yRbwUwLgM3jlTuPDvCKM3oT+v/2ivSBAAAA"
+    },
+    {
+      "id": "150028",
+      "name": "Big vegetariano",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/9FG7iL2GGJVOd3p0X93F1.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAABwBACdASoUABQAPw1srlAsJaQit/VYAYAhiWIArC/UgL5LFjRdxpD8TeJwgAD+7qCwZZZ7L1C3FQrlJjT1KPmR7oHH/1UYdMxcTK0j9mdknANNewgTm7cJqAZv/uBfAAA="
+    },
+    {
+      "id": "150024",
+      "name": "Big frango",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TCmZw259k4CFS9x_mdAcA.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAAAQBQCdASoUABQAPxFss1AsJaSisBgMAYAiCWQAwq88ANIJLjdeJA0lVdQtAEwiVMfgAP7r/0Q7gUV6NxsRucRNXLc8d8ePIYxZKw5U7Txxofm9k51w9/XarZfvlryIAAA="
+    },
+    {
+      "id": "150025",
+      "name": "Big frango com Catupiry",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/2lUls_5I5I1tjz-orK8QU.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAABQBQCdASoUABQAPxFusVCsJiSisBgMAYAiCWIAeBoB+XTK+8ZJh7E8uSyEAWWDPLfzjwAA/uv/REVpfdey6o+7t2RY98ewkgqBKIvYTkidGC1Va3PdhCsC4HhYRdMEOXp2IAAA"
+    },
+    {
+      "id": "150037",
+      "name": "Big salada",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/7darpWyhiFpafF3xcG4yP.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAwBACdASoUABQAPwlsrlArpaQit/VYAXAhCWIAyJgPSu5J9B7RYvaVepAA/u6gs5R04+/wTGPDo/Ft8TTL+WXzsoPXfyQ5ag6sHslcWWs3Z5Tw6oGz63FABm4AAA=="
+    },
+    {
+      "id": "150026",
+      "name": "Big bacon",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/O3VOKuWaBoDdPicO5kHrf.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASoUABQAPw1qr1AsJaQit/VYAYAhiWIAnTMvwTd8D8Jxinng600yP9gA/txlhwuxhY9/l8NCJ3JqXhvrX9Chxcyt/KcJ7aMW4tVS86tJ2eeFZHzbdDraxEAiMFjG0AAA"
+    },
+    {
+      "id": "150093",
+      "name": "Big EGG",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/C02Bm-NZ_T3QVhQr_aDQ_.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAACwAwCdASoUABQAPwVwsFArpqUisAwBcCCJQBAAAPgZlv21uAB0gAD+7qFWSZTbosDEDD1oNpEP2fbu1KuR06ZJI4KcNkeYQjYdJ9aURCTryyf9XL0AAA=="
+    },
+    {
+      "id": "150027",
+      "name": "Big Calabresa",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/qdg6CJpm0tAbAuinJqfQb.webp\"]",
+      "blurPlaceholder": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBACdASoUABQAPwlwrVArpqQit/VYAXAhCUAX5wHops4Wgdh3p4ntAAD+7p8KsXAWkTgZkr6cSosqzXQqNcJp/3jGxiy+9jDI7SLvBN+1nj9ZaUwRO8lAgNpj/t+FdiQHgAAA"
+    },
+    {
+      "id": "150029",
+      "name": "Especial de frango",
+      "images": "NULL",
+      "blurPlaceholder": "NULL"
+    },
+    {
+      "id": "150030",
+      "name": "Especial de bacon",
+      "images": "NULL",
+      "blurPlaceholder": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\timages\tblurPlaceholder\n150088\tLANCHE DO DIA - Big frango\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TCmZw259k4CFS9x_mdAcA.webp\"]\tdata:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAAAQBQCdASoUABQAPxFss1AsJaSisBgMAYAiCWQAwq88ANIJLjdeJA0lVdQtAEwiVMfgAP7r/0Q7gUV6NxsRucRNXLc8d8ePIYxZKw5U7Txxofm9k51w9/XarZfvlryIAAA=\n150090\tLANCHE DO DIA - Big bacon\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/098WDHEWz1hpY31RedHHU.webp\"]\tdata:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASoUABQAPw1qr1AsJaQit/VYAYAhiWIAnTMvwTd8D8Jxinng600yP9gA/txlhwuxhY9/l8NCJ3JqXhvrX9Chxcyt/KcJ7aMW4tVS86tJ2eeFZHzbdDraxEAiMFjG0AAA\n150089\tLANCHE DO DIA - Big salada\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/U6n5PQxNzWZ2RHovLlppc.webp\"]\tdata:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAwBACdASoUABQAPwlsrlArpaQit/VYAXAhCWIAyJgPSu5J9B7RYvaVepAA/u6gs5R04+/wTGPDo/Ft8TTL+WXzsoPXfyQ5ag6sHslcWWs3Z5Tw6oGz63FABm4AAA==\n150092\tLANCHE DO DIA - Big EGG\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/C02Bm-NZ_T3QVhQr_aDQ_.webp\"]\tdata:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAACwAwCdASoUABQAPwVwsFArpqUisAwBcCCJQBAAAPgZlv21uAB0gAD+7qFWSZTbosDEDD1oNpEP2fbu1KuR06ZJI4KcNkeYQjYdJ9aURCTryyf9XL0AAA==\n150091\tLANCHE DO DIA - Big Calabresa\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/5E153yjF3RdDccmrvWbDe.webp\"]\tdata:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBACdASoUABQAPwlwrVArpqQit/VYAXAhCUAX5wHops4Wgdh3p4ntAAD+7p8KsXAWkTgZkr6cSosqzXQqNcJp/3jGxiy+9jDI7SLvBN+1nj9ZaUwRO8lAgNpj/t+FdiQHgAAA\n150018\tDog Duplo\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/I5GIZXkPslNtswbceb3hW.webp\"]\tdata:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADwBACdASoUABQAPxFwslAsJiSisBgMAYAiCUAYVfXgGkEfSrcx0oU/OBEas3MHDAAA/u6hVkplufwDnEdcivrcSVOGC7BlHz+pVBrJ7qZ2EHGzEOvSDYp9ELzuUmWpsioXpwAA\n150019\tDog frango\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/cky3p3WJbf-IXK49PMoXX.webp\"]\tdata:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwBACdASoUABQAPxFssVCsJaSisBgMAYAiCWIArDMvwUZnI6zmWmlV9vw1botsZgAA/uv4kmyj2iGfg45gW7bHx3XQR10q+K67pbC0dNHUJ8k2twXEfWqQO+2Ecwpy5VE0AA==\n150020\tDog bacon\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TwCjPZvFo40KJcs4v1TCN.webp\"]\tdata:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADwBACdASoUABQAPxFss1AsJaSjMBgMAYAiCUAXZfQAGkIrySN9a1GmpbWfW7P70owA/u6hOP1UxrSGhFWg6EUX+KHeuidKflI0wlIYVIj54Mbz2bZVf1jyBe6mRWbJMC5Lc8AA\n150021\tDog Calabresa\tNULL\tNULL\n150022\tBig Lanche\tNULL\tNULL\n150023\tBig burguer\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/VY9PnsykQ1YiMhRlCKBjx.webp\"]\tdata:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAADQBACdASoUABQAPxFys1MsJiSisBgIAYAiCUAXYAHpczN3uSpLcqTCDmQl2gHigAD+6fVfERnGICYP0JGxniN2bxUz9yRbwUwLgM3jlTuPDvCKM3oT+v/2ivSBAAAA\n150028\tBig vegetariano\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/9FG7iL2GGJVOd3p0X93F1.webp\"]\tdata:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAABwBACdASoUABQAPw1srlAsJaQit/VYAYAhiWIArC/UgL5LFjRdxpD8TeJwgAD+7qCwZZZ7L1C3FQrlJjT1KPmR7oHH/1UYdMxcTK0j9mdknANNewgTm7cJqAZv/uBfAAA=\n150024\tBig frango\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TCmZw259k4CFS9x_mdAcA.webp\"]\tdata:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAAAQBQCdASoUABQAPxFss1AsJaSisBgMAYAiCWQAwq88ANIJLjdeJA0lVdQtAEwiVMfgAP7r/0Q7gUV6NxsRucRNXLc8d8ePIYxZKw5U7Txxofm9k51w9/XarZfvlryIAAA=\n150025\tBig frango com Catupiry\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/2lUls_5I5I1tjz-orK8QU.webp\"]\tdata:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAABQBQCdASoUABQAPxFusVCsJiSisBgMAYAiCWIAeBoB+XTK+8ZJh7E8uSyEAWWDPLfzjwAA/uv/REVpfdey6o+7t2RY98ewkgqBKIvYTkidGC1Va3PdhCsC4HhYRdMEOXp2IAAA\n150037\tBig salada\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/7darpWyhiFpafF3xcG4yP.webp\"]\tdata:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAwBACdASoUABQAPwlsrlArpaQit/VYAXAhCWIAyJgPSu5J9B7RYvaVepAA/u6gs5R04+/wTGPDo/Ft8TTL+WXzsoPXfyQ5ag6sHslcWWs3Z5Tw6oGz63FABm4AAA==\n150026\tBig bacon\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/O3VOKuWaBoDdPicO5kHrf.webp\"]\tdata:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASoUABQAPw1qr1AsJaQit/VYAYAhiWIAnTMvwTd8D8Jxinng600yP9gA/txlhwuxhY9/l8NCJ3JqXhvrX9Chxcyt/KcJ7aMW4tVS86tJ2eeFZHzbdDraxEAiMFjG0AAA\n150093\tBig EGG\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/C02Bm-NZ_T3QVhQr_aDQ_.webp\"]\tdata:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAACwAwCdASoUABQAPwVwsFArpqUisAwBcCCJQBAAAPgZlv21uAB0gAD+7qFWSZTbosDEDD1oNpEP2fbu1KuR06ZJI4KcNkeYQjYdJ9aURCTryyf9XL0AAA==\n150027\tBig Calabresa\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/qdg6CJpm0tAbAuinJqfQb.webp\"]\tdata:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBACdASoUABQAPwlwrVArpqQit/VYAXAhCUAX5wHops4Wgdh3p4ntAAD+7p8KsXAWkTgZkr6cSosqzXQqNcJp/3jGxiy+9jDI7SLvBN+1nj9ZaUwRO8lAgNpj/t+FdiQHgAAA\n150029\tEspecial de frango\tNULL\tNULL\n150030\tEspecial de bacon\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

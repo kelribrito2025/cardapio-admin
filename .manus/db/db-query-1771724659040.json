@@ -1,0 +1,47 @@
+{
+  "query": "SELECT id, name, menuSlug FROM establishments WHERE id = 60018;\nSELECT p.id, p.name, LEFT(JSON_EXTRACT(p.images, '$[0]'), 120) as firstImage, p.blurPlaceholder IS NOT NULL as hasBlur FROM products p WHERE p.establishmentId = 60018 ORDER BY p.sortOrder LIMIT 30;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, menuSlug FROM establishments WHERE id = 60018;\nSELECT p.id, p.name, LEFT(JSON_EXTRACT(p.images, '$[0]'), 120) as firstImage, p.blurPlaceholder IS NOT NULL as hasBlur FROM products p WHERE p.establishmentId = 60018 ORDER BY p.sortOrder LIMIT 30;",
+  "rows": [
+    {
+      "id": "60018",
+      "name": "Big Norte",
+      "menuSlug": "big-norte"
+    }
+  ],
+  "messages": [
+    "id\tname\tfirstImage\thasBlur",
+    "150039\tPastel de CARNE\tNULL\t0",
+    "150018\tDog Duplo\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/I5GIZXkPslNtswbceb3hW.webp\"\t1",
+    "150088\tLANCHE DO DIA - Big frango\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TCmZw259k4CFS9x_mdAcA.webp\"\t1",
+    "150040\tPastel de FRANGO\tNULL\t0",
+    "150019\tDog frango\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/cky3p3WJbf-IXK49PMoXX.webp\"\t1",
+    "300059\tCombo 1\tNULL\t0",
+    "150090\tLANCHE DO DIA - Big bacon\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/098WDHEWz1hpY31RedHHU.webp\"\t1",
+    "150089\tLANCHE DO DIA - Big salada\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/U6n5PQxNzWZ2RHovLlppc.webp\"\t1",
+    "150020\tDog bacon\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TwCjPZvFo40KJcs4v1TCN.webp\"\t1",
+    "150041\tPastel de QUEIJO\tNULL\t0",
+    "150092\tLANCHE DO DIA - Big EGG\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/C02Bm-NZ_T3QVhQr_aDQ_.webp\"\t1",
+    "150021\tDog Calabresa\tNULL\t0",
+    "150042\tPastel de PRESUNTO E QUEIJO\tNULL\t0",
+    "150022\tBig Lanche\tNULL\t0",
+    "150043\tPastel de PALMITO\tNULL\t0",
+    "150091\tLANCHE DO DIA - Big Calabresa\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/5E153yjF3RdDccmrvWbDe.webp\"\t1",
+    "150044\tPastel de CARNE E QUEIJO\tNULL\t0",
+    "150023\tBig burguer\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/VY9PnsykQ1YiMhRlCKBjx.webp\"\t1",
+    "150045\tPastel de FRANGO COM QUEIJO\tNULL\t0",
+    "150028\tBig vegetariano\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/9FG7iL2GGJVOd3p0X93F1.webp\"\t1",
+    "150024\tBig frango\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TCmZw259k4CFS9x_mdAcA.webp\"\t1",
+    "150046\tPastel de FRANGO COM CATUPIRY\tNULL\t0",
+    "150047\tPastel de PIZZA\tNULL\t0",
+    "150025\tBig frango com Catupiry\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/2lUls_5I5I1tjz-orK8QU.webp\"\t1",
+    "150037\tBig salada\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/7darpWyhiFpafF3xcG4yP.webp\"\t1",
+    "150048\tPastel VEGETARIANO\tNULL\t0",
+    "150049\tESPECIAL DE CARNE\tNULL\t0",
+    "150026\tBig bacon\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/O3VOKuWaBoDdPicO5kHrf.webp\"\t1",
+    "150050\tESPECIAL DE FRANGO\tNULL\t0",
+    "150093\tBig EGG\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/C02Bm-NZ_T3QVhQr_aDQ_.webp\"\t1"
+  ],
+  "stdout": "id\tname\tmenuSlug\n60018\tBig Norte\tbig-norte\nid\tname\tfirstImage\thasBlur\n150039\tPastel de CARNE\tNULL\t0\n150018\tDog Duplo\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/I5GIZXkPslNtswbceb3hW.webp\"\t1\n150088\tLANCHE DO DIA - Big frango\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TCmZw259k4CFS9x_mdAcA.webp\"\t1\n150040\tPastel de FRANGO\tNULL\t0\n150019\tDog frango\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/cky3p3WJbf-IXK49PMoXX.webp\"\t1\n300059\tCombo 1\tNULL\t0\n150090\tLANCHE DO DIA - Big bacon\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/098WDHEWz1hpY31RedHHU.webp\"\t1\n150089\tLANCHE DO DIA - Big salada\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/U6n5PQxNzWZ2RHovLlppc.webp\"\t1\n150020\tDog bacon\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TwCjPZvFo40KJcs4v1TCN.webp\"\t1\n150041\tPastel de QUEIJO\tNULL\t0\n150092\tLANCHE DO DIA - Big EGG\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/C02Bm-NZ_T3QVhQr_aDQ_.webp\"\t1\n150021\tDog Calabresa\tNULL\t0\n150042\tPastel de PRESUNTO E QUEIJO\tNULL\t0\n150022\tBig Lanche\tNULL\t0\n150043\tPastel de PALMITO\tNULL\t0\n150091\tLANCHE DO DIA - Big Calabresa\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/5E153yjF3RdDccmrvWbDe.webp\"\t1\n150044\tPastel de CARNE E QUEIJO\tNULL\t0\n150023\tBig burguer\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/VY9PnsykQ1YiMhRlCKBjx.webp\"\t1\n150045\tPastel de FRANGO COM QUEIJO\tNULL\t0\n150028\tBig vegetariano\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/9FG7iL2GGJVOd3p0X93F1.webp\"\t1\n150024\tBig frango\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TCmZw259k4CFS9x_mdAcA.webp\"\t1\n150046\tPastel de FRANGO COM CATUPIRY\tNULL\t0\n150047\tPastel de PIZZA\tNULL\t0\n150025\tBig frango com Catupiry\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/2lUls_5I5I1tjz-orK8QU.webp\"\t1\n150037\tBig salada\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/7darpWyhiFpafF3xcG4yP.webp\"\t1\n150048\tPastel VEGETARIANO\tNULL\t0\n150049\tESPECIAL DE CARNE\tNULL\t0\n150026\tBig bacon\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/O3VOKuWaBoDdPicO5kHrf.webp\"\t1\n150050\tESPECIAL DE FRANGO\tNULL\t0\n150093\tBig EGG\t\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/C02Bm-NZ_T3QVhQr_aDQ_.webp\"\t1\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

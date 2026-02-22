@@ -1,0 +1,180 @@
+{
+  "query": "SELECT p.id, p.name, JSON_UNQUOTE(JSON_EXTRACT(p.images, '$[0]')) as imgUrl FROM products p WHERE p.establishmentId = 60018 AND p.images IS NOT NULL AND JSON_LENGTH(p.images) > 0 ORDER BY p.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, JSON_UNQUOTE(JSON_EXTRACT(p.images, '$[0]')) as imgUrl FROM products p WHERE p.establishmentId = 60018 AND p.images IS NOT NULL AND JSON_LENGTH(p.images) > 0 ORDER BY p.id;",
+  "rows": [
+    {
+      "id": "150018",
+      "name": "Dog Duplo",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/I5GIZXkPslNtswbceb3hW.webp"
+    },
+    {
+      "id": "150019",
+      "name": "Dog frango",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/cky3p3WJbf-IXK49PMoXX.webp"
+    },
+    {
+      "id": "150020",
+      "name": "Dog bacon",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TwCjPZvFo40KJcs4v1TCN.webp"
+    },
+    {
+      "id": "150023",
+      "name": "Big burguer",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/VY9PnsykQ1YiMhRlCKBjx.webp"
+    },
+    {
+      "id": "150024",
+      "name": "Big frango",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TCmZw259k4CFS9x_mdAcA.webp"
+    },
+    {
+      "id": "150025",
+      "name": "Big frango com Catupiry",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/2lUls_5I5I1tjz-orK8QU.webp"
+    },
+    {
+      "id": "150026",
+      "name": "Big bacon",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/O3VOKuWaBoDdPicO5kHrf.webp"
+    },
+    {
+      "id": "150027",
+      "name": "Big Calabresa",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/qdg6CJpm0tAbAuinJqfQb.webp"
+    },
+    {
+      "id": "150028",
+      "name": "Big vegetariano",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/9FG7iL2GGJVOd3p0X93F1.webp"
+    },
+    {
+      "id": "150031",
+      "name": "Especial de calabresa",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/owY5ePan9AEALI6tU7c6Q.webp"
+    },
+    {
+      "id": "150034",
+      "name": "Big executivo",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/BZbSwHP8gTGHqSn55b-Fb.webp"
+    },
+    {
+      "id": "150035",
+      "name": "Big tudo",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/ADVqEKVdPOsQ3nF3H2m-C.webp"
+    },
+    {
+      "id": "150037",
+      "name": "Big salada",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/7darpWyhiFpafF3xcG4yP.webp"
+    },
+    {
+      "id": "150062",
+      "name": "Batata Pequena",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/ZOH6qhUoBuXqvEA4i1ob2.webp"
+    },
+    {
+      "id": "150063",
+      "name": "Batata media",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/ucFtRBzX5ue7THWBlsHCL.webp"
+    },
+    {
+      "id": "150064",
+      "name": "Batata Frita Grande",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/95aVB4dFa1NMeWsUCf5i0.webp"
+    },
+    {
+      "id": "150065",
+      "name": "Batata Frita Grande com Muçarela",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/cr9froK6UevxjwzJTwM2G.webp"
+    },
+    {
+      "id": "150066",
+      "name": "Batata Frita Grande com Cheddar",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/znMEEu30ZKR_F8IioSSfv.webp"
+    },
+    {
+      "id": "150067",
+      "name": "Batata Frita Grande com Muçarela e Bacon",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/8pyuYs2sJ1HfuP3iUV3Cg.webp"
+    },
+    {
+      "id": "150068",
+      "name": "Batata Frita Grande com Cheddar e Bacon",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/LjKd1nHvr3BDNyJLAJXlJ.webp"
+    },
+    {
+      "id": "150074",
+      "name": "Água com gás",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/HWlgvcrUoprKGjqmJcZ6h.webp"
+    },
+    {
+      "id": "150075",
+      "name": "Água sem gás",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/zcQY4XB4g7yatEWzLGOBV.webp"
+    },
+    {
+      "id": "150076",
+      "name": "Sucos com leite 500 ml",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/wmHbu-mJfWtoqMoUBKkw8.webp"
+    },
+    {
+      "id": "150077",
+      "name": "Sucos com água 500 ml",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/joCAdST_4VUaC2d5seRDx.webp"
+    },
+    {
+      "id": "150078",
+      "name": "Refrigerante lata",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/Txk7rUdA3Lgp7hdziQQDb.webp"
+    },
+    {
+      "id": "150079",
+      "name": "Refrigerante 600 ml",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/XgAPHM037efFlhzswkrst.webp"
+    },
+    {
+      "id": "150080",
+      "name": "Refrico guarana 2 litros",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/DwjXSrhn28f5TKM2NtVBP.webp"
+    },
+    {
+      "id": "150081",
+      "name": "Coca-Cola 2 litros",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/coKSK2oF41EQV4mS8kBuV.webp"
+    },
+    {
+      "id": "150088",
+      "name": "LANCHE DO DIA - Big frango",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TCmZw259k4CFS9x_mdAcA.webp"
+    },
+    {
+      "id": "150089",
+      "name": "LANCHE DO DIA - Big salada",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/U6n5PQxNzWZ2RHovLlppc.webp"
+    },
+    {
+      "id": "150090",
+      "name": "LANCHE DO DIA - Big bacon",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/098WDHEWz1hpY31RedHHU.webp"
+    },
+    {
+      "id": "150091",
+      "name": "LANCHE DO DIA - Big Calabresa",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/5E153yjF3RdDccmrvWbDe.webp"
+    },
+    {
+      "id": "150092",
+      "name": "LANCHE DO DIA - Big EGG",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/C02Bm-NZ_T3QVhQr_aDQ_.webp"
+    },
+    {
+      "id": "150093",
+      "name": "Big EGG",
+      "imgUrl": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/C02Bm-NZ_T3QVhQr_aDQ_.webp"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\timgUrl\n150018\tDog Duplo\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/I5GIZXkPslNtswbceb3hW.webp\n150019\tDog frango\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/cky3p3WJbf-IXK49PMoXX.webp\n150020\tDog bacon\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TwCjPZvFo40KJcs4v1TCN.webp\n150023\tBig burguer\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/VY9PnsykQ1YiMhRlCKBjx.webp\n150024\tBig frango\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TCmZw259k4CFS9x_mdAcA.webp\n150025\tBig frango com Catupiry\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/2lUls_5I5I1tjz-orK8QU.webp\n150026\tBig bacon\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/O3VOKuWaBoDdPicO5kHrf.webp\n150027\tBig Calabresa\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/qdg6CJpm0tAbAuinJqfQb.webp\n150028\tBig vegetariano\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/9FG7iL2GGJVOd3p0X93F1.webp\n150031\tEspecial de calabresa\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/owY5ePan9AEALI6tU7c6Q.webp\n150034\tBig executivo\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/BZbSwHP8gTGHqSn55b-Fb.webp\n150035\tBig tudo\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/ADVqEKVdPOsQ3nF3H2m-C.webp\n150037\tBig salada\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/7darpWyhiFpafF3xcG4yP.webp\n150062\tBatata Pequena\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/ZOH6qhUoBuXqvEA4i1ob2.webp\n150063\tBatata media\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/ucFtRBzX5ue7THWBlsHCL.webp\n150064\tBatata Frita Grande\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/95aVB4dFa1NMeWsUCf5i0.webp\n150065\tBatata Frita Grande com Muçarela\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/cr9froK6UevxjwzJTwM2G.webp\n150066\tBatata Frita Grande com Cheddar\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/znMEEu30ZKR_F8IioSSfv.webp\n150067\tBatata Frita Grande com Muçarela e Bacon\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/8pyuYs2sJ1HfuP3iUV3Cg.webp\n150068\tBatata Frita Grande com Cheddar e Bacon\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/LjKd1nHvr3BDNyJLAJXlJ.webp\n150074\tÁgua com gás\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/HWlgvcrUoprKGjqmJcZ6h.webp\n150075\tÁgua sem gás\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/zcQY4XB4g7yatEWzLGOBV.webp\n150076\tSucos com leite 500 ml\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/wmHbu-mJfWtoqMoUBKkw8.webp\n150077\tSucos com água 500 ml\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/joCAdST_4VUaC2d5seRDx.webp\n150078\tRefrigerante lata\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/Txk7rUdA3Lgp7hdziQQDb.webp\n150079\tRefrigerante 600 ml\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/XgAPHM037efFlhzswkrst.webp\n150080\tRefrico guarana 2 litros\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/DwjXSrhn28f5TKM2NtVBP.webp\n150081\tCoca-Cola 2 litros\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/coKSK2oF41EQV4mS8kBuV.webp\n150088\tLANCHE DO DIA - Big frango\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/TCmZw259k4CFS9x_mdAcA.webp\n150089\tLANCHE DO DIA - Big salada\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/U6n5PQxNzWZ2RHovLlppc.webp\n150090\tLANCHE DO DIA - Big bacon\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/098WDHEWz1hpY31RedHHU.webp\n150091\tLANCHE DO DIA - Big Calabresa\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/5E153yjF3RdDccmrvWbDe.webp\n150092\tLANCHE DO DIA - Big EGG\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/C02Bm-NZ_T3QVhQr_aDQ_.webp\n150093\tBig EGG\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/products/C02Bm-NZ_T3QVhQr_aDQ_.webp\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}
