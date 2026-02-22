@@ -7393,3 +7393,8 @@
 - [x] Integrar job no startup do servidor com execução automática
 - [x] Adicionar endpoint admin para trigger manual da conversão
 - [x] Escrever testes para o job de conversão
+- [x] Criar script para identificar imagens órfãs no S3 não referenciadas no banco
+- [x] Implementar modo dry-run para listar órfãs sem apagar
+- [x] Implementar modo de remoção efetiva das imagens órfãs
+- [x] Integrar como endpoint admin para trigger via painel
+- [x] Escrever testes para a lógica de detecção de órfãs

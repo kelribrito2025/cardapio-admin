@@ -297,6 +297,39 @@ export const adminRouter = router({
         });
         return { stats, logs };
       }),
+
+    /** Identifica imagens órfãs no S3 (dry-run) */
+    orphanScan: adminProcedure
+      .query(async () => {
+        const { runOrphanCleanup } = await import("./orphanCleanupJob");
+        const result = await runOrphanCleanup(true); // dry-run
+        return {
+          totalS3Objects: result.totalS3Objects,
+          totalReferencedUrls: result.totalReferencedUrls,
+          orphanCount: result.orphanCount,
+          orphanKeys: result.orphanKeys.map((o) => ({
+            key: o.key,
+            sizeMB: (o.size / (1024 * 1024)).toFixed(2),
+          })),
+          totalOrphanSizeMB: result.totalOrphanSizeMB,
+          errors: result.errors,
+        };
+      }),
+
+    /** Remove imagens órfãs do S3 */
+    orphanCleanup: adminProcedure
+      .mutation(async () => {
+        const { runOrphanCleanup } = await import("./orphanCleanupJob");
+        const result = await runOrphanCleanup(false); // actual deletion
+        return {
+          totalS3Objects: result.totalS3Objects,
+          totalReferencedUrls: result.totalReferencedUrls,
+          orphanCount: result.orphanCount,
+          deletedCount: result.deletedCount,
+          totalOrphanSizeMB: result.totalOrphanSizeMB,
+          errors: result.errors,
+        };
+      }),
   }),
 });
 

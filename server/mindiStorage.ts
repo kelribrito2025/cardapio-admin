@@ -1,7 +1,7 @@
 // Storage helpers usando S3 próprio do usuário (Mindi)
 // Substitui o storage do Manus Forge por bucket S3 configurado pelo usuário
 
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { ENV } from './_core/env';
 
 // Configuração do cliente S3
@@ -100,6 +100,46 @@ export async function mindiStorageDelete(relKey: string): Promise<void> {
   });
 
   await s3Client.send(command);
+}
+
+/**
+ * Lista todos os objetos no bucket S3 (com paginação automática)
+ * @param prefix - Prefixo opcional para filtrar objetos
+ * @returns Array de objetos com key, size e lastModified
+ */
+export async function mindiStorageList(
+  prefix?: string
+): Promise<Array<{ key: string; size: number; lastModified: Date | undefined }>> {
+  const s3Client = getS3Client();
+  const results: Array<{ key: string; size: number; lastModified: Date | undefined }> = [];
+  let continuationToken: string | undefined;
+
+  do {
+    const command = new ListObjectsV2Command({
+      Bucket: ENV.mindiS3Bucket,
+      Prefix: prefix ? normalizeKey(prefix) : undefined,
+      ContinuationToken: continuationToken,
+      MaxKeys: 1000,
+    });
+
+    const response = await s3Client.send(command);
+
+    if (response.Contents) {
+      for (const obj of response.Contents) {
+        if (obj.Key) {
+          results.push({
+            key: obj.Key,
+            size: obj.Size ?? 0,
+            lastModified: obj.LastModified,
+          });
+        }
+      }
+    }
+
+    continuationToken = response.IsTruncated ? response.NextContinuationToken : undefined;
+  } while (continuationToken);
+
+  return results;
 }
 
 /**
