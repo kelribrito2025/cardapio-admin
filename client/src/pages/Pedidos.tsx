@@ -1530,11 +1530,14 @@ export default function Pedidos() {
           <button
             onClick={() => setListStatusFilter('all')}
             className={cn(
-              "px-4 py-2 rounded-xl text-sm font-medium transition-all border",
+              "flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all border",
               listStatusFilter === 'all' ? "bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700" : "bg-card border-border text-muted-foreground hover:text-foreground"
             )}
           >
-            Todos ({filteredOrders?.length || 0})
+            Todos
+            <span className="min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-xs font-semibold bg-red-500 text-white">
+              {filteredOrders?.length || 0}
+            </span>
           </button>
           {kanbanColumns.map((col) => {
             const count = ordersByStatus[col.id]?.length || 0;
@@ -1543,12 +1546,15 @@ export default function Pedidos() {
                 key={col.id}
                 onClick={() => setListStatusFilter(col.id)}
                 className={cn(
-                  "px-4 py-2 rounded-xl text-sm font-medium transition-all border flex items-center gap-2",
+                  "flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all border",
                   listStatusFilter === col.id ? `${col.tabBg} ${col.tabText} ${col.tabBorder}` : "bg-card border-border text-muted-foreground hover:text-foreground"
                 )}
               >
                 <span className={cn("w-2.5 h-2.5 rounded-full", col.dotColor)} />
-                {col.title} ({count})
+                {col.title}
+                <span className="min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-xs font-semibold bg-red-500 text-white">
+                  {count}
+                </span>
               </button>
             );
           })}

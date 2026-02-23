@@ -7443,3 +7443,4 @@
 - [x] Corrigir frontend: interceptar resposta e mostrar modal de seleção de entregador no aceite
 - [x] Usar mutation correta (driver.assignToOrder) no modal quando contexto é aceite
 - [x] Testar e verificar a correção (0 erros TypeScript, servidor OK)
+- [x] Pedidos lista: trocar contagem de parênteses (9) para badge redondo vermelho igual ao PDV categorias
