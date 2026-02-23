@@ -96,6 +96,7 @@ const kanbanColumns = [
     tabBg: "bg-blue-100 dark:bg-blue-950/50",
     tabText: "text-blue-700 dark:text-blue-300",
     tabBorder: "border-blue-200 dark:border-blue-800",
+    badgeBg: "bg-blue-500",
     icon: Clock,
   },
   {
@@ -112,6 +113,7 @@ const kanbanColumns = [
     tabBg: "bg-red-100 dark:bg-red-950/50",
     tabText: "text-red-700 dark:text-red-300",
     tabBorder: "border-red-200 dark:border-red-800",
+    badgeBg: "bg-red-500",
     icon: ChefHat,
   },
   {
@@ -128,6 +130,7 @@ const kanbanColumns = [
     tabBg: "bg-emerald-100 dark:bg-emerald-950/50",
     tabText: "text-emerald-700 dark:text-emerald-300",
     tabBorder: "border-emerald-200 dark:border-emerald-800",
+    badgeBg: "bg-emerald-500",
     icon: Package,
   },
   {
@@ -144,6 +147,7 @@ const kanbanColumns = [
     tabBg: "bg-gray-200 dark:bg-gray-800",
     tabText: "text-gray-700 dark:text-gray-300",
     tabBorder: "border-gray-300 dark:border-gray-700",
+    badgeBg: "bg-gray-400",
     icon: CheckCircle2,
   },
   {
@@ -160,6 +164,7 @@ const kanbanColumns = [
     tabBg: "bg-red-100 dark:bg-red-950/50",
     tabText: "text-red-700 dark:text-red-300",
     tabBorder: "border-red-200 dark:border-red-800",
+    badgeBg: "bg-red-500",
     icon: XCircle,
   },
 ];
@@ -1535,7 +1540,7 @@ export default function Pedidos() {
             )}
           >
             Todos
-            <span className="min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-xs font-semibold bg-red-500 text-white">
+            <span className="min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-xs font-semibold bg-gray-500 text-white">
               {filteredOrders?.length || 0}
             </span>
           </button>
@@ -1552,7 +1557,7 @@ export default function Pedidos() {
               >
                 <span className={cn("w-2.5 h-2.5 rounded-full", col.dotColor)} />
                 {col.title}
-                <span className="min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-xs font-semibold bg-red-500 text-white">
+                <span className={cn("min-w-[20px] h-5 flex items-center justify-center px-1.5 rounded-full text-xs font-semibold text-white", col.badgeBg)}>
                   {count}
                 </span>
               </button>
