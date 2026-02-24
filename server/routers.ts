@@ -2955,6 +2955,7 @@ export const appRouter = router({
         itemBorderStyle: z.enum(['rounded', 'dashed']).optional(),
         defaultPrintMethod: z.enum(['normal', 'android']).optional(),
         htmlPrintEnabled: z.boolean().optional(),
+        beepOnPrint: z.boolean().optional(),
       }))
       .mutation(async ({ input }) => {
         await db.upsertPrinterSettings(input);

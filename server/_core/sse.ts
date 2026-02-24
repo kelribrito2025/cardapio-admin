@@ -97,6 +97,7 @@ export function notifyPrintOrder(establishmentId: number, orderData: {
     notes: string | null;
   }>;
   createdAt: Date;
+  beepOnPrint?: boolean;
 }): void {
   console.log(`[SSE] notifyPrintOrder chamado para establishmentId: ${establishmentId}, pedido: ${orderData.orderNumber}`);
   sendEvent(establishmentId, "print_order", orderData);

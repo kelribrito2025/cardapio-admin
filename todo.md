@@ -7444,3 +7444,4 @@
 - [x] Usar mutation correta (driver.assignToOrder) no modal quando contexto é aceite
 - [x] Testar e verificar a correção (0 erros TypeScript, servidor OK)
 - [x] Pedidos lista: trocar contagem de parênteses (9) para badge redondo vermelho igual ao PDV categorias
+- [x] Configurações Impressora: adicionar toggle "Bipe ao imprimir" na aba Layout abaixo de "Mostrar divisores"

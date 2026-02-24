@@ -70,6 +70,9 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
   // Modo de impressão HTML vs ESC/POS
   const [htmlPrintEnabled, setHtmlPrintEnabled] = useState(true);
 
+  // Bipe ao imprimir
+  const [beepOnPrint, setBeepOnPrint] = useState(false);
+
   // Carregar configurações salvas quando disponíveis
   useEffect(() => {
     if (savedSettings) {
@@ -88,6 +91,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       setQrCodeUrl((savedSettings as any).qrCodeUrl || null);
       setItemBorderStyle((savedSettings as any).itemBorderStyle || "rounded");
       setHtmlPrintEnabled((savedSettings as any).htmlPrintEnabled ?? true);
+      setBeepOnPrint((savedSettings as any).beepOnPrint ?? false);
     }
   }, [savedSettings]);
   
@@ -186,6 +190,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       qrCodeUrl,
       itemBorderStyle,
       htmlPrintEnabled,
+      beepOnPrint,
     });
   };
 
@@ -211,6 +216,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       boxPadding,
       showQrCode,
       qrCodeUrl,
+      beepOnPrint,
     });
     
     // Usar iframe oculto para imprimir sem abrir nova aba
@@ -266,6 +272,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
         showDividers,
         showQrCode,
         qrCodeUrl,
+        beepOnPrint,
       });
     } catch (e) {
       // Continuar mesmo se falhar o save
@@ -325,6 +332,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
         showDividers,
         showQrCode,
         qrCodeUrl,
+        beepOnPrint,
       });
     } catch (e) {
       // Continuar mesmo se falhar o save
@@ -904,6 +912,19 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
                 <Switch
                   checked={showDividers}
                   onCheckedChange={setShowDividers}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Bipe ao imprimir</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Emitir som de bipe na impressora ao imprimir
+                  </p>
+                </div>
+                <Switch
+                  checked={beepOnPrint}
+                  onCheckedChange={setBeepOnPrint}
                 />
               </div>
 

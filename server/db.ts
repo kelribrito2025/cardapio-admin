@@ -3182,6 +3182,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
             notes: item.notes || null,
           })),
           createdAt: new Date(),
+          beepOnPrint: printerSettingsResult?.beepOnPrint ?? false,
         });
         console.log('[DB:createPublicOrder] Evento de impressão enviado para pedido:', orderNumber);
       }
@@ -4966,6 +4967,7 @@ export async function upsertPrinterSettings(data: {
   itemBorderStyle?: string;
   defaultPrintMethod?: 'normal' | 'android';
   htmlPrintEnabled?: boolean;
+  beepOnPrint?: boolean;
 }): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -5005,6 +5007,7 @@ export async function upsertPrinterSettings(data: {
         itemBorderStyle: data.itemBorderStyle ?? (existing as any).itemBorderStyle ?? 'rounded',
         defaultPrintMethod: data.defaultPrintMethod ?? (existing as any).defaultPrintMethod ?? 'normal',
         htmlPrintEnabled: data.htmlPrintEnabled ?? (existing as any).htmlPrintEnabled ?? true,
+        beepOnPrint: data.beepOnPrint ?? (existing as any).beepOnPrint ?? false,
       })
       .where(eq(printerSettings.establishmentId, data.establishmentId));
   } else {
@@ -5040,6 +5043,7 @@ export async function upsertPrinterSettings(data: {
       itemBorderStyle: data.itemBorderStyle ?? 'rounded',
       defaultPrintMethod: data.defaultPrintMethod ?? 'normal',
       htmlPrintEnabled: data.htmlPrintEnabled ?? true,
+      beepOnPrint: data.beepOnPrint ?? false,
     });
   }
 }
