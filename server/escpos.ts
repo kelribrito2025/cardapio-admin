@@ -792,13 +792,13 @@ export function generatePlainTextReceipt(
   
   // ===== CABEÇALHO =====
   receipt += center(estName) + '\n';
-  receipt += center(`PEDIDO: #${order.orderNumber}`) + '\n';
-  receipt += center(formatDate(order.createdAt)) + '\n';
+  receipt += '\n';
 
-  // Tipo de pedido
+  // Linha condensada: #P99 23/02/2026 - 23:16 | ENTREGA |
   const isScheduled = (order as any).isScheduled || (order as any).scheduledAt;
   const badgeText = isScheduled ? 'AGENDADO' : (deliveryTypeText[order.deliveryType] || 'PEDIDO');
-  receipt += center(`TIPO: ${badgeText}`) + '\n';
+  const headerLine = `#${order.orderNumber} ${formatDate(order.createdAt)} | ${badgeText} |`;
+  receipt += center(headerLine) + '\n';
   receipt += dividerDouble + '\n';
 
   // Seção de agendamento
@@ -835,25 +835,11 @@ export function generatePlainTextReceipt(
   receipt += 'ITENS\n';
 
   for (const item of order.items) {
-    // Linha do item: quantidade x nome + preço alinhado à direita
-    const itemLeft = `${item.quantity}x ${normalize(item.productName).toUpperCase()}`;
-    const itemRight = formatCurrency(item.totalPrice);
-    
-    // Se cabe na linha, usa leftRight; senão quebra
-    if (itemLeft.length + itemRight.length + 1 <= charsPerLine) {
-      receipt += leftRight(itemLeft, itemRight) + '\n';
-    } else {
-      // Nome na primeira linha, preço alinhado à direita na mesma ou próxima
-      const maxNameLen = charsPerLine - itemRight.length - 1;
-      if (itemLeft.length > maxNameLen) {
-        receipt += itemLeft.substring(0, maxNameLen) + '\n';
-        receipt += leftRight('', itemRight) + '\n';
-      } else {
-        receipt += leftRight(itemLeft, itemRight) + '\n';
-      }
-    }
+    // Linha do item: quantidade x nome (sem preço)
+    const itemName = `${item.quantity}x ${normalize(item.productName).toUpperCase()}`;
+    receipt += itemName + '\n';
 
-    // Complementos com pontos
+    // Complementos com pontos (antes do preço do item)
     if (item.complements) {
       try {
         const complements = typeof item.complements === 'string'
@@ -889,6 +875,9 @@ export function generatePlainTextReceipt(
         }
       } catch (e) {}
     }
+
+    // Preço total do item na linha seguinte, alinhado à direita
+    receipt += leftRight('', formatCurrency(item.totalPrice)) + '\n';
 
     // Observações do item
     if (item.notes) {

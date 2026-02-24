@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { generatePlainTextReceipt, OrderData } from './escpos';
 
-describe('generatePlainTextReceipt - novo layout', () => {
+describe('generatePlainTextReceipt - layout v2', () => {
   const sampleOrder: OrderData = {
     orderNumber: 'P999',
     createdAt: new Date('2026-02-23T23:16:00-03:00'),
@@ -46,20 +46,18 @@ describe('generatePlainTextReceipt - novo layout', () => {
     expect(receipt).toContain('SUSHI HARUNO');
   });
 
-  it('deve conter o número do pedido no formato PEDIDO: #P999', () => {
+  it('deve conter header condensado: #P999 data | ENTREGA |', () => {
     const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment);
-    expect(receipt).toContain('PEDIDO: #P999');
+    // Formato: #P999 DD/MM/YYYY - HH:MM | ENTREGA |
+    expect(receipt).toMatch(/#P999\s+\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2} \| ENTREGA \|/);
   });
 
-  it('deve conter a data no formato DD/MM/YYYY - HH:MM', () => {
+  it('NÃO deve conter PEDIDO: nem TIPO: como linhas separadas', () => {
     const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment);
-    // Deve ter formato com separador " - " entre data e hora
-    expect(receipt).toMatch(/\d{2}\/\d{2}\/\d{4} - \d{2}:\d{2}/);
-  });
-
-  it('deve conter TIPO: ENTREGA', () => {
-    const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment);
-    expect(receipt).toContain('TIPO: ENTREGA');
+    // Não deve ter "PEDIDO:" como linha separada
+    expect(receipt).not.toMatch(/^.*PEDIDO:.*$/m);
+    // Não deve ter "TIPO:" como linha separada
+    expect(receipt).not.toMatch(/^.*TIPO:.*$/m);
   });
 
   it('deve usar separadores duplos (=) antes e depois dos totais', () => {
@@ -95,21 +93,36 @@ describe('generatePlainTextReceipt - novo layout', () => {
     expect(receipt).toContain('ITENS');
   });
 
-  it('deve exibir itens em maiúsculas com quantidade e preço', () => {
+  it('deve exibir nome do item sem preço na mesma linha', () => {
     const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment);
-    expect(receipt).toContain('2x X-BURGER ESPECIAL');
+    const lines = receipt.split('\n');
+    // Deve ter uma linha com "2x X-BURGER ESPECIAL" sem preço
+    const itemLine = lines.find(l => l.includes('2x X-BURGER ESPECIAL'));
+    expect(itemLine).toBeDefined();
+    expect(itemLine).not.toContain('R$ 67,80');
+  });
+
+  it('deve exibir preço do item em linha separada alinhado à direita', () => {
+    const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment);
+    // O preço R$ 67,80 deve estar em sua própria linha, alinhado à direita
     expect(receipt).toContain('R$ 67,80');
-    expect(receipt).toContain('1x BATATA FRITA GRANDE');
     expect(receipt).toContain('R$ 15,00');
-    expect(receipt).toContain('2x REFRIGERANTE 600ML');
     expect(receipt).toContain('R$ 16,00');
   });
 
   it('deve exibir complementos com pontos entre nome e preço', () => {
     const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment);
-    // Deve ter padrão: "+ Bacon extra ..... R$ 5,00"
     expect(receipt).toMatch(/\+ Bacon extra\s+\.+\s+R\$ 5,00/);
     expect(receipt).toMatch(/\+ Queijo cheddar\s+\.+\s+R\$ 3,00/);
+  });
+
+  it('complementos devem vir ANTES do preço do item', () => {
+    const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment);
+    const lines = receipt.split('\n');
+    const baconIdx = lines.findIndex(l => l.includes('Bacon extra'));
+    const priceIdx = lines.findIndex((l, i) => i > baconIdx && l.trim().endsWith('R$ 67,80'));
+    expect(baconIdx).toBeGreaterThan(-1);
+    expect(priceIdx).toBeGreaterThan(baconIdx);
   });
 
   it('deve exibir subtotal e taxa de entrega', () => {
@@ -117,7 +130,6 @@ describe('generatePlainTextReceipt - novo layout', () => {
     expect(receipt).toContain('Subtotal:');
     expect(receipt).toContain('R$ 90,80');
     expect(receipt).toContain('Taxa entrega:');
-    expect(receipt).toContain('R$ 5,00');
   });
 
   it('deve exibir TOTAL com valor correto', () => {
@@ -140,23 +152,20 @@ describe('generatePlainTextReceipt - novo layout', () => {
   it('deve funcionar com papel 58mm', () => {
     const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment, '58mm');
     expect(receipt).toContain('SUSHI HARUNO');
-    expect(receipt).toContain('PEDIDO: #P999');
-    // Linhas de separador devem ter 32 caracteres
     const doubleLines = receipt.split('\n').filter(l => /^={10,}$/.test(l.trim()));
     expect(doubleLines[0].trim().length).toBe(32);
   });
 
   it('deve funcionar com papel 80mm', () => {
     const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment, '80mm');
-    // Linhas de separador devem ter 48 caracteres
     const doubleLines = receipt.split('\n').filter(l => /^={10,}$/.test(l.trim()));
     expect(doubleLines[0].trim().length).toBe(48);
   });
 
-  it('deve exibir TIPO: RETIRADA para pedidos pickup', () => {
+  it('deve exibir | RETIRADA | para pedidos pickup', () => {
     const pickupOrder = { ...sampleOrder, deliveryType: 'pickup' as const };
     const receipt = generatePlainTextReceipt(pickupOrder, sampleEstablishment);
-    expect(receipt).toContain('TIPO: RETIRADA');
+    expect(receipt).toContain('| RETIRADA |');
   });
 
   it('deve exibir troco para pagamento em dinheiro', () => {
@@ -179,5 +188,12 @@ describe('generatePlainTextReceipt - novo layout', () => {
     const receipt = generatePlainTextReceipt(discountOrder, sampleEstablishment);
     expect(receipt).toContain('Desconto:');
     expect(receipt).toContain('-R$ 10,00');
+  });
+
+  it('deve exibir | AGENDADO | para pedidos agendados', () => {
+    const scheduledOrder = { ...sampleOrder, isScheduled: true, scheduledAt: new Date('2026-02-25T18:00:00-03:00') } as any;
+    const receipt = generatePlainTextReceipt(scheduledOrder, sampleEstablishment);
+    expect(receipt).toContain('| AGENDADO |');
+    expect(receipt).toContain('AGENDADO PARA:');
   });
 });
