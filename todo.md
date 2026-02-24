@@ -7454,3 +7454,4 @@
 - [x] Bot API: criar API Key global (master) que funcione para todos os estabelecimentos, para uso no endpoint /api/bot/whatsapp-config
 - [x] Bot API: novo endpoint GET /api/bot/api-key que retorna a apiKey filtrada por establishmentId
 - [x] Fix: adicionar groupIds como filtro na função updateComplementItemsByName para evitar alteração em massa de preços entre grupos diferentes
+- [x] Menu público: exibir badge "Grátis" nos complementos gratuitos (priceMode free ou price 0) no modal de seleção de complementos
