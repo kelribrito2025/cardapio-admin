@@ -94,6 +94,7 @@ export interface OrderData {
   neighborhood?: string;
   paymentMethod?: string;
   changeFor?: number;
+  notes?: string;
   items: OrderItem[];
   subtotal: number;
   deliveryFee?: number;
@@ -883,6 +884,13 @@ export function generatePlainTextReceipt(
     if (item.notes) {
       receipt += `  Obs: ${normalize(item.notes)}\n`;
     }
+  }
+
+  // ===== OBSERVAÇÕES DO PEDIDO =====
+  if (order.notes) {
+    receipt += dividerSingle + '\n';
+    receipt += 'OBS DO PEDIDO:\n';
+    receipt += normalize(order.notes) + '\n';
   }
 
   receipt += dividerSingle + '\n';

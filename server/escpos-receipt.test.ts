@@ -190,6 +190,18 @@ describe('generatePlainTextReceipt - layout v2', () => {
     expect(receipt).toContain('-R$ 10,00');
   });
 
+  it('deve exibir observação geral do pedido quando presente', () => {
+    const orderWithNotes = { ...sampleOrder, notes: 'Sem cebola em todos os itens, por favor' };
+    const receipt = generatePlainTextReceipt(orderWithNotes, sampleEstablishment);
+    expect(receipt).toContain('OBS DO PEDIDO:');
+    expect(receipt).toContain('Sem cebola em todos os itens, por favor');
+  });
+
+  it('não deve exibir seção de observação quando não há notes', () => {
+    const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment);
+    expect(receipt).not.toContain('OBS DO PEDIDO:');
+  });
+
   it('deve exibir | AGENDADO | para pedidos agendados', () => {
     const scheduledOrder = { ...sampleOrder, isScheduled: true, scheduledAt: new Date('2026-02-25T18:00:00-03:00') } as any;
     const receipt = generatePlainTextReceipt(scheduledOrder, sampleEstablishment);

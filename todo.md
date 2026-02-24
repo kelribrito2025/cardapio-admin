@@ -7447,3 +7447,4 @@
 - [x] Configurações Impressora: adicionar toggle "Bipe ao imprimir" na aba Layout abaixo de "Mostrar divisores"
 - [x] Reescrever modelo de recibo ESC/POS (texto) com layout: header centralizado, separadores = e -, preços alinhados à direita, complementos indentados com pontos
 - [x] Ajustar modelo ESC/POS v2: header condensado (#P99 data | TIPO |), preço do item em linha separada alinhado à direita
+- [x] ESC/POS: adicionar observação geral do pedido (order.notes) no recibo de texto
