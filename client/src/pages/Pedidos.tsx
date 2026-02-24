@@ -1133,28 +1133,39 @@ export default function Pedidos() {
                 ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400"
                 : "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
           )} style={{height: '35px', width: '161px', paddingRight: '14px', paddingLeft: '14px'}}>
-            {/* Status */}
-            <div className="flex items-center gap-2">
-              {!isWhatsappFetched || isWhatsappLoading ? (
-                /* Estado de carregamento */
-                <>
-                  <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
-                  <span>Verificando...</span>
-                </>
-              ) : whatsappStatus?.status === 'connected' ? (
-                /* Conectado */
-                <>
-                  <span className="w-4 h-4 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" style={{width: '10px', height: '10px'}} />
-                  <span style={{fontSize: '13px'}}>Conectado</span>
-                </>
-              ) : (
-                /* Desconectado */
-                <>
-                  <span className="w-4 h-4 rounded-full bg-red-500 flex-shrink-0" style={{width: '10px', height: '10px'}} />
-                  <span>Desconectado</span>
-                </>
-              )}
-            </div>
+            {/* Status com Tooltip do número conectado */}
+            <Tooltip delayDuration={150}>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-2 cursor-default">
+                  {!isWhatsappFetched || isWhatsappLoading ? (
+                    /* Estado de carregamento */
+                    <>
+                      <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
+                      <span>Verificando...</span>
+                    </>
+                  ) : whatsappStatus?.status === 'connected' ? (
+                    /* Conectado */
+                    <>
+                      <span className="w-4 h-4 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" style={{width: '10px', height: '10px'}} />
+                      <span style={{fontSize: '13px'}}>Conectado</span>
+                    </>
+                  ) : (
+                    /* Desconectado */
+                    <>
+                      <span className="w-4 h-4 rounded-full bg-red-500 flex-shrink-0" style={{width: '10px', height: '10px'}} />
+                      <span>Desconectado</span>
+                    </>
+                  )}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="text-xs">
+                {whatsappStatus?.status === 'connected' && whatsappStatus?.phone ? (
+                  <p>Número conectado:<br/><strong>{whatsappStatus.phone.replace(/^55(\d{2})(\d{5})(\d{4})$/, '+55 $1 $2-$3').replace(/^55(\d{2})(\d{4})(\d{4})$/, '+55 $1 $2-$3')}</strong></p>
+                ) : (
+                  <p>Nenhum número conectado</p>
+                )}
+              </TooltipContent>
+            </Tooltip>
             
             {/* Botões de ação - só mostra após carregar */}
             {isWhatsappFetched && !isWhatsappLoading && (
