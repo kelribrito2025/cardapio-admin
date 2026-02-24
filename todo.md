@@ -7450,3 +7450,4 @@
 - [x] ESC/POS: adicionar observação geral do pedido (order.notes) no recibo de texto
 - [x] Menu público: remover seção "Observação do pedido" (título + textarea) do modal de Resumo do Pedido
 - [x] Pedidos: adicionar tooltip customizado no botão "Conectado" mostrando número WhatsApp conectado dinamicamente
+- [x] Bot API: novo endpoint GET /api/bot/whatsapp-config que retorna establishmentId filtrado por connectedPhone

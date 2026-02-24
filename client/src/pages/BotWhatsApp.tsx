@@ -252,6 +252,7 @@ export default function BotWhatsApp() {
               { method: "POST", path: "/api/bot/orders", desc: "Criar pedido" },
               { method: "GET", path: "/api/bot/orders?phone=", desc: "Pedidos do cliente" },
               { method: "GET", path: "/api/bot/orders/:id", desc: "Detalhes do pedido" },
+              { method: "GET", path: "/api/bot/whatsapp-config?phone=", desc: "Buscar estabelecimento pelo WhatsApp" },
             ].map((ep) => (
               <div
                 key={ep.path}

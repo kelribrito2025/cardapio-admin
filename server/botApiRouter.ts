@@ -6,7 +6,7 @@
  */
 import { Router, Request, Response, NextFunction } from "express";
 import * as db from "./db";
-import { botApiKeys, orders, orderItems, products, complementGroups, complementItems, categories, neighborhoodFees, businessHours, coupons, establishments, stockItems, comboGroups, comboGroupItems } from "../drizzle/schema";
+import { botApiKeys, orders, orderItems, products, complementGroups, complementItems, categories, neighborhoodFees, businessHours, coupons, establishments, stockItems, comboGroups, comboGroupItems, whatsappConfig } from "../drizzle/schema";
 import { eq, and, desc, asc, like, sql } from "drizzle-orm";
 import { z } from "zod";
 
@@ -978,6 +978,46 @@ export function createBotApiRouter(): Router {
       });
     } catch (error) {
       console.error("[BotAPI] Erro em GET /orders/:id:", error);
+      return sendError(res, 500, "Erro interno.");
+    }
+  });
+
+  // ──────────────────────────────────────────────
+  // GET /api/bot/whatsapp-config — Buscar establishmentId pelo número conectado
+  // Query param: phone (número do WhatsApp conectado)
+  // ──────────────────────────────────────────────
+  router.get("/whatsapp-config", async (req: BotApiRequest, res: Response) => {
+    try {
+      const phone = req.query.phone as string;
+      if (!phone) {
+        return sendError(res, 400, "Parâmetro 'phone' é obrigatório. Ex: ?phone=5511999998888");
+      }
+
+      const dbInstance = await db.getDb();
+      if (!dbInstance) return sendError(res, 503, "Banco de dados indisponível.");
+
+      // Buscar na whatsappConfig pelo connectedPhone
+      const [config] = await dbInstance
+        .select({
+          establishmentId: whatsappConfig.establishmentId,
+          connectedPhone: whatsappConfig.connectedPhone,
+          status: whatsappConfig.status,
+        })
+        .from(whatsappConfig)
+        .where(eq(whatsappConfig.connectedPhone, phone))
+        .limit(1);
+
+      if (!config) {
+        return sendError(res, 404, `Nenhum estabelecimento encontrado com o número ${phone}.`);
+      }
+
+      return res.json({
+        establishmentId: config.establishmentId,
+        connectedPhone: config.connectedPhone,
+        status: config.status,
+      });
+    } catch (error) {
+      console.error("[BotAPI] Erro em GET /whatsapp-config:", error);
       return sendError(res, 500, "Erro interno.");
     }
   });
