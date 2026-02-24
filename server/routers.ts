@@ -6027,6 +6027,26 @@ export const appRouter = router({
           .where(eq(botApiKeys.id, input.id));
         return { success: true };
       }),
+
+    createGlobal: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        name: z.string().min(1, "Nome é obrigatório"),
+      }))
+      .mutation(async ({ input }) => {
+        const dbInstance = await db.getDb();
+        if (!dbInstance) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB indisponível' });
+        const apiKey = `bot_global_${crypto.randomBytes(32).toString('hex')}`;
+        const result = await dbInstance.insert(botApiKeys).values({
+          establishmentId: input.establishmentId,
+          name: input.name,
+          apiKey,
+          isActive: true,
+          isGlobal: true,
+          requestCount: 0,
+        });
+        return { id: result[0].insertId, apiKey, name: input.name };
+      }),
   }),
 });
 export type AppRouter = typeof appRouter;

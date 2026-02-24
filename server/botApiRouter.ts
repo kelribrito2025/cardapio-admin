@@ -15,6 +15,7 @@ import { z } from "zod";
 interface BotApiRequest extends Request {
   botEstablishmentId?: number;
   botApiKeyId?: number;
+  botIsGlobal?: boolean;
 }
 
 /**
@@ -67,6 +68,7 @@ async function botApiAuth(req: BotApiRequest, res: Response, next: NextFunction)
 
     req.botEstablishmentId = keyRecord.establishmentId;
     req.botApiKeyId = keyRecord.id;
+    req.botIsGlobal = keyRecord.isGlobal ?? false;
     next();
   } catch (error) {
     console.error("[BotAPI] Erro no middleware de auth:", error);
@@ -988,6 +990,11 @@ export function createBotApiRouter(): Router {
   // ──────────────────────────────────────────────
   router.get("/whatsapp-config", async (req: BotApiRequest, res: Response) => {
     try {
+      // Este endpoint requer uma API Key global (isGlobal=true)
+      if (!req.botIsGlobal) {
+        return sendError(res, 403, "Este endpoint requer uma API Key global. Gere uma na página Bot WhatsApp.");
+      }
+
       const phone = req.query.phone as string;
       if (!phone) {
         return sendError(res, 400, "Parâmetro 'phone' é obrigatório. Ex: ?phone=5511999998888");

@@ -94,6 +94,22 @@ export default function BotWhatsApp() {
     },
   });
 
+  const createGlobalMutation = trpc.botApiKeys.createGlobal.useMutation({
+    onSuccess: (data) => {
+      setCreatedKey(data.apiKey);
+      refetch();
+      toast.success("API Key Global criada com sucesso!");
+    },
+    onError: (err) => {
+      toast.error(err.message || "Erro ao criar API Key Global");
+    },
+  });
+
+  const handleCreateGlobal = () => {
+    if (!estId) return;
+    createGlobalMutation.mutate({ establishmentId: estId, name: "API Key Global (n8n)" });
+  };
+
   const handleCreate = () => {
     if (!newKeyName.trim() || !estId) return;
     createMutation.mutate({ establishmentId: estId, name: newKeyName.trim() });
@@ -144,19 +160,24 @@ export default function BotWhatsApp() {
             Gerencie as API Keys para integração com bots de atendimento via WhatsApp (n8n, etc.)
           </p>
         </div>
-        <Dialog open={showCreateDialog} onOpenChange={(open) => {
-          setShowCreateDialog(open);
-          if (!open) {
-            setCreatedKey(null);
-            setNewKeyName("");
-          }
-        }}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Nova API Key
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handleCreateGlobal} disabled={createGlobalMutation.isPending}>
+            {createGlobalMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Shield className="h-4 w-4 mr-2" />}
+            Nova Key Global
+          </Button>
+          <Dialog open={showCreateDialog} onOpenChange={(open) => {
+            setShowCreateDialog(open);
+            if (!open) {
+              setCreatedKey(null);
+              setNewKeyName("");
+            }
+          }}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Nova API Key
+              </Button>
+            </DialogTrigger>
           <DialogContent>
             {!createdKey ? (
               <>
@@ -225,6 +246,7 @@ export default function BotWhatsApp() {
             )}
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Info Card - Endpoints */}
@@ -332,6 +354,11 @@ export default function BotWhatsApp() {
                         >
                           {key.isActive ? "Ativa" : "Inativa"}
                         </Badge>
+                        {(key as any).isGlobal && (
+                          <Badge variant="outline" className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200">
+                            Global
+                          </Badge>
+                        )}
                       </div>
 
                       {/* API Key */}

@@ -1039,6 +1039,7 @@ export const botApiKeys = mysqlTable("botApiKeys", {
   name: varchar("name", { length: 255 }).notNull(), // Nome descritivo (ex: "n8n WhatsApp Bot")
   apiKey: varchar("apiKey", { length: 128 }).notNull().unique(), // Chave de API (bot_ + 64 hex chars)
   isActive: boolean("isActive").default(true).notNull(),
+  isGlobal: boolean("isGlobal").default(false).notNull(), // Se true, acessa todos os estabelecimentos
   lastUsedAt: timestamp("lastUsedAt"), // Último uso da chave
   requestCount: int("requestCount").default(0).notNull(), // Contador de requisições
   createdAt: timestamp("createdAt").defaultNow().notNull(),

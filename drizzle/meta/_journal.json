@@ -729,6 +729,13 @@
       "when": 1771891639553,
       "tag": "0103_real_roughhouse",
       "breakpoints": true
+    },
+    {
+      "idx": 104,
+      "version": "5",
+      "when": 1771957430388,
+      "tag": "0104_vengeful_scarlet_spider",
+      "breakpoints": true
     }
   ]
 }

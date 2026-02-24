@@ -7451,3 +7451,4 @@
 - [x] Menu público: remover seção "Observação do pedido" (título + textarea) do modal de Resumo do Pedido
 - [x] Pedidos: adicionar tooltip customizado no botão "Conectado" mostrando número WhatsApp conectado dinamicamente
 - [x] Bot API: novo endpoint GET /api/bot/whatsapp-config que retorna establishmentId filtrado por connectedPhone
+- [x] Bot API: criar API Key global (master) que funcione para todos os estabelecimentos, para uso no endpoint /api/bot/whatsapp-config
