@@ -4080,22 +4080,6 @@ export default function PublicMenu() {
                   </div>
                 </div>
 
-                {/* Observação do Pedido */}
-                <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
-                      <FileText className="h-5 w-5 text-purple-500" />
-                    </div>
-                    <h3 className="font-bold text-gray-900">Observação do pedido</h3>
-                  </div>
-                  <textarea
-                    value={orderObservation}
-                    onChange={(e) => setOrderObservation(e.target.value)}
-                    placeholder="Ex: Sem cebola, bem passado..."
-                    className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
-                    rows={2}
-                  />
-                </div>
 
                 {/* Total */}
                 <div className="border-t border-dashed border-gray-200 pt-4 space-y-2">
