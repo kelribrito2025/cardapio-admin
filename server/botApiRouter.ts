@@ -1029,5 +1029,63 @@ export function createBotApiRouter(): Router {
     }
   });
 
+  // ──────────────────────────────────────────────
+  // GET /api/bot/api-key — Buscar API Key pelo establishmentId
+  // Query param: establishmentId (ID do estabelecimento)
+  // ──────────────────────────────────────────────
+  router.get("/api-key", async (req: BotApiRequest, res: Response) => {
+    try {
+      // Este endpoint requer uma API Key global (isGlobal=true)
+      if (!req.botIsGlobal) {
+        return sendError(res, 403, "Este endpoint requer uma API Key global. Gere uma na página Bot WhatsApp.");
+      }
+
+      const establishmentId = parseInt(req.query.establishmentId as string, 10);
+      if (!establishmentId || isNaN(establishmentId)) {
+        return sendError(res, 400, "Parâmetro 'establishmentId' é obrigatório. Ex: ?establishmentId=30001");
+      }
+
+      const dbInstance = await db.getDb();
+      if (!dbInstance) return sendError(res, 503, "Banco de dados indisponível.");
+
+      // Buscar a API Key ativa (não global) vinculada ao establishmentId
+      const [keyRecord] = await dbInstance
+        .select({
+          id: botApiKeys.id,
+          name: botApiKeys.name,
+          apiKey: botApiKeys.apiKey,
+          establishmentId: botApiKeys.establishmentId,
+          isActive: botApiKeys.isActive,
+          createdAt: botApiKeys.createdAt,
+        })
+        .from(botApiKeys)
+        .where(
+          and(
+            eq(botApiKeys.establishmentId, establishmentId),
+            eq(botApiKeys.isActive, true),
+            eq(botApiKeys.isGlobal, false)
+          )
+        )
+        .orderBy(desc(botApiKeys.createdAt))
+        .limit(1);
+
+      if (!keyRecord) {
+        return sendError(res, 404, `Nenhuma API Key ativa encontrada para o estabelecimento ${establishmentId}.`);
+      }
+
+      return res.json({
+        id: keyRecord.id,
+        name: keyRecord.name,
+        apiKey: keyRecord.apiKey,
+        establishmentId: keyRecord.establishmentId,
+        isActive: keyRecord.isActive,
+        createdAt: keyRecord.createdAt,
+      });
+    } catch (error) {
+      console.error("[BotAPI] Erro em GET /api-key:", error);
+      return sendError(res, 500, "Erro interno.");
+    }
+  });
+
   return router;
 }
