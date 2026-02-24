@@ -7453,3 +7453,4 @@
 - [x] Bot API: novo endpoint GET /api/bot/whatsapp-config que retorna establishmentId filtrado por connectedPhone
 - [x] Bot API: criar API Key global (master) que funcione para todos os estabelecimentos, para uso no endpoint /api/bot/whatsapp-config
 - [x] Bot API: novo endpoint GET /api/bot/api-key que retorna a apiKey filtrada por establishmentId
+- [x] Fix: adicionar groupIds como filtro na função updateComplementItemsByName para evitar alteração em massa de preços entre grupos diferentes

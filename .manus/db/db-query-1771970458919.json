@@ -1,0 +1,178 @@
+{
+  "query": "SELECT cg.id, cg.productId, cg.name, p.name as productName FROM complementGroups cg JOIN products p ON cg.productId = p.id JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = 150004 AND (cg.name LIKE '%Sabor%' OR cg.name LIKE '%Sorvete%' OR cg.name LIKE '%Extra%') ORDER BY cg.name, cg.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.id, cg.productId, cg.name, p.name as productName FROM complementGroups cg JOIN products p ON cg.productId = p.id JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = 150004 AND (cg.name LIKE '%Sabor%' OR cg.name LIKE '%Sorvete%' OR cg.name LIKE '%Extra%') ORDER BY cg.name, cg.id;",
+  "rows": [
+    {
+      "id": "420073",
+      "productId": "590035",
+      "name": "Adicionais extra",
+      "productName": "Crepioca"
+    },
+    {
+      "id": "420075",
+      "productId": "590036",
+      "name": "Adicionais extra",
+      "productName": "Tapioca salgada"
+    },
+    {
+      "id": "420077",
+      "productId": "590037",
+      "name": "Adicionais extra R$",
+      "productName": "Tapioca doce"
+    },
+    {
+      "id": "420017",
+      "productId": "590016",
+      "name": "Deseja adicionais extras?",
+      "productName": "300 ml"
+    },
+    {
+      "id": "420022",
+      "productId": "590021",
+      "name": "Deseja adicionais extras?",
+      "productName": "500 ml"
+    },
+    {
+      "id": "420027",
+      "productId": "590022",
+      "name": "Deseja adicionais extras?",
+      "productName": "750 ml"
+    },
+    {
+      "id": "420037",
+      "productId": "590024",
+      "name": "Deseja adicionais extras?",
+      "productName": "Barca"
+    },
+    {
+      "id": "420042",
+      "productId": "590025",
+      "name": "Deseja adicionais extras?",
+      "productName": "1 Litro"
+    },
+    {
+      "id": "420047",
+      "productId": "590026",
+      "name": "Deseja adicionais extras?",
+      "productName": "300 ml"
+    },
+    {
+      "id": "420052",
+      "productId": "590027",
+      "name": "Deseja adicionais extras?",
+      "productName": "500 ml"
+    },
+    {
+      "id": "420057",
+      "productId": "590028",
+      "name": "Deseja adicionais extras?",
+      "productName": "1 Litro"
+    },
+    {
+      "id": "420062",
+      "productId": "590029",
+      "name": "Deseja adicionais extras?",
+      "productName": "750 ml"
+    },
+    {
+      "id": "420065",
+      "productId": "590030",
+      "name": "Deseja Adicionais Extras?",
+      "productName": "Roleta de inverno"
+    },
+    {
+      "id": "420067",
+      "productId": "590031",
+      "name": "Deseja algum adicional extra?",
+      "productName": "Milk-Shake 300ml"
+    },
+    {
+      "id": "420069",
+      "productId": "590032",
+      "name": "Deseja algum adicional extra?",
+      "productName": "Milk-Shake 500ml"
+    },
+    {
+      "id": "420018",
+      "productId": "590016",
+      "name": "Deseja Sorvete? (Extra)",
+      "productName": "300 ml"
+    },
+    {
+      "id": "420023",
+      "productId": "590021",
+      "name": "Deseja Sorvete? (Extra)",
+      "productName": "500 ml"
+    },
+    {
+      "id": "420028",
+      "productId": "590022",
+      "name": "Deseja Sorvete? (Extra)",
+      "productName": "750 ml"
+    },
+    {
+      "id": "420038",
+      "productId": "590024",
+      "name": "Deseja Sorvete? (Extra)",
+      "productName": "Barca"
+    },
+    {
+      "id": "420043",
+      "productId": "590025",
+      "name": "Deseja Sorvete? (Extra)",
+      "productName": "1 Litro"
+    },
+    {
+      "id": "420048",
+      "productId": "590026",
+      "name": "Deseja Sorvete? (Extra)",
+      "productName": "300 ml"
+    },
+    {
+      "id": "420053",
+      "productId": "590027",
+      "name": "Deseja Sorvete? (Extra)",
+      "productName": "500 ml"
+    },
+    {
+      "id": "420058",
+      "productId": "590028",
+      "name": "Deseja Sorvete? (Extra)",
+      "productName": "1 Litro"
+    },
+    {
+      "id": "420063",
+      "productId": "590029",
+      "name": "Deseja Sorvete? (Extra)",
+      "productName": "750 ml"
+    },
+    {
+      "id": "420066",
+      "productId": "590031",
+      "name": "Sabores",
+      "productName": "Milk-Shake 300ml"
+    },
+    {
+      "id": "420068",
+      "productId": "590032",
+      "name": "Sabores",
+      "productName": "Milk-Shake 500ml"
+    },
+    {
+      "id": "420070",
+      "productId": "590033",
+      "name": "Sabores do pote de sorvete 1.5L",
+      "productName": "Pote de sorvete 1.5L"
+    },
+    {
+      "id": "420071",
+      "productId": "590034",
+      "name": "Sabores do pote de sorvete 1.8L",
+      "productName": "Pote de sorvete 1.8L"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tproductId\tname\tproductName\n420073\t590035\tAdicionais extra\tCrepioca\n420075\t590036\tAdicionais extra\tTapioca salgada\n420077\t590037\tAdicionais extra R$\tTapioca doce\n420017\t590016\tDeseja adicionais extras?\t300 ml\n420022\t590021\tDeseja adicionais extras?\t500 ml\n420027\t590022\tDeseja adicionais extras?\t750 ml\n420037\t590024\tDeseja adicionais extras?\tBarca\n420042\t590025\tDeseja adicionais extras?\t1 Litro\n420047\t590026\tDeseja adicionais extras?\t300 ml\n420052\t590027\tDeseja adicionais extras?\t500 ml\n420057\t590028\tDeseja adicionais extras?\t1 Litro\n420062\t590029\tDeseja adicionais extras?\t750 ml\n420065\t590030\tDeseja Adicionais Extras?\tRoleta de inverno\n420067\t590031\tDeseja algum adicional extra?\tMilk-Shake 300ml\n420069\t590032\tDeseja algum adicional extra?\tMilk-Shake 500ml\n420018\t590016\tDeseja Sorvete? (Extra)\t300 ml\n420023\t590021\tDeseja Sorvete? (Extra)\t500 ml\n420028\t590022\tDeseja Sorvete? (Extra)\t750 ml\n420038\t590024\tDeseja Sorvete? (Extra)\tBarca\n420043\t590025\tDeseja Sorvete? (Extra)\t1 Litro\n420048\t590026\tDeseja Sorvete? (Extra)\t300 ml\n420053\t590027\tDeseja Sorvete? (Extra)\t500 ml\n420058\t590028\tDeseja Sorvete? (Extra)\t1 Litro\n420063\t590029\tDeseja Sorvete? (Extra)\t750 ml\n420066\t590031\tSabores\tMilk-Shake 300ml\n420068\t590032\tSabores\tMilk-Shake 500ml\n420070\t590033\tSabores do pote de sorvete 1.5L\tPote de sorvete 1.5L\n420071\t590034\tSabores do pote de sorvete 1.8L\tPote de sorvete 1.8L\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

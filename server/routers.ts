@@ -981,11 +981,12 @@ export const appRouter = router({
         return { success: true };
       }),
     
-    // Atualizar complemento globalmente (propaga para todos os produtos)
+    // Atualizar complemento (com groupId = apenas no grupo específico, sem groupId = propaga para todos)
     updateGlobal: protectedProcedure
       .input(z.object({
         establishmentId: z.number(),
         complementName: z.string(),
+        groupIds: z.array(z.number()).optional(),
         newName: z.string().optional(),
         isActive: z.boolean().optional(),
         priceMode: z.enum(["normal", "free"]).optional(),
@@ -1000,9 +1001,9 @@ export const appRouter = router({
         badgeText: z.string().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
-        const { establishmentId, complementName, newName, ...data } = input;
+        const { establishmentId, complementName, groupIds, newName, ...data } = input;
         const updateData = { ...data, ...(newName ? { name: newName } : {}) };
-        await db.updateComplementItemsByName(establishmentId, complementName, updateData);
+        await db.updateComplementItemsByName(establishmentId, complementName, updateData, groupIds);
         return { success: true };
       }),
     

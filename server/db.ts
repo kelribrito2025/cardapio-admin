@@ -1065,12 +1065,26 @@ export async function updateComplementItemsByName(
     availableDays?: number[] | null;
     availableHours?: { day: number; startTime: string; endTime: string }[] | null;
     badgeText?: string | null;
-  }
+  },
+  scopeGroupIds?: number[]
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  // Buscar todos os produtos do estabelecimento
+  // Se scopeGroupIds foi fornecido, atualizar apenas os itens desses grupos específicos
+  if (scopeGroupIds && scopeGroupIds.length > 0) {
+    await db.update(complementItems)
+      .set(data)
+      .where(
+        and(
+          inArray(complementItems.groupId, scopeGroupIds),
+          eq(complementItems.name, complementName)
+        )
+      );
+    return;
+  }
+  
+  // Caso contrário, comportamento original: atualizar em todos os grupos do estabelecimento
   const establishmentProducts = await db.select({ id: products.id })
     .from(products)
     .where(eq(products.establishmentId, establishmentId));
@@ -1079,7 +1093,6 @@ export async function updateComplementItemsByName(
   
   const productIds = establishmentProducts.map(p => p.id);
   
-  // Buscar todos os grupos de complementos desses produtos
   const allGroups = await db.select()
     .from(complementGroups)
     .where(inArray(complementGroups.productId, productIds));
@@ -1088,7 +1101,6 @@ export async function updateComplementItemsByName(
   
   const groupIds = allGroups.map(g => g.id);
   
-  // Atualizar todos os itens com o mesmo nome nesses grupos
   await db.update(complementItems)
     .set(data)
     .where(

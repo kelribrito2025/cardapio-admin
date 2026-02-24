@@ -1023,9 +1023,10 @@ function GroupCard({
     updateGlobalMutation.mutate({
       establishmentId,
       complementName: itemName,
+      groupIds: group.groupIds,
       isActive,
     });
-    toast.success(isActive ? "Complemento ativado em todos os produtos" : "Complemento pausado em todos os produtos");
+    toast.success(isActive ? "Complemento ativado nos produtos deste grupo" : "Complemento pausado nos produtos deste grupo");
   };
 
   const handleDeleteItemByName = (itemName: string) => {
@@ -1321,14 +1322,14 @@ function GroupCard({
                               updateItemMutation.mutate({ id, ...data });
                               return;
                             }
-                            // If updating by name globally (price, priceMode, etc)
+                            // If updating price/priceMode, scope to this group's groupIds only
                             if (data.priceMode !== undefined || data.price !== undefined) {
-                              // Update globally via updateGlobal
                               const itemObj = items.find((i: any) => i.id === id);
                               if (itemObj) {
                                 updateGlobalMutation.mutate({
                                   establishmentId,
                                   complementName: itemObj.name,
+                                  groupIds: group.groupIds,
                                   ...data,
                                 });
                               }
