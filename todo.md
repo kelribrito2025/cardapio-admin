@@ -7478,3 +7478,7 @@
 - [x] Fix: impressão HTML tem muito espaço em branco abaixo do conteúdo - impressora não corta no lugar certo
 - [x] Fix: impressão via browser (window.print) ficou alinhada à esquerda e não preenche a página corretamente após fix do Mindi Printer
 - [x] Fix: toggle de som reseta ao navegar entre menus - deve resetar apenas no carregamento real da página (F5/primeiro acesso), não na navegação interna
+- [x] Substituir opção "Múltiplas Impressoras (Android)" por "Impressão Automática (Mindi Printer)" no menu de impressão
+- [x] Opção "Impressão Automática" só deve aparecer quando o usuário já gerou uma API Key para o Mindi Printer
+- [x] Quando "Impressão Automática" estiver marcada como favorita, ao aceitar pedido NÃO deve abrir o webview de impressão (impressão é enviada via SSE automaticamente)
+- [x] Manter opção "Impressão Normal" funcionando como antes (abre webview ao aceitar)

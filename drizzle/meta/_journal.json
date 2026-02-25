@@ -743,6 +743,13 @@
       "when": 1772040418364,
       "tag": "0105_broad_runaways",
       "breakpoints": true
+    },
+    {
+      "idx": 106,
+      "version": "5",
+      "when": 1772057343951,
+      "tag": "0106_curvy_katie_power",
+      "breakpoints": true
     }
   ]
 }

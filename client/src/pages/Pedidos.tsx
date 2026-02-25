@@ -433,7 +433,7 @@ export default function Pedidos() {
   });
 
   // Função para alternar o método de impressão favorito
-  const handleToggleFavoritePrintMethod = (method: 'normal' | 'android') => {
+  const handleToggleFavoritePrintMethod = (method: 'normal' | 'automatic') => {
     console.log('[Favorito] Clicou para mudar para:', method);
     console.log('[Favorito] establishmentId:', establishmentId);
     console.log('[Favorito] printerSettings atual:', printerSettings);
@@ -447,6 +447,9 @@ export default function Pedidos() {
       defaultPrintMethod: method,
     });
   };
+
+  // Verificar se o usuário tem API Key gerada (Mindi Printer conectado)
+  const hasMindiPrinterApiKey = !!printerSettings?.printerApiKey;
 
   // Hook para gerenciar contagem de pedidos novos na sidebar
   const { decrementCount } = useNewOrders();
@@ -826,15 +829,13 @@ export default function Pedidos() {
       // Verificar método de impressão favorito
       const printMethod = printerSettings?.defaultPrintMethod || 'normal';
       
-      if (printMethod === 'android') {
-        toast.success("📦 Pedido aceito e enviado para impressão!", {
-          description: "O pedido foi aceito e está sendo enviado para as impressoras Android.",
+      if (printMethod === 'automatic') {
+        // Impressão automática via Mindi Printer (SSE) - NÃO abre webview
+        // O pedido já é enviado automaticamente para a impressora via SSE
+        toast.success("📦 Pedido aceito!", {
+          description: "Impressão automática enviada para o Mindi Printer.",
           duration: 4000,
         });
-        
-        setTimeout(() => {
-          handlePrintMultiPrinter(orderId);
-        }, 300);
       } else {
         // Impressão normal - abrir tela de impressão do navegador
         toast.success("📦 Pedido aceito!", {
@@ -1431,29 +1432,37 @@ export default function Pedidos() {
                                     />
                                   </button>
                                 </div>
-                                <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={() => handlePrintMultiPrinter(order.id)}>
-                                  <div className="flex items-center">
-                                    <Printer className="h-4 w-4 mr-2" />
-                                    <span className="text-sm">Múltiplas Impressoras (Android)</span>
+                                {hasMindiPrinterApiKey && (
+                                  <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={() => {
+                                    toast.info("Impressão automática", {
+                                      description: "A impressão automática é enviada via Mindi Printer ao receber o pedido. Marque como favorita para não abrir a tela de impressão ao aceitar.",
+                                      duration: 5000,
+                                    });
+                                  }}>
+                                    <div className="flex items-center">
+                                      <Wifi className="h-4 w-4 mr-2 text-emerald-500" />
+                                      <span className="text-sm">Impressão Automática</span>
+                                      <span className="ml-1.5 text-[10px] px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 rounded-full font-medium">Mindi</span>
+                                    </div>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleToggleFavoritePrintMethod('automatic');
+                                      }}
+                                      className="p-1 hover:bg-accent-foreground/10 rounded"
+                                      title="Definir como impressão padrão. Ao marcar como favorito, o pedido será impresso automaticamente via Mindi Printer e a tela de impressão não abrirá ao aceitar."
+                                    >
+                                      <Star 
+                                        className={cn(
+                                          "h-4 w-4 transition-colors",
+                                          printerSettings?.defaultPrintMethod === 'automatic' 
+                                            ? "fill-amber-500 text-amber-500" 
+                                            : "text-amber-500"
+                                        )} 
+                                      />
+                                    </button>
                                   </div>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleToggleFavoritePrintMethod('android');
-                                    }}
-                                    className="p-1 hover:bg-accent-foreground/10 rounded"
-                                    title="Definir como impressão padrão. Ao marcar como favorito, essa opção será usada automaticamente ao clicar em Aceitar pedido."
-                                  >
-                                    <Star 
-                                      className={cn(
-                                        "h-4 w-4 transition-colors",
-                                        printerSettings?.defaultPrintMethod === 'android' 
-                                          ? "fill-amber-500 text-amber-500" 
-                                          : "text-amber-500"
-                                      )} 
-                                    />
-                                  </button>
-                                </div>
+                                )}
                               </DropdownMenuContent>
                             </DropdownMenu>
                             <Button
@@ -1760,29 +1769,37 @@ export default function Pedidos() {
                     />
                   </button>
                 </div>
-                <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={() => orderDetails && handlePrintMultiPrinter(orderDetails.id)}>
-                  <div className="flex items-center">
-                    <Printer className="h-4 w-4 mr-2" />
-                    <span className="text-sm">Múltiplas Impressoras (Android)</span>
+                {hasMindiPrinterApiKey && (
+                  <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={() => {
+                    toast.info("Impressão automática", {
+                      description: "A impressão automática é enviada via Mindi Printer ao receber o pedido. Marque como favorita para não abrir a tela de impressão ao aceitar.",
+                      duration: 5000,
+                    });
+                  }}>
+                    <div className="flex items-center">
+                      <Wifi className="h-4 w-4 mr-2 text-emerald-500" />
+                      <span className="text-sm">Impressão Automática</span>
+                      <span className="ml-1.5 text-[10px] px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 rounded-full font-medium">Mindi</span>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleFavoritePrintMethod('automatic');
+                      }}
+                      className="p-1 hover:bg-accent-foreground/10 rounded"
+                      title="Definir como impressão padrão. Ao marcar como favorito, o pedido será impresso automaticamente via Mindi Printer e a tela de impressão não abrirá ao aceitar."
+                    >
+                      <Star 
+                        className={cn(
+                          "h-4 w-4 transition-colors",
+                          printerSettings?.defaultPrintMethod === 'automatic' 
+                            ? "fill-amber-500 text-amber-500" 
+                            : "text-amber-500"
+                        )} 
+                      />
+                    </button>
                   </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleToggleFavoritePrintMethod('android');
-                    }}
-                    className="p-1 hover:bg-accent-foreground/10 rounded"
-                    title="Definir como impressão padrão. Ao marcar como favorito, essa opção será usada automaticamente ao clicar em Aceitar pedido."
-                  >
-                    <Star 
-                      className={cn(
-                        "h-4 w-4 transition-colors",
-                        printerSettings?.defaultPrintMethod === 'android' 
-                          ? "fill-amber-500 text-amber-500" 
-                          : "text-amber-500"
-                      )} 
-                    />
-                  </button>
-                </div>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
