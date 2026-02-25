@@ -7460,3 +7460,4 @@
 - [x] Adicionar badge "Breve" ao item "Mapa de mesas" no menu lateral
 - [x] Criar endpoint GET /api/bot/menu-link que retorna { menuUrl, slug, establishmentName }
 - [x] Bloquear opção "Confirmação via Botões" - desativar toggle no frontend e impedir ativação no backend
+- [x] Fix: impressão automática não funciona - pedido feito pelo menu público não dispara evento print_order via SSE para o Mindi Printer app

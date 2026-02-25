@@ -1819,10 +1819,11 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
     }
     
     // Quando pedido é aceito (status -> preparing), enviar evento print_order para app externo
+    // Só imprime aqui se printOnNewOrder está DESATIVADO (senão já imprimiu na criação do pedido)
     if (status === "preparing") {
       try {
         const printerSettingsResult = await getPrinterSettings(order.establishmentId);
-        if (printerSettingsResult?.autoPrintEnabled) {
+        if (printerSettingsResult && !printerSettingsResult.printOnNewOrder) {
           const orderItemsList = await db.select().from(orderItems).where(eq(orderItems.orderId, id));
           notifyPrintOrder(order.establishmentId, {
             orderId: id,
@@ -3195,11 +3196,11 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
       console.log('[DB:createPublicOrder] Notificação SSE adiada - aguardando confirmação do cliente');
     }
     
-    // Verificar se impressão automática está ativada e enviar evento de impressão
+    // Verificar se impressão está configurada e enviar evento de impressão via SSE
     try {
       const printerSettingsResult = await getPrinterSettings(data.establishmentId);
-      if (printerSettingsResult?.autoPrintEnabled && printerSettingsResult?.printOnNewOrder) {
-        // Enviar evento SSE para impressão (para app ESC POS)
+      if (printerSettingsResult?.printOnNewOrder) {
+        // Enviar evento SSE para impressão (Mindi Printer app)
         notifyPrintOrder(data.establishmentId, {
           orderId,
           orderNumber,
