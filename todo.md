@@ -7460,3 +7460,5 @@
 - [x] Adicionar badge "Breve" ao item "Mapa de mesas" no menu lateral
 - [x] Investigar: beepOnPrint true no status mas bipe não funciona no app externo
 - [x] Fix: impressão HTML tem tamanho diferente (maior) que impressão ESC/POS na térmica 80mm
+- [x] Fix: pedido imprimindo 2x (evento print_order duplicado)
+- [x] Fix: impressão HTML ainda menor que ESC/POS - ajustar largura para igualar
