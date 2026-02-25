@@ -162,30 +162,24 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     localStorage.setItem('expandedMenus', JSON.stringify(expandedMenus));
   }, [expandedMenus]);
   
-  // Estado local para controlar se o som está habilitado (sincronizado com localStorage)
-  // IMPORTANTE: O padrão é FALSE (desativado) até o usuário clicar para ativar
-  const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
-    if (typeof window !== "undefined") {
-      // Só retorna true se explicitamente definido como "true"
-      return localStorage.getItem("notificationSoundEnabled") === "true";
-    }
-    return false;
-  });
+  // Estado local para controlar se o som está habilitado
+  // IMPORTANTE: SEMPRE inicia FALSE ao carregar/atualizar a página
+  // O navegador bloqueia reprodução de áudio sem interação do usuário (autoplay policy)
+  // Então mesmo que o localStorage tenha "true", forçamos false até o usuário clicar
+  const [isSoundEnabled, setIsSoundEnabled] = useState(false);
   
-  // Sincronizar estado com localStorage quando o componente monta ou navega
+  // Ao montar, forçar localStorage para "false" para manter consistência
+  // O usuário precisa clicar no toggle para ativar o som a cada sessão
   useEffect(() => {
+    localStorage.setItem("notificationSoundEnabled", "false");
+    
+    // Ouvir mudanças no localStorage (para sincronizar entre abas)
     const syncSoundState = () => {
       const storedValue = localStorage.getItem("notificationSoundEnabled");
       const shouldBeEnabled = storedValue === "true";
-      if (isSoundEnabled !== shouldBeEnabled) {
-        setIsSoundEnabled(shouldBeEnabled);
-      }
+      setIsSoundEnabled(shouldBeEnabled);
     };
     
-    // Sincronizar imediatamente
-    syncSoundState();
-    
-    // Ouvir mudanças no localStorage (para sincronizar entre abas)
     window.addEventListener("storage", syncSoundState);
     return () => window.removeEventListener("storage", syncSoundState);
   }, []);

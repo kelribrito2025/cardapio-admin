@@ -7472,3 +7472,4 @@
 - [ ] Fix: pedidos novos do menu público não aparecem em tempo real no admin - precisa atualizar a página para ver o pedido (SSE do dashboard não está notificando)
 - [x] Melhoria: tornar createPrintLog resiliente - falhas de logging nunca devem interferir no fluxo de impressão
 - [x] Fix: impressão HTML via SSE/Mindi Printer não ocupa a largura total do papel 80mm (ESC/POS funciona corretamente)
+- [x] Fix: toggle de som deve iniciar desativado ao carregar/atualizar a página (browser autoplay policy bloqueia som sem interação do usuário)
