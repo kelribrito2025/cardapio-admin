@@ -1852,8 +1852,8 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
             beepOnPrint: printerSettingsResult?.beepOnPrint ?? false,
           });
           console.log(`[DB:updateOrderStatus] Evento print_order enviado para pedido aceito: ${order.orderNumber}`);
-          // Registrar log de impress\u00e3o
-          await createPrintLog({
+          // Registrar log de impressão (fire-and-forget - nunca bloqueia)
+          createPrintLog({
             establishmentId: order.establishmentId,
             orderId: id,
             orderNumber: order.orderNumber,
@@ -1862,10 +1862,10 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
             status: 'sent',
             printerConnections: getPrinterConnectionCount(order.establishmentId),
             metadata: { previousStatus: order.status, beepOnPrint: printerSettingsResult?.beepOnPrint ?? false },
-          });
+          }).catch(() => {});
         }
       } catch (printErr) {
-        console.error('[DB:updateOrderStatus] Erro ao enviar evento de impress\u00e3o:', printErr);
+        console.error('[DB:updateOrderStatus] Erro ao enviar evento de impressão:', printErr);
       }
     }
     
@@ -3238,9 +3238,9 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           createdAt: new Date(),
           beepOnPrint: printerSettingsResult?.beepOnPrint ?? false,
         });
-        console.log('[DB:createPublicOrder] Evento de impress\u00e3o SSE enviado para pedido:', orderNumber);
-        // Registrar log de impress\u00e3o
-        await createPrintLog({
+        console.log('[DB:createPublicOrder] Evento de impressão SSE enviado para pedido:', orderNumber);
+        // Registrar log de impressão (fire-and-forget - nunca bloqueia o fluxo de impressão)
+        createPrintLog({
           establishmentId: data.establishmentId,
           orderId,
           orderNumber,
@@ -3249,7 +3249,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           status: 'sent',
           printerConnections: getPrinterConnectionCount(data.establishmentId),
           metadata: { autoAccept: !!(data as any).autoAcceptOrders, beepOnPrint: printerSettingsResult?.beepOnPrint ?? false },
-        });
+        }).catch(() => {});
       }
       
       // Se printOnNewOrder está ativo, o Mindi Printer app cuida da impressão via SSE
@@ -3298,7 +3298,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
         
         if (printResult.success) {
           console.log('[DB:createPublicOrder] POSPrinterDriver:', printResult.message);
-          await createPrintLog({
+          createPrintLog({
             establishmentId: data.establishmentId,
             orderId,
             orderNumber,
@@ -3306,10 +3306,10 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
             method: 'pos_driver',
             status: 'sent',
             metadata: { linkcode: printerSettingsResult.posPrinterLinkcode },
-          });
+          }).catch(() => {});
         } else {
           console.error('[DB:createPublicOrder] POSPrinterDriver erro:', printResult.message);
-          await createPrintLog({
+          createPrintLog({
             establishmentId: data.establishmentId,
             orderId,
             orderNumber,
@@ -3317,7 +3317,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
             method: 'pos_driver',
             status: 'failed',
             errorMessage: printResult.message,
-          });
+          }).catch(() => {});
         }
       }
       
@@ -3371,7 +3371,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           multiPrintResult.results.map(r => `${r.ip}: ${r.success ? 'OK' : r.message}`).join(', '));
         // Log para cada impressora
         for (const r of multiPrintResult.results) {
-          await createPrintLog({
+          createPrintLog({
             establishmentId: data.establishmentId,
             orderId,
             orderNumber,
@@ -3380,7 +3380,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
             status: r.success ? 'sent' : 'failed',
             errorMessage: r.success ? undefined : r.message,
             metadata: { ip: r.ip, printerCount: activePrinters.length },
-          });
+          }).catch(() => {});
         }
       } else if ((printerSettingsResult as any)?.directPrintEnabled && (printerSettingsResult as any)?.directPrintIp) {
         // Fallback para impressão direta única (configuração antiga)
@@ -3423,8 +3423,8 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
         );
         
         if (directPrintResult.success) {
-          console.log('[DB:createPublicOrder] Impress\u00e3o direta:', directPrintResult.message);
-          await createPrintLog({
+          console.log('[DB:createPublicOrder] Impressão direta:', directPrintResult.message);
+          createPrintLog({
             establishmentId: data.establishmentId,
             orderId,
             orderNumber,
@@ -3432,10 +3432,10 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
             method: 'direct',
             status: 'sent',
             metadata: { ip: (printerSettingsResult as any).directPrintIp, port: (printerSettingsResult as any).directPrintPort || 9100 },
-          });
+          }).catch(() => {});
         } else {
-          console.error('[DB:createPublicOrder] Impress\u00e3o direta erro:', directPrintResult.message);
-          await createPrintLog({
+          console.error('[DB:createPublicOrder] Impressão direta erro:', directPrintResult.message);
+          createPrintLog({
             establishmentId: data.establishmentId,
             orderId,
             orderNumber,
@@ -3444,15 +3444,15 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
             status: 'failed',
             errorMessage: directPrintResult.message,
             metadata: { ip: (printerSettingsResult as any).directPrintIp, port: (printerSettingsResult as any).directPrintPort || 9100 },
-          });
+          }).catch(() => {});
         }
       }
       
       } // fim do if (!printOnNewOrder) - bloco de métodos legados
     } catch (printError) {
-      console.error('[DB:createPublicOrder] Erro ao verificar configura\u00e7\u00f5es de impress\u00e3o:', printError);
-      // Registrar falha no log
-      await createPrintLog({
+      console.error('[DB:createPublicOrder] Erro ao verificar configurações de impressão:', printError);
+      // Registrar falha no log (protegido - nunca falha)
+      createPrintLog({
         establishmentId: data.establishmentId,
         orderId,
         orderNumber,
@@ -3460,8 +3460,8 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
         method: 'sse',
         status: 'failed',
         errorMessage: printError instanceof Error ? printError.message : String(printError),
-      });
-      // N\u00e3o falhar o pedido por causa de erro de impress\u00e3o
+      }).catch(() => {}); // fire-and-forget no catch block
+      // Não falhar o pedido por causa de erro de impressão
     }
     
     // Enviar notificação WhatsApp para o cliente sobre novo pedido
@@ -10396,10 +10396,12 @@ export async function createPrintLog(data: {
   errorMessage?: string;
   metadata?: Record<string, unknown>;
 }): Promise<number | null> {
-  const db = await getDb();
-  if (!db) return null;
-  
+  // IMPORTANTE: Esta função NUNCA deve lançar exceção.
+  // Falhas de logging não devem interferir no fluxo de impressão.
   try {
+    const db = await getDb();
+    if (!db) return null;
+    
     const result = await db.insert(printLogs).values({
       establishmentId: data.establishmentId,
       orderId: data.orderId,
@@ -10415,7 +10417,8 @@ export async function createPrintLog(data: {
     console.log(`[PrintLog] Registrado: pedido=${data.orderNumber} trigger=${data.trigger} method=${data.method} status=${data.status} conns=${data.printerConnections || 0}`);
     return result[0].insertId;
   } catch (error) {
-    console.error("[PrintLog] Erro ao registrar log:", error);
+    // Silenciar completamente - logging nunca deve quebrar o fluxo principal
+    console.error("[PrintLog] Erro ao registrar log (ignorado):", error instanceof Error ? error.message : String(error));
     return null;
   }
 }

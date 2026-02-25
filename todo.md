@@ -7469,3 +7469,5 @@
 - [x] Sistema de log de impressão: integrar logging em todos os pontos de disparo de impressão (createPublicOrder, updateOrderStatus)
 - [x] Sistema de log de impressão: criar UI para visualizar logs na aba de impressão nas configurações
 - [x] Sistema de log de impressão: testes vitest
+- [ ] Fix: pedidos novos do menu público não aparecem em tempo real no admin - precisa atualizar a página para ver o pedido (SSE do dashboard não está notificando)
+- [x] Melhoria: tornar createPrintLog resiliente - falhas de logging nunca devem interferir no fluxo de impressão

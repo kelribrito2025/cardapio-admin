@@ -114,3 +114,98 @@ describe("Print Log Data Validation", () => {
     expect(printLogs.status).toBeDefined();
   });
 });
+
+describe("Print Log Resilience", () => {
+  it("createPrintLog should never throw an exception", async () => {
+    const db = await import("./db");
+    // Even with invalid/missing DB, createPrintLog should return null, not throw
+    // The function has an outer try-catch that catches everything
+    const result = await db.createPrintLog({
+      establishmentId: 99999,
+      orderId: 99999,
+      orderNumber: "TEST-RESILIENCE",
+      trigger: "new_order",
+      method: "sse",
+      status: "sent",
+      printerConnections: 0,
+    });
+    // Should return a number (insertId) or null, never throw
+    expect(result === null || typeof result === "number").toBe(true);
+  });
+
+  it("createPrintLog should return null instead of throwing on error", async () => {
+    const db = await import("./db");
+    // The function signature guarantees it returns Promise<number | null>
+    const returnType = db.createPrintLog({
+      establishmentId: 0,
+      orderId: 0,
+      orderNumber: "",
+      trigger: "new_order",
+      method: "sse",
+      status: "failed",
+    });
+    // Should be a Promise
+    expect(returnType).toBeInstanceOf(Promise);
+    // Should resolve (not reject)
+    const result = await returnType;
+    expect(result === null || typeof result === "number").toBe(true);
+  });
+
+  it("all createPrintLog calls in db.ts should be fire-and-forget (no await)", async () => {
+    const fs = await import("fs");
+    const dbContent = fs.readFileSync("server/db.ts", "utf-8");
+    
+    // Find all lines with createPrintLog calls (excluding the function definition and exports)
+    const lines = dbContent.split("\n");
+    const callLines = lines.filter(line => {
+      const trimmed = line.trim();
+      return trimmed.includes("createPrintLog(") && 
+             !trimmed.startsWith("export") && 
+             !trimmed.startsWith("//") &&
+             !trimmed.startsWith("*") &&
+             !trimmed.includes("typeof db.createPrintLog");
+    });
+    
+    // None of the call sites should use 'await createPrintLog'
+    const awaitCalls = callLines.filter(line => line.includes("await createPrintLog"));
+    expect(awaitCalls).toHaveLength(0);
+    
+    // All call sites should have .catch(() => {}) for fire-and-forget
+    // (the function definition itself doesn't need it)
+    const callSitesWithoutCatch = callLines.filter(line => {
+      // Lines that start the call but the .catch is on the same or next line
+      return line.includes("createPrintLog(") && 
+             !line.includes(".catch") &&
+             !line.includes("export") &&
+             !line.includes("function createPrintLog");
+    });
+    // These are multi-line calls where .catch is on a subsequent line, which is fine
+    // Just verify no 'await' is used
+    for (const line of callSitesWithoutCatch) {
+      expect(line).not.toContain("await");
+    }
+  });
+
+  it("createPrintLog function should have outer try-catch wrapping everything", async () => {
+    const fs = await import("fs");
+    const dbContent = fs.readFileSync("server/db.ts", "utf-8");
+    
+    // Find the createPrintLog function definition
+    const funcStart = dbContent.indexOf("export async function createPrintLog");
+    expect(funcStart).toBeGreaterThan(-1);
+    
+    // Extract the function body (approximate)
+    const funcBody = dbContent.substring(funcStart, funcStart + 1500);
+    
+    // Should contain the resilience comment
+    expect(funcBody).toContain("NUNCA deve lan\u00e7ar exce\u00e7\u00e3o");
+    
+    // Should have try as the first block (outer try-catch)
+    expect(funcBody).toContain("try {");
+    
+    // The getDb() call should be INSIDE the try block
+    const tryIndex = funcBody.indexOf("try {");
+    const getDbIndex = funcBody.indexOf("getDb()");
+    expect(getDbIndex).toBeGreaterThan(tryIndex);
+  });
+});
