@@ -7473,3 +7473,6 @@
 - [x] Melhoria: tornar createPrintLog resiliente - falhas de logging nunca devem interferir no fluxo de impressão
 - [x] Fix: impressão HTML via SSE/Mindi Printer não ocupa a largura total do papel 80mm (ESC/POS funciona corretamente)
 - [x] Fix: toggle de som deve iniciar desativado ao carregar/atualizar a página (browser autoplay policy bloqueia som sem interação do usuário)
+- [x] Fix: impressão HTML via Mindi Printer ainda não ocupa largura total do papel 80mm - ajustar template para width 100% sem restrições
+- [x] Fix: impressão HTML via Mindi Printer ainda não ocupa largura total do papel 80mm - ajustar template para width 100%
+- [x] Fix: impressão HTML tem muito espaço em branco abaixo do conteúdo - impressora não corta no lugar certo

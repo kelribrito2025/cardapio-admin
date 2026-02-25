@@ -159,33 +159,41 @@ function generateReceiptHTML(
     }
     html {
       width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      background: #e5e5e0;
+      height: auto;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      overflow: visible;
     }
     body { 
       font-family: 'Arial', 'Helvetica', sans-serif; 
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: ${paperWidth}; 
-      max-width: ${paperWidth};
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      min-height: 0;
       padding: 8px;
+      margin: 0;
       background: #fff;
       color: #000;
       -webkit-font-smoothing: antialiased;
-      margin: 0 auto;
+      overflow: visible;
     }
-    /* Estilo para visualizacao no browser (nao afeta impressora) */
-    @media screen {
+    /* Estilo para visualizacao no browser - nao afeta app de impressora */
+    @media screen and (min-width: 400px) {
       html {
         background: #e5e5e0;
+        display: flex;
+        justify-content: center;
       }
       body {
         background: #f5f5f0;
         max-width: 320px;
         padding: 20px;
+        margin: 20px auto;
       }
     }
     @media print {
@@ -976,33 +984,41 @@ function generateTabReceiptHTML(
     }
     html {
       width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      background: #e5e5e0;
+      height: auto;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      overflow: visible;
     }
     body { 
       font-family: 'Arial', 'Helvetica', sans-serif; 
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: ${paperWidth}; 
-      max-width: ${paperWidth};
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      min-height: 0;
       padding: 8px;
+      margin: 0;
       background: #fff;
       color: #000;
       -webkit-font-smoothing: antialiased;
-      margin: 0 auto;
+      overflow: visible;
     }
-    /* Estilo para visualizacao no browser (nao afeta impressora) */
-    @media screen {
+    /* Estilo para visualizacao no browser - nao afeta app de impressora */
+    @media screen and (min-width: 400px) {
       html {
         background: #e5e5e0;
+        display: flex;
+        justify-content: center;
       }
       body {
         background: #f5f5f0;
         max-width: 320px;
         padding: 20px;
+        margin: 20px auto;
       }
     }
     @media print {
