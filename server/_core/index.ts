@@ -169,13 +169,24 @@ function generateReceiptHTML(
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: 100%; 
-      max-width: 320px;
-      padding: 20px;
-      background: #f5f5f0;
+      width: ${paperWidth}; 
+      max-width: ${paperWidth};
+      padding: 8px;
+      background: #fff;
       color: #000;
       -webkit-font-smoothing: antialiased;
       margin: 0 auto;
+    }
+    /* Estilo para visualizacao no browser (nao afeta impressora) */
+    @media screen {
+      html {
+        background: #e5e5e0;
+      }
+      body {
+        background: #f5f5f0;
+        max-width: 320px;
+        padding: 20px;
+      }
     }
     @media print {
       * {
@@ -189,7 +200,8 @@ function generateReceiptHTML(
       }
       body {
         background: #fff;
-        max-width: 100%;
+        width: ${paperWidth};
+        max-width: ${paperWidth};
         padding: 8px;
       }
       .delivery-badge {
@@ -974,13 +986,24 @@ function generateTabReceiptHTML(
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: 100%; 
-      max-width: 320px;
-      padding: 20px;
-      background: #f5f5f0;
+      width: ${paperWidth}; 
+      max-width: ${paperWidth};
+      padding: 8px;
+      background: #fff;
       color: #000;
       -webkit-font-smoothing: antialiased;
       margin: 0 auto;
+    }
+    /* Estilo para visualizacao no browser (nao afeta impressora) */
+    @media screen {
+      html {
+        background: #e5e5e0;
+      }
+      body {
+        background: #f5f5f0;
+        max-width: 320px;
+        padding: 20px;
+      }
     }
     @media print {
       * {
@@ -994,7 +1017,8 @@ function generateTabReceiptHTML(
       }
       body {
         background: #fff;
-        max-width: 100%;
+        width: ${paperWidth};
+        max-width: ${paperWidth};
         padding: 8px;
       }
       .delivery-badge {
