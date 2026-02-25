@@ -7482,3 +7482,4 @@
 - [x] Opção "Impressão Automática" só deve aparecer quando o usuário já gerou uma API Key para o Mindi Printer
 - [x] Quando "Impressão Automática" estiver marcada como favorita, ao aceitar pedido NÃO deve abrir o webview de impressão (impressão é enviada via SSE automaticamente)
 - [x] Manter opção "Impressão Normal" funcionando como antes (abre webview ao aceitar)
+- [x] Fix: ícone de Entregadores no menu lateral deve ser o mesmo ícone usado no modal de acompanhamento do pedido (status "Saiu para entrega") - alterado de Truck para Bike

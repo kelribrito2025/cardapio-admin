@@ -35,7 +35,7 @@ import {
   Sun,
   Star,
   BookOpen,
-  Truck,
+  Bike,
   CalendarClock,
   BadgeDollarSign,
   Bot,
@@ -87,7 +87,7 @@ const menuSections = [
       { icon: ClipboardList, label: "Pedidos", href: "/pedidos", disabled: false, isParent: true, children: [
         { icon: CalendarClock, label: "Agendados", href: "/agendados", disabled: false },
       ] },
-      { icon: Truck, label: "Entregadores", href: "/entregadores", disabled: false },
+      { icon: Bike, label: "Entregadores", href: "/entregadores", disabled: false },
       { icon: BookOpen, label: "Menu", href: "/menu-parent", disabled: false, isParent: true, children: [
         { icon: UtensilsCrossed, label: "Cardápio", href: "/catalogo", disabled: false },
         { icon: Layers, label: "Grupos", href: "/complementos", disabled: false },
