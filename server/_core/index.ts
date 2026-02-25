@@ -2665,6 +2665,7 @@ async function startServer() {
         printOnNewOrder: settings?.printOnNewOrder || false,
         paperWidth: settings?.paperWidth || "80mm",
         htmlPrintEnabled: settings?.htmlPrintEnabled ?? true,
+        beepOnPrint: settings?.beepOnPrint ?? false,
         activeConnections: getConnectionCount(result.establishmentId),
       });
     } catch (error) {

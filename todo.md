@@ -7456,3 +7456,4 @@
 - [x] Fix: adicionar groupIds como filtro na função updateComplementItemsByName para evitar alteração em massa de preços entre grupos diferentes
 - [x] Menu público: exibir badge "Grátis" nos complementos gratuitos (priceMode free ou price 0) no modal de seleção de complementos
 - [x] Fix: badge "Grátis" no menu público deve aparecer SOMENTE quando priceMode === 'free', não quando preço é 0 ou indefinido
+- [x] Fix: beepOnPrint não está sendo enviado no evento SSE de impressão para o app externo

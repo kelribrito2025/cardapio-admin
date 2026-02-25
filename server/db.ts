@@ -1818,6 +1818,44 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
       });
     }
     
+    // Quando pedido é aceito (status -> preparing), enviar evento print_order para app externo
+    if (status === "preparing") {
+      try {
+        const printerSettingsResult = await getPrinterSettings(order.establishmentId);
+        if (printerSettingsResult?.autoPrintEnabled) {
+          const orderItemsList = await db.select().from(orderItems).where(eq(orderItems.orderId, id));
+          notifyPrintOrder(order.establishmentId, {
+            orderId: id,
+            orderNumber: order.orderNumber,
+            customerName: order.customerName || null,
+            customerPhone: order.customerPhone || null,
+            customerAddress: order.customerAddress || null,
+            deliveryType: order.deliveryType || "delivery",
+            paymentMethod: order.paymentMethod || "cash",
+            subtotal: order.subtotal || "0",
+            deliveryFee: order.deliveryFee || "0",
+            discount: order.discount || "0",
+            total: order.total,
+            notes: order.notes || null,
+            changeAmount: order.changeAmount || null,
+            items: orderItemsList.map(item => ({
+              productName: item.productName,
+              quantity: item.quantity ?? 1,
+              unitPrice: item.unitPrice,
+              totalPrice: item.totalPrice,
+              complements: item.complements as Array<{ name: string; price: number }> | null,
+              notes: item.notes || null,
+            })),
+            createdAt: order.createdAt || new Date(),
+            beepOnPrint: printerSettingsResult?.beepOnPrint ?? false,
+          });
+          console.log(`[DB:updateOrderStatus] Evento print_order enviado para pedido aceito: ${order.orderNumber}`);
+        }
+      } catch (printErr) {
+        console.error('[DB:updateOrderStatus] Erro ao enviar evento de impressão:', printErr);
+      }
+    }
+    
     // Nota: o desconto de estoque é feito na criação do pedido (createPublicOrder)
     // Não descontar novamente ao mudar de status para evitar dupla contagem
     
