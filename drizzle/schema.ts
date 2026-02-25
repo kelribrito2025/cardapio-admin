@@ -1048,3 +1048,22 @@ export const botApiKeys = mysqlTable("botApiKeys", {
 
 export type BotApiKey = typeof botApiKeys.$inferSelect;
 export type InsertBotApiKey = typeof botApiKeys.$inferInsert;
+
+
+// Logs de impressao
+export const printLogs = mysqlTable("printLogs", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  orderId: int("orderId").notNull(),
+  orderNumber: varchar("orderNumber", { length: 50 }).notNull(),
+  trigger: mysqlEnum("trigger", ["new_order", "accept", "manual", "reprint"]).default("new_order").notNull(),
+  method: mysqlEnum("method", ["sse", "pos_driver", "socket_tcp", "direct"]).default("sse").notNull(),
+  status: mysqlEnum("status", ["sent", "delivered", "failed"]).default("sent").notNull(),
+  printerConnections: int("printerConnections").default(0).notNull(),
+  errorMessage: text("errorMessage"),
+  metadata: json("metadata"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type PrintLog = typeof printLogs.$inferSelect;
+export type InsertPrintLog = typeof printLogs.$inferInsert;

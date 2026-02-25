@@ -1,6 +1,6 @@
 import { eq, desc, asc, and, like, notLike, sql, gte, lte, lt, gt, or, ne, inArray, isNotNull, getTableColumns } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate, notifyPrintOrder } from "./_core/sse";
+import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate, notifyPrintOrder, getPrinterConnectionCount } from "./_core/sse";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
 import { 
   InsertUser, users, 
@@ -48,7 +48,8 @@ import {
   recurringExpenseHistory, InsertRecurringExpenseHistoryEntry,
   financialGoals, InsertFinancialGoal, FinancialGoal,
   cashbackTransactions, InsertCashbackTransaction, CashbackTransaction,
-  cashbackBalances, InsertCashbackBalance, CashbackBalance
+  cashbackBalances, InsertCashbackBalance, CashbackBalance,
+  printLogs, InsertPrintLog, PrintLog
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -1851,9 +1852,20 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
             beepOnPrint: printerSettingsResult?.beepOnPrint ?? false,
           });
           console.log(`[DB:updateOrderStatus] Evento print_order enviado para pedido aceito: ${order.orderNumber}`);
+          // Registrar log de impress\u00e3o
+          await createPrintLog({
+            establishmentId: order.establishmentId,
+            orderId: id,
+            orderNumber: order.orderNumber,
+            trigger: 'accept',
+            method: 'sse',
+            status: 'sent',
+            printerConnections: getPrinterConnectionCount(order.establishmentId),
+            metadata: { previousStatus: order.status, beepOnPrint: printerSettingsResult?.beepOnPrint ?? false },
+          });
         }
       } catch (printErr) {
-        console.error('[DB:updateOrderStatus] Erro ao enviar evento de impressão:', printErr);
+        console.error('[DB:updateOrderStatus] Erro ao enviar evento de impress\u00e3o:', printErr);
       }
     }
     
@@ -3226,7 +3238,18 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           createdAt: new Date(),
           beepOnPrint: printerSettingsResult?.beepOnPrint ?? false,
         });
-        console.log('[DB:createPublicOrder] Evento de impressão SSE enviado para pedido:', orderNumber);
+        console.log('[DB:createPublicOrder] Evento de impress\u00e3o SSE enviado para pedido:', orderNumber);
+        // Registrar log de impress\u00e3o
+        await createPrintLog({
+          establishmentId: data.establishmentId,
+          orderId,
+          orderNumber,
+          trigger: 'new_order',
+          method: 'sse',
+          status: 'sent',
+          printerConnections: getPrinterConnectionCount(data.establishmentId),
+          metadata: { autoAccept: !!(data as any).autoAcceptOrders, beepOnPrint: printerSettingsResult?.beepOnPrint ?? false },
+        });
       }
       
       // Se printOnNewOrder está ativo, o Mindi Printer app cuida da impressão via SSE
@@ -3275,8 +3298,26 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
         
         if (printResult.success) {
           console.log('[DB:createPublicOrder] POSPrinterDriver:', printResult.message);
+          await createPrintLog({
+            establishmentId: data.establishmentId,
+            orderId,
+            orderNumber,
+            trigger: 'new_order',
+            method: 'pos_driver',
+            status: 'sent',
+            metadata: { linkcode: printerSettingsResult.posPrinterLinkcode },
+          });
         } else {
           console.error('[DB:createPublicOrder] POSPrinterDriver erro:', printResult.message);
+          await createPrintLog({
+            establishmentId: data.establishmentId,
+            orderId,
+            orderNumber,
+            trigger: 'new_order',
+            method: 'pos_driver',
+            status: 'failed',
+            errorMessage: printResult.message,
+          });
         }
       }
       
@@ -3326,8 +3367,21 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
         // Imprimir em todas as impressoras ativas simultaneamente
         const multiPrintResult = await printOrderToMultiplePrinters(printerConfigs, orderData);
         
-        console.log(`[DB:createPublicOrder] Impressão em ${activePrinters.length} impressora(s):`, 
+        console.log(`[DB:createPublicOrder] Impress\u00e3o em ${activePrinters.length} impressora(s):`, 
           multiPrintResult.results.map(r => `${r.ip}: ${r.success ? 'OK' : r.message}`).join(', '));
+        // Log para cada impressora
+        for (const r of multiPrintResult.results) {
+          await createPrintLog({
+            establishmentId: data.establishmentId,
+            orderId,
+            orderNumber,
+            trigger: 'new_order',
+            method: 'socket_tcp',
+            status: r.success ? 'sent' : 'failed',
+            errorMessage: r.success ? undefined : r.message,
+            metadata: { ip: r.ip, printerCount: activePrinters.length },
+          });
+        }
       } else if ((printerSettingsResult as any)?.directPrintEnabled && (printerSettingsResult as any)?.directPrintIp) {
         // Fallback para impressão direta única (configuração antiga)
         const { printOrderDirect } = await import('./escposPrinter');
@@ -3369,16 +3423,45 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
         );
         
         if (directPrintResult.success) {
-          console.log('[DB:createPublicOrder] Impressão direta:', directPrintResult.message);
+          console.log('[DB:createPublicOrder] Impress\u00e3o direta:', directPrintResult.message);
+          await createPrintLog({
+            establishmentId: data.establishmentId,
+            orderId,
+            orderNumber,
+            trigger: 'new_order',
+            method: 'direct',
+            status: 'sent',
+            metadata: { ip: (printerSettingsResult as any).directPrintIp, port: (printerSettingsResult as any).directPrintPort || 9100 },
+          });
         } else {
-          console.error('[DB:createPublicOrder] Impressão direta erro:', directPrintResult.message);
+          console.error('[DB:createPublicOrder] Impress\u00e3o direta erro:', directPrintResult.message);
+          await createPrintLog({
+            establishmentId: data.establishmentId,
+            orderId,
+            orderNumber,
+            trigger: 'new_order',
+            method: 'direct',
+            status: 'failed',
+            errorMessage: directPrintResult.message,
+            metadata: { ip: (printerSettingsResult as any).directPrintIp, port: (printerSettingsResult as any).directPrintPort || 9100 },
+          });
         }
       }
       
       } // fim do if (!printOnNewOrder) - bloco de métodos legados
     } catch (printError) {
-      console.error('[DB:createPublicOrder] Erro ao verificar configurações de impressão:', printError);
-      // Não falhar o pedido por causa de erro de impressão
+      console.error('[DB:createPublicOrder] Erro ao verificar configura\u00e7\u00f5es de impress\u00e3o:', printError);
+      // Registrar falha no log
+      await createPrintLog({
+        establishmentId: data.establishmentId,
+        orderId,
+        orderNumber,
+        trigger: 'new_order',
+        method: 'sse',
+        status: 'failed',
+        errorMessage: printError instanceof Error ? printError.message : String(printError),
+      });
+      // N\u00e3o falhar o pedido por causa de erro de impress\u00e3o
     }
     
     // Enviar notificação WhatsApp para o cliente sobre novo pedido
@@ -10297,4 +10380,153 @@ export async function getCashbackTransactionByOrderId(orderId: number) {
     .limit(1);
   
   return result[0] || null;
+}
+
+
+// ============ PRINT LOGS ============
+
+export async function createPrintLog(data: {
+  establishmentId: number;
+  orderId: number;
+  orderNumber: string;
+  trigger: "new_order" | "accept" | "manual" | "reprint";
+  method: "sse" | "pos_driver" | "socket_tcp" | "direct";
+  status: "sent" | "delivered" | "failed";
+  printerConnections?: number;
+  errorMessage?: string;
+  metadata?: Record<string, unknown>;
+}): Promise<number | null> {
+  const db = await getDb();
+  if (!db) return null;
+  
+  try {
+    const result = await db.insert(printLogs).values({
+      establishmentId: data.establishmentId,
+      orderId: data.orderId,
+      orderNumber: data.orderNumber,
+      trigger: data.trigger,
+      method: data.method,
+      status: data.status,
+      printerConnections: data.printerConnections || 0,
+      errorMessage: data.errorMessage || null,
+      metadata: data.metadata || null,
+    });
+    
+    console.log(`[PrintLog] Registrado: pedido=${data.orderNumber} trigger=${data.trigger} method=${data.method} status=${data.status} conns=${data.printerConnections || 0}`);
+    return result[0].insertId;
+  } catch (error) {
+    console.error("[PrintLog] Erro ao registrar log:", error);
+    return null;
+  }
+}
+
+export async function getPrintLogs(establishmentId: number, options?: {
+  limit?: number;
+  offset?: number;
+  orderId?: number;
+  orderNumber?: string;
+  trigger?: string;
+  status?: string;
+  startDate?: Date;
+  endDate?: Date;
+}): Promise<{ logs: PrintLog[]; total: number }> {
+  const db = await getDb();
+  if (!db) return { logs: [], total: 0 };
+  
+  const conditions = [eq(printLogs.establishmentId, establishmentId)];
+  
+  if (options?.orderId) {
+    conditions.push(eq(printLogs.orderId, options.orderId));
+  }
+  if (options?.orderNumber) {
+    conditions.push(like(printLogs.orderNumber, `%${options.orderNumber}%`));
+  }
+  if (options?.trigger) {
+    conditions.push(eq(printLogs.trigger, options.trigger as any));
+  }
+  if (options?.status) {
+    conditions.push(eq(printLogs.status, options.status as any));
+  }
+  if (options?.startDate) {
+    conditions.push(gte(printLogs.createdAt, options.startDate));
+  }
+  if (options?.endDate) {
+    conditions.push(lte(printLogs.createdAt, options.endDate));
+  }
+  
+  const whereClause = and(...conditions);
+  
+  const [logs, countResult] = await Promise.all([
+    db.select()
+      .from(printLogs)
+      .where(whereClause)
+      .orderBy(desc(printLogs.createdAt))
+      .limit(options?.limit || 50)
+      .offset(options?.offset || 0),
+    db.select({ count: sql<number>`count(*)` })
+      .from(printLogs)
+      .where(whereClause),
+  ]);
+  
+  return {
+    logs,
+    total: countResult[0]?.count || 0,
+  };
+}
+
+export async function getPrintLogStats(establishmentId: number, days: number = 7): Promise<{
+  totalPrints: number;
+  successCount: number;
+  failedCount: number;
+  byTrigger: Record<string, number>;
+  byMethod: Record<string, number>;
+}> {
+  const db = await getDb();
+  if (!db) return { totalPrints: 0, successCount: 0, failedCount: 0, byTrigger: {}, byMethod: {} };
+  
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+  
+  const logs = await db.select()
+    .from(printLogs)
+    .where(and(
+      eq(printLogs.establishmentId, establishmentId),
+      gte(printLogs.createdAt, startDate)
+    ));
+  
+  const byTrigger: Record<string, number> = {};
+  const byMethod: Record<string, number> = {};
+  let successCount = 0;
+  let failedCount = 0;
+  
+  for (const log of logs) {
+    byTrigger[log.trigger] = (byTrigger[log.trigger] || 0) + 1;
+    byMethod[log.method] = (byMethod[log.method] || 0) + 1;
+    if (log.status === "sent" || log.status === "delivered") successCount++;
+    if (log.status === "failed") failedCount++;
+  }
+  
+  return {
+    totalPrints: logs.length,
+    successCount,
+    failedCount,
+    byTrigger,
+    byMethod,
+  };
+}
+
+export async function clearPrintLogs(establishmentId: number, olderThanDays?: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  
+  const conditions = [eq(printLogs.establishmentId, establishmentId)];
+  
+  if (olderThanDays) {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
+    conditions.push(lte(printLogs.createdAt, cutoffDate));
+  }
+  
+  const result = await db.delete(printLogs).where(and(...conditions));
+  return result[0].affectedRows || 0;
 }

@@ -7463,3 +7463,9 @@
 - [x] Fix: impressão automática não funciona - pedido feito pelo menu público não dispara evento print_order via SSE para o Mindi Printer app
 - [x] Fix: pedido sendo impresso 2x na mesma impressora via SSE
 - [x] Fix: pedido ainda sendo impresso 2x mesmo após desativar impressora legada - separar pool SSE de impressora do pool do dashboard
+- [x] Sistema de log de impressão: criar tabela printLogs no banco de dados
+- [x] Sistema de log de impressão: criar db helpers para inserir e consultar logs
+- [x] Sistema de log de impressão: criar rotas tRPC para listar logs com filtros
+- [x] Sistema de log de impressão: integrar logging em todos os pontos de disparo de impressão (createPublicOrder, updateOrderStatus)
+- [x] Sistema de log de impressão: criar UI para visualizar logs na aba de impressão nas configurações
+- [x] Sistema de log de impressão: testes vitest

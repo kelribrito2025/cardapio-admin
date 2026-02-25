@@ -3254,6 +3254,56 @@ export const appRouter = router({
           return db.getPrintHistory(input.establishmentId, input.limit);
         }),
     }),
+    
+    // ============ PRINT LOGS ============
+    logs: router({
+      // Listar logs de impressão com filtros
+      list: protectedProcedure
+        .input(z.object({
+          establishmentId: z.number(),
+          limit: z.number().optional(),
+          offset: z.number().optional(),
+          orderId: z.number().optional(),
+          orderNumber: z.string().optional(),
+          trigger: z.string().optional(),
+          status: z.string().optional(),
+          startDate: z.date().optional(),
+          endDate: z.date().optional(),
+        }))
+        .query(async ({ input }) => {
+          return db.getPrintLogs(input.establishmentId, {
+            limit: input.limit,
+            offset: input.offset,
+            orderId: input.orderId,
+            orderNumber: input.orderNumber,
+            trigger: input.trigger,
+            status: input.status,
+            startDate: input.startDate,
+            endDate: input.endDate,
+          });
+        }),
+      
+      // Estatísticas de impressão
+      stats: protectedProcedure
+        .input(z.object({
+          establishmentId: z.number(),
+          days: z.number().optional(),
+        }))
+        .query(async ({ input }) => {
+          return db.getPrintLogStats(input.establishmentId, input.days);
+        }),
+      
+      // Limpar logs antigos
+      clear: protectedProcedure
+        .input(z.object({
+          establishmentId: z.number(),
+          olderThanDays: z.number().optional(),
+        }))
+        .mutation(async ({ input }) => {
+          const deleted = await db.clearPrintLogs(input.establishmentId, input.olderThanDays);
+          return { deleted };
+        }),
+    }),
   }),
   
   // ============ PUSH NOTIFICATIONS ============

@@ -6,7 +6,8 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Printer, Save, RotateCcw, Smartphone, Loader2, FileText, Settings, Eye, Type, Plus, Pencil, Trash2, Star, Key, Copy, RefreshCw, Unplug } from "lucide-react";
+import { Printer, Save, RotateCcw, Smartphone, Loader2, FileText, Settings, Eye, Type, Plus, Pencil, Trash2, Star, Key, Copy, RefreshCw, Unplug, ScrollText } from "lucide-react";
+import { PrintLogsTab } from "./PrintLogsTab";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
@@ -842,7 +843,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       </Card>
 
       <Tabs defaultValue="layout" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="layout" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             <span className="hidden sm:inline">Layout</span>
@@ -858,6 +859,10 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
           <TabsTrigger value="api" className="flex items-center gap-2">
             <Key className="h-4 w-4" />
             <span className="hidden sm:inline">API</span>
+          </TabsTrigger>
+          <TabsTrigger value="logs" className="flex items-center gap-2">
+            <ScrollText className="h-4 w-4" />
+            <span className="hidden sm:inline">Logs</span>
           </TabsTrigger>
         </TabsList>
         
@@ -1211,6 +1216,11 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
         {/* API Key Tab */}
         <TabsContent value="api" className="space-y-4 mt-4">
           <PrinterApiKeySection establishmentId={establishmentId} />
+        </TabsContent>
+
+        {/* Logs Tab */}
+        <TabsContent value="logs" className="space-y-4 mt-4">
+          <PrintLogsTab establishmentId={establishmentId} />
         </TabsContent>
       </Tabs>
     </div>
