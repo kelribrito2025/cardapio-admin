@@ -1127,13 +1127,13 @@ export default function Pedidos() {
             </button>
           </div>
           <div className={cn(
-            "flex items-center gap-3 px-4 py-2 rounded-xl border text-sm font-medium whitespace-nowrap",
+            "flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium whitespace-nowrap",
             !isWhatsappFetched || isWhatsappLoading
               ? "bg-muted/50 border-border text-muted-foreground"
               : whatsappStatus?.status === 'connected'
                 ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400"
                 : "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
-          )} style={{height: '35px', width: '161px', paddingRight: '14px', paddingLeft: '14px'}}>
+          )} style={{height: '35px'}}>
             {/* Status com Tooltip do número conectado */}
             <Tooltip delayDuration={150}>
               <TooltipTrigger asChild>
@@ -1186,7 +1186,7 @@ export default function Pedidos() {
                             disconnectWhatsapp.mutate();
                           }
                         }}
-                        disabled={disconnectWhatsapp.isPending} style={{marginLeft: '-7px'}}
+                        disabled={disconnectWhatsapp.isPending}
                       >
                         <Link2Off className="h-4 w-4" />
                       </Button>
@@ -1207,7 +1207,7 @@ export default function Pedidos() {
                           setQrCodeModalOpen(true);
                           connectWhatsapp.mutate();
                         }}
-                        disabled={connectWhatsapp.isPending} style={{width: '82px', height: '30px'}}
+                        disabled={connectWhatsapp.isPending}
                       >
                         {connectWhatsapp.isPending ? (
                           <Loader2 className="h-4 w-4 animate-spin" />

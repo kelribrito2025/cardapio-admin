@@ -7484,3 +7484,4 @@
 - [x] Manter opção "Impressão Normal" funcionando como antes (abre webview ao aceitar)
 - [x] Fix: ícone de Entregadores no menu lateral deve ser o mesmo ícone usado no modal de acompanhamento do pedido (status "Saiu para entrega") - alterado de Truck para Bike
 - [x] Padronizar ícone de entregador/delivery de Truck para Bike em todas as telas: PDV, Configurações, Entregadores, Pedidos, LandingPage, Onboarding, PublicMenu, Agendados, EntregadorDetalhes, PDVSlidebar, MobilePDVModal
+- [x] Fix: botão "Desconectado | Conectar" do WhatsApp na página de Pedidos com layout quebrado (texto sobreposto e cortado) - removido width fixo de 161px, agora auto-size
