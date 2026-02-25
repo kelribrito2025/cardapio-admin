@@ -1087,5 +1087,36 @@ export function createBotApiRouter(): Router {
     }
   });
 
+  // ──────────────────────────────────────────────
+  // GET /api/bot/menu-link — Link público do cardápio
+  // Retorna a URL completa do cardápio público do restaurante
+  // ──────────────────────────────────────────────
+  router.get("/menu-link", async (req: BotApiRequest, res: Response) => {
+    try {
+      const estId = req.botEstablishmentId!;
+      const establishment = await db.getEstablishmentById(estId);
+      if (!establishment) {
+        return sendError(res, 404, "Estabelecimento não encontrado.");
+      }
+
+      if (!establishment.menuSlug) {
+        return sendError(res, 404, "O estabelecimento ainda não possui um slug de cardápio configurado.");
+      }
+
+      // Construir a URL completa do cardápio público
+      const appUrl = process.env.VITE_APP_URL || 'https://v2.mindi.com.br';
+      const menuUrl = `${appUrl}/menu/${establishment.menuSlug}`;
+
+      return res.json({
+        menuUrl,
+        slug: establishment.menuSlug,
+        establishmentName: establishment.name,
+      });
+    } catch (error) {
+      console.error("[BotAPI] Erro em GET /menu-link:", error);
+      return sendError(res, 500, "Erro interno.");
+    }
+  });
+
   return router;
 }

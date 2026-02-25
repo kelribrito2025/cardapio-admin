@@ -7462,3 +7462,4 @@
 - [x] Fix: impressão HTML tem tamanho diferente (maior) que impressão ESC/POS na térmica 80mm
 - [x] Fix: pedido imprimindo 2x (evento print_order duplicado)
 - [x] Fix: impressão HTML ainda menor que ESC/POS - ajustar largura para igualar
+- [x] Criar endpoint API para bot WhatsApp consultar link do cardápio público do restaurante
