@@ -1087,5 +1087,42 @@ export function createBotApiRouter(): Router {
     }
   });
 
+  // ──────────────────────────────────────────────
+  // GET /api/bot/menu-link — Link do cardápio público
+  // ──────────────────────────────────────────────
+  router.get("/menu-link", async (req: BotApiRequest, res: Response) => {
+    try {
+      const estId = req.botEstablishmentId!;
+      const dbInstance = await db.getDb();
+      if (!dbInstance) return sendError(res, 503, "Banco de dados indisponível.");
+
+      const [establishment] = await dbInstance
+        .select({
+          name: establishments.name,
+          menuSlug: establishments.menuSlug,
+        })
+        .from(establishments)
+        .where(eq(establishments.id, estId))
+        .limit(1);
+
+      if (!establishment) {
+        return sendError(res, 404, "Estabelecimento não encontrado.");
+      }
+
+      const slug = establishment.menuSlug || String(estId);
+      const baseUrl = "https://v2.mindi.com.br";
+      const menuUrl = `${baseUrl}/menu/${slug}`;
+
+      return res.json({
+        menuUrl,
+        slug,
+        establishmentName: establishment.name,
+      });
+    } catch (error) {
+      console.error("[BotAPI] Erro em GET /menu-link:", error);
+      return sendError(res, 500, "Erro interno.");
+    }
+  });
+
   return router;
 }
