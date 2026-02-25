@@ -163,15 +163,27 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }, [expandedMenus]);
   
   // Estado local para controlar se o som está habilitado
-  // IMPORTANTE: SEMPRE inicia FALSE ao carregar/atualizar a página
+  // IMPORTANTE: SEMPRE inicia FALSE ao carregar/atualizar a página (F5 ou primeiro acesso)
   // O navegador bloqueia reprodução de áudio sem interação do usuário (autoplay policy)
-  // Então mesmo que o localStorage tenha "true", forçamos false até o usuário clicar
-  const [isSoundEnabled, setIsSoundEnabled] = useState(false);
+  // Usamos sessionStorage para marcar que o reset já foi feito nesta sessão do browser.
+  // Assim, ao navegar entre menus (que remonta o AdminLayout), o estado é preservado.
+  const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
+    // Se já resetamos nesta sessão, ler o valor real do localStorage
+    if (sessionStorage.getItem("soundResetDone") === "true") {
+      return localStorage.getItem("notificationSoundEnabled") === "true";
+    }
+    // Primeiro carregamento da sessão: forçar desativado
+    return false;
+  });
   
-  // Ao montar, forçar localStorage para "false" para manter consistência
-  // O usuário precisa clicar no toggle para ativar o som a cada sessão
+  // Ao montar, forçar localStorage para "false" APENAS no primeiro carregamento da sessão
+  // Navegação interna (trocar de menu) NÃO reseta o toggle
   useEffect(() => {
-    localStorage.setItem("notificationSoundEnabled", "false");
+    if (sessionStorage.getItem("soundResetDone") !== "true") {
+      // Primeiro carregamento desta sessão (F5, novo acesso, nova aba)
+      localStorage.setItem("notificationSoundEnabled", "false");
+      sessionStorage.setItem("soundResetDone", "true");
+    }
     
     // Ouvir mudanças no localStorage (para sincronizar entre abas)
     const syncSoundState = () => {
