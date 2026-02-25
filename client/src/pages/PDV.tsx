@@ -2076,7 +2076,7 @@ export default function PDV() {
                         onClick={() => setSelectedNeighborhoodFee(null)}
                         className="px-3 py-2.5 text-red-500 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors whitespace-nowrap"
                       >
-                        Alterar
+                        Alterar bairro
                       </button>
                     </div>
                   ) : (

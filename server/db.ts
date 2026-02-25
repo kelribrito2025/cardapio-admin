@@ -1818,49 +1818,43 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
       });
     }
     
-    // Enviar print_order quando o pedido muda para 'new' (confirmação do cliente via WhatsApp)
-    // Neste caso, o print_order NÃO foi enviado no createPublicOrder porque requiresConfirmation estava ativo
-    if (status === 'new') {
+    // Quando pedido é aceito (status -> preparing), enviar evento print_order para app externo
+    if (status === "preparing") {
       try {
         const printerSettingsResult = await getPrinterSettings(order.establishmentId);
-        if (printerSettingsResult?.printOnNewOrder) {
-          // Buscar itens do pedido para incluir no evento de impressão
+        if (printerSettingsResult?.autoPrintEnabled) {
           const orderItemsList = await db.select().from(orderItems).where(eq(orderItems.orderId, id));
-          
           notifyPrintOrder(order.establishmentId, {
             orderId: id,
-            orderNumber: order.orderNumber || '',
+            orderNumber: order.orderNumber,
             customerName: order.customerName || null,
             customerPhone: order.customerPhone || null,
             customerAddress: order.customerAddress || null,
-            deliveryType: order.deliveryType || 'delivery',
-            paymentMethod: order.paymentMethod || 'cash',
-            subtotal: order.subtotal || '0',
-            deliveryFee: order.deliveryFee || '0',
-            discount: order.discount || '0',
-            total: order.total || '0',
+            deliveryType: order.deliveryType || "delivery",
+            paymentMethod: order.paymentMethod || "cash",
+            subtotal: order.subtotal || "0",
+            deliveryFee: order.deliveryFee || "0",
+            discount: order.discount || "0",
+            total: order.total,
             notes: order.notes || null,
             changeAmount: order.changeAmount || null,
             items: orderItemsList.map(item => ({
-              productName: item.productName || '',
+              productName: item.productName,
               quantity: item.quantity ?? 1,
-              unitPrice: item.unitPrice || '0',
-              totalPrice: item.totalPrice || '0',
+              unitPrice: item.unitPrice,
+              totalPrice: item.totalPrice,
               complements: item.complements as Array<{ name: string; price: number }> | null,
               notes: item.notes || null,
             })),
             createdAt: order.createdAt || new Date(),
             beepOnPrint: printerSettingsResult?.beepOnPrint ?? false,
           });
-          console.log(`[DB:updateOrderStatus] print_order enviado para pedido confirmado: ${order.orderNumber}`);
+          console.log(`[DB:updateOrderStatus] Evento print_order enviado para pedido aceito: ${order.orderNumber}`);
         }
       } catch (printErr) {
-        console.error('[DB:updateOrderStatus] Erro ao enviar print_order:', printErr);
+        console.error('[DB:updateOrderStatus] Erro ao enviar evento de impressão:', printErr);
       }
     }
-    // NOTA: print_order NÃO é enviado para outros status (preparing, ready, etc.)
-    // Para pedidos sem confirmação, a impressão já foi disparada no createPublicOrder
-    // Isso evita impressão duplicada quando o admin aceita o pedido.
     
     // Nota: o desconto de estoque é feito na criação do pedido (createPublicOrder)
     // Não descontar novamente ao mudar de status para evitar dupla contagem
@@ -3211,13 +3205,10 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     }
     
     // Verificar se impressão automática está ativada e enviar evento de impressão
-    // NÃO enviar print_order se requer confirmação (será enviado quando o cliente confirmar)
     try {
       const printerSettingsResult = await getPrinterSettings(data.establishmentId);
-      if (printerSettingsResult?.printOnNewOrder && !requiresConfirmation) {
-        // Enviar evento SSE para impressão quando printOnNewOrder está ativo
-        // Só envia se o pedido não requer confirmação via WhatsApp
-        // Para pedidos com confirmação, o print_order é enviado no updateOrderStatus quando confirmado
+      if (printerSettingsResult?.autoPrintEnabled && printerSettingsResult?.printOnNewOrder) {
+        // Enviar evento SSE para impressão (para app ESC POS)
         notifyPrintOrder(data.establishmentId, {
           orderId,
           orderNumber,
@@ -3246,8 +3237,147 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
         console.log('[DB:createPublicOrder] Evento de impressão enviado para pedido:', orderNumber);
       }
       
-      // Impressão direta via socket TCP e POSPrinterDriver foram removidas.
-      // Toda impressão é gerenciada pelo app Mindi Printer via SSE (print_order event acima).
+      // Impressão automática via POSPrinterDriver (se configurado)
+      if (printerSettingsResult?.posPrinterEnabled && printerSettingsResult?.posPrinterLinkcode) {
+        const { printViaPOSPrinterDriver } = await import('./posPrinterDriver');
+        const establishment = await getEstablishmentById(data.establishmentId);
+        
+        const printResult = await printViaPOSPrinterDriver(
+          {
+            orderNumber,
+            customerName: data.customerName || 'Nao informado',
+            customerPhone: data.customerPhone || undefined,
+            customerAddress: data.customerAddress || undefined,
+            deliveryType: (data.deliveryType || 'delivery') as 'delivery' | 'pickup',
+            paymentMethod: data.paymentMethod || 'cash',
+            changeFor: data.changeAmount || undefined,
+            items: items.map(item => ({
+              quantity: item.quantity ?? 1,
+              productName: item.productName,
+              totalPrice: item.totalPrice,
+              notes: item.notes || undefined,
+              complements: typeof item.complements === 'string' ? item.complements : (item.complements ? JSON.stringify(item.complements) : undefined),
+            })),
+            subtotal: data.subtotal || '0',
+            deliveryFee: data.deliveryFee || undefined,
+            discount: data.discount || undefined,
+            couponCode: data.couponCode || undefined,
+            total: data.total,
+            notes: data.notes || undefined,
+            createdAt: new Date(),
+          },
+          { name: establishment?.name || 'Estabelecimento' },
+          {
+            copies: printerSettingsResult.copies || 1,
+            headerMessage: printerSettingsResult.headerMessage || undefined,
+            footerMessage: printerSettingsResult.footerMessage || undefined,
+            paperWidth: printerSettingsResult.paperWidth || '80mm',
+            posPrinterLinkcode: printerSettingsResult.posPrinterLinkcode,
+            posPrinterNumber: printerSettingsResult.posPrinterNumber || 1,
+          }
+        );
+        
+        if (printResult.success) {
+          console.log('[DB:createPublicOrder] POSPrinterDriver:', printResult.message);
+        } else {
+          console.error('[DB:createPublicOrder] POSPrinterDriver erro:', printResult.message);
+        }
+      }
+      
+      // Impressão direta via rede local (Socket TCP) - Múltiplas impressoras
+      const activePrinters = await getActivePrinters(data.establishmentId);
+      
+      if (activePrinters.length > 0) {
+        const { printOrderToMultiplePrinters } = await import('./escposPrinter');
+        const establishment = await getEstablishmentById(data.establishmentId);
+        
+        // Extrair bairro do endereço se disponível
+        const addressParts = data.customerAddress?.split(',') || [];
+        const neighborhoodFromAddress = addressParts.length > 1 ? addressParts[addressParts.length - 1]?.trim() : undefined;
+        
+        // Preparar configuração das impressoras
+        const printerConfigs = activePrinters.map(p => ({
+          ip: p.ipAddress,
+          port: p.port || 9100,
+        }));
+        
+        // Preparar dados do pedido
+        const orderData = {
+          orderId: 0,
+          orderNumber: parseInt(orderNumber) || 0,
+          customerName: data.customerName || 'Nao informado',
+          customerPhone: data.customerPhone || undefined,
+          deliveryType: (data.deliveryType || 'delivery') as 'delivery' | 'pickup' | 'table',
+          address: data.customerAddress || undefined,
+          neighborhood: neighborhoodFromAddress,
+          paymentMethod: data.paymentMethod || 'Dinheiro',
+          items: items.map(item => ({
+            name: item.productName,
+            quantity: item.quantity ?? 1,
+            price: parseFloat(item.totalPrice) / (item.quantity ?? 1),
+            observation: item.notes || undefined,
+            complements: typeof item.complements === 'string' ? item.complements : undefined,
+          })),
+          subtotal: parseFloat(data.subtotal || '0'),
+          deliveryFee: parseFloat(data.deliveryFee || '0'),
+          discount: parseFloat(data.discount || '0'),
+          total: parseFloat(data.total),
+          observation: data.notes || undefined,
+          createdAt: new Date(),
+          establishmentName: establishment?.name || 'Estabelecimento',
+        };
+        
+        // Imprimir em todas as impressoras ativas simultaneamente
+        const multiPrintResult = await printOrderToMultiplePrinters(printerConfigs, orderData);
+        
+        console.log(`[DB:createPublicOrder] Impressão em ${activePrinters.length} impressora(s):`, 
+          multiPrintResult.results.map(r => `${r.ip}: ${r.success ? 'OK' : r.message}`).join(', '));
+      } else if ((printerSettingsResult as any)?.directPrintEnabled && (printerSettingsResult as any)?.directPrintIp) {
+        // Fallback para impressão direta única (configuração antiga)
+        const { printOrderDirect } = await import('./escposPrinter');
+        const establishment = await getEstablishmentById(data.establishmentId);
+        
+        // Extrair bairro do endereço se disponível
+        const addressParts = data.customerAddress?.split(',') || [];
+        const neighborhoodFromAddress = addressParts.length > 1 ? addressParts[addressParts.length - 1]?.trim() : undefined;
+        
+        const directPrintResult = await printOrderDirect(
+          {
+            ip: (printerSettingsResult as any).directPrintIp,
+            port: (printerSettingsResult as any).directPrintPort || 9100,
+          },
+          {
+            orderId: 0,
+            orderNumber: parseInt(orderNumber) || 0,
+            customerName: data.customerName || 'Nao informado',
+            customerPhone: data.customerPhone || undefined,
+            deliveryType: (data.deliveryType || 'delivery') as 'delivery' | 'pickup' | 'table',
+            address: data.customerAddress || undefined,
+            neighborhood: neighborhoodFromAddress,
+            paymentMethod: data.paymentMethod || 'Dinheiro',
+            items: items.map(item => ({
+              name: item.productName,
+              quantity: item.quantity ?? 1,
+              price: parseFloat(item.totalPrice) / (item.quantity ?? 1),
+              observation: item.notes || undefined,
+              complements: typeof item.complements === 'string' ? item.complements : undefined,
+            })),
+            subtotal: parseFloat(data.subtotal || '0'),
+            deliveryFee: parseFloat(data.deliveryFee || '0'),
+            discount: parseFloat(data.discount || '0'),
+            total: parseFloat(data.total),
+            observation: data.notes || undefined,
+            createdAt: new Date(),
+            establishmentName: establishment?.name || 'Estabelecimento',
+          }
+        );
+        
+        if (directPrintResult.success) {
+          console.log('[DB:createPublicOrder] Impressão direta:', directPrintResult.message);
+        } else {
+          console.error('[DB:createPublicOrder] Impressão direta erro:', directPrintResult.message);
+        }
+      }
     } catch (printError) {
       console.error('[DB:createPublicOrder] Erro ao verificar configurações de impressão:', printError);
       // Não falhar o pedido por causa de erro de impressão

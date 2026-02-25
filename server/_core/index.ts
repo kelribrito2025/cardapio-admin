@@ -73,7 +73,7 @@ function generateReceiptHTML(
   
   // Configurar largura do papel
   const is58mm = settings?.paperWidth === '58mm';
-  const paperWidth = is58mm ? '58mm' : '80mm'; // Largura total do papel térmico (igual ESC/POS)
+  const paperWidth = is58mm ? '48mm' : '72mm'; // Largura real do papel térmico
   
   // Usar configurações de fonte salvas ou valores padrão
   const baseFontSize = `${settings?.fontSize || (is58mm ? 11 : 12)}px`;
@@ -160,19 +160,22 @@ function generateReceiptHTML(
     html {
       width: 100%;
       height: 100%;
-      background: #fff;
+      display: flex;
+      justify-content: center;
+      background: #e5e5e0;
     }
     body { 
       font-family: 'Arial', 'Helvetica', sans-serif; 
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      max-width: 320px; 
-      margin: 0 auto;
-      padding: 4px;
-      background: #fff;
+      width: 100%; 
+      max-width: 320px;
+      padding: 20px;
+      background: #f5f5f0;
       color: #000;
       -webkit-font-smoothing: antialiased;
+      margin: 0 auto;
     }
     @media print {
       * {
@@ -186,10 +189,8 @@ function generateReceiptHTML(
       }
       body {
         background: #fff;
-        width: 100%;
         max-width: 100%;
-        margin: 0;
-        padding: 2mm;
+        padding: 8px;
       }
       .delivery-badge {
         background: #000 !important;
@@ -663,7 +664,7 @@ function generateSectorReceiptHTML(
   
   // Configurar largura do papel
   const is58mm = settings?.paperWidth === '58mm';
-  const paperWidth = is58mm ? '58mm' : '80mm';
+  const paperWidth = is58mm ? '48mm' : '72mm';
   
   const baseFontSize = `${settings?.fontSize || (is58mm ? 11 : 12)}px`;
   const baseFontWeight = settings?.fontWeight || 500;
@@ -722,8 +723,8 @@ function generateSectorReceiptHTML(
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      max-width: 320px; 
-      margin: 0 auto;
+      width: 100%; 
+      max-width: 100%;
       padding: 8px;
       background: #fff;
       color: #000;
@@ -798,7 +799,7 @@ function generateSectorReceiptHTML(
       font-weight: ${headerFontWeight};
     }
     @media print {
-      body { width: ${paperWidth}; max-width: 100%; margin: 0; padding: 2mm; }
+      body { width: ${paperWidth}; padding: 2mm; }
     }
   </style>
 </head>
@@ -880,7 +881,7 @@ function generateTabReceiptHTML(
   
   // Configurar largura do papel
   const is58mm = settings?.paperWidth === '58mm';
-  const paperWidth = is58mm ? '58mm' : '80mm';
+  const paperWidth = is58mm ? '48mm' : '72mm';
   
   const baseFontSize = `${settings?.fontSize || (is58mm ? 11 : 12)}px`;
   const baseFontWeight = settings?.fontWeight || 500;
@@ -964,19 +965,22 @@ function generateTabReceiptHTML(
     html {
       width: 100%;
       height: 100%;
-      background: #fff;
+      display: flex;
+      justify-content: center;
+      background: #e5e5e0;
     }
     body { 
       font-family: 'Arial', 'Helvetica', sans-serif; 
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      max-width: 320px; 
-      margin: 0 auto;
-      padding: 4px;
-      background: #fff;
+      width: 100%; 
+      max-width: 320px;
+      padding: 20px;
+      background: #f5f5f0;
       color: #000;
       -webkit-font-smoothing: antialiased;
+      margin: 0 auto;
     }
     @media print {
       * {
@@ -990,10 +994,8 @@ function generateTabReceiptHTML(
       }
       body {
         background: #fff;
-        width: 100%;
         max-width: 100%;
-        margin: 0;
-        padding: 2mm;
+        padding: 8px;
       }
       .delivery-badge {
         background: #000 !important;
