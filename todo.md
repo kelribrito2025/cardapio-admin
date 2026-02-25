@@ -7459,3 +7459,4 @@
 - [x] Fix: beepOnPrint não está sendo enviado no evento SSE de impressão para o app externo
 - [x] Adicionar badge "Breve" ao item "Mapa de mesas" no menu lateral
 - [x] Criar endpoint GET /api/bot/menu-link que retorna { menuUrl, slug, establishmentName }
+- [x] Bloquear opção "Confirmação via Botões" - desativar toggle no frontend e impedir ativação no backend

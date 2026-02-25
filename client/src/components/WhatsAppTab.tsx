@@ -154,7 +154,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
   
   const handleSaveNotifications = () => {
     saveNotificationsMutation.mutate({
-      requireOrderConfirmation,
+      requireOrderConfirmation: false, // Feature bloqueada temporariamente
       notifyOnNewOrder,
       notifyOnPreparing,
       notifyOnReady,
@@ -334,12 +334,15 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                         Enviar botões interativos para o cliente confirmar ou cancelar o pedido antes de começar a preparar
                       </p>
                     </div>
-                    <Switch
-                      checked={requireOrderConfirmation}
-                      onCheckedChange={setRequireOrderConfirmation}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={false}
+                        disabled
+                      />
+                      <span className="text-xs text-muted-foreground italic">Indisponível</span>
+                    </div>
                   </div>
-                  {requireOrderConfirmation && (
+                  {false && (
                     <div className="mt-3 p-3 bg-card rounded-md border border-amber-100 dark:border-amber-800/30">
                       <p className="text-xs text-amber-600 dark:text-amber-400 mb-2">
                         <strong>Como funciona:</strong>
@@ -368,7 +371,6 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                   <Switch
                     checked={notifyOnNewOrder}
                     onCheckedChange={setNotifyOnNewOrder}
-                    disabled={requireOrderConfirmation}
                   />
                 </div>
                 
@@ -524,12 +526,15 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                         Enviar botões interativos para o cliente confirmar ou cancelar o pedido antes de começar a preparar
                       </p>
                     </div>
-                    <Switch
-                      checked={requireOrderConfirmation}
-                      onCheckedChange={setRequireOrderConfirmation}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={false}
+                        disabled
+                      />
+                      <span className="text-xs text-muted-foreground italic">Indisponível</span>
+                    </div>
                   </div>
-                  {requireOrderConfirmation && (
+                  {false && (
                     <div className="mt-3 p-3 bg-card rounded-md border border-amber-100 dark:border-amber-800/30">
                       <p className="text-xs text-amber-600 dark:text-amber-400 mb-2">
                         <strong>Como funciona:</strong>
@@ -558,7 +563,6 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                   <Switch
                     checked={notifyOnNewOrder}
                     onCheckedChange={setNotifyOnNewOrder}
-                    disabled={requireOrderConfirmation}
                   />
                 </div>
                 

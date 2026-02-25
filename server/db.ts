@@ -3047,17 +3047,8 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     throw new Error("Database not available");
   }
   
-  // Verificar ANTES se deve usar confirmação via botões
-  let requiresConfirmation = false;
-  try {
-    const whatsappConfig = await getWhatsappConfig(data.establishmentId);
-    if (whatsappConfig && whatsappConfig.status === 'connected' && (whatsappConfig as any).requireOrderConfirmation && data.customerPhone) {
-      requiresConfirmation = true;
-      console.log('[DB:createPublicOrder] Confirmação via botões está ativada');
-    }
-  } catch (e) {
-    console.log('[DB:createPublicOrder] Erro ao verificar configuração de confirmação:', e);
-  }
+  // Confirmação via botões está temporariamente BLOQUEADA
+  const requiresConfirmation = false;
   
   // ===== VALIDAÇÃO DE ESTOQUE =====
   // Verificar se há estoque suficiente para todos os itens ANTES de criar o pedido
@@ -3396,14 +3387,14 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           scheduledTime: new Date(data.scheduledAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         } : undefined;
         
-        // Verificar se deve usar confirmação via botões
-        if ((whatsappConfig as any).requireOrderConfirmation && !data.isScheduled) {
+        // Confirmação via botões está temporariamente BLOQUEADA
+        if (false && (whatsappConfig as any).requireOrderConfirmation && !data.isScheduled) {
           // Enviar mensagem com botões de confirmação
           const { sendOrderConfirmationRequest } = await import('./_core/uazapi');
           
           await sendOrderConfirmationRequest(
-            whatsappConfig.instanceToken,
-            data.customerPhone,
+            whatsappConfig!.instanceToken!,
+            data.customerPhone!,
             {
               customerName: data.customerName || 'Cliente',
               orderNumber,
@@ -3417,7 +3408,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
                 notes: item.notes,
               })),
               orderTotal: data.total,
-              template: whatsappConfig.templateNewOrder,
+              template: whatsappConfig!.templateNewOrder,
               paymentMethod: data.paymentMethod,
             }
           );
@@ -5335,7 +5326,7 @@ export async function upsertWhatsappConfig(data: {
         connectedPhone: data.connectedPhone !== undefined ? data.connectedPhone : existing.connectedPhone,
         lastQrCode: data.lastQrCode !== undefined ? data.lastQrCode : existing.lastQrCode,
         qrCodeExpiresAt: data.qrCodeExpiresAt !== undefined ? data.qrCodeExpiresAt : existing.qrCodeExpiresAt,
-        requireOrderConfirmation: data.requireOrderConfirmation ?? existing.requireOrderConfirmation,
+        requireOrderConfirmation: false, // Feature temporariamente BLOQUEADA
         notifyOnNewOrder: data.notifyOnNewOrder ?? existing.notifyOnNewOrder,
         notifyOnPreparing: data.notifyOnPreparing ?? existing.notifyOnPreparing,
         notifyOnReady: data.notifyOnReady ?? existing.notifyOnReady,
@@ -5393,7 +5384,7 @@ Motivo: *{{cancellationReason}}*`;
     connectedPhone: data.connectedPhone || null,
     lastQrCode: data.lastQrCode || null,
     qrCodeExpiresAt: data.qrCodeExpiresAt || null,
-    requireOrderConfirmation: data.requireOrderConfirmation ?? true, // Ativado por padrão
+    requireOrderConfirmation: false, // Feature temporariamente BLOQUEADA
     notifyOnNewOrder: data.notifyOnNewOrder ?? true,
     notifyOnPreparing: data.notifyOnPreparing ?? true,
     notifyOnReady: data.notifyOnReady ?? true,

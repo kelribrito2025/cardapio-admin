@@ -3408,6 +3408,9 @@ export const appRouter = router({
         const establishment = await db.getEstablishmentByUserId(ctx.user.id);
         if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
         
+        // Confirmação via botões está temporariamente bloqueada
+        input.requireOrderConfirmation = false;
+        
         // Se está ativando confirmação via botões, configurar webhook automaticamente
         if (input.requireOrderConfirmation) {
           const whatsappConfig = await db.getWhatsappConfig(establishment.id);
