@@ -3247,7 +3247,8 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
       }
       
       // Impressão automática via POSPrinterDriver (se configurado)
-      if (printerSettingsResult?.posPrinterEnabled && printerSettingsResult?.posPrinterLinkcode) {
+      // SKIP se printOnNewOrder está ativo - o app externo (Mindi Printer) já cuida da impressão via SSE
+      if (printerSettingsResult?.posPrinterEnabled && printerSettingsResult?.posPrinterLinkcode && !printerSettingsResult?.printOnNewOrder) {
         const { printViaPOSPrinterDriver } = await import('./posPrinterDriver');
         const establishment = await getEstablishmentById(data.establishmentId);
         
@@ -3294,7 +3295,8 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
       }
       
       // Impressão direta via rede local (Socket TCP) - Múltiplas impressoras
-      const activePrinters = await getActivePrinters(data.establishmentId);
+      // SKIP se printOnNewOrder está ativo - o app externo (Mindi Printer) já cuida da impressão via SSE
+      const activePrinters = !printerSettingsResult?.printOnNewOrder ? await getActivePrinters(data.establishmentId) : [];
       
       if (activePrinters.length > 0) {
         const { printOrderToMultiplePrinters } = await import('./escposPrinter');
@@ -3341,7 +3343,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
         
         console.log(`[DB:createPublicOrder] Impressão em ${activePrinters.length} impressora(s):`, 
           multiPrintResult.results.map(r => `${r.ip}: ${r.success ? 'OK' : r.message}`).join(', '));
-      } else if ((printerSettingsResult as any)?.directPrintEnabled && (printerSettingsResult as any)?.directPrintIp) {
+      } else if ((printerSettingsResult as any)?.directPrintEnabled && (printerSettingsResult as any)?.directPrintIp && !printerSettingsResult?.printOnNewOrder) {
         // Fallback para impressão direta única (configuração antiga)
         const { printOrderDirect } = await import('./escposPrinter');
         const establishment = await getEstablishmentById(data.establishmentId);

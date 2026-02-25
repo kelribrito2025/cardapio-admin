@@ -7464,5 +7464,5 @@
 - [x] Fix: impressão HTML ainda menor que ESC/POS - ajustar largura para igualar
 - [x] Criar endpoint API para bot WhatsApp consultar link do cardápio público do restaurante
 - [x] Fix: impressão automática parou de funcionar após correção de duplicação - print_order não está sendo enviado
-- [ ] Fix: impressão automática pelo app externo ainda imprimindo 2x (estabelecimento 30001)
+- [x] Fix: impressão automática pelo app externo ainda imprimindo 2x (estabelecimento 30001)
 - [x] Bloquear opção "Confirmação via Botões" - impedir que usuário ative essa funcionalidade
