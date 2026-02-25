@@ -7463,3 +7463,4 @@
 - [x] Fix: pedido imprimindo 2x (evento print_order duplicado)
 - [x] Fix: impressão HTML ainda menor que ESC/POS - ajustar largura para igualar
 - [x] Criar endpoint API para bot WhatsApp consultar link do cardápio público do restaurante
+- [x] Fix: impressão automática parou de funcionar após correção de duplicação - print_order não está sendo enviado

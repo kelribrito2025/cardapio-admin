@@ -1818,8 +1818,48 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
       });
     }
     
-    // NOTA: print_order NÃO é enviado aqui no updateOrderStatus.
-    // A impressão é disparada APENAS no createPublicOrder (quando printOnNewOrder está ativo).
+    // Enviar print_order quando o pedido muda para 'new' (confirmação do cliente via WhatsApp)
+    // Neste caso, o print_order NÃO foi enviado no createPublicOrder porque requiresConfirmation estava ativo
+    if (status === 'new') {
+      try {
+        const printerSettingsResult = await getPrinterSettings(order.establishmentId);
+        if (printerSettingsResult?.printOnNewOrder) {
+          // Buscar itens do pedido para incluir no evento de impressão
+          const orderItemsList = await db.select().from(orderItems).where(eq(orderItems.orderId, id));
+          
+          notifyPrintOrder(order.establishmentId, {
+            orderId: id,
+            orderNumber: order.orderNumber || '',
+            customerName: order.customerName || null,
+            customerPhone: order.customerPhone || null,
+            customerAddress: order.customerAddress || null,
+            deliveryType: order.deliveryType || 'delivery',
+            paymentMethod: order.paymentMethod || 'cash',
+            subtotal: order.subtotal || '0',
+            deliveryFee: order.deliveryFee || '0',
+            discount: order.discount || '0',
+            total: order.total || '0',
+            notes: order.notes || null,
+            changeAmount: order.changeAmount || null,
+            items: orderItemsList.map(item => ({
+              productName: item.productName || '',
+              quantity: item.quantity ?? 1,
+              unitPrice: item.unitPrice || '0',
+              totalPrice: item.totalPrice || '0',
+              complements: item.complements as Array<{ name: string; price: number }> | null,
+              notes: item.notes || null,
+            })),
+            createdAt: order.createdAt || new Date(),
+            beepOnPrint: printerSettingsResult?.beepOnPrint ?? false,
+          });
+          console.log(`[DB:updateOrderStatus] print_order enviado para pedido confirmado: ${order.orderNumber}`);
+        }
+      } catch (printErr) {
+        console.error('[DB:updateOrderStatus] Erro ao enviar print_order:', printErr);
+      }
+    }
+    // NOTA: print_order NÃO é enviado para outros status (preparing, ready, etc.)
+    // Para pedidos sem confirmação, a impressão já foi disparada no createPublicOrder
     // Isso evita impressão duplicada quando o admin aceita o pedido.
     
     // Nota: o desconto de estoque é feito na criação do pedido (createPublicOrder)
@@ -3171,11 +3211,13 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     }
     
     // Verificar se impressão automática está ativada e enviar evento de impressão
+    // NÃO enviar print_order se requer confirmação (será enviado quando o cliente confirmar)
     try {
       const printerSettingsResult = await getPrinterSettings(data.establishmentId);
-      if (printerSettingsResult?.printOnNewOrder) {
-        // Enviar evento SSE para impressão sempre que printOnNewOrder está ativo
-        // O app externo imprime ao receber este evento (independente de autoAccept)
+      if (printerSettingsResult?.printOnNewOrder && !requiresConfirmation) {
+        // Enviar evento SSE para impressão quando printOnNewOrder está ativo
+        // Só envia se o pedido não requer confirmação via WhatsApp
+        // Para pedidos com confirmação, o print_order é enviado no updateOrderStatus quando confirmado
         notifyPrintOrder(data.establishmentId, {
           orderId,
           orderNumber,
