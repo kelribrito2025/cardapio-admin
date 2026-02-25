@@ -4,6 +4,10 @@ import { Response } from "express";
 // Map<establishmentId, Set<Response>>
 const connections = new Map<number, Set<Response>>();
 
+// Armazena conexões SSE por estabelecimento (EXCLUSIVO para impressoras/Mindi Printer app)
+// Separado do pool do dashboard para evitar impressão duplicada
+const printerConnections = new Map<number, Set<Response>>();
+
 // Armazena conexões SSE por orderNumber (para clientes acompanharem pedidos)
 // Map<orderNumber, Set<Response>>
 const orderConnections = new Map<string, Set<Response>>();
@@ -72,7 +76,66 @@ export function notifyNewOrder(establishmentId: number, order: unknown): void {
 }
 
 /**
- * Envia evento para imprimir pedido (usado pelo Print Server Local)
+ * Adiciona uma conexão SSE de impressora para um estabelecimento
+ */
+export function addPrinterConnection(establishmentId: number, res: Response): void {
+  if (!printerConnections.has(establishmentId)) {
+    printerConnections.set(establishmentId, new Set());
+  }
+  printerConnections.get(establishmentId)!.add(res);
+  
+  console.log(`[SSE-Printer] Nova conexão de impressora para estabelecimento ${establishmentId}. Total impressoras: ${printerConnections.get(establishmentId)!.size}`);
+}
+
+/**
+ * Remove uma conexão SSE de impressora
+ */
+export function removePrinterConnection(establishmentId: number, res: Response): void {
+  const printerConns = printerConnections.get(establishmentId);
+  if (printerConns) {
+    printerConns.delete(res);
+    console.log(`[SSE-Printer] Conexão de impressora removida do estabelecimento ${establishmentId}. Restantes: ${printerConns.size}`);
+    
+    if (printerConns.size === 0) {
+      printerConnections.delete(establishmentId);
+    }
+  }
+}
+
+/**
+ * Envia um evento SSE APENAS para conexões de impressora de um estabelecimento
+ */
+function sendPrinterEvent(establishmentId: number, eventType: string, data: unknown): void {
+  const printerConns = printerConnections.get(establishmentId);
+  if (!printerConns || printerConns.size === 0) {
+    console.log(`[SSE-Printer] Nenhuma conexão de impressora ativa para estabelecimento ${establishmentId}`);
+    return;
+  }
+  
+  const eventData = JSON.stringify(data);
+  const message = `event: ${eventType}\ndata: ${eventData}\n\n`;
+  
+  console.log(`[SSE-Printer] Enviando evento '${eventType}' para ${printerConns.size} impressora(s) do estabelecimento ${establishmentId}`);
+  
+  printerConns.forEach((res) => {
+    try {
+      res.write(message);
+    } catch (error) {
+      console.error(`[SSE-Printer] Erro ao enviar evento:`, error);
+      removePrinterConnection(establishmentId, res);
+    }
+  });
+}
+
+/**
+ * Retorna o número de conexões de impressora ativas para um estabelecimento
+ */
+export function getPrinterConnectionCount(establishmentId: number): number {
+  return printerConnections.get(establishmentId)?.size || 0;
+}
+
+/**
+ * Envia evento para imprimir pedido (APENAS para impressoras, não para dashboard)
  */
 export function notifyPrintOrder(establishmentId: number, orderData: {
   orderId: number;
@@ -99,8 +162,9 @@ export function notifyPrintOrder(establishmentId: number, orderData: {
   createdAt: Date;
   beepOnPrint?: boolean;
 }): void {
-  console.log(`[SSE] notifyPrintOrder chamado para establishmentId: ${establishmentId}, pedido: ${orderData.orderNumber}`);
-  sendEvent(establishmentId, "print_order", orderData);
+  console.log(`[SSE-Printer] notifyPrintOrder chamado para establishmentId: ${establishmentId}, pedido: ${orderData.orderNumber}`);
+  // Envia APENAS para conexões de impressora, não para o dashboard
+  sendPrinterEvent(establishmentId, "print_order", orderData);
 }
 
 /**

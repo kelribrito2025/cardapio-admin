@@ -8,7 +8,7 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
-import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, addOrderIdConnectionForMultiple, removeOrderIdConnectionFromMultiple, sendAllOrdersHeartbeat, sendEvent, getConnectionCount } from "./sse";
+import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, addOrderIdConnectionForMultiple, removeOrderIdConnectionFromMultiple, sendAllOrdersHeartbeat, sendEvent, getConnectionCount, addPrinterConnection, removePrinterConnection, getPrinterConnectionCount } from "./sse";
 import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrdersByIds, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getPrinterSettings, getActivePrinters, getTabById, getTabItems, getTableById } from "../db";
 import { sdk } from "./sdk";
 import { startScheduledCampaignJob } from "../scheduledCampaignJob";
@@ -2611,8 +2611,8 @@ async function startServer() {
       // Enviar evento de conex\u00e3o estabelecida
       res.write(`event: connected\ndata: ${JSON.stringify({ establishmentId, source: "printer_app" })}\n\n`);
       
-      // Adicionar conex\u00e3o ao pool do estabelecimento (recebe os mesmos eventos: new_order, print_order, etc.)
-      addConnection(establishmentId, res);
+      // Adicionar ao pool EXCLUSIVO de impressoras (separado do dashboard)
+      addPrinterConnection(establishmentId, res);
       
       // Heartbeat a cada 30 segundos
       const heartbeatInterval = setInterval(() => {
@@ -2623,11 +2623,11 @@ async function startServer() {
         }
       }, 30000);
       
-      // Cleanup quando conex\u00e3o fechar
+      // Cleanup quando conexão fechar
       req.on("close", () => {
         clearInterval(heartbeatInterval);
-        removeConnection(establishmentId, res);
-        console.log(`[SSE-Printer] Conex\u00e3o fechada para estabelecimento ${establishmentId}`);
+        removePrinterConnection(establishmentId, res);
+        console.log(`[SSE-Printer] Conexão de impressora fechada para estabelecimento ${establishmentId}`);
       });
       
     } catch (error) {
@@ -2666,7 +2666,7 @@ async function startServer() {
         paperWidth: settings?.paperWidth || "80mm",
         htmlPrintEnabled: settings?.htmlPrintEnabled ?? true,
         beepOnPrint: settings?.beepOnPrint ?? false,
-        activeConnections: getConnectionCount(result.establishmentId),
+        activeConnections: getPrinterConnectionCount(result.establishmentId),
       });
     } catch (error) {
       console.error("[SSE-Printer] Erro no status:", error);

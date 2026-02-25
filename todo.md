@@ -7462,3 +7462,4 @@
 - [x] Bloquear opção "Confirmação via Botões" - desativar toggle no frontend e impedir ativação no backend
 - [x] Fix: impressão automática não funciona - pedido feito pelo menu público não dispara evento print_order via SSE para o Mindi Printer app
 - [x] Fix: pedido sendo impresso 2x na mesma impressora via SSE
+- [x] Fix: pedido ainda sendo impresso 2x mesmo após desativar impressora legada - separar pool SSE de impressora do pool do dashboard
