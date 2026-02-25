@@ -5,7 +5,7 @@ import { BlurImage } from "@/components/BlurImage";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Truck, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, Rocket, CalendarClock, Wallet, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, Rocket, CalendarClock, Wallet, ArrowUpRight, ArrowDownLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -2201,7 +2201,7 @@ export default function PublicMenu() {
                       {/* Ícone de caminhão com badge */}
                       <div className="relative">
                         <div className="w-11 h-11 bg-red-100 rounded-full flex items-center justify-center">
-                          <Truck className="h-5 w-5 text-red-500" />
+                          <Bike className="h-5 w-5 text-red-500" />
                         </div>
                         {establishment.deliveryFeeType === "free" && (
                           <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
@@ -3459,7 +3459,7 @@ export default function PublicMenu() {
                 {/* Forma de Entrega */}
                 <div>
                   <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
-                    <Truck className="h-4 w-4 text-red-500" />
+                    <Bike className="h-4 w-4 text-red-500" />
                     Forma de entrega
                   </h3>
                   <div className="space-y-2">
@@ -3473,7 +3473,7 @@ export default function PublicMenu() {
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <Truck className={`h-5 w-5 ${deliveryType === 'delivery' ? 'text-red-500' : 'text-gray-400'}`} />
+                          <Bike className={`h-5 w-5 ${deliveryType === 'delivery' ? 'text-red-500' : 'text-gray-400'}`} />
                           <div className="text-left">
                             <span className="font-medium text-gray-800">Taxa de entrega</span>
                             {establishment.deliveryFeeType === "free" ? (
@@ -4049,7 +4049,7 @@ export default function PublicMenu() {
                 <div>
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                      <Truck className="h-5 w-5 text-blue-500" />
+                      <Bike className="h-5 w-5 text-blue-500" />
                     </div>
                     <h3 className="font-bold text-gray-900">Entrega</h3>
                   </div>

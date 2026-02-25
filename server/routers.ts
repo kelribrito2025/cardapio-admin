@@ -2954,7 +2954,7 @@ export const appRouter = router({
         showDividers: z.boolean().optional(),
         boxPadding: z.number().min(4).max(20).optional(),
         itemBorderStyle: z.enum(['rounded', 'dashed']).optional(),
-        defaultPrintMethod: z.enum(['normal', 'android', 'automatic']).optional(),
+        defaultPrintMethod: z.enum(['normal', 'automatic']).optional(),
         htmlPrintEnabled: z.boolean().optional(),
         beepOnPrint: z.boolean().optional(),
       }))

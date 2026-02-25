@@ -5,7 +5,7 @@ import { PageHeader, StatCard, EmptyState, TableSkeleton } from "@/components/sh
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Truck,
+  Bike,
   UserCheck,
   UserX,
   DollarSign,
@@ -585,7 +585,7 @@ export default function Entregadores() {
       <PageHeader
         title="Entregadores"
         description="Cadastre entregadores, acompanhe entregas e visualize repasses recentes."
-        icon={<Truck className="h-6 w-6 text-blue-600" />}
+        icon={<Bike className="h-6 w-6 text-blue-600" />}
         actions={
           <Button onClick={handleNew} className="gap-2">
             <Plus className="h-4 w-4" />
@@ -599,7 +599,7 @@ export default function Entregadores() {
         <StatCard
           title="Cadastrados"
           value={metricsLoading ? "..." : metrics?.total ?? 0}
-          icon={Truck}
+          icon={Bike}
           variant="blue"
           loading={metricsLoading}
         />
@@ -639,7 +639,7 @@ export default function Entregadores() {
           <TableSkeleton rows={5} columns={6} />
         ) : !driversList || driversList.length === 0 ? (
           <EmptyState
-            icon={Truck}
+            icon={Bike}
             title="Nenhum entregador cadastrado"
             description="Cadastre seu primeiro entregador para começar a gerenciar entregas."
             action={{ label: "Novo entregador", onClick: handleNew }}

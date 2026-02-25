@@ -514,12 +514,9 @@ export function MobilePDVModal({
   const handlePrintTabReceipt = async () => {
     if (!tabId) return;
     const printMethod = printerSettings?.defaultPrintMethod || 'normal';
-    if (printMethod === 'android') {
-      try {
-        const response = await fetch(`${window.location.origin}/api/print/multiprinter-tab/${tabId}`);
-        const data = await response.json();
-        if (data.success && data.deepLink) window.location.href = data.deepLink;
-      } catch (error) { console.error("Erro ao imprimir:", error); }
+    if (printMethod === 'automatic') {
+      // Impressão automática via Mindi Printer - não faz nada no frontend
+      return;
     } else {
       try {
         const receiptUrl = `${window.location.origin}/api/print/tab-receipt/${tabId}`;

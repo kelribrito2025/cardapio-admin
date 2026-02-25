@@ -11,7 +11,7 @@ import {
   X,
   BarChart3,
   ShoppingBag,
-  Truck,
+  Bike,
   Package,
   XCircle,
   TrendingDown,
@@ -545,7 +545,7 @@ function ProblemSolutionSection() {
 
   const solutionItems = [
     { icon: Link2, text: "Seu próprio link de vendas" },
-    { icon: Truck, text: "Controle total de entregadores" },
+    { icon: Bike, text: "Controle total de entregadores" },
     { icon: PieChart, text: "Relatórios financeiros em tempo real" },
     { icon: Users, text: "Base de clientes 100% sua" },
   ];
@@ -1464,7 +1464,7 @@ function WhatsAppIntegrationSection() {
               >
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                    <Truck className="w-4 h-4 text-blue-600" />
+                    <Bike className="w-4 h-4 text-blue-600" />
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-gray-900">Saiu p/ entrega</p>

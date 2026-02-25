@@ -15,7 +15,7 @@ import {
   Clock,
   Phone,
   Package,
-  Truck,
+  Bike,
   Store,
   UtensilsCrossed,
   Check,
@@ -168,13 +168,16 @@ export default function Agendados() {
     },
   });
 
-  const handleToggleFavoritePrintMethod = (method: 'normal' | 'android') => {
+  const handleToggleFavoritePrintMethod = (method: 'normal' | 'automatic') => {
     if (!establishment?.id) return;
     updatePrintMethodMutation.mutate({
       establishmentId: establishment.id,
       defaultPrintMethod: method,
     });
   };
+
+  // Verificar se o usuário tem API Key gerada (Mindi Printer conectado)
+  const hasMindiPrinterApiKey = !!printerSettings?.printerApiKey;
 
   const handlePrintOrderDirect = async (orderId: number) => {
     try {
@@ -615,19 +618,22 @@ export default function Agendados() {
                                   <Star className={cn("h-4 w-4 transition-colors", printerSettings?.defaultPrintMethod === 'normal' ? "fill-amber-500 text-amber-500" : "text-amber-500")} />
                                 </button>
                               </div>
-                              <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={() => handlePrintMultiPrinter(order.id)}>
+                              {hasMindiPrinterApiKey && (
+                              <div className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" onClick={() => toast.info("Impressão automática ativa", { description: "Os pedidos serão impressos automaticamente via Mindi Printer" })}>
                                 <div className="flex items-center">
                                   <Printer className="h-4 w-4 mr-2" />
-                                  <span className="text-sm">Múltiplas Impressoras (Android)</span>
+                                  <span className="text-sm">Impressão Automática</span>
+                                  <span className="ml-2 text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 px-1.5 py-0.5 rounded">Mindi</span>
                                 </div>
                                 <button
-                                  onClick={(e) => { e.stopPropagation(); handleToggleFavoritePrintMethod('android'); }}
+                                  onClick={(e) => { e.stopPropagation(); handleToggleFavoritePrintMethod('automatic'); }}
                                   className="p-1 hover:bg-accent-foreground/10 rounded"
                                   title="Definir como impressão padrão"
                                 >
-                                  <Star className={cn("h-4 w-4 transition-colors", printerSettings?.defaultPrintMethod === 'android' ? "fill-amber-500 text-amber-500" : "text-amber-500")} />
+                                  <Star className={cn("h-4 w-4 transition-colors", printerSettings?.defaultPrintMethod === 'automatic' ? "fill-amber-500 text-amber-500" : "text-amber-500")} />
                                 </button>
                               </div>
+                              )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                           <Button

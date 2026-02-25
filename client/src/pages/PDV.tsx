@@ -9,7 +9,7 @@ import { useLocation } from "wouter";
 import { 
   UtensilsCrossed, 
   ShoppingBag, 
-  Truck, 
+  Bike, 
   Plus, 
   Minus, 
   Trash2, 
@@ -154,8 +154,9 @@ export default function PDV() {
   const handlePrintWithFavoriteMethod = async (orderId: number) => {
     const printMethod = printerSettings?.defaultPrintMethod || 'normal';
     
-    if (printMethod === 'android') {
-      await handlePrintMultiPrinter(orderId);
+    if (printMethod === 'automatic') {
+      // Impressão automática via Mindi Printer - não faz nada no frontend
+      return;
     } else {
       await handlePrintOrderDirect(orderId);
     }
@@ -1117,7 +1118,7 @@ export default function PDV() {
                       : "bg-card text-muted-foreground hover:bg-muted border border-border"
                   )}
                 >
-                  <Truck className="h-4 w-4" />
+                  <Bike className="h-4 w-4" />
                   Entrega
                 </button>
               </div>
@@ -1900,7 +1901,7 @@ export default function PDV() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-white/20 rounded-lg">
-                  <Truck className="h-5 w-5 text-white" />
+                  <Bike className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white">Dados da Entrega</h2>
@@ -2021,7 +2022,7 @@ export default function PDV() {
                     className="w-full flex items-center justify-between p-4 border-2 border-red-500 bg-red-50 dark:bg-red-950/30 rounded-xl"
                   >
                     <div className="flex items-center gap-3">
-                      <Truck className="h-5 w-5 text-red-500" />
+                      <Bike className="h-5 w-5 text-red-500" />
                       <div>
                         <span className="font-medium text-foreground">Entrega</span>
                         <span className="ml-2 text-sm text-green-600 font-medium">

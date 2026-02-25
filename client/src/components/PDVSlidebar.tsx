@@ -182,13 +182,16 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   });
 
   // Função para alternar o método de impressão favorito
-  const handleToggleFavoritePrintMethod = (method: 'normal' | 'android') => {
+  const handleToggleFavoritePrintMethod = (method: 'normal' | 'automatic') => {
     if (!establishmentId) return;
     updatePrintMethodMutation.mutate({
       establishmentId,
       defaultPrintMethod: method,
     });
   };
+
+  // Verificar se o usuário tem API Key gerada (Mindi Printer conectado)
+  const hasMindiPrinterApiKey = !!printerSettings?.printerApiKey;
 
   // Função para imprimir pedido
   const handlePrintOrderDirect = async (orderId: number) => {
@@ -230,8 +233,10 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
   const handlePrintWithFavoriteMethod = async (orderId: number) => {
     const printMethod = printerSettings?.defaultPrintMethod || 'normal';
-    if (printMethod === 'android') {
-      await handlePrintMultiPrinter(orderId);
+    if (printMethod === 'automatic') {
+      // Impressão automática via Mindi Printer - não faz nada no frontend
+      // A impressão é enviada automaticamente via SSE
+      return;
     } else {
       await handlePrintOrderDirect(orderId);
     }
@@ -932,16 +937,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     if (!tabId) return;
     const printMethod = printerSettings?.defaultPrintMethod || 'normal';
     
-    if (printMethod === 'android') {
-      try {
-        const response = await fetch(`${window.location.origin}/api/print/multiprinter-tab/${tabId}`);
-        const data = await response.json();
-        if (data.success && data.deepLink) {
-          window.location.href = data.deepLink;
-        }
-      } catch (error) {
-        console.error("Erro ao imprimir em múltiplas impressoras:", error);
-      }
+    if (printMethod === 'automatic') {
+      // Impressão automática via Mindi Printer - não faz nada no frontend
+      return;
     } else {
       try {
         const receiptUrl = `${window.location.origin}/api/print/tab-receipt/${tabId}`;
@@ -1990,41 +1988,31 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                           </TooltipContent>
                         </Tooltip>
                       </div>
+                      {hasMindiPrinterApiKey && (
                       <div 
                         className="flex items-center justify-between px-2 py-1.5 hover:bg-accent rounded-sm cursor-pointer" 
-                        onClick={async () => {
-                          try {
-                            const response = await fetch(`${window.location.origin}/api/print/multiprinter-tab/${tabId}`);
-                            const data = await response.json();
-                            if (data.success && data.deepLink) {
-                              window.location.href = data.deepLink;
-                              toast.info("Abrindo múltiplas impressoras Android...");
-                            } else {
-                              toast.error("Erro ao gerar link de impressão");
-                            }
-                          } catch (error) {
-                            console.error("Erro ao imprimir em múltiplas impressoras:", error);
-                            toast.error("Erro ao conectar com impressoras");
-                          }
+                        onClick={() => {
+                          toast.info("Impressão automática ativa", { description: "Os pedidos serão impressos automaticamente via Mindi Printer" });
                         }}
                       >
                         <div className="flex items-center">
                           <Printer className="h-4 w-4 mr-2" />
-                          <span className="text-sm">Múltiplas Impressoras (Android)</span>
+                          <span className="text-sm">Impressão Automática</span>
+                          <span className="ml-2 text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 px-1.5 py-0.5 rounded">Mindi</span>
                         </div>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleToggleFavoritePrintMethod('android');
+                                handleToggleFavoritePrintMethod('automatic');
                               }}
                               className="p-1 hover:bg-accent-foreground/10 rounded"
                             >
                               <Star 
                                 className={cn(
                                   "h-4 w-4 transition-colors",
-                                  printerSettings?.defaultPrintMethod === 'android' 
+                                  printerSettings?.defaultPrintMethod === 'automatic' 
                                     ? "fill-amber-500 text-amber-500" 
                                     : "text-amber-500"
                                 )} 
@@ -2033,10 +2021,11 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                           </TooltipTrigger>
                           <TooltipContent side="left" className="max-w-[220px]">
                             <p className="font-medium">Definir como impressão padrão</p>
-                            <p className="text-xs text-muted-foreground">Ao marcar como favorito, essa opção será usada automaticamente ao clicar em Aceitar pedido.</p>
+                            <p className="text-xs text-muted-foreground">Ao marcar como favorito, os pedidos serão impressos automaticamente via Mindi Printer.</p>
                           </TooltipContent>
                         </Tooltip>
                       </div>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}

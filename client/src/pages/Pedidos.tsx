@@ -53,7 +53,7 @@ import {
   Trash2,
   Edit,
   ArrowLeft,
-  Truck,
+  Bike,
   Plus,
   MoreVertical,
   CheckCircle2,
@@ -181,7 +181,7 @@ const statusConfig: Record<OrderStatus, {
   new: { label: "Novo", variant: "info", icon: Clock, color: "text-blue-600", bgColor: "bg-blue-50 dark:bg-blue-950/30", badgeBg: "#3b82f6", badgeText: "#ffffff" },
   preparing: { label: "Preparando", variant: "warning", icon: ChefHat, color: "text-red-600", bgColor: "bg-red-50 dark:bg-red-950/30", badgeBg: "#dc2626", badgeText: "#ffffff" },
   ready: { label: "Pronto", variant: "success", icon: Package, color: "text-emerald-600", bgColor: "bg-emerald-50 dark:bg-emerald-950/30", badgeBg: "#059669", badgeText: "#ffffff" },
-  out_for_delivery: { label: "Em entrega", variant: "info", icon: Truck, color: "text-orange-600", bgColor: "bg-orange-50 dark:bg-orange-950/30", badgeBg: "#ea580c", badgeText: "#ffffff" },
+  out_for_delivery: { label: "Em entrega", variant: "info", icon: Bike, color: "text-orange-600", bgColor: "bg-orange-50 dark:bg-orange-950/30", badgeBg: "#ea580c", badgeText: "#ffffff" },
   completed: { label: "Finalizado", variant: "default", icon: CheckCircle, color: "text-muted-foreground", bgColor: "bg-muted", badgeBg: "#6b7280", badgeText: "#ffffff" },
   cancelled: { label: "Cancelado", variant: "error", icon: XCircle, color: "text-red-600", bgColor: "bg-red-50 dark:bg-red-950/30", badgeBg: "#dc2626", badgeText: "#ffffff" },
 };
@@ -2370,7 +2370,7 @@ export default function Pedidos() {
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Truck className="h-5 w-5 text-orange-500" />
+              <Bike className="h-5 w-5 text-orange-500" />
               Selecionar Entregador
             </DialogTitle>
             <DialogDescription>
@@ -2408,7 +2408,7 @@ export default function Pedidos() {
                 )}
               >
                 <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-950/50 flex items-center justify-center flex-shrink-0">
-                  <Truck className="h-5 w-5 text-orange-600" />
+                  <Bike className="h-5 w-5 text-orange-600" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm truncate">{driver.name}</p>

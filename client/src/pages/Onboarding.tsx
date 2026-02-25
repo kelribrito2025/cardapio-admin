@@ -13,7 +13,7 @@ import {
   UtensilsCrossed,
   CheckCircle2,
   X,
-  Truck,
+  Bike,
   ShoppingBag,
   Check,
   Utensils,
@@ -62,7 +62,7 @@ const HOW_FOUND = [
 
 // Opções de tipo de entrega
 const DELIVERY_TYPES = [
-  { id: "delivery", label: "Delivery", icon: Truck, description: "Entrega no endereço do cliente" },
+  { id: "delivery", label: "Delivery", icon: Bike, description: "Entrega no endereço do cliente" },
   { id: "pickup", label: "Retirada", icon: ShoppingBag, description: "Cliente retira no local" },
   { id: "both", label: "Ambos", icon: Check, description: "Delivery e retirada" },
 ];

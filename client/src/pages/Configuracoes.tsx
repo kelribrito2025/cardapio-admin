@@ -34,7 +34,6 @@ import {
   Link as LinkIcon,
   Phone,
   CreditCard,
-  Truck,
   ImagePlus,
   Save,
   Copy,
@@ -1908,7 +1907,7 @@ export default function Configuracoes() {
                       onCheckedChange={(checked) => setAllowsDelivery(checked as boolean)}
                       className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
-                    <Truck className="h-4 w-4 text-muted-foreground" />
+                    <Bike className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium text-sm">Entrega</span>
                   </label>
                   <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
@@ -2018,7 +2017,7 @@ export default function Configuracoes() {
                     )}>
                       {deliveryFeeType === "free" && <div className="h-2 w-2 rounded-full bg-emerald-500" />}
                     </div>
-                    <Truck className={cn("h-4 w-4", deliveryFeeType === "free" ? "text-emerald-600" : "text-muted-foreground")} />
+                    <Bike className={cn("h-4 w-4", deliveryFeeType === "free" ? "text-emerald-600" : "text-muted-foreground")} />
                     <span className={cn("font-medium text-sm", deliveryFeeType === "free" ? "text-emerald-700" : "text-foreground")}>Grátis</span>
                   </label>
 

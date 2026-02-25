@@ -5096,7 +5096,7 @@ export async function upsertPrinterSettings(data: {
   showDividers?: boolean;
   boxPadding?: number;
   itemBorderStyle?: string;
-  defaultPrintMethod?: 'normal' | 'android' | 'automatic';
+  defaultPrintMethod?: 'normal' | 'automatic';
   htmlPrintEnabled?: boolean;
   beepOnPrint?: boolean;
 }): Promise<void> {

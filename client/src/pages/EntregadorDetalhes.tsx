@@ -10,7 +10,7 @@ import {
   DollarSign,
   Clock,
   CheckCircle2,
-  Truck,
+  Bike,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation, useParams } from "wouter";
@@ -144,7 +144,7 @@ export default function EntregadorDetalhes() {
         {/* Deliveries Table */}
         <div>
           <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-            <Truck className="h-5 w-5 text-muted-foreground" />
+            <Bike className="h-5 w-5 text-muted-foreground" />
             Entregas realizadas
           </h2>
 
