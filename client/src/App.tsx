@@ -47,6 +47,9 @@ import AdminRelatorios from "./pages/admin/AdminRelatorios";
 // Landing Page
 import LandingPage from "./pages/LandingPage";
 
+// Public Pages
+import Privacidade from "./pages/Privacidade";
+
 // Auth Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -101,6 +104,9 @@ function Router() {
     <Switch>
       {/* Landing Page - rota pública */}
       <Route path="/landing" component={LandingPage} />
+      
+      {/* Política de Privacidade - rota pública (Play Store) */}
+      <Route path="/privacidade" component={Privacidade} />
       
       {/* Auth routes - sem NewOrdersProvider */}
       <Route path="/login" component={Login} />

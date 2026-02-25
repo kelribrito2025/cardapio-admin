@@ -7485,3 +7485,7 @@
 - [x] Fix: ícone de Entregadores no menu lateral deve ser o mesmo ícone usado no modal de acompanhamento do pedido (status "Saiu para entrega") - alterado de Truck para Bike
 - [x] Padronizar ícone de entregador/delivery de Truck para Bike em todas as telas: PDV, Configurações, Entregadores, Pedidos, LandingPage, Onboarding, PublicMenu, Agendados, EntregadorDetalhes, PDVSlidebar, MobilePDVModal
 - [x] Fix: botão "Desconectado | Conectar" do WhatsApp na página de Pedidos com layout quebrado (texto sobreposto e cortado) - removido width fixo de 161px, agora auto-size
+- [x] Criar página /privacidade (Política de Privacidade) para conformidade com Play Store
+- [x] Página pública com link direto, sem aparecer no menu lateral do admin
+- [x] Layout e estilo consistente com o sistema (cores, fontes, design)
+- [x] Textos completos de política de privacidade adequados para app de cardápio digital
