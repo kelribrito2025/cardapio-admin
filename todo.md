@@ -7467,3 +7467,4 @@
 - [x] Fix: impressão automática pelo app externo ainda imprimindo 2x (estabelecimento 30001)
 - [x] Bloquear opção "Confirmação via Botões" - impedir que usuário ative essa funcionalidade
 - [x] Remover impressão direta via socket TCP (printOrderToMultiplePrinters, printOrderDirect, POSPrinterDriver) do createPublicOrder - app Mindi Printer cuida via SSE
+- [x] Fix: recibo HTML na impressão normal está alinhado à esquerda em vez de centralizado

@@ -167,13 +167,12 @@ function generateReceiptHTML(
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: 100%; 
-      max-width: 100%;
+      max-width: 320px; 
+      margin: 0 auto;
       padding: 4px;
       background: #fff;
       color: #000;
       -webkit-font-smoothing: antialiased;
-      margin: 0;
     }
     @media print {
       * {
@@ -189,6 +188,7 @@ function generateReceiptHTML(
         background: #fff;
         width: 100%;
         max-width: 100%;
+        margin: 0;
         padding: 2mm;
       }
       .delivery-badge {
@@ -722,8 +722,8 @@ function generateSectorReceiptHTML(
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: 100%; 
-      max-width: 100%;
+      max-width: 320px; 
+      margin: 0 auto;
       padding: 8px;
       background: #fff;
       color: #000;
@@ -798,7 +798,7 @@ function generateSectorReceiptHTML(
       font-weight: ${headerFontWeight};
     }
     @media print {
-      body { width: ${paperWidth}; padding: 2mm; }
+      body { width: ${paperWidth}; max-width: 100%; margin: 0; padding: 2mm; }
     }
   </style>
 </head>
@@ -971,13 +971,12 @@ function generateTabReceiptHTML(
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: 100%; 
-      max-width: 100%;
+      max-width: 320px; 
+      margin: 0 auto;
       padding: 4px;
       background: #fff;
       color: #000;
       -webkit-font-smoothing: antialiased;
-      margin: 0;
     }
     @media print {
       * {
@@ -993,6 +992,7 @@ function generateTabReceiptHTML(
         background: #fff;
         width: 100%;
         max-width: 100%;
+        margin: 0;
         padding: 2mm;
       }
       .delivery-badge {
