@@ -78,7 +78,7 @@ const menuSections = [
     items: [
       { icon: LayoutDashboard, label: "Dashboard", href: "/", disabled: false },
       { icon: Monitor, label: "PDV", href: "/pdv", disabled: false },
-      { icon: Utensils, label: "Mapa de mesas", href: "/mesas", disabled: false },
+      { icon: Utensils, label: "Mapa de mesas", href: "/mesas", disabled: false, comingSoon: true },
     ]
   },
   {
