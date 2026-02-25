@@ -204,13 +204,16 @@ function generateReceiptHTML(
       }
       html {
         background: #fff;
-        display: block;
+        display: flex;
+        justify-content: center;
+        width: 100%;
       }
       body {
         background: #fff;
         width: ${paperWidth};
         max-width: ${paperWidth};
         padding: 8px;
+        margin: 0 auto;
       }
       .delivery-badge {
         background: #000 !important;
@@ -1029,13 +1032,16 @@ function generateTabReceiptHTML(
       }
       html {
         background: #fff;
-        display: block;
+        display: flex;
+        justify-content: center;
+        width: 100%;
       }
       body {
         background: #fff;
         width: ${paperWidth};
         max-width: ${paperWidth};
         padding: 8px;
+        margin: 0 auto;
       }
       .delivery-badge {
         background: #000 !important;

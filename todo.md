@@ -7476,3 +7476,4 @@
 - [x] Fix: impressão HTML via Mindi Printer ainda não ocupa largura total do papel 80mm - ajustar template para width 100% sem restrições
 - [x] Fix: impressão HTML via Mindi Printer ainda não ocupa largura total do papel 80mm - ajustar template para width 100%
 - [x] Fix: impressão HTML tem muito espaço em branco abaixo do conteúdo - impressora não corta no lugar certo
+- [x] Fix: impressão via browser (window.print) ficou alinhada à esquerda e não preenche a página corretamente após fix do Mindi Printer
