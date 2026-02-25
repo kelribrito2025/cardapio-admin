@@ -415,8 +415,8 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: 100%; 
-      max-width: 100%;
+      width: ${paperWidthValue}; 
+      max-width: ${paperWidthValue};
       padding: 8px;
       background: #fff;
       color: #000;

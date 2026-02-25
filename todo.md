@@ -7458,3 +7458,5 @@
 - [x] Fix: badge "Grátis" no menu público deve aparecer SOMENTE quando priceMode === 'free', não quando preço é 0 ou indefinido
 - [x] Fix: beepOnPrint não está sendo enviado no evento SSE de impressão para o app externo
 - [x] Adicionar badge "Breve" ao item "Mapa de mesas" no menu lateral
+- [x] Investigar: beepOnPrint true no status mas bipe não funciona no app externo
+- [x] Fix: impressão HTML tem tamanho diferente (maior) que impressão ESC/POS na térmica 80mm

@@ -1822,7 +1822,9 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
     if (status === "preparing") {
       try {
         const printerSettingsResult = await getPrinterSettings(order.establishmentId);
-        if (printerSettingsResult?.autoPrintEnabled) {
+        // Sempre enviar print_order quando há configurações de impressora
+        // Não depende de autoPrintEnabled pois o app externo gerencia sua própria lógica
+        if (printerSettingsResult) {
           const orderItemsList = await db.select().from(orderItems).where(eq(orderItems.orderId, id));
           notifyPrintOrder(order.establishmentId, {
             orderId: id,
@@ -3207,8 +3209,9 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     // Verificar se impressão automática está ativada e enviar evento de impressão
     try {
       const printerSettingsResult = await getPrinterSettings(data.establishmentId);
-      if (printerSettingsResult?.autoPrintEnabled && printerSettingsResult?.printOnNewOrder) {
-        // Enviar evento SSE para impressão (para app ESC POS)
+      if (printerSettingsResult?.printOnNewOrder) {
+        // Enviar evento SSE para impressão (para app ESC POS e app externo)
+        // Não depende de autoPrintEnabled pois o app externo gerencia sua própria lógica de impressão
         notifyPrintOrder(data.establishmentId, {
           orderId,
           orderNumber,

@@ -169,9 +169,9 @@ function generateReceiptHTML(
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: 100%; 
-      max-width: 320px;
-      padding: 20px;
+      width: ${paperWidth}; 
+      max-width: ${paperWidth};
+      padding: 8px;
       background: #f5f5f0;
       color: #000;
       -webkit-font-smoothing: antialiased;
@@ -189,8 +189,9 @@ function generateReceiptHTML(
       }
       body {
         background: #fff;
-        max-width: 100%;
-        padding: 8px;
+        width: ${paperWidth};
+        max-width: ${paperWidth};
+        padding: 2mm;
       }
       .delivery-badge {
         background: #000 !important;
@@ -974,9 +975,9 @@ function generateTabReceiptHTML(
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: 100%; 
-      max-width: 320px;
-      padding: 20px;
+      width: ${paperWidth}; 
+      max-width: ${paperWidth};
+      padding: 8px;
       background: #f5f5f0;
       color: #000;
       -webkit-font-smoothing: antialiased;
@@ -994,8 +995,9 @@ function generateTabReceiptHTML(
       }
       body {
         background: #fff;
-        max-width: 100%;
-        padding: 8px;
+        width: ${paperWidth};
+        max-width: ${paperWidth};
+        padding: 2mm;
       }
       .delivery-badge {
         background: #000 !important;
