@@ -159,8 +159,9 @@ function generateReceiptHTML(
     }
     html {
       width: 100%;
-      height: auto;
+      height: fit-content;
       min-height: 0;
+      max-height: fit-content;
       margin: 0;
       padding: 0;
       background: #fff;
@@ -173,9 +174,11 @@ function generateReceiptHTML(
       line-height: 1.4;
       width: 100%;
       max-width: 100%;
-      height: auto;
+      height: fit-content;
       min-height: 0;
+      max-height: fit-content;
       padding: 8px;
+      padding-bottom: 16px;
       margin: 0;
       background: #fff;
       color: #000;
@@ -626,13 +629,23 @@ function generateReceiptHTML(
   </div>
 </body>
 <script>
+  // Shrink document to exact content height for thermal printer auto-cut
+  (function() {
+    var shrink = function() {
+      var content = document.body;
+      var h = content.scrollHeight;
+      document.documentElement.style.height = h + 'px';
+      document.documentElement.style.maxHeight = h + 'px';
+      content.style.height = h + 'px';
+      content.style.maxHeight = h + 'px';
+    };
+    if (document.readyState === 'complete') { shrink(); } 
+    else { window.addEventListener('load', shrink); }
+  })();
   // Auto-print quando a página carregar (apenas se não estiver em iframe)
-  // Quando carregado via iframe, o código do cliente controla a impressão
   window.onload = function() {
-    // Verifica se está em um iframe
     var isInIframe = window !== window.parent;
     if (!isInIframe) {
-      // Pequeno delay para garantir que o conteúdo foi renderizado
       setTimeout(function() {
         window.print();
       }, 300);
@@ -987,8 +1000,9 @@ function generateTabReceiptHTML(
     }
     html {
       width: 100%;
-      height: auto;
+      height: fit-content;
       min-height: 0;
+      max-height: fit-content;
       margin: 0;
       padding: 0;
       background: #fff;
@@ -1001,9 +1015,11 @@ function generateTabReceiptHTML(
       line-height: 1.4;
       width: 100%;
       max-width: 100%;
-      height: auto;
+      height: fit-content;
       min-height: 0;
+      max-height: fit-content;
       padding: 8px;
+      padding-bottom: 16px;
       margin: 0;
       background: #fff;
       color: #000;
@@ -1299,6 +1315,19 @@ function generateTabReceiptHTML(
   </div>
 </body>
 <script>
+  // Shrink document to exact content height for thermal printer auto-cut
+  (function() {
+    var shrink = function() {
+      var content = document.body;
+      var h = content.scrollHeight;
+      document.documentElement.style.height = h + 'px';
+      document.documentElement.style.maxHeight = h + 'px';
+      content.style.height = h + 'px';
+      content.style.maxHeight = h + 'px';
+    };
+    if (document.readyState === 'complete') { shrink(); } 
+    else { window.addEventListener('load', shrink); }
+  })();
   window.onload = function() {
     var isInIframe = window !== window.parent;
     if (!isInIframe) {
