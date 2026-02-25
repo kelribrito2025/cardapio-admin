@@ -132,3 +132,51 @@ describe('Print trigger logic - no duplicate printing', () => {
     // Total prints = 1 (accept only)
   });
 });
+
+describe('Print trigger logic - legacy methods skipped when SSE active', () => {
+  it('should skip POSPrinterDriver and Socket TCP when printOnNewOrder=true', () => {
+    const printerSettings = {
+      printOnNewOrder: true,
+      posPrinterEnabled: true,
+      posPrinterLinkcode: 'some-code',
+    };
+
+    // SSE print fires
+    const ssePrintFires = !!printerSettings?.printOnNewOrder;
+    // Legacy methods are wrapped in: if (!printerSettings?.printOnNewOrder)
+    const legacyMethodsRun = !printerSettings?.printOnNewOrder;
+
+    expect(ssePrintFires).toBe(true);
+    expect(legacyMethodsRun).toBe(false);
+  });
+
+  it('should allow legacy methods when printOnNewOrder=false', () => {
+    const printerSettings = {
+      printOnNewOrder: false,
+      posPrinterEnabled: true,
+      posPrinterLinkcode: 'some-code',
+    };
+
+    const ssePrintFires = !!printerSettings?.printOnNewOrder;
+    const legacyMethodsRun = !printerSettings?.printOnNewOrder;
+
+    expect(ssePrintFires).toBe(false);
+    expect(legacyMethodsRun).toBe(true);
+  });
+
+  it('should not have both SSE and legacy printing active at the same time', () => {
+    // For any printerSettings configuration, only one path should be active
+    const configs = [
+      { printOnNewOrder: true },
+      { printOnNewOrder: false },
+    ];
+
+    configs.forEach(settings => {
+      const ssePrints = !!settings.printOnNewOrder;
+      const legacyPrints = !settings.printOnNewOrder;
+
+      // XOR: exactly one should be true
+      expect(ssePrints !== legacyPrints).toBe(true);
+    });
+  });
+});

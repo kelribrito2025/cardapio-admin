@@ -3226,10 +3226,14 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           createdAt: new Date(),
           beepOnPrint: printerSettingsResult?.beepOnPrint ?? false,
         });
-        console.log('[DB:createPublicOrder] Evento de impressão enviado para pedido:', orderNumber);
+        console.log('[DB:createPublicOrder] Evento de impressão SSE enviado para pedido:', orderNumber);
       }
       
-      // Impressão automática via POSPrinterDriver (se configurado)
+      // Se printOnNewOrder está ativo, o Mindi Printer app cuida da impressão via SSE
+      // Não usar métodos legados (POSPrinterDriver, Socket TCP) para evitar impressão duplicada
+      if (!printerSettingsResult?.printOnNewOrder) {
+      
+      // Impressão automática via POSPrinterDriver (se configurado) - LEGADO
       if (printerSettingsResult?.posPrinterEnabled && printerSettingsResult?.posPrinterLinkcode) {
         const { printViaPOSPrinterDriver } = await import('./posPrinterDriver');
         const establishment = await getEstablishmentById(data.establishmentId);
@@ -3370,6 +3374,8 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           console.error('[DB:createPublicOrder] Impressão direta erro:', directPrintResult.message);
         }
       }
+      
+      } // fim do if (!printOnNewOrder) - bloco de métodos legados
     } catch (printError) {
       console.error('[DB:createPublicOrder] Erro ao verificar configurações de impressão:', printError);
       // Não falhar o pedido por causa de erro de impressão
