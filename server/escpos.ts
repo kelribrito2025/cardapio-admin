@@ -836,49 +836,60 @@ export function generatePlainTextReceipt(
   receipt += 'ITENS\n';
 
   for (const item of order.items) {
-    // Linha do item: quantidade x nome (sem preço)
+    // Linha do item: quantidade x nome + preço na mesma linha
     const itemName = `${item.quantity}x ${normalize(item.productName).toUpperCase()}`;
-    receipt += itemName + '\n';
+    const itemPrice = formatCurrency(item.totalPrice);
 
-    // Complementos com pontos (antes do preço do item)
+    // Verifica se tem complementos
+    let hasComplements = false;
+    let parsedComplements: any[] = [];
     if (item.complements) {
       try {
-        const complements = typeof item.complements === 'string'
+        parsedComplements = typeof item.complements === 'string'
           ? JSON.parse(item.complements)
           : item.complements;
-        
-        if (Array.isArray(complements)) {
-          for (const comp of complements) {
-            if (comp.items && Array.isArray(comp.items)) {
-              // Estrutura com grupos
-              for (const ci of comp.items) {
-                const qty = ci.quantity || 1;
-                const qtyPrefix = qty > 1 ? `${qty}x ` : '';
-                const compName = `${qtyPrefix}${normalize(ci.name)}`;
-                if (ci.price > 0) {
-                  receipt += complementLine(compName, formatCurrency(ci.price * qty)) + '\n';
-                } else {
-                  receipt += `  + ${compName}\n`;
-                }
-              }
-            } else if (comp.name) {
-              // Estrutura direta
-              const qty = comp.quantity || 1;
-              const qtyPrefix = qty > 1 ? `${qty}x ` : '';
-              const compName = `${qtyPrefix}${normalize(comp.name)}`;
-              if (comp.price > 0) {
-                receipt += complementLine(compName, formatCurrency(comp.price * qty)) + '\n';
-              } else {
-                receipt += `  + ${compName}\n`;
-              }
-            }
-          }
+        if (Array.isArray(parsedComplements) && parsedComplements.length > 0) {
+          hasComplements = parsedComplements.some(comp => 
+            (comp.items && Array.isArray(comp.items) && comp.items.length > 0) || comp.name
+          );
         }
       } catch (e) {}
     }
 
-    // Preço total do item na linha seguinte, alinhado à direita
-    receipt += leftRight('', formatCurrency(item.totalPrice)) + '\n';
+    if (hasComplements) {
+      // Se tem complementos: nome do item sem preço, complementos, depois preço alinhado à direita
+      receipt += itemName + '\n';
+
+      for (const comp of parsedComplements) {
+        if (comp.items && Array.isArray(comp.items)) {
+          for (const ci of comp.items) {
+            const qty = ci.quantity || 1;
+            const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+            const compName = `${qtyPrefix}${normalize(ci.name)}`;
+            if (ci.price > 0) {
+              receipt += complementLine(compName, formatCurrency(ci.price * qty)) + '\n';
+            } else {
+              receipt += `  + ${compName}\n`;
+            }
+          }
+        } else if (comp.name) {
+          const qty = comp.quantity || 1;
+          const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+          const compName = `${qtyPrefix}${normalize(comp.name)}`;
+          if (comp.price > 0) {
+            receipt += complementLine(compName, formatCurrency(comp.price * qty)) + '\n';
+          } else {
+            receipt += `  + ${compName}\n`;
+          }
+        }
+      }
+
+      // Preço total do item alinhado à direita (após complementos)
+      receipt += leftRight('', itemPrice) + '\n';
+    } else {
+      // Sem complementos: nome e preço na mesma linha
+      receipt += leftRight(itemName, itemPrice) + '\n';
+    }
 
     // Observações do item
     if (item.notes) {

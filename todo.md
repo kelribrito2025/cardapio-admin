@@ -7515,3 +7515,4 @@
 - [x] Criar API Key do bot automaticamente ao conectar WhatsApp pela primeira vez (sem ação manual)
 - [x] Remover seção de API Keys da página Bot WhatsApp (listagem, botão Nova API Key, dialog de criação)
 - [x] Manter apenas toggle ativar/desativar e informações de conexão/endpoints na página
+- [x] Corrigir formatação ESC/POS: preço dos itens deve ficar na mesma linha do nome do item (não na linha de baixo)

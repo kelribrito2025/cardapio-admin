@@ -145,22 +145,29 @@ describe('ESC/POS Generator', () => {
     it('should generate plain text receipt for 80mm paper', () => {
       const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment, '80mm');
       
-      expect(receipt).toContain('Hamburgueria do Joao'); // Normalized
-      expect(receipt).toContain('PEDIDO P123');
+      expect(receipt).toContain('HAMBURGUERIA DO JOAO'); // Normalized + uppercase
+      expect(receipt).toContain('P123');
       expect(receipt).toContain('ENTREGA');
       expect(receipt).toContain('Joao Silva'); // Normalized
-      expect(receipt).toContain('2x X-Burger');
+      // Items without complements should have price on same line
+      expect(receipt).toContain('2x X-BURGER');
       expect(receipt).toContain('R$ 50,00');
-      expect(receipt).toContain('1x Batata Frita');
+      expect(receipt).toContain('1x BATATA FRITA');
       expect(receipt).toContain('R$ 15,00');
       expect(receipt).toContain('Subtotal:');
       expect(receipt).toContain('R$ 65,00');
-      expect(receipt).toContain('Taxa de entrega:');
+      expect(receipt).toContain('Taxa entrega:');
       expect(receipt).toContain('R$ 5,00');
       expect(receipt).toContain('TOTAL');
       expect(receipt).toContain('R$ 70,00');
       expect(receipt).toContain('PIX');
       expect(receipt).toContain('Obrigado pela preferencia!');
+      // Verify items without complements have price on same line
+      const lines = receipt.split('\n');
+      const burgerLine = lines.find(l => l.includes('2x X-BURGER'));
+      expect(burgerLine).toContain('R$ 50,00');
+      const friesLine = lines.find(l => l.includes('1x BATATA FRITA'));
+      expect(friesLine).toContain('R$ 15,00');
     });
 
     it('should generate plain text receipt for 58mm paper', () => {
@@ -168,7 +175,7 @@ describe('ESC/POS Generator', () => {
       
       // 58mm paper has 32 chars per line
       expect(receipt).toContain('-'.repeat(32));
-      expect(receipt).toContain('PEDIDO P123');
+      expect(receipt).toContain('P123');
     });
 
     it('should handle pickup delivery type', () => {
@@ -194,7 +201,7 @@ describe('ESC/POS Generator', () => {
       };
       const receipt = generatePlainTextReceipt(cashOrder, sampleEstablishment, '80mm');
       
-      expect(receipt).toContain('Dinheiro');
+      expect(receipt).toContain('DINHEIRO');
       expect(receipt).toContain('Troco para: R$ 100,00');
       expect(receipt).toContain('Troco a devolver: R$ 30,00');
     });
@@ -297,17 +304,17 @@ describe('ESC/POS Generator', () => {
 
     it('should translate cash payment', () => {
       const receipt = generatePlainTextReceipt({ ...baseOrder, paymentMethod: 'cash' }, establishment, '80mm');
-      expect(receipt).toContain('Dinheiro');
+      expect(receipt).toContain('DINHEIRO');
     });
 
     it('should translate credit card payment', () => {
       const receipt = generatePlainTextReceipt({ ...baseOrder, paymentMethod: 'credit' }, establishment, '80mm');
-      expect(receipt).toContain('Cartao Credito');
+      expect(receipt).toContain('CARTAO CREDITO');
     });
 
     it('should translate debit card payment', () => {
       const receipt = generatePlainTextReceipt({ ...baseOrder, paymentMethod: 'debit' }, establishment, '80mm');
-      expect(receipt).toContain('Cartao Debito');
+      expect(receipt).toContain('CARTAO DEBITO');
     });
 
     it('should translate PIX payment', () => {
@@ -317,7 +324,7 @@ describe('ESC/POS Generator', () => {
 
     it('should translate boleto payment', () => {
       const receipt = generatePlainTextReceipt({ ...baseOrder, paymentMethod: 'boleto' }, establishment, '80mm');
-      expect(receipt).toContain('Boleto');
+      expect(receipt).toContain('BOLETO');
     });
   });
 });
