@@ -7509,3 +7509,5 @@
 - [x] Adicionar toggle de ativar/desativar bot ao lado do botão de API key na página de WhatsApp
 - [x] Ocultar API Key Global da listagem na página Bot WhatsApp (manter apenas no backend)
 - [x] Remover botão "Nova Key Global" da interface do usuário
+- [x] Configurar webhook padrão automaticamente ao criar instância Uazapi (URL: https://webn8n.granaupvps.shop/webhook/mindi)
+- [x] Garantir que a configuração do webhook não dependa de ação manual do usuário

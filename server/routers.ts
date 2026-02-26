@@ -3521,7 +3521,7 @@ export const appRouter = router({
         const establishment = await db.getEstablishmentByUserId(ctx.user.id);
         if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
         
-        const { isUazapiConfigured, getOrCreateInstance, connectInstance } = await import('./_core/uazapi');
+        const { isUazapiConfigured, getOrCreateInstance, connectInstance, configureWebhook } = await import('./_core/uazapi');
         
         // Verificar se UAZAPI está configurado
         if (!isUazapiConfigured()) {
@@ -3545,6 +3545,18 @@ export const appRouter = router({
             instanceId: instanceResult.instanceId,
             instanceToken: instanceResult.instanceToken,
           });
+          
+          // Configurar webhook padrão do n8n automaticamente
+          if (instanceResult.instanceToken) {
+            const N8N_WEBHOOK_URL = 'https://webn8n.granaupvps.shop/webhook/mindi';
+            try {
+              const webhookResult = await configureWebhook(instanceResult.instanceToken, N8N_WEBHOOK_URL);
+              console.log('[WhatsApp] Webhook n8n configurado automaticamente:', webhookResult.success ? 'OK' : webhookResult.message);
+            } catch (webhookError) {
+              console.error('[WhatsApp] Erro ao configurar webhook n8n (não bloqueante):', webhookError);
+              // Não bloqueia o fluxo - o webhook pode ser configurado depois
+            }
+          }
           
           config = await db.getWhatsappConfig(establishment.id);
         }
