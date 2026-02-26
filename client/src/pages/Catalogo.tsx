@@ -576,9 +576,9 @@ function SortableCategoryItem({
               {category.availabilityType === "scheduled" && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium cursor-default">
+                    <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-[3px] rounded-full font-medium cursor-default">
                       <Clock className="h-3 w-3" />
-                      Horário
+                      Agendado
                     </span>
                   </TooltipTrigger>
                   <TooltipContent>Categoria agendada para horários específicos</TooltipContent>
