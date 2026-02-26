@@ -7499,3 +7499,7 @@
 - [x] Adicionar opção de beep (sinal sonoro) na aba Mindi Printer das configurações de impressão
 - [x] Adicionar opção de ativar/desativar impressão HTML na aba Mindi Printer das configurações de impressão
 - [x] Garantir que endpoints do Mindi Printer (SSE stream, receipt, status) exponham mindiBeepOnPrint e mindiHtmlPrintEnabled para o app consumir
+- [x] Remover botão "Teste Térmica (Android)" da aba de teste de impressão
+- [x] Mover botão "Imprimir Teste" (normal) para a aba Fontes
+- [x] Remover aba "Teste" das configurações de impressão (agora são 5 abas: Layout, Fontes, Mindi, API, Logs)
+- [x] Corrigir erro TypeScript: tipo 'automatic' não era aceito no defaultPrintMethod (adicionado 'android' ao enum zod e db.ts para compatibilidade)

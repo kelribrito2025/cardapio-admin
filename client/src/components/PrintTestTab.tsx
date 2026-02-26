@@ -928,7 +928,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       </Card>
 
       <Tabs defaultValue="layout" className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="layout" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             <span className="hidden sm:inline">Layout</span>
@@ -936,10 +936,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
           <TabsTrigger value="fonts" className="flex items-center gap-2">
             <Type className="h-4 w-4" />
             <span className="hidden sm:inline">Fontes</span>
-          </TabsTrigger>
-          <TabsTrigger value="test" className="flex items-center gap-2">
-            <Printer className="h-4 w-4" />
-            <span className="hidden sm:inline">Teste</span>
           </TabsTrigger>
           <TabsTrigger value="mindi" className="flex items-center gap-2">
             <Smartphone className="h-4 w-4" />
@@ -1270,36 +1266,11 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
               <RotateCcw className="h-4 w-4 mr-2" />
               Restaurar Padrão
             </Button>
+            <Button variant="outline" onClick={handleTestPrint}>
+              <Printer className="h-4 w-4 mr-2" />
+              Imprimir Teste
+            </Button>
           </div>
-        </TabsContent>
-        
-        {/* Test Tab */}
-        <TabsContent value="test" className="space-y-4 mt-4">
-          <Card className="shadow-none">
-            <CardHeader>
-              <CardTitle>Imprimir Recibo de Teste</CardTitle>
-              <CardDescription>
-                Teste a impressão com um pedido de exemplo
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Button onClick={handleTestPrint} variant="outline">
-                  <Printer className="h-4 w-4 mr-2" />
-                  Teste Normal
-                </Button>
-                <Button onClick={handleTestThermalPrint}>
-                  <Smartphone className="h-4 w-4 mr-2" />
-                  Teste Térmica (Android)
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Para impressão térmica, use um dispositivo Android com o app Multi Printer Network Print Service instalado.
-              </p>
-            </CardContent>
-          </Card>
-
-
         </TabsContent>
 
         {/* Mindi Printer Tab */}
