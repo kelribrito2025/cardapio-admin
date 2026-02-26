@@ -7489,3 +7489,4 @@
 - [x] Página pública com link direto, sem aparecer no menu lateral do admin
 - [x] Layout e estilo consistente com o sistema (cores, fontes, design)
 - [x] Textos completos de política de privacidade adequados para app de cardápio digital
+- [x] Fix: adicionar meta viewport (width=567) no HTML de recibo gerado para impressão via Mindi Printer - conteúdo está renderizando muito estreito (alterado em 4 locais: index.ts x3 + PrintTestTab.tsx x1)
