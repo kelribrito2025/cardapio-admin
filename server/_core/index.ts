@@ -167,7 +167,7 @@ function generateReceiptHTML(
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=${paperWidth}, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pedido ${order.orderNumber}</title>
   <style>
     @page {
@@ -180,7 +180,8 @@ function generateReceiptHTML(
       box-sizing: border-box; 
     }
     html {
-      width: 100%;
+      width: ${paperWidth};
+      max-width: ${paperWidth};
       height: auto;
       min-height: 0;
       margin: 0;
@@ -193,8 +194,8 @@ function generateReceiptHTML(
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: 100%;
-      max-width: 100%;
+      width: ${paperWidth};
+      max-width: ${paperWidth};
       height: auto;
       min-height: 0;
       padding: 8px;
@@ -204,7 +205,7 @@ function generateReceiptHTML(
       -webkit-font-smoothing: antialiased;
       overflow: visible;
     }
-    /* Estilo para visualizacao no browser - nao afeta app de impressora (Mindi usa viewport 567px) */
+    /* Estilo para visualizacao no browser - nao afeta app de impressora */
     @media screen and (min-width: 768px) {
       html {
         background: #e5e5e0;
@@ -758,18 +759,19 @@ function generateSectorReceiptHTML(
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=${paperWidth}, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pedido #${order.orderNumber} - ${sectorName}</title>
   <style>
     @page { size: ${paperWidth} auto; margin: 0; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { width: ${paperWidth}; max-width: ${paperWidth}; background: #fff; }
     body { 
       font-family: 'Arial', 'Helvetica', sans-serif; 
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: 100%; 
-      max-width: 100%;
+      width: ${paperWidth}; 
+      max-width: ${paperWidth};
       padding: 8px;
       background: #fff;
       color: #000;
@@ -1016,7 +1018,7 @@ function generateTabReceiptHTML(
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=${paperWidth}, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Comanda ${tabNumber} - Mesa ${table?.number || tab.tableId}</title>
   <style>
     @page {
@@ -1029,7 +1031,8 @@ function generateTabReceiptHTML(
       box-sizing: border-box; 
     }
     html {
-      width: 100%;
+      width: ${paperWidth};
+      max-width: ${paperWidth};
       height: auto;
       min-height: 0;
       margin: 0;
@@ -1042,8 +1045,8 @@ function generateTabReceiptHTML(
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: 100%;
-      max-width: 100%;
+      width: ${paperWidth};
+      max-width: ${paperWidth};
       height: auto;
       min-height: 0;
       padding: 8px;

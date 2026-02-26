@@ -488,7 +488,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=567, initial-scale=1.0">
+  <meta name="viewport" content="width=${paperWidthValue}, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pedido ${sampleOrder.orderNumber}</title>
   <style>
     @page {
@@ -500,13 +500,14 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       padding: 0; 
       box-sizing: border-box; 
     }
+    html { width: ${paperWidthValue}; max-width: ${paperWidthValue}; background: #fff; }
     body { 
       font-family: 'Arial', 'Helvetica', sans-serif; 
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: 100%; 
-      max-width: 100%;
+      width: ${paperWidthValue}; 
+      max-width: ${paperWidthValue};
       padding: 8px;
       background: #fff;
       color: #000;

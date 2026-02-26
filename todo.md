@@ -7535,3 +7535,4 @@
 - [x] Escrever testes vitest para isScheduleAvailable (normal, meia-noite, timezone, edge cases)
 - [x] Corrigir caracteres Unicode escapados no modal de agendamento de categorias (ex: \u00e9 → é)
 - [x] Trocar ícone do badge "Agendado" de Clock para CalendarClock para melhor identificação visual
+- [x] Corrigir impressão HTML via Mindi Printer - recibo sai muito pequeno/reduzido no WebView, precisa renderizar no tamanho natural da impressora térmica
