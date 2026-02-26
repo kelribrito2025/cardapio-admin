@@ -7507,3 +7507,5 @@
 - [x] Criar endpoint tRPC para ativar/desativar bot do WhatsApp
 - [x] Criar endpoint público /api/bot/bot-status para o n8n consultar se o bot está ativo
 - [x] Adicionar toggle de ativar/desativar bot ao lado do botão de API key na página de WhatsApp
+- [x] Ocultar API Key Global da listagem na página Bot WhatsApp (manter apenas no backend)
+- [x] Remover botão "Nova Key Global" da interface do usuário

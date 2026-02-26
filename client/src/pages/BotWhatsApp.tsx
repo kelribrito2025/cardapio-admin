@@ -188,10 +188,6 @@ export default function BotWhatsApp() {
               disabled={toggleBotMutation.isPending}
             />
           </div>
-          <Button variant="outline" onClick={handleCreateGlobal} disabled={createGlobalMutation.isPending}>
-            {createGlobalMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Shield className="h-4 w-4 mr-2" />}
-            Nova Key Global
-          </Button>
           <Dialog open={showCreateDialog} onOpenChange={(open) => {
             setShowCreateDialog(open);
             if (!open) {
@@ -340,9 +336,12 @@ export default function BotWhatsApp() {
             API Keys
           </CardTitle>
           <CardDescription>
-            {apiKeys?.length
-              ? `${apiKeys.length} chave${apiKeys.length > 1 ? "s" : ""} cadastrada${apiKeys.length > 1 ? "s" : ""}`
-              : "Nenhuma chave cadastrada"}
+            {(() => {
+              const userKeys = apiKeys?.filter((k) => !(k as any).isGlobal) ?? [];
+              return userKeys.length
+                ? `${userKeys.length} chave${userKeys.length > 1 ? "s" : ""} cadastrada${userKeys.length > 1 ? "s" : ""}`
+                : "Nenhuma chave cadastrada";
+            })()}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -350,7 +349,7 @@ export default function BotWhatsApp() {
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
-          ) : !apiKeys?.length ? (
+          ) : !apiKeys?.filter((k) => !(k as any).isGlobal)?.length ? (
             <div className="text-center py-8 text-muted-foreground">
               <Bot className="h-12 w-12 mx-auto mb-3 opacity-30" />
               <p className="font-medium">Nenhuma API Key cadastrada</p>
@@ -358,7 +357,7 @@ export default function BotWhatsApp() {
             </div>
           ) : (
             <div className="space-y-3">
-              {apiKeys.map((key) => (
+              {apiKeys.filter((key) => !(key as any).isGlobal).map((key) => (
                 <div
                   key={key.id}
                   className={cn(
