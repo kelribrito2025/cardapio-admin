@@ -31,6 +31,17 @@ describe('Automatic Webhook Configuration on Instance Creation', () => {
     expect(routersSource).toContain('catch (webhookError)');
   });
 
+  it('should configure webhook on every connect/reconnect, not just on creation', () => {
+    // There should be webhook configuration both after instance creation AND after connectInstance
+    const webhookOnCreation = routersSource.indexOf('Webhook n8n configurado automaticamente');
+    const webhookOnConnect = routersSource.indexOf('Webhook n8n configurado na conexão');
+    
+    expect(webhookOnCreation).toBeGreaterThan(-1);
+    expect(webhookOnConnect).toBeGreaterThan(-1);
+    // Both should exist and be at different positions
+    expect(webhookOnConnect).not.toBe(webhookOnCreation);
+  });
+
   it('should have configureWebhook function in uazapi module', () => {
     expect(uazapiSource).toContain('export async function configureWebhook');
   });

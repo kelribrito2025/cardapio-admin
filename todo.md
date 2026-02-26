@@ -7511,3 +7511,4 @@
 - [x] Remover botão "Nova Key Global" da interface do usuário
 - [x] Configurar webhook padrão automaticamente ao criar instância Uazapi (URL: https://webn8n.granaupvps.shop/webhook/mindi)
 - [x] Garantir que a configuração do webhook não dependa de ação manual do usuário
+- [x] Configurar webhook n8n automaticamente ao reconectar instância existente (não apenas ao criar nova)

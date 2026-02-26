@@ -3568,6 +3568,17 @@ export const appRouter = router({
         // Conectar instância
         const result = await connectInstance(config.instanceToken);
         
+        // Configurar webhook padrão do n8n em toda conexão/reconexão
+        {
+          const N8N_WEBHOOK_URL = 'https://webn8n.granaupvps.shop/webhook/mindi';
+          try {
+            const webhookResult = await configureWebhook(config.instanceToken, N8N_WEBHOOK_URL);
+            console.log('[WhatsApp] Webhook n8n configurado na conexão:', webhookResult.success ? 'OK' : webhookResult.message);
+          } catch (webhookError) {
+            console.error('[WhatsApp] Erro ao configurar webhook n8n na conexão (não bloqueante):', webhookError);
+          }
+        }
+        
         // Atualizar status no banco
         await db.updateWhatsappStatus(
           establishment.id, 
