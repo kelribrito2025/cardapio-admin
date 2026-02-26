@@ -22,7 +22,8 @@ function generateReceiptHTML(
   order: any,
   items: any[],
   establishment: any,
-  settings: any
+  settings: any,
+  isMindi: boolean = false
 ): string {
   const formatCurrency = (value: number | string | null) => {
     const num = typeof value === 'string' ? parseFloat(value) : (value || 0);
@@ -145,7 +146,7 @@ function generateReceiptHTML(
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=567, initial-scale=1.0">
+  <meta name="viewport" content="${isMindi ? 'width=384, initial-scale=1.3' : 'width=device-width, initial-scale=1.0'}">
   <title>Pedido ${order.orderNumber}</title>
   <style>
     @page {
@@ -736,7 +737,7 @@ function generateSectorReceiptHTML(
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=567, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pedido #${order.orderNumber} - ${sectorName}</title>
   <style>
     @page { size: ${paperWidth} auto; margin: 0; }
@@ -973,7 +974,7 @@ function generateTabReceiptHTML(
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=567, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Comanda ${tabNumber} - Mesa ${table?.number || tab.tableId}</title>
   <style>
     @page {
@@ -2439,7 +2440,9 @@ async function startServer() {
       const settings = await getPrinterSettings(order.establishmentId);
       
       // Usar o mesmo layout completo do recibo normal, apenas com itens filtrados
-      const html = generateReceiptHTML(order, sectorItems, establishment, settings);
+      // Detectar se é requisição do Mindi Printer (via API key ou query param)
+      const isMindi = !!req.query.key || !!req.query.mindi;
+      const html = generateReceiptHTML(order, sectorItems, establishment, settings, isMindi);
       
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(html);
@@ -2800,7 +2803,7 @@ async function startServer() {
         res.setHeader("Content-Type", "text/plain; charset=utf-8");
         res.send(textReceipt);
       } else {
-        const html = generateReceiptHTML(order, orderItemsList, establishment, settings);
+        const html = generateReceiptHTML(order, orderItemsList, establishment, settings, true);
         res.setHeader("Content-Type", "text/html; charset=utf-8");
         res.send(html);
       }
