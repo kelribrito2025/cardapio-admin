@@ -2973,6 +2973,8 @@ export const appRouter = router({
         mindiShowLogo: z.boolean().optional(),
         mindiHeaderMessage: z.string().nullable().optional(),
         mindiFooterMessage: z.string().nullable().optional(),
+        mindiBeepOnPrint: z.boolean().optional(),
+        mindiHtmlPrintEnabled: z.boolean().optional(),
       }))
       .mutation(async ({ input }) => {
         await db.upsertPrinterSettings(input);

@@ -7496,3 +7496,5 @@
 - [x] Atualizar backend para salvar/carregar configurações Mindi separadamente
 - [x] Atualizar geração de recibo para usar configurações Mindi quando servido via API key
 - [x] Adicionar aba/seção "Mindi Printer" nas Configurações de Impressão no frontend
+- [x] Adicionar opção de beep (sinal sonoro) na aba Mindi Printer das configurações de impressão
+- [x] Adicionar opção de ativar/desativar impressão HTML na aba Mindi Printer das configurações de impressão

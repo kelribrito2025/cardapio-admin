@@ -90,6 +90,8 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
   const [mindiShowLogo, setMindiShowLogo] = useState(true);
   const [mindiHeaderMessage, setMindiHeaderMessage] = useState<string | null>(null);
   const [mindiFooterMessage, setMindiFooterMessage] = useState<string | null>(null);
+  const [mindiBeepOnPrint, setMindiBeepOnPrint] = useState(false);
+  const [mindiHtmlPrintEnabled, setMindiHtmlPrintEnabled] = useState(true);
 
   // Carregar configurações salvas quando disponíveis
   useEffect(() => {
@@ -126,6 +128,8 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       setMindiShowLogo((savedSettings as any).mindiShowLogo ?? true);
       setMindiHeaderMessage((savedSettings as any).mindiHeaderMessage || null);
       setMindiFooterMessage((savedSettings as any).mindiFooterMessage || null);
+      setMindiBeepOnPrint((savedSettings as any).mindiBeepOnPrint ?? false);
+      setMindiHtmlPrintEnabled((savedSettings as any).mindiHtmlPrintEnabled ?? true);
     }
   }, [savedSettings]);
   
@@ -217,6 +221,8 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
     setMindiShowLogo(true);
     setMindiHeaderMessage(null);
     setMindiFooterMessage(null);
+    setMindiBeepOnPrint(false);
+    setMindiHtmlPrintEnabled(true);
     toast.success("Configurações Mindi restauradas para o padrão");
   };
 
@@ -242,6 +248,8 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       mindiShowLogo,
       mindiHeaderMessage,
       mindiFooterMessage,
+      mindiBeepOnPrint,
+      mindiHtmlPrintEnabled,
     });
   };
 
@@ -1304,6 +1312,34 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Impressão HTML Mindi */}
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Impressão HTML</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Ative quando a impressora aceita impressão com layout HTML (mais flexível). Desative para usar o formato compatível ESC/POS.
+                  </p>
+                </div>
+                <Switch
+                  checked={mindiHtmlPrintEnabled}
+                  onCheckedChange={setMindiHtmlPrintEnabled}
+                />
+              </div>
+
+              {/* Bipe ao imprimir Mindi */}
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Bipe ao imprimir</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Emitir som de bipe na impressora ao imprimir
+                  </p>
+                </div>
+                <Switch
+                  checked={mindiBeepOnPrint}
+                  onCheckedChange={setMindiBeepOnPrint}
+                />
+              </div>
+
               {/* Largura do papel Mindi */}
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">

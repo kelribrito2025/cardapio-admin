@@ -502,6 +502,8 @@ export const printerSettings = mysqlTable("printerSettings", {
   mindiShowLogo: boolean("mindiShowLogo").default(true).notNull(), // Mostrar logo (Mindi)
   mindiHeaderMessage: text("mindiHeaderMessage"), // Mensagem cabeçalho (Mindi)
   mindiFooterMessage: text("mindiFooterMessage"), // Mensagem rodapé (Mindi)
+  mindiBeepOnPrint: boolean("mindiBeepOnPrint").default(false).notNull(), // Bipe ao imprimir (Mindi)
+  mindiHtmlPrintEnabled: boolean("mindiHtmlPrintEnabled").default(true).notNull(), // Impressão HTML ativada (Mindi)
   // Preferência de impressão padrão ao aceitar pedidos
   defaultPrintMethod: mysqlEnum("defaultPrintMethod", ["normal", "android", "automatic"]).default("normal").notNull(), // Método de impressão favorito: normal (webview), automatic (Mindi Printer via SSE)
   // Modo de impressão HTML vs ESC/POS

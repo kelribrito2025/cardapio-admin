@@ -5114,6 +5114,8 @@ export async function upsertPrinterSettings(data: {
   mindiShowLogo?: boolean;
   mindiHeaderMessage?: string | null;
   mindiFooterMessage?: string | null;
+  mindiBeepOnPrint?: boolean;
+  mindiHtmlPrintEnabled?: boolean;
 }): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -5169,6 +5171,8 @@ export async function upsertPrinterSettings(data: {
         mindiShowLogo: data.mindiShowLogo ?? (existing as any).mindiShowLogo ?? true,
         mindiHeaderMessage: data.mindiHeaderMessage !== undefined ? data.mindiHeaderMessage : (existing as any).mindiHeaderMessage,
         mindiFooterMessage: data.mindiFooterMessage !== undefined ? data.mindiFooterMessage : (existing as any).mindiFooterMessage,
+        mindiBeepOnPrint: data.mindiBeepOnPrint ?? (existing as any).mindiBeepOnPrint ?? false,
+        mindiHtmlPrintEnabled: data.mindiHtmlPrintEnabled ?? (existing as any).mindiHtmlPrintEnabled ?? true,
       })
       .where(eq(printerSettings.establishmentId, data.establishmentId));
   } else {
@@ -5220,6 +5224,8 @@ export async function upsertPrinterSettings(data: {
       mindiShowLogo: data.mindiShowLogo ?? true,
       mindiHeaderMessage: data.mindiHeaderMessage || null,
       mindiFooterMessage: data.mindiFooterMessage || null,
+      mindiBeepOnPrint: data.mindiBeepOnPrint ?? false,
+      mindiHtmlPrintEnabled: data.mindiHtmlPrintEnabled ?? true,
     });
   }
 }
