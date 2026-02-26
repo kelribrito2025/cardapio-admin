@@ -43,6 +43,7 @@ import {
   Layers,
   FolderPlus,
   Clock,
+  CalendarClock,
 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback, startTransition, type FocusEvent } from "react";
 import { useLocation } from "wouter";
@@ -577,7 +578,7 @@ function SortableCategoryItem({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-[4px] rounded-full font-medium cursor-default">
-                      <Clock className="h-3 w-3" />
+                      <CalendarClock className="h-3 w-3" />
                       Agendado
                     </span>
                   </TooltipTrigger>

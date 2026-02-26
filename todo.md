@@ -7534,3 +7534,4 @@
 - [x] Mostrar badge azul "Horário" no header da categoria quando availabilityType === "scheduled"
 - [x] Escrever testes vitest para isScheduleAvailable (normal, meia-noite, timezone, edge cases)
 - [x] Corrigir caracteres Unicode escapados no modal de agendamento de categorias (ex: \u00e9 → é)
+- [x] Trocar ícone do badge "Agendado" de Clock para CalendarClock para melhor identificação visual
