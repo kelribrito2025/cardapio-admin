@@ -11,7 +11,7 @@ import bcrypt from "bcryptjs";
 import { ENV } from "./_core/env";
 import { sdk } from "./_core/sdk";
 import { TRPCError } from "@trpc/server";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, and } from "drizzle-orm";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
 import { ifoodRouter } from "./ifoodRouter";
 import { adminRouter } from "./adminRouter";
@@ -3554,8 +3554,35 @@ export const appRouter = router({
               console.log('[WhatsApp] Webhook n8n configurado automaticamente:', webhookResult.success ? 'OK' : webhookResult.message);
             } catch (webhookError) {
               console.error('[WhatsApp] Erro ao configurar webhook n8n (não bloqueante):', webhookError);
-              // Não bloqueia o fluxo - o webhook pode ser configurado depois
             }
+          }
+          
+          // Criar API Key global automaticamente se não existir
+          try {
+            const dbInstance = await db.getDb();
+            if (dbInstance) {
+              const existingGlobalKey = await dbInstance.select().from(botApiKeys)
+                .where(and(
+                  eq(botApiKeys.establishmentId, establishment.id),
+                  eq(botApiKeys.isGlobal, true)
+                ))
+                .limit(1);
+              
+              if (existingGlobalKey.length === 0) {
+                const apiKey = `bot_global_${crypto.randomBytes(32).toString('hex')}`;
+                await dbInstance.insert(botApiKeys).values({
+                  establishmentId: establishment.id,
+                  name: `Bot ${establishment.name}`,
+                  apiKey,
+                  isActive: true,
+                  isGlobal: true,
+                  requestCount: 0,
+                });
+                console.log('[WhatsApp] API Key global criada automaticamente para estabelecimento:', establishment.id);
+              }
+            }
+          } catch (apiKeyError) {
+            console.error('[WhatsApp] Erro ao criar API Key global (não bloqueante):', apiKeyError);
           }
           
           config = await db.getWhatsappConfig(establishment.id);

@@ -7512,3 +7512,6 @@
 - [x] Configurar webhook padrão automaticamente ao criar instância Uazapi (URL: https://webn8n.granaupvps.shop/webhook/mindi)
 - [x] Garantir que a configuração do webhook não dependa de ação manual do usuário
 - [x] Configurar webhook n8n automaticamente ao reconectar instância existente (não apenas ao criar nova)
+- [x] Criar API Key do bot automaticamente ao conectar WhatsApp pela primeira vez (sem ação manual)
+- [x] Remover seção de API Keys da página Bot WhatsApp (listagem, botão Nova API Key, dialog de criação)
+- [x] Manter apenas toggle ativar/desativar e informações de conexão/endpoints na página
