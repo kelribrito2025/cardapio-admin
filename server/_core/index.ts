@@ -172,24 +172,19 @@ function generateReceiptHTML(
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: ${isMindi ? '384px' : '100%'};
-      max-width: ${isMindi ? '384px' : '100%'};
+      width: 100%;
+      max-width: 100%;
       height: auto;
       min-height: 0;
       padding: 8px;
-      margin: 0 auto;
+      margin: 0;
       background: #fff;
       color: #000;
       -webkit-font-smoothing: antialiased;
       overflow: visible;
     }
-<<<<<<< Updated upstream
     /* Estilo para visualizacao no browser - nao afeta app de impressora (Mindi usa viewport 567px) */
     @media screen and (min-width: 768px) {
-=======
-    ${isMindi ? '/* Mindi Printer: largura fixa 384px */' : `/* Estilo para visualizacao no browser - nao afeta app de impressora */
-    @media screen and (min-width: 400px) {
->>>>>>> Stashed changes
       html {
         background: #e5e5e0;
         display: flex;
@@ -201,7 +196,7 @@ function generateReceiptHTML(
         padding: 20px;
         margin: 20px auto;
       }
-    }`}
+    }
     @media print {
       * {
         -webkit-print-color-adjust: exact !important;
@@ -1005,24 +1000,19 @@ function generateTabReceiptHTML(
       font-size: ${baseFontSize}; 
       font-weight: ${baseFontWeight};
       line-height: 1.4;
-      width: ${isMindi ? '384px' : '100%'};
-      max-width: ${isMindi ? '384px' : '100%'};
+      width: 100%;
+      max-width: 100%;
       height: auto;
       min-height: 0;
       padding: 8px;
-      margin: 0 auto;
+      margin: 0;
       background: #fff;
       color: #000;
       -webkit-font-smoothing: antialiased;
       overflow: visible;
     }
-<<<<<<< Updated upstream
     /* Estilo para visualizacao no browser - nao afeta app de impressora (Mindi usa viewport 567px) */
     @media screen and (min-width: 768px) {
-=======
-    ${isMindi ? '/* Mindi Printer: largura fixa 384px */' : `/* Estilo para visualizacao no browser - nao afeta app de impressora */
-    @media screen and (min-width: 400px) {
->>>>>>> Stashed changes
       html {
         background: #e5e5e0;
         display: flex;
@@ -1034,7 +1024,7 @@ function generateTabReceiptHTML(
         padding: 20px;
         margin: 20px auto;
       }
-    }`}
+    }
     @media print {
       * {
         -webkit-print-color-adjust: exact !important;
