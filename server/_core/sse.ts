@@ -161,6 +161,7 @@ export function notifyPrintOrder(establishmentId: number, orderData: {
   }>;
   createdAt: Date;
   beepOnPrint?: boolean;
+  htmlPrintEnabled?: boolean;
 }): void {
   console.log(`[SSE-Printer] notifyPrintOrder chamado para establishmentId: ${establishmentId}, pedido: ${orderData.orderNumber}`);
   // Envia APENAS para conexões de impressora, não para o dashboard

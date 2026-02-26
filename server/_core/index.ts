@@ -2713,9 +2713,9 @@ async function startServer() {
         establishmentName: establishment?.name || "Desconhecido",
         autoPrintEnabled: settings?.autoPrintEnabled || false,
         printOnNewOrder: settings?.printOnNewOrder || false,
-        paperWidth: settings?.paperWidth || "80mm",
-        htmlPrintEnabled: settings?.htmlPrintEnabled ?? true,
-        beepOnPrint: settings?.beepOnPrint ?? false,
+        paperWidth: (settings as any)?.mindiPaperWidth || settings?.paperWidth || "80mm",
+        htmlPrintEnabled: (settings as any)?.mindiHtmlPrintEnabled ?? settings?.htmlPrintEnabled ?? true,
+        beepOnPrint: (settings as any)?.mindiBeepOnPrint ?? settings?.beepOnPrint ?? false,
         activeConnections: getPrinterConnectionCount(result.establishmentId),
       });
     } catch (error) {
@@ -2767,8 +2767,9 @@ async function startServer() {
       const establishment = await getEstablishmentById(order.establishmentId);
       const settings = await getPrinterSettings(order.establishmentId);
       
-      // Verificar se deve usar ESC/POS ou HTML
-      const useEscPos = format === 'text' || settings?.htmlPrintEnabled === false;
+      // Verificar se deve usar ESC/POS ou HTML (usa configurações Mindi para este endpoint)
+      const mindiHtmlEnabled = (settings as any)?.mindiHtmlPrintEnabled ?? settings?.htmlPrintEnabled ?? true;
+      const useEscPos = format === 'text' || mindiHtmlEnabled === false;
       
       if (useEscPos) {
         const { generatePlainTextReceipt } = await import('../escpos');

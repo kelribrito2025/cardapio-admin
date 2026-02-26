@@ -7498,3 +7498,4 @@
 - [x] Adicionar aba/seção "Mindi Printer" nas Configurações de Impressão no frontend
 - [x] Adicionar opção de beep (sinal sonoro) na aba Mindi Printer das configurações de impressão
 - [x] Adicionar opção de ativar/desativar impressão HTML na aba Mindi Printer das configurações de impressão
+- [x] Garantir que endpoints do Mindi Printer (SSE stream, receipt, status) exponham mindiBeepOnPrint e mindiHtmlPrintEnabled para o app consumir

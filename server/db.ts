@@ -1849,7 +1849,8 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
               notes: item.notes || null,
             })),
             createdAt: order.createdAt || new Date(),
-            beepOnPrint: printerSettingsResult?.beepOnPrint ?? false,
+            beepOnPrint: (printerSettingsResult as any)?.mindiBeepOnPrint ?? printerSettingsResult?.beepOnPrint ?? false,
+            htmlPrintEnabled: (printerSettingsResult as any)?.mindiHtmlPrintEnabled ?? printerSettingsResult?.htmlPrintEnabled ?? true,
           });
           console.log(`[DB:updateOrderStatus] Evento print_order enviado para pedido aceito: ${order.orderNumber}`);
           // Registrar log de impressão (fire-and-forget - nunca bloqueia)
@@ -1861,7 +1862,7 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
             method: 'sse',
             status: 'sent',
             printerConnections: getPrinterConnectionCount(order.establishmentId),
-            metadata: { previousStatus: order.status, beepOnPrint: printerSettingsResult?.beepOnPrint ?? false },
+            metadata: { previousStatus: order.status, beepOnPrint: (printerSettingsResult as any)?.mindiBeepOnPrint ?? printerSettingsResult?.beepOnPrint ?? false, htmlPrintEnabled: (printerSettingsResult as any)?.mindiHtmlPrintEnabled ?? printerSettingsResult?.htmlPrintEnabled ?? true },
           }).catch(() => {});
         }
       } catch (printErr) {
@@ -3236,7 +3237,8 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
             notes: item.notes || null,
           })),
           createdAt: new Date(),
-          beepOnPrint: printerSettingsResult?.beepOnPrint ?? false,
+          beepOnPrint: (printerSettingsResult as any)?.mindiBeepOnPrint ?? printerSettingsResult?.beepOnPrint ?? false,
+          htmlPrintEnabled: (printerSettingsResult as any)?.mindiHtmlPrintEnabled ?? printerSettingsResult?.htmlPrintEnabled ?? true,
         });
         console.log('[DB:createPublicOrder] Evento de impressão SSE enviado para pedido:', orderNumber);
         // Registrar log de impressão (fire-and-forget - nunca bloqueia o fluxo de impressão)
@@ -3248,7 +3250,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           method: 'sse',
           status: 'sent',
           printerConnections: getPrinterConnectionCount(data.establishmentId),
-          metadata: { autoAccept: !!(data as any).autoAcceptOrders, beepOnPrint: printerSettingsResult?.beepOnPrint ?? false },
+          metadata: { autoAccept: !!(data as any).autoAcceptOrders, beepOnPrint: (printerSettingsResult as any)?.mindiBeepOnPrint ?? printerSettingsResult?.beepOnPrint ?? false, htmlPrintEnabled: (printerSettingsResult as any)?.mindiHtmlPrintEnabled ?? printerSettingsResult?.htmlPrintEnabled ?? true },
         }).catch(() => {});
       }
       
