@@ -145,7 +145,7 @@ function generateReceiptHTML(
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=567, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pedido ${order.orderNumber}</title>
   <style>
     @page {
@@ -736,7 +736,7 @@ function generateSectorReceiptHTML(
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=567, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pedido #${order.orderNumber} - ${sectorName}</title>
   <style>
     @page { size: ${paperWidth} auto; margin: 0; }
@@ -973,7 +973,7 @@ function generateTabReceiptHTML(
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=567, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Comanda ${tabNumber} - Mesa ${table?.number || tab.tableId}</title>
   <style>
     @page {

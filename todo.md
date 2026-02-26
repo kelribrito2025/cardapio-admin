@@ -7491,3 +7491,4 @@
 - [x] Textos completos de política de privacidade adequados para app de cardápio digital
 - [x] Fix: adicionar meta viewport (width=567) no HTML de recibo gerado para impressão via Mindi Printer - conteúdo está renderizando muito estreito (alterado em 4 locais: index.ts x3 + PrintTestTab.tsx x1)
 - [x] Fix: recibo HTML via Mindi Printer continua com largura estreita - media query @media screen (min-width: 400px) alterada para 768px para não afetar o Mindi Printer (viewport 567px)
+- [x] Fix: reverter viewport para device-width (567px encolheu as fontes) mas manter media query em 768px para não limitar largura no Mindi Printer

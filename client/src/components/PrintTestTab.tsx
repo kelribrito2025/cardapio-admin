@@ -399,7 +399,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=567, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pedido ${sampleOrder.orderNumber}</title>
   <style>
     @page {
