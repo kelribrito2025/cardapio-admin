@@ -5099,6 +5099,21 @@ export async function upsertPrinterSettings(data: {
   defaultPrintMethod?: 'normal' | 'automatic';
   htmlPrintEnabled?: boolean;
   beepOnPrint?: boolean;
+  mindiFontSize?: number;
+  mindiFontWeight?: number;
+  mindiTitleFontSize?: number;
+  mindiTitleFontWeight?: number;
+  mindiItemFontSize?: number;
+  mindiItemFontWeight?: number;
+  mindiObsFontSize?: number;
+  mindiObsFontWeight?: number;
+  mindiShowDividers?: boolean;
+  mindiBoxPadding?: number;
+  mindiItemBorderStyle?: string;
+  mindiPaperWidth?: string;
+  mindiShowLogo?: boolean;
+  mindiHeaderMessage?: string | null;
+  mindiFooterMessage?: string | null;
 }): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -5139,6 +5154,21 @@ export async function upsertPrinterSettings(data: {
         defaultPrintMethod: data.defaultPrintMethod ?? (existing as any).defaultPrintMethod ?? 'normal',
         htmlPrintEnabled: data.htmlPrintEnabled ?? (existing as any).htmlPrintEnabled ?? true,
         beepOnPrint: data.beepOnPrint ?? (existing as any).beepOnPrint ?? false,
+        mindiFontSize: data.mindiFontSize ?? (existing as any).mindiFontSize ?? 12,
+        mindiFontWeight: data.mindiFontWeight ?? (existing as any).mindiFontWeight ?? 500,
+        mindiTitleFontSize: data.mindiTitleFontSize ?? (existing as any).mindiTitleFontSize ?? 16,
+        mindiTitleFontWeight: data.mindiTitleFontWeight ?? (existing as any).mindiTitleFontWeight ?? 700,
+        mindiItemFontSize: data.mindiItemFontSize ?? (existing as any).mindiItemFontSize ?? 12,
+        mindiItemFontWeight: data.mindiItemFontWeight ?? (existing as any).mindiItemFontWeight ?? 700,
+        mindiObsFontSize: data.mindiObsFontSize ?? (existing as any).mindiObsFontSize ?? 11,
+        mindiObsFontWeight: data.mindiObsFontWeight ?? (existing as any).mindiObsFontWeight ?? 500,
+        mindiShowDividers: data.mindiShowDividers ?? (existing as any).mindiShowDividers ?? false,
+        mindiBoxPadding: data.mindiBoxPadding ?? (existing as any).mindiBoxPadding ?? 12,
+        mindiItemBorderStyle: data.mindiItemBorderStyle ?? (existing as any).mindiItemBorderStyle ?? 'rounded',
+        mindiPaperWidth: data.mindiPaperWidth ?? (existing as any).mindiPaperWidth ?? '80mm',
+        mindiShowLogo: data.mindiShowLogo ?? (existing as any).mindiShowLogo ?? true,
+        mindiHeaderMessage: data.mindiHeaderMessage !== undefined ? data.mindiHeaderMessage : (existing as any).mindiHeaderMessage,
+        mindiFooterMessage: data.mindiFooterMessage !== undefined ? data.mindiFooterMessage : (existing as any).mindiFooterMessage,
       })
       .where(eq(printerSettings.establishmentId, data.establishmentId));
   } else {
@@ -5175,6 +5205,21 @@ export async function upsertPrinterSettings(data: {
       defaultPrintMethod: data.defaultPrintMethod ?? 'normal',
       htmlPrintEnabled: data.htmlPrintEnabled ?? true,
       beepOnPrint: data.beepOnPrint ?? false,
+      mindiFontSize: data.mindiFontSize ?? 12,
+      mindiFontWeight: data.mindiFontWeight ?? 500,
+      mindiTitleFontSize: data.mindiTitleFontSize ?? 16,
+      mindiTitleFontWeight: data.mindiTitleFontWeight ?? 700,
+      mindiItemFontSize: data.mindiItemFontSize ?? 12,
+      mindiItemFontWeight: data.mindiItemFontWeight ?? 700,
+      mindiObsFontSize: data.mindiObsFontSize ?? 11,
+      mindiObsFontWeight: data.mindiObsFontWeight ?? 500,
+      mindiShowDividers: data.mindiShowDividers ?? false,
+      mindiBoxPadding: data.mindiBoxPadding ?? 12,
+      mindiItemBorderStyle: data.mindiItemBorderStyle ?? 'rounded',
+      mindiPaperWidth: data.mindiPaperWidth ?? '80mm',
+      mindiShowLogo: data.mindiShowLogo ?? true,
+      mindiHeaderMessage: data.mindiHeaderMessage || null,
+      mindiFooterMessage: data.mindiFooterMessage || null,
     });
   }
 }

@@ -74,6 +74,23 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
   // Bipe ao imprimir
   const [beepOnPrint, setBeepOnPrint] = useState(false);
 
+  // Configurações específicas do Mindi Printer
+  const [mindiFontSize, setMindiFontSize] = useState(12);
+  const [mindiFontWeight, setMindiFontWeight] = useState(500);
+  const [mindiTitleFontSize, setMindiTitleFontSize] = useState(16);
+  const [mindiTitleFontWeight, setMindiTitleFontWeight] = useState(700);
+  const [mindiItemFontSize, setMindiItemFontSize] = useState(12);
+  const [mindiItemFontWeight, setMindiItemFontWeight] = useState(700);
+  const [mindiObsFontSize, setMindiObsFontSize] = useState(11);
+  const [mindiObsFontWeight, setMindiObsFontWeight] = useState(500);
+  const [mindiPaperWidth, setMindiPaperWidth] = useState("80mm");
+  const [mindiShowDividers, setMindiShowDividers] = useState(false);
+  const [mindiBoxPadding, setMindiBoxPadding] = useState(12);
+  const [mindiItemBorderStyle, setMindiItemBorderStyle] = useState<"rounded" | "dashed">("rounded");
+  const [mindiShowLogo, setMindiShowLogo] = useState(true);
+  const [mindiHeaderMessage, setMindiHeaderMessage] = useState<string | null>(null);
+  const [mindiFooterMessage, setMindiFooterMessage] = useState<string | null>(null);
+
   // Carregar configurações salvas quando disponíveis
   useEffect(() => {
     if (savedSettings) {
@@ -93,6 +110,22 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       setItemBorderStyle((savedSettings as any).itemBorderStyle || "rounded");
       setHtmlPrintEnabled((savedSettings as any).htmlPrintEnabled ?? true);
       setBeepOnPrint((savedSettings as any).beepOnPrint ?? false);
+      // Mindi Printer settings
+      setMindiFontSize((savedSettings as any).mindiFontSize || 12);
+      setMindiFontWeight((savedSettings as any).mindiFontWeight || 500);
+      setMindiTitleFontSize((savedSettings as any).mindiTitleFontSize || 16);
+      setMindiTitleFontWeight((savedSettings as any).mindiTitleFontWeight || 700);
+      setMindiItemFontSize((savedSettings as any).mindiItemFontSize || 12);
+      setMindiItemFontWeight((savedSettings as any).mindiItemFontWeight || 700);
+      setMindiObsFontSize((savedSettings as any).mindiObsFontSize || 11);
+      setMindiObsFontWeight((savedSettings as any).mindiObsFontWeight || 500);
+      setMindiPaperWidth((savedSettings as any).mindiPaperWidth || "80mm");
+      setMindiShowDividers((savedSettings as any).mindiShowDividers ?? false);
+      setMindiBoxPadding((savedSettings as any).mindiBoxPadding || 12);
+      setMindiItemBorderStyle((savedSettings as any).mindiItemBorderStyle || "rounded");
+      setMindiShowLogo((savedSettings as any).mindiShowLogo ?? true);
+      setMindiHeaderMessage((savedSettings as any).mindiHeaderMessage || null);
+      setMindiFooterMessage((savedSettings as any).mindiFooterMessage || null);
     }
   }, [savedSettings]);
   
@@ -166,6 +199,50 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
     setPaperWidth("80mm");
     setShowDividers(true);
     toast.success("Configurações restauradas para o padrão");
+  };
+
+  const resetMindiToDefaults = () => {
+    setMindiFontSize(12);
+    setMindiFontWeight(500);
+    setMindiTitleFontSize(16);
+    setMindiTitleFontWeight(700);
+    setMindiItemFontSize(12);
+    setMindiItemFontWeight(700);
+    setMindiObsFontSize(11);
+    setMindiObsFontWeight(500);
+    setMindiPaperWidth("80mm");
+    setMindiShowDividers(false);
+    setMindiBoxPadding(12);
+    setMindiItemBorderStyle("rounded");
+    setMindiShowLogo(true);
+    setMindiHeaderMessage(null);
+    setMindiFooterMessage(null);
+    toast.success("Configurações Mindi restauradas para o padrão");
+  };
+
+  const handleSaveMindiSettings = () => {
+    if (!establishmentId) {
+      toast.error("Estabelecimento não encontrado");
+      return;
+    }
+    saveSettingsMutation.mutate({
+      establishmentId,
+      mindiFontSize,
+      mindiFontWeight,
+      mindiTitleFontSize,
+      mindiTitleFontWeight,
+      mindiItemFontSize,
+      mindiItemFontWeight,
+      mindiObsFontSize,
+      mindiObsFontWeight,
+      mindiPaperWidth: mindiPaperWidth as "58mm" | "80mm",
+      mindiShowDividers,
+      mindiBoxPadding,
+      mindiItemBorderStyle,
+      mindiShowLogo,
+      mindiHeaderMessage,
+      mindiFooterMessage,
+    });
   };
 
   const handleSaveSettings = () => {
@@ -843,7 +920,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       </Card>
 
       <Tabs defaultValue="layout" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="layout" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             <span className="hidden sm:inline">Layout</span>
@@ -855,6 +932,10 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
           <TabsTrigger value="test" className="flex items-center gap-2">
             <Printer className="h-4 w-4" />
             <span className="hidden sm:inline">Teste</span>
+          </TabsTrigger>
+          <TabsTrigger value="mindi" className="flex items-center gap-2">
+            <Smartphone className="h-4 w-4" />
+            <span className="hidden sm:inline">Mindi</span>
           </TabsTrigger>
           <TabsTrigger value="api" className="flex items-center gap-2">
             <Key className="h-4 w-4" />
@@ -1211,6 +1292,157 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
           </Card>
 
 
+        </TabsContent>
+
+        {/* Mindi Printer Tab */}
+        <TabsContent value="mindi" className="space-y-4 mt-4">
+          <Card className="shadow-none">
+            <CardHeader>
+              <CardTitle>Configurações do Mindi Printer</CardTitle>
+              <CardDescription>
+                Ajustes exclusivos para impressão via Mindi Printer (app externo). Estas configurações não afetam a impressão normal do navegador.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Largura do papel Mindi */}
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Largura do papel</Label>
+                  <p className="text-sm text-muted-foreground">Tamanho da bobina térmica no Mindi</p>
+                </div>
+                <Select value={mindiPaperWidth} onValueChange={setMindiPaperWidth}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="58mm">58mm</SelectItem>
+                    <SelectItem value="80mm">80mm</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Divisores Mindi */}
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Mostrar divisores</Label>
+                  <p className="text-sm text-muted-foreground">Linhas tracejadas entre seções</p>
+                </div>
+                <Switch checked={mindiShowDividers} onCheckedChange={setMindiShowDividers} />
+              </div>
+
+              {/* Estilo de borda Mindi */}
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Estilo dos itens</Label>
+                  <p className="text-sm text-muted-foreground">Aparência das caixas de produtos</p>
+                </div>
+                <Select value={mindiItemBorderStyle} onValueChange={(v) => setMindiItemBorderStyle(v as "rounded" | "dashed")}>
+                  <SelectTrigger className="w-44">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="rounded">Caixas arredondadas</SelectItem>
+                    <SelectItem value="dashed">Linhas tracejadas</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Espaçamento Mindi */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Espaçamento interno: {mindiBoxPadding}px</Label>
+                </div>
+                <Slider value={[mindiBoxPadding]} onValueChange={(v) => setMindiBoxPadding(v[0])} min={4} max={20} step={2} />
+              </div>
+
+              <div className="border-t pt-4 mt-4">
+                <h4 className="font-medium mb-4">Configurações de Fonte</h4>
+              </div>
+
+              {/* Fonte geral Mindi */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Texto geral</Label>
+                  <span className="text-sm text-muted-foreground">{mindiFontSize}px / peso {mindiFontWeight}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-xs text-muted-foreground">Tamanho</span>
+                    <Slider value={[mindiFontSize]} onValueChange={(v) => setMindiFontSize(v[0])} min={8} max={18} step={1} className="mt-2" />
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Peso</span>
+                    <Slider value={[mindiFontWeight]} onValueChange={(v) => setMindiFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Títulos Mindi */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Títulos/Pedido</Label>
+                  <span className="text-sm text-muted-foreground">{mindiTitleFontSize}px / peso {mindiTitleFontWeight}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-xs text-muted-foreground">Tamanho</span>
+                    <Slider value={[mindiTitleFontSize]} onValueChange={(v) => setMindiTitleFontSize(v[0])} min={12} max={24} step={1} className="mt-2" />
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Peso</span>
+                    <Slider value={[mindiTitleFontWeight]} onValueChange={(v) => setMindiTitleFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Itens Mindi */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Nome dos itens</Label>
+                  <span className="text-sm text-muted-foreground">{mindiItemFontSize}px / peso {mindiItemFontWeight}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-xs text-muted-foreground">Tamanho</span>
+                    <Slider value={[mindiItemFontSize]} onValueChange={(v) => setMindiItemFontSize(v[0])} min={8} max={18} step={1} className="mt-2" />
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Peso</span>
+                    <Slider value={[mindiItemFontWeight]} onValueChange={(v) => setMindiItemFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Observações Mindi */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Observações/Complementos</Label>
+                  <span className="text-sm text-muted-foreground">{mindiObsFontSize}px / peso {mindiObsFontWeight}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-xs text-muted-foreground">Tamanho</span>
+                    <Slider value={[mindiObsFontSize]} onValueChange={(v) => setMindiObsFontSize(v[0])} min={8} max={16} step={1} className="mt-2" />
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Peso</span>
+                    <Slider value={[mindiObsFontWeight]} onValueChange={(v) => setMindiObsFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex gap-3">
+            <Button onClick={handleSaveMindiSettings} disabled={saveSettingsMutation.isPending}>
+              <Save className="h-4 w-4 mr-2" />
+              {saveSettingsMutation.isPending ? "Salvando..." : "Salvar Mindi"}
+            </Button>
+            <Button variant="outline" onClick={resetMindiToDefaults}>
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Restaurar Padrão
+            </Button>
+          </div>
         </TabsContent>
 
         {/* API Key Tab */}

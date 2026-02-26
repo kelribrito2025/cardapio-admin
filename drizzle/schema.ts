@@ -486,6 +486,22 @@ export const printerSettings = mysqlTable("printerSettings", {
   showDividers: boolean("showDividers").default(false).notNull(), // Mostrar divisores
   boxPadding: int("boxPadding").default(12).notNull(), // Espaçamento interno das caixas com bordas redondas
   itemBorderStyle: varchar("itemBorderStyle", { length: 20 }).default("rounded").notNull(), // Estilo de borda dos itens: rounded ou dashed
+  // Configurações de fonte específicas para Mindi Printer (independentes da impressão normal)
+  mindiFontSize: int("mindiFontSize").default(12).notNull(), // Tamanho da fonte geral (Mindi)
+  mindiFontWeight: int("mindiFontWeight").default(500).notNull(), // Peso da fonte geral (Mindi)
+  mindiTitleFontSize: int("mindiTitleFontSize").default(16).notNull(), // Tamanho da fonte de títulos (Mindi)
+  mindiTitleFontWeight: int("mindiTitleFontWeight").default(700).notNull(), // Peso da fonte de títulos (Mindi)
+  mindiItemFontSize: int("mindiItemFontSize").default(12).notNull(), // Tamanho da fonte de itens (Mindi)
+  mindiItemFontWeight: int("mindiItemFontWeight").default(700).notNull(), // Peso da fonte de itens (Mindi)
+  mindiObsFontSize: int("mindiObsFontSize").default(11).notNull(), // Tamanho da fonte de observações (Mindi)
+  mindiObsFontWeight: int("mindiObsFontWeight").default(500).notNull(), // Peso da fonte de observações (Mindi)
+  mindiShowDividers: boolean("mindiShowDividers").default(false).notNull(), // Mostrar divisores (Mindi)
+  mindiBoxPadding: int("mindiBoxPadding").default(12).notNull(), // Espaçamento interno (Mindi)
+  mindiItemBorderStyle: varchar("mindiItemBorderStyle", { length: 20 }).default("rounded").notNull(), // Estilo de borda (Mindi)
+  mindiPaperWidth: varchar("mindiPaperWidth", { length: 10 }).default("80mm").notNull(), // Largura do papel (Mindi)
+  mindiShowLogo: boolean("mindiShowLogo").default(true).notNull(), // Mostrar logo (Mindi)
+  mindiHeaderMessage: text("mindiHeaderMessage"), // Mensagem cabeçalho (Mindi)
+  mindiFooterMessage: text("mindiFooterMessage"), // Mensagem rodapé (Mindi)
   // Preferência de impressão padrão ao aceitar pedidos
   defaultPrintMethod: mysqlEnum("defaultPrintMethod", ["normal", "android", "automatic"]).default("normal").notNull(), // Método de impressão favorito: normal (webview), automatic (Mindi Printer via SSE)
   // Modo de impressão HTML vs ESC/POS

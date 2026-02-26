@@ -7491,3 +7491,8 @@
 - [x] Textos completos de política de privacidade adequados para app de cardápio digital
 - [x] Fix: adicionar meta viewport (width=567) no HTML de recibo gerado para impressão via Mindi Printer - conteúdo está renderizando muito estreito (alterado em 4 locais: index.ts x3 + PrintTestTab.tsx x1)
 - [x] Fix: recibo HTML via Mindi Printer continua com largura estreita - media query @media screen (min-width: 400px) alterada para 768px para não afetar o Mindi Printer (viewport 567px)
+- [x] Separar configurações de fonte/estilo de impressão em duas: "Impressão Normal" e "Mindi Printer"
+- [x] Adicionar colunas Mindi-specific no schema (mindiFontSize, mindiTitleFontSize, etc.)
+- [x] Atualizar backend para salvar/carregar configurações Mindi separadamente
+- [x] Atualizar geração de recibo para usar configurações Mindi quando servido via API key
+- [x] Adicionar aba/seção "Mindi Printer" nas Configurações de Impressão no frontend

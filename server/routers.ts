@@ -2957,6 +2957,22 @@ export const appRouter = router({
         defaultPrintMethod: z.enum(['normal', 'automatic']).optional(),
         htmlPrintEnabled: z.boolean().optional(),
         beepOnPrint: z.boolean().optional(),
+        // Configurações específicas do Mindi Printer
+        mindiFontSize: z.number().min(8).max(24).optional(),
+        mindiFontWeight: z.number().min(300).max(900).optional(),
+        mindiTitleFontSize: z.number().min(10).max(32).optional(),
+        mindiTitleFontWeight: z.number().min(300).max(900).optional(),
+        mindiItemFontSize: z.number().min(8).max(24).optional(),
+        mindiItemFontWeight: z.number().min(300).max(900).optional(),
+        mindiObsFontSize: z.number().min(8).max(20).optional(),
+        mindiObsFontWeight: z.number().min(300).max(900).optional(),
+        mindiShowDividers: z.boolean().optional(),
+        mindiBoxPadding: z.number().min(4).max(20).optional(),
+        mindiItemBorderStyle: z.enum(['rounded', 'dashed']).optional(),
+        mindiPaperWidth: z.enum(['58mm', '80mm']).optional(),
+        mindiShowLogo: z.boolean().optional(),
+        mindiHeaderMessage: z.string().nullable().optional(),
+        mindiFooterMessage: z.string().nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         await db.upsertPrinterSettings(input);

@@ -22,7 +22,8 @@ function generateReceiptHTML(
   order: any,
   items: any[],
   establishment: any,
-  settings: any
+  settings: any,
+  isMindi: boolean = false
 ): string {
   const formatCurrency = (value: number | string | null) => {
     const num = typeof value === 'string' ? parseFloat(value) : (value || 0);
@@ -71,30 +72,33 @@ function generateReceiptHTML(
     'card_online': 'Pagamento confirmado \u2013 Cart\u00e3o online'
   };
   
-  // Configurar largura do papel
-  const is58mm = settings?.paperWidth === '58mm';
+  // Configurar largura do papel - usa configurações Mindi quando aplicável
+  const effectivePaperWidth = isMindi ? (settings?.mindiPaperWidth || settings?.paperWidth) : settings?.paperWidth;
+  const is58mm = effectivePaperWidth === '58mm';
   const paperWidth = is58mm ? '48mm' : '72mm'; // Largura real do papel térmico
   
-  // Usar configurações de fonte salvas ou valores padrão
-  const baseFontSize = `${settings?.fontSize || (is58mm ? 11 : 12)}px`;
-  const baseFontWeight = settings?.fontWeight || 500;
-  const headerFontSize = `${settings?.titleFontSize || (is58mm ? 14 : 16)}px`;
-  const headerFontWeight = settings?.titleFontWeight || 700;
-  const orderNumberSize = `${(settings?.titleFontSize || (is58mm ? 14 : 16)) + 4}px`;
-  const itemFontSize = `${settings?.itemFontSize || (is58mm ? 11 : 12)}px`;
-  const itemFontWeight = settings?.itemFontWeight || 700;
-  const totalFontSize = `${(settings?.titleFontSize || (is58mm ? 13 : 14)) - 2}px`;
-  const smallFontSize = `${settings?.obsFontSize || (is58mm ? 10 : 11)}px`;
-  const smallFontWeight = settings?.obsFontWeight || 500;
-  const showDividers = settings?.showDividers ?? false;
-  const boxPadding = `${(settings as any)?.boxPadding || 12}px`;
-  const itemBorderStyle = (settings as any)?.itemBorderStyle || 'rounded';
+  // Usar configurações de fonte: Mindi-specific quando isMindi=true, normais caso contrário
+  const baseFontSize = `${(isMindi ? settings?.mindiFontSize : settings?.fontSize) || (is58mm ? 11 : 12)}px`;
+  const baseFontWeight = (isMindi ? settings?.mindiFontWeight : settings?.fontWeight) || 500;
+  const headerFontSize = `${(isMindi ? settings?.mindiTitleFontSize : settings?.titleFontSize) || (is58mm ? 14 : 16)}px`;
+  const headerFontWeight = (isMindi ? settings?.mindiTitleFontWeight : settings?.titleFontWeight) || 700;
+  const effectiveTitleSize = (isMindi ? settings?.mindiTitleFontSize : settings?.titleFontSize) || (is58mm ? 14 : 16);
+  const orderNumberSize = `${effectiveTitleSize + 4}px`;
+  const itemFontSize = `${(isMindi ? settings?.mindiItemFontSize : settings?.itemFontSize) || (is58mm ? 11 : 12)}px`;
+  const itemFontWeight = (isMindi ? settings?.mindiItemFontWeight : settings?.itemFontWeight) || 700;
+  const totalFontSize = `${effectiveTitleSize - 2}px`;
+  const smallFontSize = `${(isMindi ? settings?.mindiObsFontSize : settings?.obsFontSize) || (is58mm ? 10 : 11)}px`;
+  const smallFontWeight = (isMindi ? settings?.mindiObsFontWeight : settings?.obsFontWeight) || 500;
+  const showDividers = (isMindi ? settings?.mindiShowDividers : settings?.showDividers) ?? false;
+  const boxPadding = `${(isMindi ? settings?.mindiBoxPadding : (settings as any)?.boxPadding) || 12}px`;
+  const itemBorderStyle = (isMindi ? settings?.mindiItemBorderStyle : (settings as any)?.itemBorderStyle) || 'rounded';
   
   // Logo URL (usa o personalizado ou o do estabelecimento)
-  const logoUrl = settings?.logoUrl || establishment?.logo;
+  const effectiveShowLogo = isMindi ? (settings?.mindiShowLogo ?? true) : (settings?.showLogo ?? true);
+  const logoUrl = effectiveShowLogo ? (settings?.logoUrl || establishment?.logo) : null;
   
   // Mensagem de cabeçalho personalizada
-  const headerMessage = settings?.headerMessage;
+  const headerMessage = isMindi ? (settings?.mindiHeaderMessage ?? settings?.headerMessage) : settings?.headerMessage;
   
   let itemsHTML = '';
   for (const item of items) {
@@ -2438,8 +2442,8 @@ async function startServer() {
       const establishment = await getEstablishmentById(order.establishmentId);
       const settings = await getPrinterSettings(order.establishmentId);
       
-      // Usar o mesmo layout completo do recibo normal, apenas com itens filtrados
-      const html = generateReceiptHTML(order, sectorItems, establishment, settings);
+      // Usar o mesmo layout completo do recibo normal, apenas com itens filtrados (Mindi Printer)
+      const html = generateReceiptHTML(order, sectorItems, establishment, settings, true);
       
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.send(html);
@@ -2800,7 +2804,7 @@ async function startServer() {
         res.setHeader("Content-Type", "text/plain; charset=utf-8");
         res.send(textReceipt);
       } else {
-        const html = generateReceiptHTML(order, orderItemsList, establishment, settings);
+        const html = generateReceiptHTML(order, orderItemsList, establishment, settings, true);
         res.setHeader("Content-Type", "text/html; charset=utf-8");
         res.send(html);
       }
