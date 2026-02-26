@@ -294,6 +294,7 @@ export const appRouter = router({
         fakeReviewCount: z.number().min(0).max(250).optional(),
         ownerDisplayName: z.string().max(11).nullable().optional(),
         autoAcceptOrders: z.boolean().optional(),
+        whatsappBotEnabled: z.boolean().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;

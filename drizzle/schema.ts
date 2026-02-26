@@ -38,6 +38,7 @@ export const establishments = mysqlTable("establishments", {
   isOpen: boolean("isOpen").default(false).notNull(),
   menuSlug: varchar("menuSlug", { length: 100 }).unique(),
   whatsapp: varchar("whatsapp", { length: 30 }),
+  whatsappBotEnabled: boolean("whatsappBotEnabled").default(false).notNull(), // Toggle para ativar/desativar bot do WhatsApp (n8n)
   instagram: varchar("instagram", { length: 100 }),
   acceptsCash: boolean("acceptsCash").default(true).notNull(),
   acceptsCard: boolean("acceptsCard").default(true).notNull(),

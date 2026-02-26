@@ -7503,3 +7503,7 @@
 - [x] Mover botão "Imprimir Teste" (normal) para a aba Fontes
 - [x] Remover aba "Teste" das configurações de impressão (agora são 5 abas: Layout, Fontes, Mindi, API, Logs)
 - [x] Corrigir erro TypeScript: tipo 'automatic' não era aceito no defaultPrintMethod (adicionado 'android' ao enum zod e db.ts para compatibilidade)
+- [x] Adicionar coluna whatsappBotEnabled no schema do banco de dados
+- [x] Criar endpoint tRPC para ativar/desativar bot do WhatsApp
+- [x] Criar endpoint público /api/bot/bot-status para o n8n consultar se o bot está ativo
+- [x] Adicionar toggle de ativar/desativar bot ao lado do botão de API key na página de WhatsApp

@@ -48,6 +48,7 @@ import {
   Code,
   BookOpen,
   AlertCircle,
+  Power,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AdminLayout } from "@/components/AdminLayout";
@@ -59,8 +60,19 @@ export default function BotWhatsApp() {
   const [visibleKeys, setVisibleKeys] = useState<Set<number>>(new Set());
   const [deleteKeyId, setDeleteKeyId] = useState<number | null>(null);
 
-  const { data: establishment } = trpc.establishment.get.useQuery();
+  const { data: establishment, refetch: refetchEstablishment } = trpc.establishment.get.useQuery();
   const estId = establishment?.id;
+  const botEnabled = establishment?.whatsappBotEnabled ?? false;
+
+  const toggleBotMutation = trpc.establishment.update.useMutation({
+    onSuccess: () => {
+      refetchEstablishment();
+      toast.success(botEnabled ? "Bot desativado!" : "Bot ativado!");
+    },
+    onError: (err) => {
+      toast.error(err.message || "Erro ao alterar status do bot");
+    },
+  });
 
   const { data: apiKeys, isLoading, refetch } = trpc.botApiKeys.list.useQuery(
     { establishmentId: estId! },
@@ -160,7 +172,22 @@ export default function BotWhatsApp() {
             Gerencie as API Keys para integração com bots de atendimento via WhatsApp (n8n, etc.)
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {/* Bot Toggle */}
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg border bg-card">
+            <Power className={cn("h-4 w-4", botEnabled ? "text-green-500" : "text-muted-foreground")} />
+            <span className="text-sm font-medium whitespace-nowrap">
+              {botEnabled ? "Bot Ativo" : "Bot Inativo"}
+            </span>
+            <Switch
+              checked={botEnabled}
+              onCheckedChange={(checked) => {
+                if (!estId) return;
+                toggleBotMutation.mutate({ id: estId, whatsappBotEnabled: checked });
+              }}
+              disabled={toggleBotMutation.isPending}
+            />
+          </div>
           <Button variant="outline" onClick={handleCreateGlobal} disabled={createGlobalMutation.isPending}>
             {createGlobalMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Shield className="h-4 w-4 mr-2" />}
             Nova Key Global
@@ -276,6 +303,7 @@ export default function BotWhatsApp() {
               { method: "GET", path: "/api/bot/orders/:id", desc: "Detalhes do pedido" },
               { method: "GET", path: "/api/bot/whatsapp-config?phone=", desc: "Buscar estabelecimento pelo WhatsApp" },
               { method: "GET", path: "/api/bot/api-key?establishmentId=", desc: "Buscar API Key pelo estabelecimento" },
+              { method: "GET", path: "/api/bot/bot-status", desc: "Verificar se bot está ativo" },
               { method: "GET", path: "/api/bot/menu-link", desc: "Link do cardápio público" },
             ].map((ep) => (
               <div

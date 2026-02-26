@@ -1088,6 +1088,41 @@ export function createBotApiRouter(): Router {
   });
 
   // ──────────────────────────────────────────────
+  // GET /api/bot/bot-status — Verificar se o bot está ativo para o estabelecimento
+  // Retorna { enabled: boolean, establishmentId: number }
+  // ──────────────────────────────────────────────
+  router.get("/bot-status", async (req: BotApiRequest, res: Response) => {
+    try {
+      const estId = req.botEstablishmentId!;
+      const dbInstance = await db.getDb();
+      if (!dbInstance) return sendError(res, 503, "Banco de dados indisponível.");
+
+      const [establishment] = await dbInstance
+        .select({
+          id: establishments.id,
+          name: establishments.name,
+          whatsappBotEnabled: establishments.whatsappBotEnabled,
+        })
+        .from(establishments)
+        .where(eq(establishments.id, estId))
+        .limit(1);
+
+      if (!establishment) {
+        return sendError(res, 404, "Estabelecimento não encontrado.");
+      }
+
+      return res.json({
+        enabled: establishment.whatsappBotEnabled,
+        establishmentId: establishment.id,
+        establishmentName: establishment.name,
+      });
+    } catch (error) {
+      console.error("[BotAPI] Erro em GET /bot-status:", error);
+      return sendError(res, 500, "Erro interno.");
+    }
+  });
+
+  // ──────────────────────────────────────────────
   // GET /api/bot/menu-link — Link do cardápio público
   // ──────────────────────────────────────────────
   router.get("/menu-link", async (req: BotApiRequest, res: Response) => {
