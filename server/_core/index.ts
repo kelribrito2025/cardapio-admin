@@ -102,42 +102,60 @@ function generateReceiptHTML(
   
   let itemsHTML = '';
   for (const item of items) {
-    let itemHTML = `
-      <div class="item">
-        <div class="item-header">
-          <span>${item.quantity}x ${item.productName}</span>
-          <span>${formatCurrency(item.totalPrice)}</span>
-        </div>
-    `;
-    if (item.notes) {
-      itemHTML += `<div class="item-obs">Obs: ${item.notes}</div>`;
-    }
-    // Parse complements if exists
+    // Calcular preço base do item (sem complementos)
+    let complementsTotal = 0;
+    let parsedComplements: any[] = [];
     if (item.complements) {
       try {
-        const complements = typeof item.complements === 'string' ? JSON.parse(item.complements) : item.complements;
-        if (Array.isArray(complements)) {
-          for (const comp of complements) {
-            // Suporta duas estruturas:
-            // 1. Estrutura antiga com grupos: {items: [{name, price}]}
-            // 2. Estrutura nova direta: {name, price}
+        parsedComplements = typeof item.complements === 'string' ? JSON.parse(item.complements) : item.complements;
+        if (Array.isArray(parsedComplements)) {
+          for (const comp of parsedComplements) {
             if (comp.items && Array.isArray(comp.items)) {
-              // Estrutura antiga com grupos de complementos
               for (const ci of comp.items) {
                 const qty = ci.quantity || 1;
-                const qtyPrefix = qty > 1 ? `${qty}x ` : '';
-                itemHTML += `<div class="item-complement">+ ${qtyPrefix}${ci.name}${ci.price > 0 ? ` (${formatCurrency(ci.price * qty)})` : ''}</div>`;
+                complementsTotal += (ci.price || 0) * qty;
               }
             } else if (comp.name) {
-              // Estrutura nova: array direto de complementos {name, price, quantity}
               const qty = comp.quantity || 1;
-              const qtyPrefix = qty > 1 ? `${qty}x ` : '';
-              itemHTML += `<div class="item-complement">+ ${qtyPrefix}${comp.name}${comp.price > 0 ? ` (${formatCurrency(comp.price * qty)})` : ''}</div>`;
+              complementsTotal += (comp.price || 0) * qty;
             }
           }
         }
       } catch (e) {
         // Ignore parse errors
+      }
+    }
+    
+    // Preço base = totalPrice - (complementsTotal * quantity)
+    const totalPrice = typeof item.totalPrice === 'string' ? parseFloat(item.totalPrice) : (item.totalPrice || 0);
+    const hasComplements = parsedComplements.length > 0 && complementsTotal > 0;
+    const basePrice = hasComplements ? totalPrice - (complementsTotal * item.quantity) : totalPrice;
+    const displayPrice = basePrice > 0 ? basePrice : totalPrice;
+    
+    let itemHTML = `
+      <div class="item">
+        <div class="item-header">
+          <span>${item.quantity}x ${item.productName}</span>
+          <span>${formatCurrency(displayPrice)}</span>
+        </div>
+    `;
+    if (item.notes) {
+      itemHTML += `<div class="item-obs">Obs: ${item.notes}</div>`;
+    }
+    // Render complements
+    if (Array.isArray(parsedComplements)) {
+      for (const comp of parsedComplements) {
+        if (comp.items && Array.isArray(comp.items)) {
+          for (const ci of comp.items) {
+            const qty = ci.quantity || 1;
+            const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+            itemHTML += `<div class="item-complement">+ ${qtyPrefix}${ci.name}${ci.price > 0 ? ` (${formatCurrency(ci.price * qty)})` : ''}</div>`;
+          }
+        } else if (comp.name) {
+          const qty = comp.quantity || 1;
+          const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+          itemHTML += `<div class="item-complement">+ ${qtyPrefix}${comp.name}${comp.price > 0 ? ` (${formatCurrency(comp.price * qty)})` : ''}</div>`;
+        }
       }
     }
     itemHTML += `</div>`;
@@ -930,36 +948,57 @@ function generateTabReceiptHTML(
     const itemTotal = parseFloat(item.totalPrice) || 0;
     subtotal += itemTotal;
     
+    // Calcular preço base do item (sem complementos)
+    let complementsTotal = 0;
+    let parsedComplements: any[] = [];
+    if (item.complements) {
+      try {
+        parsedComplements = typeof item.complements === 'string' ? JSON.parse(item.complements) : item.complements;
+        if (Array.isArray(parsedComplements)) {
+          for (const comp of parsedComplements) {
+            if (comp.items && Array.isArray(comp.items)) {
+              for (const ci of comp.items) {
+                const qty = ci.quantity || 1;
+                complementsTotal += (ci.price || 0) * qty;
+              }
+            } else if (comp.name) {
+              const qty = comp.quantity || 1;
+              complementsTotal += (comp.price || 0) * qty;
+            }
+          }
+        }
+      } catch (e) {}
+    }
+    
+    const hasComplements = parsedComplements.length > 0 && complementsTotal > 0;
+    const basePrice = hasComplements ? itemTotal - (complementsTotal * item.quantity) : itemTotal;
+    const displayPrice = basePrice > 0 ? basePrice : itemTotal;
+    
     let itemHTML = `
       <div class="item">
         <div class="item-header">
           <span>${item.quantity}x ${item.productName}</span>
-          <span>${formatCurrency(itemTotal)}</span>
+          <span>${formatCurrency(displayPrice)}</span>
         </div>
     `;
     if (item.notes) {
       itemHTML += `<div class="item-obs">Obs: ${item.notes}</div>`;
     }
-    // Parse complements if exists
-    if (item.complements) {
-      try {
-        const complements = typeof item.complements === 'string' ? JSON.parse(item.complements) : item.complements;
-        if (Array.isArray(complements)) {
-          for (const comp of complements) {
-            if (comp.items && Array.isArray(comp.items)) {
-              for (const ci of comp.items) {
-                const qty = ci.quantity || 1;
-                const qtyPrefix = qty > 1 ? `${qty}x ` : '';
-                itemHTML += `<div class="item-complement">+ ${qtyPrefix}${ci.name}${ci.price > 0 ? ` (${formatCurrency(ci.price * qty)})` : ''}</div>`;
-              }
-            } else if (comp.name) {
-              const qty = comp.quantity || 1;
-              const qtyPrefix = qty > 1 ? `${qty}x ` : '';
-              itemHTML += `<div class="item-complement">+ ${qtyPrefix}${comp.name}${comp.price > 0 ? ` (${formatCurrency(comp.price * qty)})` : ''}</div>`;
-            }
+    // Render complements
+    if (Array.isArray(parsedComplements)) {
+      for (const comp of parsedComplements) {
+        if (comp.items && Array.isArray(comp.items)) {
+          for (const ci of comp.items) {
+            const qty = ci.quantity || 1;
+            const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+            itemHTML += `<div class="item-complement">+ ${qtyPrefix}${ci.name}${ci.price > 0 ? ` (${formatCurrency(ci.price * qty)})` : ''}</div>`;
           }
+        } else if (comp.name) {
+          const qty = comp.quantity || 1;
+          const qtyPrefix = qty > 1 ? `${qty}x ` : '';
+          itemHTML += `<div class="item-complement">+ ${qtyPrefix}${comp.name}${comp.price > 0 ? ` (${formatCurrency(comp.price * qty)})` : ''}</div>`;
         }
-      } catch (e) {}
+      }
     }
     itemHTML += `</div>`;
     itemsHTML += itemHTML;
