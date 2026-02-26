@@ -2692,13 +2692,29 @@ export default function PublicMenu() {
                   <h3 className="font-semibold text-gray-900">Horários de Funcionamento</h3>
                 </div>
                 <div className="space-y-2">
-                  <ScheduleRow day="Segunda-feira" hours="18:00 às 23:00" dayIndex={1} />
-                  <ScheduleRow day="Terça-feira" hours="18:00 às 23:00" dayIndex={2} />
-                  <ScheduleRow day="Quarta-feira" hours="18:00 às 23:00" dayIndex={3} />
-                  <ScheduleRow day="Quinta-feira" hours="18:00 às 23:00" dayIndex={4} />
-                  <ScheduleRow day="Sexta-feira" hours="18:00 às 23:00" dayIndex={5} />
-                  <ScheduleRow day="Sábado" hours="12:00 às 23:00" dayIndex={6} />
-                  <ScheduleRow day="Domingo" hours="12:00 às 22:00" dayIndex={0} />
+                  {(() => {
+                    const dayNames = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+                    const orderedDays = [1, 2, 3, 4, 5, 6, 0]; // Seg a Dom
+                    
+                    if (!businessHoursData || businessHoursData.length === 0) {
+                      return <p className="text-sm text-gray-500 py-2">Horários não configurados</p>;
+                    }
+                    
+                    return orderedDays.map((dayIndex) => {
+                      const dayData = businessHoursData.find((h: any) => h.dayOfWeek === dayIndex);
+                      const hours = dayData && dayData.isActive && dayData.openTime && dayData.closeTime
+                        ? `${dayData.openTime} às ${dayData.closeTime}`
+                        : 'Fechado';
+                      return (
+                        <ScheduleRow
+                          key={dayIndex}
+                          day={dayNames[dayIndex]}
+                          hours={hours}
+                          dayIndex={dayIndex}
+                        />
+                      );
+                    });
+                  })()}
                 </div>
               </div>
 
