@@ -838,7 +838,6 @@ export function generatePlainTextReceipt(
   for (const item of order.items) {
     // Linha do item: quantidade x nome + preço na mesma linha
     const itemName = `${item.quantity}x ${normalize(item.productName).toUpperCase()}`;
-    const itemPrice = formatCurrency(item.totalPrice);
 
     // Verifica se tem complementos
     let hasComplements = false;
@@ -857,9 +856,27 @@ export function generatePlainTextReceipt(
     }
 
     if (hasComplements) {
-      // Se tem complementos: nome do item sem preço, complementos, depois preço alinhado à direita
-      receipt += itemName + '\n';
+      // Calcula preço base do item (totalPrice - soma dos complementos)
+      let complementsTotal = 0;
+      for (const comp of parsedComplements) {
+        if (comp.items && Array.isArray(comp.items)) {
+          for (const ci of comp.items) {
+            const qty = ci.quantity || 1;
+            if (ci.price > 0) complementsTotal += ci.price * qty;
+          }
+        } else if (comp.name && comp.price > 0) {
+          const qty = comp.quantity || 1;
+          complementsTotal += comp.price * qty;
+        }
+      }
+      const basePrice = item.totalPrice - (complementsTotal * item.quantity);
+      // Se basePrice faz sentido, usa; senão usa totalPrice
+      const itemBasePrice = basePrice > 0 ? formatCurrency(basePrice) : formatCurrency(item.totalPrice);
 
+      // Nome do item + preço base na mesma linha
+      receipt += leftRight(itemName, itemBasePrice) + '\n';
+
+      // Complementos com pontos
       for (const comp of parsedComplements) {
         if (comp.items && Array.isArray(comp.items)) {
           for (const ci of comp.items) {
@@ -883,12 +900,10 @@ export function generatePlainTextReceipt(
           }
         }
       }
-
-      // Preço total do item alinhado à direita (após complementos)
-      receipt += leftRight('', itemPrice) + '\n';
+      // NÃO mostra total do item abaixo dos complementos (evita confusão)
     } else {
       // Sem complementos: nome e preço na mesma linha
-      receipt += leftRight(itemName, itemPrice) + '\n';
+      receipt += leftRight(itemName, formatCurrency(item.totalPrice)) + '\n';
     }
 
     // Observações do item

@@ -7516,3 +7516,4 @@
 - [x] Remover seção de API Keys da página Bot WhatsApp (listagem, botão Nova API Key, dialog de criação)
 - [x] Manter apenas toggle ativar/desativar e informações de conexão/endpoints na página
 - [x] Corrigir formatação ESC/POS: preço dos itens deve ficar na mesma linha do nome do item (não na linha de baixo)
+- [x] Corrigir ESC/POS: itens com complementos devem mostrar preço base do item na mesma linha do nome e remover total abaixo dos complementos

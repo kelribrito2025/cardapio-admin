@@ -93,36 +93,39 @@ describe('generatePlainTextReceipt - layout v2', () => {
     expect(receipt).toContain('ITENS');
   });
 
-  it('deve exibir nome do item sem preço na mesma linha', () => {
+  it('deve exibir preço base do item na mesma linha do nome (com complementos)', () => {
     const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment);
     const lines = receipt.split('\n');
-    // Deve ter uma linha com "2x X-BURGER ESPECIAL" sem preço
+    // Item com complementos: preço base (67.80 - (5+3)*2 = 51.80) na mesma linha
     const itemLine = lines.find(l => l.includes('2x X-BURGER ESPECIAL'));
     expect(itemLine).toBeDefined();
-    expect(itemLine).not.toContain('R$ 67,80');
+    expect(itemLine).toContain('R$'); // Preço base na mesma linha
   });
 
-  it('deve exibir preço do item em linha separada alinhado à direita', () => {
+  it('não deve exibir total do item abaixo dos complementos', () => {
     const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment);
-    // O preço R$ 67,80 deve estar em sua própria linha, alinhado à direita
-    expect(receipt).toContain('R$ 67,80');
-    expect(receipt).toContain('R$ 15,00');
-    expect(receipt).toContain('R$ 16,00');
+    const lines = receipt.split('\n');
+    const baconIdx = lines.findIndex(l => l.includes('Bacon extra'));
+    const cheddarIdx = lines.findIndex(l => l.includes('Queijo cheddar'));
+    // Após o último complemento, não deve ter linha com R$ 67,80 (total)
+    const nextLine = lines[cheddarIdx + 1];
+    // A próxima linha não deve ser o total 67,80 alinhado à direita
+    expect(nextLine?.trim()).not.toBe('R$ 67,80');
+  });
+
+  it('itens sem complementos devem ter preço na mesma linha', () => {
+    const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment);
+    const lines = receipt.split('\n');
+    const friesLine = lines.find(l => l.includes('1x BATATA FRITA GRANDE'));
+    expect(friesLine).toContain('R$ 15,00');
+    const sodaLine = lines.find(l => l.includes('2x REFRIGERANTE 600ML'));
+    expect(sodaLine).toContain('R$ 16,00');
   });
 
   it('deve exibir complementos com pontos entre nome e preço', () => {
     const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment);
     expect(receipt).toMatch(/\+ Bacon extra\s+\.+\s+R\$ 5,00/);
     expect(receipt).toMatch(/\+ Queijo cheddar\s+\.+\s+R\$ 3,00/);
-  });
-
-  it('complementos devem vir ANTES do preço do item', () => {
-    const receipt = generatePlainTextReceipt(sampleOrder, sampleEstablishment);
-    const lines = receipt.split('\n');
-    const baconIdx = lines.findIndex(l => l.includes('Bacon extra'));
-    const priceIdx = lines.findIndex((l, i) => i > baconIdx && l.trim().endsWith('R$ 67,80'));
-    expect(baconIdx).toBeGreaterThan(-1);
-    expect(priceIdx).toBeGreaterThan(baconIdx);
   });
 
   it('deve exibir subtotal e taxa de entrega', () => {
