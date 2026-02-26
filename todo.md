@@ -7533,3 +7533,4 @@
 - [x] Criar modal/dialog de agendamento de categoria (dias + horários) seguindo padrão dos complementos
 - [x] Mostrar badge azul "Horário" no header da categoria quando availabilityType === "scheduled"
 - [x] Escrever testes vitest para isScheduleAvailable (normal, meia-noite, timezone, edge cases)
+- [x] Corrigir caracteres Unicode escapados no modal de agendamento de categorias (ex: \u00e9 → é)

@@ -571,17 +571,17 @@ function SortableCategoryItem({
                 <Pencil className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-primary transition-colors duration-200" />
               </div>
               <span className="text-xs text-muted-foreground font-medium">
-                {categoryProducts.length} {categoryProducts.length === 1 ? "\u00edtem" : "\u00edtens"}
+                {categoryProducts.length} {categoryProducts.length === 1 ? "ítem" : "ítens"}
               </span>
               {category.availabilityType === "scheduled" && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium cursor-default">
                       <Clock className="h-3 w-3" />
-                      Hor\u00e1rio
+                      Horário
                     </span>
                   </TooltipTrigger>
-                  <TooltipContent>Categoria agendada para hor\u00e1rios espec\u00edficos</TooltipContent>
+                  <TooltipContent>Categoria agendada para horários específicos</TooltipContent>
                 </Tooltip>
               )}
               {!effectiveIsActive && (
@@ -1614,7 +1614,7 @@ export default function Catalogo() {
               Agendar disponibilidade
             </DialogTitle>
             <DialogDescription>
-              Configure quando a categoria <strong>"{schedulingCategory?.name}"</strong> aparece no menu p\u00fablico.
+              Configure quando a categoria <strong>"{schedulingCategory?.name}"</strong> aparece no menu público.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
@@ -1629,9 +1629,9 @@ export default function Catalogo() {
                   className="mt-0.5 accent-red-700"
                 />
                 <div>
-                  <span className="text-sm font-medium">Sempre dispon\u00edvel</span>
+                  <span className="text-sm font-medium">Sempre disponível</span>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    A categoria ficar\u00e1 vis\u00edvel sempre que o estabelecimento estiver aberto
+                    A categoria ficará visível sempre que o estabelecimento estiver aberto
                   </p>
                 </div>
               </label>
@@ -1645,9 +1645,9 @@ export default function Catalogo() {
                   className="mt-0.5 accent-red-700"
                 />
                 <div>
-                  <span className="text-sm font-medium">Dias e hor\u00e1rios espec\u00edficos</span>
+                  <span className="text-sm font-medium">Dias e horários específicos</span>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Escolha quando a categoria aparece no card\u00e1pio
+                    Escolha quando a categoria aparece no cardápio
                   </p>
                 </div>
               </label>
@@ -1677,7 +1677,7 @@ export default function Catalogo() {
 
                 {schedSelectedDays.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-xs font-medium text-muted-foreground">Hor\u00e1rios por dia:</p>
+                    <p className="text-xs font-medium text-muted-foreground">Horários por dia:</p>
                     {schedSelectedDays.map((day) => {
                       const dayLabel = DAYS_OF_WEEK.find((d) => d.value === day)?.label;
                       const existing = schedHoursConfig.find((h) => h.day === day);
@@ -1692,7 +1692,7 @@ export default function Catalogo() {
                             }
                             className="w-28 h-9 text-sm"
                           />
-                          <span className="text-muted-foreground text-xs">at\u00e9</span>
+                          <span className="text-muted-foreground text-xs">até</span>
                           <Input
                             type="time"
                             value={existing?.endTime || "23:59"}
