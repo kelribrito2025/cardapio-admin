@@ -182,8 +182,8 @@ function generateReceiptHTML(
       -webkit-font-smoothing: antialiased;
       overflow: visible;
     }
-    /* Estilo para visualizacao no browser - nao afeta app de impressora */
-    @media screen and (min-width: 400px) {
+    /* Estilo para visualizacao no browser - nao afeta app de impressora (Mindi usa viewport 567px) */
+    @media screen and (min-width: 768px) {
       html {
         background: #e5e5e0;
         display: flex;
@@ -1010,8 +1010,8 @@ function generateTabReceiptHTML(
       -webkit-font-smoothing: antialiased;
       overflow: visible;
     }
-    /* Estilo para visualizacao no browser - nao afeta app de impressora */
-    @media screen and (min-width: 400px) {
+    /* Estilo para visualizacao no browser - nao afeta app de impressora (Mindi usa viewport 567px) */
+    @media screen and (min-width: 768px) {
       html {
         background: #e5e5e0;
         display: flex;
