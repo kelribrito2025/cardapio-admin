@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO categories (establishmentId, name, description, sortOrder, isActive) VALUES (210005, 'Sobremesas', 'Doces e sobremesas', 18, 1); SET @cat_sobre = LAST_INSERT_ID(); INSERT INTO products (establishmentId, categoryId, name, description, price, status, sortOrder) VALUES (210005, @cat_sobre, 'Café Espresso', '', '9.90', 'active', 1), (210005, @cat_sobre, 'Sorvete na Taça', '', '14.90', 'active', 2), (210005, @cat_sobre, 'Petit Gâteau', '', '29.90', 'active', 3), (210005, @cat_sobre, 'Sequência de Fondue Doce', '', '34.90', 'active', 4);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute INSERT INTO categories (establishmentId, name, description, sortOrder, isActive) VALUES (210005, 'Sobremesas', 'Doces e sobremesas', 18, 1); SET @cat_sobre = LAST_INSERT_ID(); INSERT INTO products (establishmentId, categoryId, name, description, price, status, sortOrder) VALUES (210005, @cat_sobre, 'Café Espresso', '', '9.90', 'active', 1), (210005, @cat_sobre, 'Sorvete na Taça', '', '14.90', 'active', 2), (210005, @cat_sobre, 'Petit Gâteau', '', '29.90', 'active', 3), (210005, @cat_sobre, 'Sequência de Fondue Doce', '', '34.90', 'active', 4);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 99
+}

@@ -42,6 +42,7 @@ import {
   ChevronDown,
   Layers,
   FolderPlus,
+  Clock,
 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback, startTransition, type FocusEvent } from "react";
 import { useLocation } from "wouter";
@@ -431,6 +432,7 @@ function SortableCategoryItem({
   onDuplicateCategory,
   onDeleteCategory,
   onCreateCombo,
+  onSchedule,
   toggleCategoryStatusPending,
   updateCategoryPending,
   duplicateCategoryPending,
@@ -453,6 +455,7 @@ function SortableCategoryItem({
   onDuplicateCategory: (id: number) => void;
   onDeleteCategory: (id: number, name: string, productCount: number) => void;
   onCreateCombo: (categoryId: number, categoryName: string) => void;
+  onSchedule: (category: any) => void;
   toggleCategoryStatusPending: boolean;
   updateCategoryPending: boolean;
   duplicateCategoryPending: boolean;
@@ -568,8 +571,19 @@ function SortableCategoryItem({
                 <Pencil className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-primary transition-colors duration-200" />
               </div>
               <span className="text-xs text-muted-foreground font-medium">
-                {categoryProducts.length} {categoryProducts.length === 1 ? "ítem" : "ítens"}
+                {categoryProducts.length} {categoryProducts.length === 1 ? "\u00edtem" : "\u00edtens"}
               </span>
+              {category.availabilityType === "scheduled" && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium cursor-default">
+                      <Clock className="h-3 w-3" />
+                      Hor\u00e1rio
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>Categoria agendada para hor\u00e1rios espec\u00edficos</TooltipContent>
+                </Tooltip>
+              )}
               {!effectiveIsActive && (
                 <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">{allItemsPaused && category.isActive ? 'Todos pausados' : 'Pausada'}</span>
               )}
@@ -646,6 +660,12 @@ function SortableCategoryItem({
               </DropdownMenuItem>
               <DropdownMenuSeparator className="sm:hidden" />
               <DropdownMenuItem
+                onClick={() => onSchedule(category)}
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                Agendar disponibilidade
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onClick={() => onDuplicateCategory(category.id)}
                 disabled={duplicateCategoryPending}
               >
@@ -709,6 +729,13 @@ export default function Catalogo() {
   const [deleteCategoryDialogOpen, setDeleteCategoryDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<{ id: number; name: string; productCount: number } | null>(null);
   
+  // Category scheduling dialog state
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [schedulingCategory, setSchedulingCategory] = useState<any>(null);
+  const [schedAvailabilityType, setSchedAvailabilityType] = useState<"always" | "scheduled">("always");
+  const [schedSelectedDays, setSchedSelectedDays] = useState<number[]>([]);
+  const [schedHoursConfig, setSchedHoursConfig] = useState<{ day: number; startTime: string; endTime: string }[]>([]);
+
   // Combo Sheet state
   const [comboSheetOpen, setComboSheetOpen] = useState(false);
   const [productSheetOpen, setProductSheetOpen] = useState(false);
@@ -946,6 +973,57 @@ export default function Catalogo() {
     },
     onError: () => toast.error("Erro ao atualizar status da categoria"),
   });
+
+  const scheduleCategoryMutation = trpc.category.update.useMutation({
+    onSuccess: () => {
+      refetchCategories();
+      setScheduleDialogOpen(false);
+      setSchedulingCategory(null);
+      toast.success("Disponibilidade da categoria atualizada");
+    },
+    onError: () => toast.error("Erro ao atualizar disponibilidade"),
+  });
+
+  const DAYS_OF_WEEK = [
+    { value: 0, label: "Dom" },
+    { value: 1, label: "Seg" },
+    { value: 2, label: "Ter" },
+    { value: 3, label: "Qua" },
+    { value: 4, label: "Qui" },
+    { value: 5, label: "Sex" },
+    { value: 6, label: "Sab" },
+  ];
+
+  const openScheduleDialog = useCallback((cat: any) => {
+    setSchedulingCategory(cat);
+    setSchedAvailabilityType(cat.availabilityType || "always");
+    setSchedSelectedDays(cat.availableDays || []);
+    setSchedHoursConfig(cat.availableHours || []);
+    setScheduleDialogOpen(true);
+  }, []);
+
+  const handleSaveSchedule = useCallback(() => {
+    if (!schedulingCategory) return;
+    scheduleCategoryMutation.mutate({
+      id: schedulingCategory.id,
+      availabilityType: schedAvailabilityType,
+      availableDays: schedAvailabilityType === "scheduled" ? schedSelectedDays : null,
+      availableHours: schedAvailabilityType === "scheduled" ? schedHoursConfig : null,
+    });
+  }, [schedulingCategory, schedAvailabilityType, schedSelectedDays, schedHoursConfig]);
+
+  const toggleSchedDay = useCallback((day: number) => {
+    setSchedSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort()
+    );
+  }, []);
+
+  const updateSchedHoursForDay = useCallback((day: number, startTime: string, endTime: string) => {
+    setSchedHoursConfig((prev) => {
+      const filtered = prev.filter((h) => h.day !== day);
+      return [...filtered, { day, startTime, endTime }].sort((a, b) => a.day - b.day);
+    });
+  }, []);
 
   // Mutation para mover produto entre categorias
   const moveProductCategoryMutation = trpc.product.update.useMutation({
@@ -1308,6 +1386,7 @@ export default function Catalogo() {
                   setComboSheetCategoryName(name);
                   setComboSheetOpen(true);
                 }}
+                onSchedule={openScheduleDialog}
                 toggleCategoryStatusPending={toggleCategoryStatusMutation.isPending}
                 updateCategoryPending={updateCategoryMutation.isPending}
                 duplicateCategoryPending={duplicateCategoryMutation.isPending}
@@ -1525,6 +1604,125 @@ export default function Catalogo() {
           }}
         />
       )}
+
+      {/* Category Scheduling Dialog */}
+      <Dialog open={scheduleDialogOpen} onOpenChange={setScheduleDialogOpen}>
+        <DialogContent className="rounded-2xl max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-blue-600" />
+              Agendar disponibilidade
+            </DialogTitle>
+            <DialogDescription>
+              Configure quando a categoria <strong>"{schedulingCategory?.name}"</strong> aparece no menu p\u00fablico.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            {/* Radio buttons */}
+            <div className="space-y-2">
+              <label className="flex items-start gap-3 cursor-pointer p-3 rounded-xl hover:bg-muted/50 transition-colors border border-transparent has-[:checked]:border-blue-200 has-[:checked]:bg-blue-50/50">
+                <input
+                  type="radio"
+                  name="cat-avail"
+                  checked={schedAvailabilityType === "always"}
+                  onChange={() => setSchedAvailabilityType("always")}
+                  className="mt-0.5 accent-red-700"
+                />
+                <div>
+                  <span className="text-sm font-medium">Sempre dispon\u00edvel</span>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    A categoria ficar\u00e1 vis\u00edvel sempre que o estabelecimento estiver aberto
+                  </p>
+                </div>
+              </label>
+
+              <label className="flex items-start gap-3 cursor-pointer p-3 rounded-xl hover:bg-muted/50 transition-colors border border-transparent has-[:checked]:border-blue-200 has-[:checked]:bg-blue-50/50">
+                <input
+                  type="radio"
+                  name="cat-avail"
+                  checked={schedAvailabilityType === "scheduled"}
+                  onChange={() => setSchedAvailabilityType("scheduled")}
+                  className="mt-0.5 accent-red-700"
+                />
+                <div>
+                  <span className="text-sm font-medium">Dias e hor\u00e1rios espec\u00edficos</span>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Escolha quando a categoria aparece no card\u00e1pio
+                  </p>
+                </div>
+              </label>
+            </div>
+
+            {/* Day/Hour selector */}
+            {schedAvailabilityType === "scheduled" && (
+              <div className="space-y-3 pl-1">
+                <p className="text-xs font-medium text-muted-foreground">Selecione os dias:</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {DAYS_OF_WEEK.map((day) => (
+                    <button
+                      key={day.value}
+                      type="button"
+                      onClick={() => toggleSchedDay(day.value)}
+                      className={cn(
+                        "px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors",
+                        schedSelectedDays.includes(day.value)
+                          ? "bg-red-700 text-white border-red-700"
+                          : "bg-background text-muted-foreground border-border hover:border-red-300"
+                      )}
+                    >
+                      {day.label}
+                    </button>
+                  ))}
+                </div>
+
+                {schedSelectedDays.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground">Hor\u00e1rios por dia:</p>
+                    {schedSelectedDays.map((day) => {
+                      const dayLabel = DAYS_OF_WEEK.find((d) => d.value === day)?.label;
+                      const existing = schedHoursConfig.find((h) => h.day === day);
+                      return (
+                        <div key={day} className="flex items-center gap-2 text-sm">
+                          <span className="w-10 font-medium text-muted-foreground">{dayLabel}</span>
+                          <Input
+                            type="time"
+                            value={existing?.startTime || "00:00"}
+                            onChange={(e) =>
+                              updateSchedHoursForDay(day, e.target.value, existing?.endTime || "23:59")
+                            }
+                            className="w-28 h-9 text-sm"
+                          />
+                          <span className="text-muted-foreground text-xs">at\u00e9</span>
+                          <Input
+                            type="time"
+                            value={existing?.endTime || "23:59"}
+                            onChange={(e) =>
+                              updateSchedHoursForDay(day, existing?.startTime || "00:00", e.target.value)
+                            }
+                            className="w-28 h-9 text-sm"
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setScheduleDialogOpen(false)} className="rounded-xl">
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSaveSchedule}
+              disabled={scheduleCategoryMutation.isPending || (schedAvailabilityType === "scheduled" && schedSelectedDays.length === 0)}
+              className="rounded-xl bg-red-700 hover:bg-red-800 text-white"
+            >
+              {scheduleCategoryMutation.isPending ? "Salvando..." : "Salvar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }

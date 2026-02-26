@@ -1,0 +1,1030 @@
+{
+  "query": "SELECT cg.name AS grupo, ci.name AS complemento, ci.price FROM complementGroups cg JOIN complementItems ci ON ci.groupId = cg.id JOIN products p ON p.id = cg.productId WHERE p.establishmentId = 210005 ORDER BY cg.id, ci.sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.name AS grupo, ci.name AS complemento, ci.price FROM complementGroups cg JOIN complementItems ci ON ci.groupId = cg.id JOIN products p ON p.id = cg.productId WHERE p.establishmentId = 210005 ORDER BY cg.id, ci.sortOrder;",
+  "rows": [
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Gado grelhado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Gado acebolado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Frango Grelhado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Frango Acebolado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Frango crocante",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Frango a parmegiana",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Frango ao molho de nata",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Peixe a milanesa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Peixe à portuguesa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Peixe grelhado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Suíno ao barbecue",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Carne de panela",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Costela na panela",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Strogonoff de frango",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Strogonoff de gado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Entreveiro",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Calabresa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Almôndegas ao sugo",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Maionese",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Macarronese",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Salpicão",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Alface",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Brócolis",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Cenoura",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Beterraba",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Tomate",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Rúcula",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Chuchu",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Cebola/Pimentão",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Pimentão",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Cebola",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Tomate/Cebola",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Mix de verduras",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Mix de folhas",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Repolho",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Pepino",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Couve",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Beterraba com maçã",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Grão de bico",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Frutas picadas",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Lasanha de frango",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Lasanha bolonhesa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Lasanha de strogonoff",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Pureê de batata",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Purê de moranga",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Risoto de brócolis",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Risoto de filé",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Risoto de alho poró",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Risoto de milho",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Risoto de frango",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Risoto de queijo",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa ao alho e óleo",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa bolonhesa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa carbonara",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa ao filé",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa a primavera",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa aos 4 queijos",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa ao pesto",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa temperada",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa com rúcula e tomate seco",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Legumes na manteiga",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Seleta de legumes",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Nhoque ao sugo",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Nhoque bolonhesa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Nhoque ao queijo",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Moranga caramelizada",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Repolho refogado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Suflê de cenoura",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Ovos mexidos",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Ovo frito",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata frita",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata dorê",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata na mostarda",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata com ervas",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata rústica",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata cremosa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata assada",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Panqueca de carne",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Panqueca de strogonoff",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Farofa gourmet",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Polenta a milanesa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Polenta cremosa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Polenta frita",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Brocolis gratinado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Bolinho de arroz",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Couve refogada",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Couve com farofa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Canelone de frios",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Repolho a primavera",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Aipim frito",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Brócolis ao alho e óleo",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Gado grelhado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Gado acebolado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Frango Grelhado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Frango Acebolado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Frango crocante",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Frango a parmegiana",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Frango ao molho de nata",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Peixe a milanesa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Peixe à portuguesa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Peixe grelhado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Suíno ao barbecue",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Carne de panela",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Costela na panela",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Strogonoff de frango",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Strogonoff de gado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Entreveiro",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Calabresa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Carnes | 1 opção",
+      "complemento": "Almôndegas ao sugo",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Maionese",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Macarronese",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Salpicão",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Alface",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Brócolis",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Cenoura",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Beterraba",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Tomate",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Rúcula",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Chuchu",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Cebola/Pimentão",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Pimentão",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Cebola",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Tomate/Cebola",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Mix de verduras",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Mix de folhas",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Repolho",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Pepino",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Couve",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Beterraba com maçã",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Grão de bico",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Salada | 2 Opções",
+      "complemento": "Frutas picadas",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Lasanha de frango",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Lasanha bolonhesa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Lasanha de strogonoff",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Pureê de batata",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Purê de moranga",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Risoto de brócolis",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Risoto de filé",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Risoto de alho poró",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Risoto de milho",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Risoto de frango",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Risoto de queijo",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa ao alho e óleo",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa bolonhesa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa carbonara",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa ao filé",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa a primavera",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa aos 4 queijos",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa ao pesto",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa temperada",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Massa com rúcula e tomate seco",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Legumes na manteiga",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Seleta de legumes",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Nhoque ao sugo",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Nhoque bolonhesa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Nhoque ao queijo",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Moranga caramelizada",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Repolho refogado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Suflê de cenoura",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Ovos mexidos",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Ovo frito",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata frita",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata dorê",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata na mostarda",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata com ervas",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata rústica",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata cremosa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Batata assada",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Panqueca de carne",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Panqueca de strogonoff",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Farofa gourmet",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Polenta a milanesa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Polenta cremosa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Polenta frita",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Brocolis gratinado",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Bolinho de arroz",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Couve refogada",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Couve com farofa",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Canelone de frios",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Repolho a primavera",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Aipim frito",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Acompanhamentos | 2 opções",
+      "complemento": "Brócolis ao alho e óleo",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Escolha sua cerveja",
+      "complemento": "Original 600ml",
+      "price": "24.90"
+    },
+    {
+      "grupo": "Escolha sua cerveja",
+      "complemento": "Norteña / Patrícia 960ml",
+      "price": "39.90"
+    },
+    {
+      "grupo": "Escolha sua cerveja",
+      "complemento": "Patagônia IPA long",
+      "price": "18.90"
+    },
+    {
+      "grupo": "Escolha sua cerveja",
+      "complemento": "Patagônia WEISE long",
+      "price": "18.90"
+    },
+    {
+      "grupo": "Escolha sua cerveja",
+      "complemento": "Heineken long",
+      "price": "14.90"
+    },
+    {
+      "grupo": "Escolha seu chopp",
+      "complemento": "Heineken 350ml",
+      "price": "18.90"
+    },
+    {
+      "grupo": "Escolha seu chopp",
+      "complemento": "IPA 350ml",
+      "price": "19.90"
+    },
+    {
+      "grupo": "Escolha seu chopp",
+      "complemento": "Imigração Pilsen 350ml",
+      "price": "17.90"
+    },
+    {
+      "grupo": "Escolha seu chopp",
+      "complemento": "Blue Moon 350ml",
+      "price": "19.90"
+    },
+    {
+      "grupo": "Escolha seu drink",
+      "complemento": "Aperol Spritz",
+      "price": "24.90"
+    },
+    {
+      "grupo": "Escolha seu drink",
+      "complemento": "Gin Tônica",
+      "price": "19.90"
+    },
+    {
+      "grupo": "Escolha seu drink",
+      "complemento": "Jack and Coke",
+      "price": "24.90"
+    },
+    {
+      "grupo": "Escolha seu drink",
+      "complemento": "Mojito",
+      "price": "21.90"
+    },
+    {
+      "grupo": "Escolha seu drink",
+      "complemento": "Piña Colada",
+      "price": "24.90"
+    },
+    {
+      "grupo": "Escolha seu drink",
+      "complemento": "Sex on the Beach",
+      "price": "25.90"
+    },
+    {
+      "grupo": "Escolha seu drink",
+      "complemento": "Caipirinha (limão / morango / abacaxi)",
+      "price": "24.90"
+    },
+    {
+      "grupo": "Escolha sua bebida",
+      "complemento": "Água Mineral",
+      "price": "4.99"
+    },
+    {
+      "grupo": "Escolha sua bebida",
+      "complemento": "Coca-Cola 290ml",
+      "price": "6.50"
+    },
+    {
+      "grupo": "Escolha sua bebida",
+      "complemento": "Guaraná Lata",
+      "price": "6.50"
+    },
+    {
+      "grupo": "Escolha sua bebida",
+      "complemento": "Suco Natural",
+      "price": "14.90"
+    },
+    {
+      "grupo": "Escolha sua bebida",
+      "complemento": "Tônica",
+      "price": "7.50"
+    },
+    {
+      "grupo": "Escolha",
+      "complemento": "Taça de Vinho",
+      "price": "19.90"
+    }
+  ],
+  "messages": [],
+  "stdout": "grupo\tcomplemento\tprice\nCarnes | 1 opção\tGado grelhado\t0.00\nCarnes | 1 opção\tGado acebolado\t0.00\nCarnes | 1 opção\tFrango Grelhado\t0.00\nCarnes | 1 opção\tFrango Acebolado\t0.00\nCarnes | 1 opção\tFrango crocante\t0.00\nCarnes | 1 opção\tFrango a parmegiana\t0.00\nCarnes | 1 opção\tFrango ao molho de nata\t0.00\nCarnes | 1 opção\tPeixe a milanesa\t0.00\nCarnes | 1 opção\tPeixe à portuguesa\t0.00\nCarnes | 1 opção\tPeixe grelhado\t0.00\nCarnes | 1 opção\tSuíno ao barbecue\t0.00\nCarnes | 1 opção\tCarne de panela\t0.00\nCarnes | 1 opção\tCostela na panela\t0.00\nCarnes | 1 opção\tStrogonoff de frango\t0.00\nCarnes | 1 opção\tStrogonoff de gado\t0.00\nCarnes | 1 opção\tEntreveiro\t0.00\nCarnes | 1 opção\tCalabresa\t0.00\nCarnes | 1 opção\tAlmôndegas ao sugo\t0.00\nSalada | 2 Opções\tMaionese\t0.00\nSalada | 2 Opções\tMacarronese\t0.00\nSalada | 2 Opções\tSalpicão\t0.00\nSalada | 2 Opções\tAlface\t0.00\nSalada | 2 Opções\tBrócolis\t0.00\nSalada | 2 Opções\tCenoura\t0.00\nSalada | 2 Opções\tBeterraba\t0.00\nSalada | 2 Opções\tTomate\t0.00\nSalada | 2 Opções\tRúcula\t0.00\nSalada | 2 Opções\tChuchu\t0.00\nSalada | 2 Opções\tCebola/Pimentão\t0.00\nSalada | 2 Opções\tPimentão\t0.00\nSalada | 2 Opções\tCebola\t0.00\nSalada | 2 Opções\tTomate/Cebola\t0.00\nSalada | 2 Opções\tMix de verduras\t0.00\nSalada | 2 Opções\tMix de folhas\t0.00\nSalada | 2 Opções\tRepolho\t0.00\nSalada | 2 Opções\tPepino\t0.00\nSalada | 2 Opções\tCouve\t0.00\nSalada | 2 Opções\tBeterraba com maçã\t0.00\nSalada | 2 Opções\tGrão de bico\t0.00\nSalada | 2 Opções\tFrutas picadas\t0.00\nAcompanhamentos | 2 opções\tLasanha de frango\t0.00\nAcompanhamentos | 2 opções\tLasanha bolonhesa\t0.00\nAcompanhamentos | 2 opções\tLasanha de strogonoff\t0.00\nAcompanhamentos | 2 opções\tPureê de batata\t0.00\nAcompanhamentos | 2 opções\tPurê de moranga\t0.00\nAcompanhamentos | 2 opções\tRisoto de brócolis\t0.00\nAcompanhamentos | 2 opções\tRisoto de filé\t0.00\nAcompanhamentos | 2 opções\tRisoto de alho poró\t0.00\nAcompanhamentos | 2 opções\tRisoto de milho\t0.00\nAcompanhamentos | 2 opções\tRisoto de frango\t0.00\nAcompanhamentos | 2 opções\tRisoto de queijo\t0.00\nAcompanhamentos | 2 opções\tMassa ao alho e óleo\t0.00\nAcompanhamentos | 2 opções\tMassa bolonhesa\t0.00\nAcompanhamentos | 2 opções\tMassa carbonara\t0.00\nAcompanhamentos | 2 opções\tMassa ao filé\t0.00\nAcompanhamentos | 2 opções\tMassa a primavera\t0.00\nAcompanhamentos | 2 opções\tMassa aos 4 queijos\t0.00\nAcompanhamentos | 2 opções\tMassa ao pesto\t0.00\nAcompanhamentos | 2 opções\tMassa temperada\t0.00\nAcompanhamentos | 2 opções\tMassa com rúcula e tomate seco\t0.00\nAcompanhamentos | 2 opções\tLegumes na manteiga\t0.00\nAcompanhamentos | 2 opções\tSeleta de legumes\t0.00\nAcompanhamentos | 2 opções\tNhoque ao sugo\t0.00\nAcompanhamentos | 2 opções\tNhoque bolonhesa\t0.00\nAcompanhamentos | 2 opções\tNhoque ao queijo\t0.00\nAcompanhamentos | 2 opções\tMoranga caramelizada\t0.00\nAcompanhamentos | 2 opções\tRepolho refogado\t0.00\nAcompanhamentos | 2 opções\tSuflê de cenoura\t0.00\nAcompanhamentos | 2 opções\tOvos mexidos\t0.00\nAcompanhamentos | 2 opções\tOvo frito\t0.00\nAcompanhamentos | 2 opções\tBatata frita\t0.00\nAcompanhamentos | 2 opções\tBatata dorê\t0.00\nAcompanhamentos | 2 opções\tBatata na mostarda\t0.00\nAcompanhamentos | 2 opções\tBatata com ervas\t0.00\nAcompanhamentos | 2 opções\tBatata rústica\t0.00\nAcompanhamentos | 2 opções\tBatata cremosa\t0.00\nAcompanhamentos | 2 opções\tBatata assada\t0.00\nAcompanhamentos | 2 opções\tPanqueca de carne\t0.00\nAcompanhamentos | 2 opções\tPanqueca de strogonoff\t0.00\nAcompanhamentos | 2 opções\tFarofa gourmet\t0.00\nAcompanhamentos | 2 opções\tPolenta a milanesa\t0.00\nAcompanhamentos | 2 opções\tPolenta cremosa\t0.00\nAcompanhamentos | 2 opções\tPolenta frita\t0.00\nAcompanhamentos | 2 opções\tBrocolis gratinado\t0.00\nAcompanhamentos | 2 opções\tBolinho de arroz\t0.00\nAcompanhamentos | 2 opções\tCouve refogada\t0.00\nAcompanhamentos | 2 opções\tCouve com farofa\t0.00\nAcompanhamentos | 2 opções\tCanelone de frios\t0.00\nAcompanhamentos | 2 opções\tRepolho a primavera\t0.00\nAcompanhamentos | 2 opções\tAipim frito\t0.00\nAcompanhamentos | 2 opções\tBrócolis ao alho e óleo\t0.00\nCarnes | 1 opção\tGado grelhado\t0.00\nCarnes | 1 opção\tGado acebolado\t0.00\nCarnes | 1 opção\tFrango Grelhado\t0.00\nCarnes | 1 opção\tFrango Acebolado\t0.00\nCarnes | 1 opção\tFrango crocante\t0.00\nCarnes | 1 opção\tFrango a parmegiana\t0.00\nCarnes | 1 opção\tFrango ao molho de nata\t0.00\nCarnes | 1 opção\tPeixe a milanesa\t0.00\nCarnes | 1 opção\tPeixe à portuguesa\t0.00\nCarnes | 1 opção\tPeixe grelhado\t0.00\nCarnes | 1 opção\tSuíno ao barbecue\t0.00\nCarnes | 1 opção\tCarne de panela\t0.00\nCarnes | 1 opção\tCostela na panela\t0.00\nCarnes | 1 opção\tStrogonoff de frango\t0.00\nCarnes | 1 opção\tStrogonoff de gado\t0.00\nCarnes | 1 opção\tEntreveiro\t0.00\nCarnes | 1 opção\tCalabresa\t0.00\nCarnes | 1 opção\tAlmôndegas ao sugo\t0.00\nSalada | 2 Opções\tMaionese\t0.00\nSalada | 2 Opções\tMacarronese\t0.00\nSalada | 2 Opções\tSalpicão\t0.00\nSalada | 2 Opções\tAlface\t0.00\nSalada | 2 Opções\tBrócolis\t0.00\nSalada | 2 Opções\tCenoura\t0.00\nSalada | 2 Opções\tBeterraba\t0.00\nSalada | 2 Opções\tTomate\t0.00\nSalada | 2 Opções\tRúcula\t0.00\nSalada | 2 Opções\tChuchu\t0.00\nSalada | 2 Opções\tCebola/Pimentão\t0.00\nSalada | 2 Opções\tPimentão\t0.00\nSalada | 2 Opções\tCebola\t0.00\nSalada | 2 Opções\tTomate/Cebola\t0.00\nSalada | 2 Opções\tMix de verduras\t0.00\nSalada | 2 Opções\tMix de folhas\t0.00\nSalada | 2 Opções\tRepolho\t0.00\nSalada | 2 Opções\tPepino\t0.00\nSalada | 2 Opções\tCouve\t0.00\nSalada | 2 Opções\tBeterraba com maçã\t0.00\nSalada | 2 Opções\tGrão de bico\t0.00\nSalada | 2 Opções\tFrutas picadas\t0.00\nAcompanhamentos | 2 opções\tLasanha de frango\t0.00\nAcompanhamentos | 2 opções\tLasanha bolonhesa\t0.00\nAcompanhamentos | 2 opções\tLasanha de strogonoff\t0.00\nAcompanhamentos | 2 opções\tPureê de batata\t0.00\nAcompanhamentos | 2 opções\tPurê de moranga\t0.00\nAcompanhamentos | 2 opções\tRisoto de brócolis\t0.00\nAcompanhamentos | 2 opções\tRisoto de filé\t0.00\nAcompanhamentos | 2 opções\tRisoto de alho poró\t0.00\nAcompanhamentos | 2 opções\tRisoto de milho\t0.00\nAcompanhamentos | 2 opções\tRisoto de frango\t0.00\nAcompanhamentos | 2 opções\tRisoto de queijo\t0.00\nAcompanhamentos | 2 opções\tMassa ao alho e óleo\t0.00\nAcompanhamentos | 2 opções\tMassa bolonhesa\t0.00\nAcompanhamentos | 2 opções\tMassa carbonara\t0.00\nAcompanhamentos | 2 opções\tMassa ao filé\t0.00\nAcompanhamentos | 2 opções\tMassa a primavera\t0.00\nAcompanhamentos | 2 opções\tMassa aos 4 queijos\t0.00\nAcompanhamentos | 2 opções\tMassa ao pesto\t0.00\nAcompanhamentos | 2 opções\tMassa temperada\t0.00\nAcompanhamentos | 2 opções\tMassa com rúcula e tomate seco\t0.00\nAcompanhamentos | 2 opções\tLegumes na manteiga\t0.00\nAcompanhamentos | 2 opções\tSeleta de legumes\t0.00\nAcompanhamentos | 2 opções\tNhoque ao sugo\t0.00\nAcompanhamentos | 2 opções\tNhoque bolonhesa\t0.00\nAcompanhamentos | 2 opções\tNhoque ao queijo\t0.00\nAcompanhamentos | 2 opções\tMoranga caramelizada\t0.00\nAcompanhamentos | 2 opções\tRepolho refogado\t0.00\nAcompanhamentos | 2 opções\tSuflê de cenoura\t0.00\nAcompanhamentos | 2 opções\tOvos mexidos\t0.00\nAcompanhamentos | 2 opções\tOvo frito\t0.00\nAcompanhamentos | 2 opções\tBatata frita\t0.00\nAcompanhamentos | 2 opções\tBatata dorê\t0.00\nAcompanhamentos | 2 opções\tBatata na mostarda\t0.00\nAcompanhamentos | 2 opções\tBatata com ervas\t0.00\nAcompanhamentos | 2 opções\tBatata rústica\t0.00\nAcompanhamentos | 2 opções\tBatata cremosa\t0.00\nAcompanhamentos | 2 opções\tBatata assada\t0.00\nAcompanhamentos | 2 opções\tPanqueca de carne\t0.00\nAcompanhamentos | 2 opções\tPanqueca de strogonoff\t0.00\nAcompanhamentos | 2 opções\tFarofa gourmet\t0.00\nAcompanhamentos | 2 opções\tPolenta a milanesa\t0.00\nAcompanhamentos | 2 opções\tPolenta cremosa\t0.00\nAcompanhamentos | 2 opções\tPolenta frita\t0.00\nAcompanhamentos | 2 opções\tBrocolis gratinado\t0.00\nAcompanhamentos | 2 opções\tBolinho de arroz\t0.00\nAcompanhamentos | 2 opções\tCouve refogada\t0.00\nAcompanhamentos | 2 opções\tCouve com farofa\t0.00\nAcompanhamentos | 2 opções\tCanelone de frios\t0.00\nAcompanhamentos | 2 opções\tRepolho a primavera\t0.00\nAcompanhamentos | 2 opções\tAipim frito\t0.00\nAcompanhamentos | 2 opções\tBrócolis ao alho e óleo\t0.00\nEscolha sua cerveja\tOriginal 600ml\t24.90\nEscolha sua cerveja\tNorteña / Patrícia 960ml\t39.90\nEscolha sua cerveja\tPatagônia IPA long\t18.90\nEscolha sua cerveja\tPatagônia WEISE long\t18.90\nEscolha sua cerveja\tHeineken long\t14.90\nEscolha seu chopp\tHeineken 350ml\t18.90\nEscolha seu chopp\tIPA 350ml\t19.90\nEscolha seu chopp\tImigração Pilsen 350ml\t17.90\nEscolha seu chopp\tBlue Moon 350ml\t19.90\nEscolha seu drink\tAperol Spritz\t24.90\nEscolha seu drink\tGin Tônica\t19.90\nEscolha seu drink\tJack and Coke\t24.90\nEscolha seu drink\tMojito\t21.90\nEscolha seu drink\tPiña Colada\t24.90\nEscolha seu drink\tSex on the Beach\t25.90\nEscolha seu drink\tCaipirinha (limão / morango / abacaxi)\t24.90\nEscolha sua bebida\tÁgua Mineral\t4.99\nEscolha sua bebida\tCoca-Cola 290ml\t6.50\nEscolha sua bebida\tGuaraná Lata\t6.50\nEscolha sua bebida\tSuco Natural\t14.90\nEscolha sua bebida\tTônica\t7.50\nEscolha\tTaça de Vinho\t19.90\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

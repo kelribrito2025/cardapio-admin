@@ -545,10 +545,19 @@ export const appRouter = router({
         name: z.string().min(1).optional(),
         description: z.string().nullable().optional(),
         isActive: z.boolean().optional(),
+        availabilityType: z.enum(["always", "scheduled"]).optional(),
+        availableDays: z.array(z.number()).nullable().optional(),
+        availableHours: z.array(z.object({
+          day: z.number(),
+          startTime: z.string(),
+          endTime: z.string(),
+        })).nullable().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
         await db.updateCategory(id, data);
+        // Invalidar cache do menu publico ao alterar categoria
+        db.invalidatePublicMenuCache();
         return { success: true };
       }),
     
@@ -1482,43 +1491,7 @@ export const appRouter = router({
         const currentDay = localTime.getDay();
         const currentTime = localTime.toTimeString().slice(0, 5);
         
-        // Função para verificar se um complemento está disponível agora
-        const isComplementAvailable = (item: {
-          isActive: boolean;
-          availabilityType: string | null;
-          availableDays: number[] | null;
-          availableHours: { day: number; startTime: string; endTime: string }[] | null;
-        }) => {
-          // Se não está ativo, não está disponível
-          if (!item.isActive) return false;
-          
-          // Se é "always" ou não tem tipo definido, está sempre disponível
-          if (!item.availabilityType || item.availabilityType === 'always') return true;
-          
-          // Se é "scheduled", verificar dias e horários
-          if (item.availabilityType === 'scheduled') {
-            // Verificar se o dia atual está nos dias disponíveis
-            if (!item.availableDays || !item.availableDays.includes(currentDay)) {
-              return false;
-            }
-            
-            // Verificar se o horário atual está em algum intervalo configurado para o dia
-            if (item.availableHours && item.availableHours.length > 0) {
-              const dayHours = item.availableHours.filter(h => h.day === currentDay);
-              if (dayHours.length === 0) return false;
-              
-              return dayHours.some(h => {
-                return currentTime >= h.startTime && currentTime <= h.endTime;
-              });
-            }
-            
-            // Se tem dias mas não tem horários configurados, considera o dia inteiro
-            return true;
-          }
-          
-          return true;
-        };
-        
+        // Usar funcao compartilhada isScheduleAvailable (com suporte a meia-noite)
         const groupsWithItems = await Promise.all(
           groups
             .filter(group => group.isActive !== false) // Filtrar grupos pausados
@@ -1526,7 +1499,10 @@ export const appRouter = router({
               const items = await db.getComplementItemsByGroup(group.id);
               return {
                 ...group,
-                items: items.filter(item => isComplementAvailable(item)),
+                items: items.filter(item => {
+                  if (!item.isActive) return false;
+                  return db.isScheduleAvailable(item, currentDay, currentTime);
+                }),
               };
             })
         );
@@ -1608,15 +1584,38 @@ export const appRouter = router({
           });
         }
         
-        // Validar disponibilidade dos complementos usando timezone do estabelecimento
+        // Validar disponibilidade usando timezone do estabelecimento
         const orderTz = establishment.timezone || 'America/Sao_Paulo';
         const orderLocalTime = db.getLocalDate(orderTz);
         const currentDay = orderLocalTime.getDay();
         const currentTime = orderLocalTime.toTimeString().slice(0, 5);
         
+        // Validar disponibilidade das categorias dos produtos
+        const productIds = Array.from(new Set(items.map(i => i.productId)));
+        for (const productId of productIds) {
+          const product = await db.getProductById(productId);
+          if (product && product.categoryId) {
+            const category = await db.getCategoryById(product.categoryId);
+            if (category && !db.isScheduleAvailable(
+              {
+                availabilityType: category.availabilityType,
+                availableDays: category.availableDays as number[] | null,
+                availableHours: category.availableHours as { day: number; startTime: string; endTime: string }[] | null,
+              },
+              currentDay,
+              currentTime
+            )) {
+              throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: `A categoria "${category.name}" não está disponível neste horário.`,
+              });
+            }
+          }
+        }
+        
+        // Validar disponibilidade dos complementos (usando funcao compartilhada com suporte a meia-noite)
         for (const item of items) {
           if (item.complements && item.complements.length > 0) {
-            // Buscar grupos de complementos do produto
             const groups = await db.getComplementGroupsByProduct(item.productId);
             for (const group of groups) {
               const complementItems = await db.getComplementItemsByGroup(group.id);
@@ -1624,7 +1623,6 @@ export const appRouter = router({
               for (const complement of item.complements) {
                 const dbComplement = complementItems.find(c => c.name === complement.name);
                 if (dbComplement) {
-                  // Verificar se o complemento está disponível
                   if (!dbComplement.isActive) {
                     throw new TRPCError({
                       code: 'BAD_REQUEST',
@@ -1632,28 +1630,11 @@ export const appRouter = router({
                     });
                   }
                   
-                  if (dbComplement.availabilityType === 'scheduled') {
-                    const availableDays = dbComplement.availableDays as number[] | null;
-                    const availableHours = dbComplement.availableHours as { day: number; startTime: string; endTime: string }[] | null;
-                    
-                    if (availableDays && !availableDays.includes(currentDay)) {
-                      throw new TRPCError({
-                        code: 'BAD_REQUEST',
-                        message: `O complemento "${complement.name}" não está disponível hoje.`,
-                      });
-                    }
-                    
-                    if (availableHours && availableHours.length > 0) {
-                      const dayHours = availableHours.filter(h => h.day === currentDay);
-                      const isInTimeRange = dayHours.some(h => currentTime >= h.startTime && currentTime <= h.endTime);
-                      
-                      if (!isInTimeRange) {
-                        throw new TRPCError({
-                          code: 'BAD_REQUEST',
-                          message: `O complemento "${complement.name}" não está disponível neste horário.`,
-                        });
-                      }
-                    }
+                  if (!db.isScheduleAvailable(dbComplement, currentDay, currentTime)) {
+                    throw new TRPCError({
+                      code: 'BAD_REQUEST',
+                      message: `O complemento "${complement.name}" não está disponível neste horário.`,
+                    });
                   }
                 }
               }

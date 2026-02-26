@@ -1,0 +1,30 @@
+{
+  "query": "SELECT id, name FROM products WHERE establishmentId = 210005 AND categoryId = (SELECT id FROM categories WHERE establishmentId = 210005 AND name = 'Para Compartilhar') ORDER BY sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name FROM products WHERE establishmentId = 210005 AND categoryId = (SELECT id FROM categories WHERE establishmentId = 210005 AND name = 'Para Compartilhar') ORDER BY sortOrder;",
+  "rows": [
+    {
+      "id": "680019",
+      "name": "Peixe ao Molho do Cheff"
+    },
+    {
+      "id": "680020",
+      "name": "Filé Mignon ao Molho Gorgonzola"
+    },
+    {
+      "id": "680021",
+      "name": "Entrecot Gran Reserva"
+    },
+    {
+      "id": "680022",
+      "name": "Chorizo"
+    },
+    {
+      "id": "680023",
+      "name": "Parmegiana de Filé"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n680019\tPeixe ao Molho do Cheff\n680020\tFilé Mignon ao Molho Gorgonzola\n680021\tEntrecot Gran Reserva\n680022\tChorizo\n680023\tParmegiana de Filé\n",
+  "stderr": "",
+  "execution_time_ms": 159
+}

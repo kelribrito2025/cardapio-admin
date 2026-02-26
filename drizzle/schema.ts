@@ -138,6 +138,10 @@ export const categories = mysqlTable("categories", {
   description: text("description"),
   sortOrder: int("sortOrder").default(0).notNull(),
   isActive: boolean("isActive").default(true).notNull(),
+  // Disponibilidade por dias e horarios (mesmo padrao dos complement_items)
+  availabilityType: mysqlEnum("availabilityType", ["always", "scheduled"]).default("always").notNull(),
+  availableDays: json("availableDays").$type<number[]>(), // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sab
+  availableHours: json("availableHours").$type<{ day: number; startTime: string; endTime: string }[]>(), // Horarios por dia
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

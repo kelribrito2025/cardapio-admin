@@ -1,0 +1,70 @@
+{
+  "query": "SELECT c.name AS categoria, p.name AS produto, p.price, p.description FROM categories c LEFT JOIN products p ON p.categoryId = c.id WHERE c.establishmentId = 210005 AND c.sortOrder >= 10 ORDER BY c.sortOrder, p.sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT c.name AS categoria, p.name AS produto, p.price, p.description FROM categories c LEFT JOIN products p ON p.categoryId = c.id WHERE c.establishmentId = 210005 AND c.sortOrder >= 10 ORDER BY c.sortOrder, p.sortOrder;",
+  "rows": [
+    {
+      "categoria": "Entradinhas",
+      "produto": "Queijo Coalho",
+      "price": "29.90",
+      "description": "Grelhado, vem com mel orgânico e um toque de pimenta fresca"
+    },
+    {
+      "categoria": "Entradinhas",
+      "produto": "Linguiça Parrillera na Brasa",
+      "price": "39.90",
+      "description": "Exclusividade da casa. Levemente apimentada e vem com farofa e salsa verde. Frango com queijo ou mista com pimenta"
+    },
+    {
+      "categoria": "Entradinhas",
+      "produto": "Tábua de Frios",
+      "price": "54.90",
+      "description": "Salame italiano, queijo em cubos, azeitona, ovo de codorna, pepino, pão torrado, e presunto."
+    },
+    {
+      "categoria": "Entradinhas",
+      "produto": "Pão de Alho",
+      "price": "14.90",
+      "description": "Delicioso e crocante, assado na parrilha."
+    },
+    {
+      "categoria": "Entradinhas",
+      "produto": "Provoleta Uruguaia",
+      "price": "29.90",
+      "description": "Corte de queijo provolone fresco, assado na parrilha com temperos especiais."
+    },
+    {
+      "categoria": "Cervejas",
+      "produto": "Cervejas",
+      "price": "0.00",
+      "description": "Escolha sua cerveja"
+    },
+    {
+      "categoria": "Chopp",
+      "produto": "Chopp",
+      "price": "0.00",
+      "description": "Escolha seu chopp"
+    },
+    {
+      "categoria": "Drinks",
+      "produto": "Drinks",
+      "price": "0.00",
+      "description": "Escolha seu drink"
+    },
+    {
+      "categoria": "Softs",
+      "produto": "Softs",
+      "price": "0.00",
+      "description": "Escolha sua bebida"
+    },
+    {
+      "categoria": "Espumantes e Vinhos",
+      "produto": "Espumantes e Vinhos",
+      "price": "0.00",
+      "description": "Espumantes e vinhos nacionais e importados (consultar atendente)"
+    }
+  ],
+  "messages": [],
+  "stdout": "categoria\tproduto\tprice\tdescription\nEntradinhas\tQueijo Coalho\t29.90\tGrelhado, vem com mel orgânico e um toque de pimenta fresca\nEntradinhas\tLinguiça Parrillera na Brasa\t39.90\tExclusividade da casa. Levemente apimentada e vem com farofa e salsa verde. Frango com queijo ou mista com pimenta\nEntradinhas\tTábua de Frios\t54.90\tSalame italiano, queijo em cubos, azeitona, ovo de codorna, pepino, pão torrado, e presunto.\nEntradinhas\tPão de Alho\t14.90\tDelicioso e crocante, assado na parrilha.\nEntradinhas\tProvoleta Uruguaia\t29.90\tCorte de queijo provolone fresco, assado na parrilha com temperos especiais.\nCervejas\tCervejas\t0.00\tEscolha sua cerveja\nChopp\tChopp\t0.00\tEscolha seu chopp\nDrinks\tDrinks\t0.00\tEscolha seu drink\nSofts\tSofts\t0.00\tEscolha sua bebida\nEspumantes e Vinhos\tEspumantes e Vinhos\t0.00\tEspumantes e vinhos nacionais e importados (consultar atendente)\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

@@ -1,0 +1,220 @@
+{
+  "query": "SELECT p.name AS produto, cg.name AS grupo, ci.name AS complemento, ci.price FROM products p JOIN complementGroups cg ON cg.productId = p.id JOIN complementItems ci ON ci.groupId = cg.id WHERE p.id IN (680019, 680020, 680021, 680022, 680023) ORDER BY p.sortOrder, ci.sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.name AS produto, cg.name AS grupo, ci.name AS complemento, ci.price FROM products p JOIN complementGroups cg ON cg.productId = p.id JOIN complementItems ci ON ci.groupId = cg.id WHERE p.id IN (680019, 680020, 680021, 680022, 680023) ORDER BY p.sortOrder, ci.sortOrder;",
+  "rows": [
+    {
+      "produto": "Peixe ao Molho do Cheff",
+      "grupo": "Acompanhamentos",
+      "complemento": "Farofa Wood",
+      "price": "14.90"
+    },
+    {
+      "produto": "Peixe ao Molho do Cheff",
+      "grupo": "Acompanhamentos",
+      "complemento": "Purê de Batatas",
+      "price": "29.90"
+    },
+    {
+      "produto": "Peixe ao Molho do Cheff",
+      "grupo": "Acompanhamentos",
+      "complemento": "Arroz (Branco ou Integral)",
+      "price": "16.90"
+    },
+    {
+      "produto": "Peixe ao Molho do Cheff",
+      "grupo": "Acompanhamentos",
+      "complemento": "Fritas com Queijo",
+      "price": "19.90"
+    },
+    {
+      "produto": "Peixe ao Molho do Cheff",
+      "grupo": "Acompanhamentos",
+      "complemento": "Batatinhas Douradas",
+      "price": "17.90"
+    },
+    {
+      "produto": "Peixe ao Molho do Cheff",
+      "grupo": "Acompanhamentos",
+      "complemento": "Vinagrete",
+      "price": "9.90"
+    },
+    {
+      "produto": "Peixe ao Molho do Cheff",
+      "grupo": "Acompanhamentos",
+      "complemento": "Salada do Cheff",
+      "price": "14.90"
+    },
+    {
+      "produto": "Filé Mignon ao Molho Gorgonzola",
+      "grupo": "Acompanhamentos",
+      "complemento": "Farofa Wood",
+      "price": "14.90"
+    },
+    {
+      "produto": "Filé Mignon ao Molho Gorgonzola",
+      "grupo": "Acompanhamentos",
+      "complemento": "Purê de Batatas",
+      "price": "29.90"
+    },
+    {
+      "produto": "Filé Mignon ao Molho Gorgonzola",
+      "grupo": "Acompanhamentos",
+      "complemento": "Arroz (Branco ou Integral)",
+      "price": "16.90"
+    },
+    {
+      "produto": "Filé Mignon ao Molho Gorgonzola",
+      "grupo": "Acompanhamentos",
+      "complemento": "Fritas com Queijo",
+      "price": "19.90"
+    },
+    {
+      "produto": "Filé Mignon ao Molho Gorgonzola",
+      "grupo": "Acompanhamentos",
+      "complemento": "Batatinhas Douradas",
+      "price": "17.90"
+    },
+    {
+      "produto": "Filé Mignon ao Molho Gorgonzola",
+      "grupo": "Acompanhamentos",
+      "complemento": "Vinagrete",
+      "price": "9.90"
+    },
+    {
+      "produto": "Filé Mignon ao Molho Gorgonzola",
+      "grupo": "Acompanhamentos",
+      "complemento": "Salada do Cheff",
+      "price": "14.90"
+    },
+    {
+      "produto": "Entrecot Gran Reserva",
+      "grupo": "Acompanhamentos",
+      "complemento": "Farofa Wood",
+      "price": "14.90"
+    },
+    {
+      "produto": "Entrecot Gran Reserva",
+      "grupo": "Acompanhamentos",
+      "complemento": "Purê de Batatas",
+      "price": "29.90"
+    },
+    {
+      "produto": "Entrecot Gran Reserva",
+      "grupo": "Acompanhamentos",
+      "complemento": "Arroz (Branco ou Integral)",
+      "price": "16.90"
+    },
+    {
+      "produto": "Entrecot Gran Reserva",
+      "grupo": "Acompanhamentos",
+      "complemento": "Fritas com Queijo",
+      "price": "19.90"
+    },
+    {
+      "produto": "Entrecot Gran Reserva",
+      "grupo": "Acompanhamentos",
+      "complemento": "Batatinhas Douradas",
+      "price": "17.90"
+    },
+    {
+      "produto": "Entrecot Gran Reserva",
+      "grupo": "Acompanhamentos",
+      "complemento": "Vinagrete",
+      "price": "9.90"
+    },
+    {
+      "produto": "Entrecot Gran Reserva",
+      "grupo": "Acompanhamentos",
+      "complemento": "Salada do Cheff",
+      "price": "14.90"
+    },
+    {
+      "produto": "Chorizo",
+      "grupo": "Acompanhamentos",
+      "complemento": "Farofa Wood",
+      "price": "14.90"
+    },
+    {
+      "produto": "Chorizo",
+      "grupo": "Acompanhamentos",
+      "complemento": "Purê de Batatas",
+      "price": "29.90"
+    },
+    {
+      "produto": "Chorizo",
+      "grupo": "Acompanhamentos",
+      "complemento": "Arroz (Branco ou Integral)",
+      "price": "16.90"
+    },
+    {
+      "produto": "Chorizo",
+      "grupo": "Acompanhamentos",
+      "complemento": "Fritas com Queijo",
+      "price": "19.90"
+    },
+    {
+      "produto": "Chorizo",
+      "grupo": "Acompanhamentos",
+      "complemento": "Batatinhas Douradas",
+      "price": "17.90"
+    },
+    {
+      "produto": "Chorizo",
+      "grupo": "Acompanhamentos",
+      "complemento": "Vinagrete",
+      "price": "9.90"
+    },
+    {
+      "produto": "Chorizo",
+      "grupo": "Acompanhamentos",
+      "complemento": "Salada do Cheff",
+      "price": "14.90"
+    },
+    {
+      "produto": "Parmegiana de Filé",
+      "grupo": "Acompanhamentos",
+      "complemento": "Farofa Wood",
+      "price": "14.90"
+    },
+    {
+      "produto": "Parmegiana de Filé",
+      "grupo": "Acompanhamentos",
+      "complemento": "Purê de Batatas",
+      "price": "29.90"
+    },
+    {
+      "produto": "Parmegiana de Filé",
+      "grupo": "Acompanhamentos",
+      "complemento": "Arroz (Branco ou Integral)",
+      "price": "16.90"
+    },
+    {
+      "produto": "Parmegiana de Filé",
+      "grupo": "Acompanhamentos",
+      "complemento": "Fritas com Queijo",
+      "price": "19.90"
+    },
+    {
+      "produto": "Parmegiana de Filé",
+      "grupo": "Acompanhamentos",
+      "complemento": "Batatinhas Douradas",
+      "price": "17.90"
+    },
+    {
+      "produto": "Parmegiana de Filé",
+      "grupo": "Acompanhamentos",
+      "complemento": "Vinagrete",
+      "price": "9.90"
+    },
+    {
+      "produto": "Parmegiana de Filé",
+      "grupo": "Acompanhamentos",
+      "complemento": "Salada do Cheff",
+      "price": "14.90"
+    }
+  ],
+  "messages": [],
+  "stdout": "produto\tgrupo\tcomplemento\tprice\nPeixe ao Molho do Cheff\tAcompanhamentos\tFarofa Wood\t14.90\nPeixe ao Molho do Cheff\tAcompanhamentos\tPurê de Batatas\t29.90\nPeixe ao Molho do Cheff\tAcompanhamentos\tArroz (Branco ou Integral)\t16.90\nPeixe ao Molho do Cheff\tAcompanhamentos\tFritas com Queijo\t19.90\nPeixe ao Molho do Cheff\tAcompanhamentos\tBatatinhas Douradas\t17.90\nPeixe ao Molho do Cheff\tAcompanhamentos\tVinagrete\t9.90\nPeixe ao Molho do Cheff\tAcompanhamentos\tSalada do Cheff\t14.90\nFilé Mignon ao Molho Gorgonzola\tAcompanhamentos\tFarofa Wood\t14.90\nFilé Mignon ao Molho Gorgonzola\tAcompanhamentos\tPurê de Batatas\t29.90\nFilé Mignon ao Molho Gorgonzola\tAcompanhamentos\tArroz (Branco ou Integral)\t16.90\nFilé Mignon ao Molho Gorgonzola\tAcompanhamentos\tFritas com Queijo\t19.90\nFilé Mignon ao Molho Gorgonzola\tAcompanhamentos\tBatatinhas Douradas\t17.90\nFilé Mignon ao Molho Gorgonzola\tAcompanhamentos\tVinagrete\t9.90\nFilé Mignon ao Molho Gorgonzola\tAcompanhamentos\tSalada do Cheff\t14.90\nEntrecot Gran Reserva\tAcompanhamentos\tFarofa Wood\t14.90\nEntrecot Gran Reserva\tAcompanhamentos\tPurê de Batatas\t29.90\nEntrecot Gran Reserva\tAcompanhamentos\tArroz (Branco ou Integral)\t16.90\nEntrecot Gran Reserva\tAcompanhamentos\tFritas com Queijo\t19.90\nEntrecot Gran Reserva\tAcompanhamentos\tBatatinhas Douradas\t17.90\nEntrecot Gran Reserva\tAcompanhamentos\tVinagrete\t9.90\nEntrecot Gran Reserva\tAcompanhamentos\tSalada do Cheff\t14.90\nChorizo\tAcompanhamentos\tFarofa Wood\t14.90\nChorizo\tAcompanhamentos\tPurê de Batatas\t29.90\nChorizo\tAcompanhamentos\tArroz (Branco ou Integral)\t16.90\nChorizo\tAcompanhamentos\tFritas com Queijo\t19.90\nChorizo\tAcompanhamentos\tBatatinhas Douradas\t17.90\nChorizo\tAcompanhamentos\tVinagrete\t9.90\nChorizo\tAcompanhamentos\tSalada do Cheff\t14.90\nParmegiana de Filé\tAcompanhamentos\tFarofa Wood\t14.90\nParmegiana de Filé\tAcompanhamentos\tPurê de Batatas\t29.90\nParmegiana de Filé\tAcompanhamentos\tArroz (Branco ou Integral)\t16.90\nParmegiana de Filé\tAcompanhamentos\tFritas com Queijo\t19.90\nParmegiana de Filé\tAcompanhamentos\tBatatinhas Douradas\t17.90\nParmegiana de Filé\tAcompanhamentos\tVinagrete\t9.90\nParmegiana de Filé\tAcompanhamentos\tSalada do Cheff\t14.90\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

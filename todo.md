@@ -7520,3 +7520,16 @@
 - [x] Corrigir versão HTML do recibo: mostrar preço base do item (sem complementos) na linha do item, igual à correção ESC/POS
 - [x] Corrigir bug: horários de funcionamento alterados em Configurações > Atendimento não refletem no menu público
 - [x] Corrigir toggle de som: resetar para OFF em reload completo (F5), manter estado em navegação SPA
+
+## Agendamento de Categorias (Category Scheduling)
+- [x] Adicionar colunas availabilityType, availableDays, availableHours na tabela categories (schema + migração)
+- [x] Criar função utilitária compartilhada isScheduleAvailable com suporte a horários que cruzam meia-noite
+- [x] Corrigir bug de meia-noite na verificação de complementos (reutilizar nova função)
+- [x] Adicionar cache em memória com TTL para getPublicMenuData (por establishmentId)
+- [x] Atualizar endpoint category.update para aceitar campos de agendamento
+- [x] Filtrar categorias agendadas fora do horário no getPublicMenuData (menu público)
+- [x] Validar categorias agendadas no createOrder (rejeitar pedidos com categorias indisponíveis)
+- [x] Adicionar opção "Agendar" no dropdown de 3 pontinhos da categoria no /catalogo
+- [x] Criar modal/dialog de agendamento de categoria (dias + horários) seguindo padrão dos complementos
+- [x] Mostrar badge azul "Horário" no header da categoria quando availabilityType === "scheduled"
+- [x] Escrever testes vitest para isScheduleAvailable (normal, meia-noite, timezone, edge cases)

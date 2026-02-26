@@ -106,6 +106,109 @@ export function fmtLocalDateTime(d: Date): string {
   return `${fmtLocalDate(d)} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
 }
 
+// ============ SCHEDULE AVAILABILITY ============
+
+/**
+ * Verifica se um item agendado (categoria ou complemento) esta disponivel
+ * no dia/horario atual. Suporta horarios que cruzam meia-noite (ex: 22:00 - 02:00).
+ * @param item Objeto com availabilityType, availableDays e availableHours
+ * @param currentDay Dia da semana atual (0=Dom...6=Sab)
+ * @param currentTime Horario atual no formato "HH:MM"
+ */
+export function isScheduleAvailable(
+  item: {
+    availabilityType: string | null;
+    availableDays: number[] | null;
+    availableHours: { day: number; startTime: string; endTime: string }[] | null;
+  },
+  currentDay: number,
+  currentTime: string
+): boolean {
+  // Se e "always" ou nao tem tipo definido, esta sempre disponivel
+  if (!item.availabilityType || item.availabilityType === 'always') return true;
+
+  // Se e "scheduled", verificar dias e horarios
+  if (item.availabilityType === 'scheduled') {
+    // Se nao tem dias configurados, considerar indisponivel
+    if (!item.availableDays || item.availableDays.length === 0) return false;
+
+    // Se tem horarios configurados, verificar com suporte a meia-noite
+    if (item.availableHours && item.availableHours.length > 0) {
+      // 1) Verificar horarios do dia atual
+      if (item.availableDays.includes(currentDay)) {
+        const dayHours = item.availableHours.filter(h => h.day === currentDay);
+        for (const h of dayHours) {
+          if (h.endTime < h.startTime) {
+            // Horario cruza meia-noite (ex: 22:00 - 02:00)
+            // Parte de hoje: currentTime >= startTime (22:00 ate 23:59)
+            if (currentTime >= h.startTime) return true;
+          } else {
+            // Horario normal no mesmo dia (ex: 08:00 - 18:00)
+            if (currentTime >= h.startTime && currentTime <= h.endTime) return true;
+          }
+        }
+      }
+
+      // 2) Verificar horarios do dia anterior que cruzam meia-noite
+      const yesterdayDay = currentDay === 0 ? 6 : currentDay - 1;
+      if (item.availableDays.includes(yesterdayDay)) {
+        const yesterdayHours = item.availableHours.filter(h => h.day === yesterdayDay);
+        for (const h of yesterdayHours) {
+          if (h.endTime < h.startTime) {
+            // Horario de ontem cruza meia-noite
+            // Parte de hoje: currentTime < endTime (00:00 ate 02:00)
+            if (currentTime < h.endTime) return true;
+          }
+        }
+      }
+
+      return false;
+    }
+
+    // Se tem dias mas nao tem horarios configurados, considera o dia inteiro
+    return item.availableDays.includes(currentDay);
+  }
+
+  return true;
+}
+
+// ============ PUBLIC MENU CACHE ============
+
+interface PublicMenuCacheEntry {
+  data: any;
+  expiresAt: number;
+}
+
+const publicMenuCache = new Map<string, PublicMenuCacheEntry>();
+const PUBLIC_MENU_CACHE_TTL = 30_000; // 30 seconds
+
+export function getPublicMenuFromCache(slug: string): any | null {
+  const entry = publicMenuCache.get(slug);
+  if (entry && entry.expiresAt > Date.now()) {
+    return entry.data;
+  }
+  // Limpar entrada expirada
+  if (entry) publicMenuCache.delete(slug);
+  return null;
+}
+
+export function setPublicMenuCache(slug: string, data: any): void {
+  publicMenuCache.set(slug, {
+    data,
+    expiresAt: Date.now() + PUBLIC_MENU_CACHE_TTL,
+  });
+}
+
+export function invalidatePublicMenuCache(establishmentId?: number): void {
+  if (!establishmentId) {
+    publicMenuCache.clear();
+    return;
+  }
+  // Invalidar todas as entradas (nao sabemos o slug a partir do id)
+  // Para cache pequeno isso e aceitavel
+  publicMenuCache.clear();
+}
+
 // ============ HELPER FUNCTIONS ============
 
 /**
@@ -409,6 +512,10 @@ export async function isSlugAvailable(slug: string, excludeEstablishmentId?: num
 }
 
 export async function getPublicMenuData(slug: string) {
+  // Verificar cache primeiro
+  const cached = getPublicMenuFromCache(slug);
+  if (cached) return cached;
+
   const db = await getDb();
   if (!db) return null;
   
@@ -487,17 +594,40 @@ export async function getPublicMenuData(slug: string) {
   // Isso garante que frontend e backend usem a mesma lógica
   const storeStatus = await getEstablishmentOpenStatus(establishment.id);
   
-  return {
+  // Filtrar categorias agendadas fora do horario
+  const tz = establishment.timezone || 'America/Sao_Paulo';
+  const localTime = getLocalDate(tz);
+  const currentDay = localTime.getDay();
+  const currentTime = localTime.toTimeString().slice(0, 5);
+
+  const availableCategories = menuCategories.filter(cat =>
+    isScheduleAvailable(
+      {
+        availabilityType: cat.availabilityType,
+        availableDays: cat.availableDays as number[] | null,
+        availableHours: cat.availableHours as { day: number; startTime: string; endTime: string }[] | null,
+      },
+      currentDay,
+      currentTime
+    )
+  );
+
+  const result = {
     establishment: {
       ...establishment,
       // Sobrescrever com status calculado pelo servidor
       computedIsOpen: storeStatus.isOpen,
       computedManuallyClosed: storeStatus.manuallyClosed,
     },
-    categories: menuCategories,
+    categories: availableCategories,
     products: productsWithStockInfo,
     trialBlocked: false,
   };
+
+  // Armazenar no cache
+  setPublicMenuCache(slug, result);
+
+  return result;
 }
 
 // ============ ACCOUNT & SECURITY FUNCTIONS ============
@@ -578,6 +708,14 @@ export async function updateTwoFactorSettings(
 }
 
 // ============ CATEGORY FUNCTIONS ============
+export async function getCategoryById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
 export async function getCategoriesByEstablishment(establishmentId: number) {
   const db = await getDb();
   if (!db) return [];
