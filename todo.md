@@ -7519,3 +7519,4 @@
 - [x] Corrigir ESC/POS: itens com complementos devem mostrar preço base do item na mesma linha do nome e remover total abaixo dos complementos
 - [x] Corrigir versão HTML do recibo: mostrar preço base do item (sem complementos) na linha do item, igual à correção ESC/POS
 - [x] Corrigir bug: horários de funcionamento alterados em Configurações > Atendimento não refletem no menu público
+- [x] Corrigir toggle de som: resetar para OFF em reload completo (F5), manter estado em navegação SPA

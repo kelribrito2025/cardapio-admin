@@ -165,24 +165,26 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   // Estado local para controlar se o som está habilitado
   // IMPORTANTE: SEMPRE inicia FALSE ao carregar/atualizar a página (F5 ou primeiro acesso)
   // O navegador bloqueia reprodução de áudio sem interação do usuário (autoplay policy)
-  // Usamos sessionStorage para marcar que o reset já foi feito nesta sessão do browser.
-  // Assim, ao navegar entre menus (que remonta o AdminLayout), o estado é preservado.
+  // Estratégia: usamos uma flag em memória (window.__soundMounted) para distinguir:
+  //   - Reload real (F5/refresh): window.__soundMounted não existe → forçar desativado
+  //   - Navegação SPA (troca de rota): window.__soundMounted existe → preservar estado
   const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
-    // Se já resetamos nesta sessão, ler o valor real do localStorage
-    if (sessionStorage.getItem("soundResetDone") === "true") {
+    // Se o componente já foi montado nesta "vida" da página (navegação SPA),
+    // preservar o estado atual do localStorage
+    if ((window as any).__soundMounted === true) {
       return localStorage.getItem("notificationSoundEnabled") === "true";
     }
-    // Primeiro carregamento da sessão: forçar desativado
+    // Reload real (F5) ou primeiro acesso: forçar desativado
     return false;
   });
   
-  // Ao montar, forçar localStorage para "false" APENAS no primeiro carregamento da sessão
-  // Navegação interna (trocar de menu) NÃO reseta o toggle
+  // Ao montar, detectar se é reload real ou navegação SPA
+  // window.__soundMounted é limpo automaticamente em reload (F5) pois vive apenas em memória JS
   useEffect(() => {
-    if (sessionStorage.getItem("soundResetDone") !== "true") {
-      // Primeiro carregamento desta sessão (F5, novo acesso, nova aba)
+    if ((window as any).__soundMounted !== true) {
+      // Reload real (F5, novo acesso, nova aba) — forçar desativado
       localStorage.setItem("notificationSoundEnabled", "false");
-      sessionStorage.setItem("soundResetDone", "true");
+      (window as any).__soundMounted = true;
     }
     
     // Ouvir mudanças no localStorage (para sincronizar entre abas)
