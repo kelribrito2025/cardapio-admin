@@ -341,7 +341,7 @@ export function TemplatesEditor({
                 )}
               </button>
               {/* Tooltip */}
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex flex-col items-center z-30 pointer-events-none">
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex flex-col items-center z-[9999] pointer-events-none">
                 <div className="bg-foreground text-background text-sm px-4 py-2.5 rounded-lg shadow-lg w-72 text-center whitespace-normal">
                   <div className="font-semibold mb-0.5">{v.label}</div>
                   <div className="opacity-80">{v.description}</div>
