@@ -153,7 +153,7 @@ function formatWhatsAppText(text: string): React.ReactNode {
     .replace(/\{\{deliveryMessage\}\}/g, '\ud83d\udee5 Nosso entregador já está a caminho.')
     .replace(/\{\{pickupMessage\}\}/g, 'Você já pode vir retirar. \ud83d\ude04')
     .replace(/\{\{cancellationReason\}\}/g, 'Item indisponível')
-    .replace(/\{\{itensPedido\}\}/g, '\u2022 1x Pizza Margherita\n\u2022 1x Refrigerante')
+    .replace(/\{\{itensPedido\}\}/g, '\ud83d\udce6 *Itens do pedido:*\n1x Pizza Margherita\n1x Refrigerante')
     .replace(/\{\{totalPagamento\}\}/g, '🧾 Total: R$ 129,00\n💰 Pagamento via: PIX')
     .replace(/\{\{cashbackEarned\}\}/g, 'Cashback ganho: R$0,15')
     .replace(/\{\{cashbackTotal\}\}/g, 'Cashback acumulado: R$0,35')

@@ -479,7 +479,7 @@ export function generateStatusMessage(
   // Gerar texto dos itens do pedido (sem preço individual, apenas total no final)
   let itensPedidoText = '';
   if (orderItems && orderItems.length > 0) {
-    itensPedidoText = orderItems.map(item => {
+    itensPedidoText = '📦 *Itens do pedido:*\n' + orderItems.map(item => {
       let itemText = `${item.quantity}x ${item.productName}`;
       
       // Adicionar complementos se existirem

@@ -7590,3 +7590,7 @@
 - [x] Adicionar substituição no preview dos modais de onboarding
 - [x] Adicionar variável na lista de variáveis disponíveis na UI de configuração de templates
 - [x] Omitir campos vazios (complemento, ponto de referência) quando não preenchidos
+
+## Cabeçalho na variável {{itensPedido}}
+- [x] Adicionar "📦 *Itens do pedido:*" como cabeçalho antes da lista de itens no backend (generateStatusMessage)
+- [x] Atualizar preview no TemplatesEditor.tsx
