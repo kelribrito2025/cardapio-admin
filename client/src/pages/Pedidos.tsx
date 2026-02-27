@@ -2571,7 +2571,12 @@ export default function Pedidos() {
         }}
       >
         <DialogContent
-          className="sm:max-w-[440px] p-0 overflow-hidden"
+          className={cn(
+            "sm:max-w-[440px] p-0 overflow-hidden border-t-4",
+            statusOnboardingModal.statusType === 'preparing' && 'border-t-red-500',
+            statusOnboardingModal.statusType === 'ready' && 'border-t-emerald-500',
+            statusOnboardingModal.statusType === 'completed' && 'border-t-muted-foreground/50',
+          )}
           style={{ borderRadius: '16px' }}
         >
           {statusOnboardingModal.statusType && (() => {
@@ -2633,7 +2638,7 @@ export default function Pedidos() {
 
             return (
               <>
-                <div className={cn("px-6 pt-5 pb-6", cfg.borderClass)}>
+                <div className="px-6 pt-5 pb-6">
                   {/* Header com ícone */}
                   <div className="flex items-start gap-3 mb-4">
                     <div className={cn("p-2.5 rounded-xl flex-shrink-0", cfg.iconBg)}>
