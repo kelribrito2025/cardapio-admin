@@ -68,6 +68,8 @@ import {
   LayoutGrid,
   List,
   Eye,
+  Info,
+  Send,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "wouter";
@@ -77,6 +79,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 
 type OrderStatus = "new" | "preparing" | "ready" | "out_for_delivery" | "completed" | "cancelled";
@@ -247,6 +250,14 @@ export default function Pedidos() {
   const [whatsappMsgFading, setWhatsappMsgFading] = useState(false);
   const [, navigate] = useLocation();
 
+  // Estado para modal de onboarding contextual ao mudar status do pedido
+  const [statusOnboardingModal, setStatusOnboardingModal] = useState<{
+    open: boolean;
+    statusType: 'preparing' | 'ready' | 'completed' | null;
+    orderId: number | null;
+    dontShowAgain: boolean;
+  }>({ open: false, statusType: null, orderId: null, dontShowAgain: false });
+
   // Carrossel de mensagens do modal WhatsApp (estabilizado com useMemo)
   const whatsappMessages = useMemo(() => [
     {
@@ -301,6 +312,9 @@ export default function Pedidos() {
     refetchInterval: isPollingQrCode ? 3000 : 30000,
   });
   
+  // Query para configurações do WhatsApp (notificações ativas)
+  const { data: whatsappConfig } = trpc.whatsapp.getConfig.useQuery();
+
   // Mutation para conectar WhatsApp (gera QR Code)
   const connectWhatsapp = trpc.whatsapp.connect.useMutation({
     onSuccess: (data) => {
@@ -795,15 +809,44 @@ export default function Pedidos() {
     }).format(Number(value));
   };
 
-  const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
+  // Helper: verificar se o modal de onboarding de status já foi dispensado
+  const isStatusOnboardingDismissed = (statusType: 'preparing' | 'ready' | 'completed'): boolean => {
+    if (!establishmentId) return true;
+    try {
+      return localStorage.getItem(`onboarding_modal_dismissed_${establishmentId}_${statusType}`) === 'true';
+    } catch {
+      return false;
+    }
+  };
+
+  // Helper: verificar se a notificação correspondente está ativa
+  const isNotificationActive = (statusType: 'preparing' | 'ready' | 'completed'): boolean => {
+    if (!whatsappConfig) return false;
+    if (whatsappStatus?.status !== 'connected') return false;
+    switch (statusType) {
+      case 'preparing': return whatsappConfig.notifyOnPreparing ?? true;
+      case 'ready': return whatsappConfig.notifyOnReady ?? true;
+      case 'completed': return whatsappConfig.notifyOnCompleted ?? false;
+      default: return false;
+    }
+  };
+
+  // Helper: salvar preferência de "não mostrar novamente"
+  const dismissStatusOnboarding = (statusType: 'preparing' | 'ready' | 'completed') => {
+    if (!establishmentId) return;
+    try {
+      localStorage.setItem(`onboarding_modal_dismissed_${establishmentId}_${statusType}`, 'true');
+    } catch {}
+  };
+
+  // Executar a mudança de status real (chamado após o modal ou diretamente)
+  const executeStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
     // Smart driver assignment: intercept when marking as "ready" for DELIVERY orders only
     if (newStatus === "ready") {
-      // Find the order to check its deliveryType
       const order = allOrders.find((o: any) => o.id === orderId);
       const isDeliveryOrder = order?.deliveryType === 'delivery';
 
       if (isDeliveryOrder) {
-        // Delivery order: use smart driver assignment flow
         setLoadingOrderId(orderId);
         markReadyAndAssignMutation.mutate(
           { orderId },
@@ -815,7 +858,6 @@ export default function Pedidos() {
         );
         return;
       }
-      // Pickup/dine_in: fall through to normal status update
     }
 
     setLoadingOrderId(orderId);
@@ -829,18 +871,14 @@ export default function Pedidos() {
     );
     
     if (newStatus === "preparing") {
-      // Verificar método de impressão favorito
       const printMethod = printerSettings?.defaultPrintMethod || 'normal';
       
       if (printMethod === 'automatic') {
-        // Impressão automática via Mindi Printer (SSE) - NÃO abre webview
-        // O pedido já é enviado automaticamente para a impressora via SSE
         toast.success("📦 Pedido aceito!", {
           description: "Impressão automática enviada para o Mindi Printer.",
           duration: 4000,
         });
       } else {
-        // Impressão normal - abrir tela de impressão do navegador
         toast.success("📦 Pedido aceito!", {
           description: "Abrindo tela de impressão...",
           duration: 4000,
@@ -851,6 +889,45 @@ export default function Pedidos() {
         }, 300);
       }
     }
+  };
+
+  const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
+    // Verificar se devemos mostrar o modal de onboarding contextual
+    const statusType = newStatus as 'preparing' | 'ready' | 'completed';
+    if (
+      (statusType === 'preparing' || statusType === 'ready' || statusType === 'completed') &&
+      isNotificationActive(statusType) &&
+      !isStatusOnboardingDismissed(statusType)
+    ) {
+      // Mostrar modal informativo antes de executar a ação
+      setStatusOnboardingModal({
+        open: true,
+        statusType,
+        orderId,
+        dontShowAgain: false,
+      });
+      return;
+    }
+
+    // Sem modal: executar diretamente
+    executeStatusUpdate(orderId, newStatus);
+  };
+
+  // Handler para confirmar ação no modal de onboarding
+  const handleStatusOnboardingConfirm = () => {
+    const { statusType, orderId, dontShowAgain } = statusOnboardingModal;
+    if (!statusType || !orderId) return;
+
+    // Salvar preferência se marcou "não mostrar novamente"
+    if (dontShowAgain) {
+      dismissStatusOnboarding(statusType);
+    }
+
+    // Fechar modal
+    setStatusOnboardingModal({ open: false, statusType: null, orderId: null, dontShowAgain: false });
+
+    // Executar a ação
+    executeStatusUpdate(orderId, statusType);
   };
 
   const handleCancelOrder = () => {
@@ -2481,6 +2558,131 @@ export default function Pedidos() {
               Cancelar
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de onboarding contextual ao mudar status do pedido */}
+      <Dialog
+        open={statusOnboardingModal.open}
+        onOpenChange={(open) => {
+          if (!open) {
+            setStatusOnboardingModal({ open: false, statusType: null, orderId: null, dontShowAgain: false });
+          }
+        }}
+      >
+        <DialogContent
+          className="sm:max-w-[420px] p-0 overflow-hidden"
+          style={{ borderRadius: '16px' }}
+        >
+          {/* Borda colorida no topo conforme status */}
+          {statusOnboardingModal.statusType && (() => {
+            const modalConfig = {
+              preparing: {
+                borderColor: '#dc2626',
+                iconBg: 'bg-red-100 dark:bg-red-950/50',
+                iconColor: 'text-red-600',
+                icon: ChefHat,
+                title: 'Pedido em preparo',
+                description: 'Ao aceitar este pedido, uma mensagem será enviada automaticamente ao cliente via WhatsApp informando que o pedido está sendo preparado.',
+                messagePreview: 'Seu pedido está sendo preparado! 👨\u200d🍳',
+                buttonLabel: 'Entendi, aceitar pedido',
+              },
+              ready: {
+                borderColor: '#059669',
+                iconBg: 'bg-emerald-100 dark:bg-emerald-950/50',
+                iconColor: 'text-emerald-600',
+                icon: Package,
+                title: 'Pedido pronto',
+                description: 'Ao marcar como pronto, uma mensagem será enviada automaticamente ao cliente via WhatsApp informando que o pedido está pronto para retirada ou entrega.',
+                messagePreview: 'Seu pedido está pronto! ✅',
+                buttonLabel: 'Entendi, marcar como pronto',
+              },
+              completed: {
+                borderColor: '#6b7280',
+                iconBg: 'bg-gray-100 dark:bg-gray-800',
+                iconColor: 'text-gray-600',
+                icon: CheckCircle,
+                title: 'Pedido finalizado',
+                description: 'Ao finalizar este pedido, uma mensagem será enviada automaticamente ao cliente via WhatsApp confirmando a conclusão e agradecendo pela preferência.',
+                messagePreview: 'Seu pedido foi finalizado! Obrigado pela preferência! ❤️',
+                buttonLabel: 'Entendi, finalizar pedido',
+              },
+            };
+            const cfg = modalConfig[statusOnboardingModal.statusType!];
+            const IconComponent = cfg.icon;
+            return (
+              <>
+                {/* Barra colorida no topo */}
+                <div className="h-1.5 w-full" style={{ backgroundColor: cfg.borderColor }} />
+                
+                <div className="px-6 pt-5 pb-6">
+                  {/* Header com ícone */}
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className={cn("p-2.5 rounded-xl flex-shrink-0", cfg.iconBg)}>
+                      <IconComponent className={cn("h-6 w-6", cfg.iconColor)} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">{cfg.title}</h3>
+                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                        {cfg.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Preview da mensagem WhatsApp */}
+                  <div className="rounded-xl overflow-hidden border border-border shadow-sm mb-5">
+                    <div className="bg-emerald-700 px-3 py-2 flex items-center gap-2">
+                      <MessageCircle className="h-4 w-4 text-white" />
+                      <span className="text-white text-xs font-medium">Mensagem enviada ao cliente</span>
+                    </div>
+                    <div className="bg-[#e5ddd5] px-4 py-3">
+                      <div className="bg-card rounded-lg px-3 py-2.5 max-w-[90%] shadow-sm relative">
+                        <div className="absolute -left-1.5 top-0 w-3 h-3 bg-card" style={{ clipPath: 'polygon(100% 0, 0 0, 100% 100%)' }} />
+                        <p className="text-[13px] text-foreground leading-relaxed">
+                          <strong>{establishment?.name || 'Seu Estabelecimento'}</strong>
+                        </p>
+                        <p className="text-[13px] text-foreground leading-relaxed mt-1">
+                          {cfg.messagePreview}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground text-right mt-1">
+                          {format(new Date(), 'HH:mm')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Info box */}
+                  <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg px-3 py-2.5 mb-5">
+                    <Info className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                      Você pode personalizar as mensagens em <strong>Configurações → Notificações de Status</strong>.
+                    </p>
+                  </div>
+
+                  {/* Checkbox "Não mostrar novamente" */}
+                  <label className="flex items-center gap-2 cursor-pointer mb-5">
+                    <Checkbox
+                      checked={statusOnboardingModal.dontShowAgain}
+                      onCheckedChange={(checked) =>
+                        setStatusOnboardingModal(prev => ({ ...prev, dontShowAgain: !!checked }))
+                      }
+                    />
+                    <span className="text-sm text-muted-foreground">Não mostrar novamente</span>
+                  </label>
+
+                  {/* Botão de confirmação */}
+                  <Button
+                    className="w-full rounded-xl h-10 font-semibold"
+                    style={{ backgroundColor: cfg.borderColor, color: '#ffffff' }}
+                    onClick={handleStatusOnboardingConfirm}
+                  >
+                    <Send className="h-4 w-4 mr-2" />
+                    {cfg.buttonLabel}
+                  </Button>
+                </div>
+              </>
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </AdminLayout>

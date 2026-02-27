@@ -7551,3 +7551,8 @@
 - [x] Limpar connectedPhone automaticamente ao desconectar WhatsApp
 - [ ] Validar unicidade do número ao conectar — limpar registros antigos de outros estabelecimentos
 - [ ] Criar API key não-global automaticamente ao ativar o bot WhatsApp
+- [x] Modal informativo ao aceitar pedido (com verificação de notificação ativa)
+- [x] Modal informativo ao marcar como pronto (com verificação de notificação ativa)
+- [x] Modal informativo ao finalizar pedido (com verificação de notificação ativa)
+- [x] Checkbox "Não mostrar novamente" com persistência em localStorage por estabelecimento
+- [x] Borda colorida do modal conforme status (vermelho, verde, cinza)
