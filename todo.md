@@ -7566,3 +7566,4 @@
 - [x] Modal de "Pedido pronto": mostrar mensagem de retirada quando pedido é para retirada, e mensagem de entrega quando é para entrega
 - [x] Modal de onboarding: usar os templates reais de Configurações → WhatsApp → Templates no preview, respeitando tipo entrega vs retirada
 - [x] Modal de onboarding: remover variáveis {{cashbackEarned}} e {{cashbackTotal}} do preview quando cashback não está ativo
+- [x] Modal de onboarding: quando cashback NÃO está ativo, remover linhas com {{cashbackEarned}} e {{cashbackTotal}} em vez de substituí-las por valores de exemplo

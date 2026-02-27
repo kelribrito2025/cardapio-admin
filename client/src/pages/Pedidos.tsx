@@ -2620,10 +2620,15 @@ export default function Pedidos() {
                 .replace(/\{\{pickupMessage\}\}/g, 'Você já pode vir retirar. 😄')
                 .replace(/\{\{cancellationReason\}\}/g, 'Item indisponível')
                 .replace(/\{\{itensPedido\}\}/g, '• 1x Pizza Margherita\n• 1x Refrigerante')
-                .replace(/\{\{totalPagamento\}\}/g, '🧾 Total: R$ 129,00\n💰 Pagamento via: PIX')
-                .replace(/\{\{cashbackEarned\}\}/g, 'Cashback ganho: R$0,15')
-                .replace(/\{\{cashbackTotal\}\}/g, 'Cashback acumulado: R$0,35');
-              // Remover linhas que contêm variáveis não resolvidas (ex: {{algo}})
+                .replace(/\{\{totalPagamento\}\}/g, '🧾 Total: R$ 129,00\n💰 Pagamento via: PIX');
+              // Cashback: só substituir por valores de exemplo se cashback estiver ativo
+              const isCashbackActive = (establishment as any)?.cashbackEnabled === true || (establishment as any)?.rewardProgramType === 'cashback';
+              if (isCashbackActive) {
+                resolved = resolved
+                  .replace(/\{\{cashbackEarned\}\}/g, 'Cashback ganho: R$0,15')
+                  .replace(/\{\{cashbackTotal\}\}/g, 'Cashback acumulado: R$0,35');
+              }
+              // Remover linhas que contêm variáveis não resolvidas (ex: {{algo}}) - inclui cashback quando não ativo
               resolved = resolved.split('\n').filter(line => !/\{\{[^}]+\}\}/.test(line)).join('\n');
               // Limpar linhas vazias consecutivas (máx 2)
               resolved = resolved.replace(/\n{3,}/g, '\n\n');
