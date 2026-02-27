@@ -49,9 +49,11 @@ import {
   financialGoals, InsertFinancialGoal, FinancialGoal,
   cashbackTransactions, InsertCashbackTransaction, CashbackTransaction,
   cashbackBalances, InsertCashbackBalance, CashbackBalance,
-  printLogs, InsertPrintLog, PrintLog
+  printLogs, InsertPrintLog, PrintLog,
+  botApiKeys, InsertBotApiKey, BotApiKey
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
+import crypto from 'crypto';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -5720,6 +5722,76 @@ export async function deleteWhatsappConfig(establishmentId: number): Promise<voi
   if (!db) throw new Error("Database not available");
   
   await db.delete(whatsappConfig).where(eq(whatsappConfig.establishmentId, establishmentId));
+}
+
+/**
+ * Limpa o connectedPhone de TODOS os outros estabelecimentos que possuem o mesmo número.
+ * Deve ser chamado quando um estabelecimento conecta com sucesso a um número,
+ * para evitar conflitos no lookup do N8N (que busca por connectedPhone).
+ */
+export async function clearPhoneFromOtherEstablishments(
+  currentEstablishmentId: number,
+  phone: string
+): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  
+  const result = await db.update(whatsappConfig)
+    .set({ connectedPhone: null })
+    .where(
+      and(
+        eq(whatsappConfig.connectedPhone, phone),
+        ne(whatsappConfig.establishmentId, currentEstablishmentId)
+      )
+    );
+  
+  const affected = (result as any)[0]?.affectedRows ?? 0;
+  if (affected > 0) {
+    console.log(`[WhatsApp] Limpou connectedPhone de ${affected} outro(s) estabelecimento(s) com o número ${phone}`);
+  }
+  return affected;
+}
+
+/**
+ * Garante que existe uma API key não-global (isGlobal=false) para o estabelecimento.
+ * O N8N precisa dessa key para autenticar chamadas ao bot-status, cardápio, etc.
+ * Retorna a key existente ou cria uma nova.
+ */
+export async function ensureNonGlobalBotApiKey(
+  establishmentId: number,
+  establishmentName: string
+): Promise<{ apiKey: string; created: boolean }> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Verificar se já existe uma key não-global ativa
+  const existing = await db.select().from(botApiKeys)
+    .where(
+      and(
+        eq(botApiKeys.establishmentId, establishmentId),
+        eq(botApiKeys.isGlobal, false),
+        eq(botApiKeys.isActive, true)
+      )
+    )
+    .limit(1);
+  
+  if (existing.length > 0) {
+    return { apiKey: existing[0].apiKey, created: false };
+  }
+  
+  // Criar nova key não-global
+  const apiKey = `bot_${crypto.randomBytes(32).toString('hex')}`;
+  await db.insert(botApiKeys).values({
+    establishmentId,
+    name: `Bot ${establishmentName}`,
+    apiKey,
+    isActive: true,
+    isGlobal: false,
+    requestCount: 0,
+  });
+  
+  console.log(`[WhatsApp] API Key não-global criada automaticamente para estabelecimento ${establishmentId}`);
+  return { apiKey, created: true };
 }
 
 

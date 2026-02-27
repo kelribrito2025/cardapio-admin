@@ -311,6 +311,19 @@ export const appRouter = router({
         }
         
         await db.updateEstablishment(id, data);
+        
+        // PREVENÇÃO: Ao ativar o bot, garantir que existe API key não-global para o N8N
+        if (data.whatsappBotEnabled === true) {
+          try {
+            const est = await db.getEstablishmentById(id);
+            if (est) {
+              await db.ensureNonGlobalBotApiKey(id, est.name);
+            }
+          } catch (err) {
+            console.error('[WhatsApp] Erro ao garantir API key não-global ao ativar bot (não bloqueante):', err);
+          }
+        }
+        
         return { success: true };
       }),
     
@@ -3622,6 +3635,22 @@ export const appRouter = router({
             result.phone || null,
             result.qrcode || null
           );
+          
+          // PREVENÇÃO: Ao conectar com um número, limpar esse número de outros estabelecimentos
+          if (result.status === 'connected' && result.phone) {
+            try {
+              await db.clearPhoneFromOtherEstablishments(establishment.id, result.phone);
+            } catch (err) {
+              console.error('[WhatsApp] Erro ao limpar phone de outros estabelecimentos (não bloqueante):', err);
+            }
+            
+            // PREVENÇÃO: Garantir que existe API key não-global para o N8N
+            try {
+              await db.ensureNonGlobalBotApiKey(establishment.id, establishment.name);
+            } catch (err) {
+              console.error('[WhatsApp] Erro ao garantir API key não-global (não bloqueante):', err);
+            }
+          }
         }
         
         return result;
@@ -3643,8 +3672,10 @@ export const appRouter = router({
         const { disconnectInstance } = await import('./_core/uazapi');
         const result = await disconnectInstance(config.instanceToken);
         
-        // Atualizar status no banco
+        // Atualizar status no banco — LIMPAR connectedPhone ao desconectar
         await db.updateWhatsappStatus(establishment.id, 'disconnected', null, null);
+        
+        console.log(`[WhatsApp] Desconectado e connectedPhone limpo para estabelecimento ${establishment.id}`);
         
         return result;
       }),

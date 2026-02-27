@@ -7548,3 +7548,6 @@
 - [x] Bug: Número do step piscando ao digitar nos campos do onboarding (animate-ping re-renderiza)
 - [x] Aumentar espaçamento entre círculo do step e label no stepper do onboarding
 - [x] Remover badge "Breve" do item Mapa de mesas no menu lateral
+- [x] Limpar connectedPhone automaticamente ao desconectar WhatsApp
+- [ ] Validar unicidade do número ao conectar — limpar registros antigos de outros estabelecimentos
+- [ ] Criar API key não-global automaticamente ao ativar o bot WhatsApp
