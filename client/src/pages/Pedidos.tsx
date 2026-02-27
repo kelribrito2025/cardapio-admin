@@ -202,6 +202,8 @@ export default function Pedidos() {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState<number | null>(null);
   const [cancellationReason, setCancellationReason] = useState("");
+  const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
+  const [clearColumnTarget, setClearColumnTarget] = useState<OrderStatus | null>(null);
   // Estado para controlar expansão das colunas no mobile (acordeão)
   const [expandedColumns, setExpandedColumns] = useState<Set<OrderStatus>>(() => new Set<OrderStatus>(["new"]));
   // Estado para limpeza manual visual das colunas (sem apagar do banco)
@@ -1268,7 +1270,8 @@ export default function Pedidos() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleManualClear(column.id);
+                              setClearColumnTarget(column.id);
+                              setClearConfirmOpen(true);
                             }}
                             className={cn(
                               "p-2.5 rounded-lg shrink-0 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer",
@@ -2204,6 +2207,38 @@ export default function Pedidos() {
               className="rounded-xl"
             >
               {updateStatusMutation.isPending ? "Cancelando..." : "Cancelar Pedido"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de confirmação para limpar pedidos */}
+      <Dialog open={clearConfirmOpen} onOpenChange={setClearConfirmOpen}>
+        <DialogContent className="rounded-2xl sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Limpar pedidos</DialogTitle>
+            <DialogDescription>
+              {clearColumnTarget === "completed"
+                ? "Tem certeza que deseja limpar todos os pedidos completos da tela?"
+                : "Tem certeza que deseja limpar todos os pedidos cancelados da tela?"}
+            </DialogDescription>
+          </DialogHeader>
+          <p className="text-xs text-muted-foreground">
+            Os pedidos não serão apagados do sistema, apenas removidos da visualização atual.
+          </p>
+          <DialogFooter className="gap-3">
+            <Button variant="outline" onClick={() => setClearConfirmOpen(false)} className="rounded-xl">
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => {
+                if (clearColumnTarget) handleManualClear(clearColumnTarget);
+                setClearConfirmOpen(false);
+                setClearColumnTarget(null);
+              }}
+              className="rounded-xl"
+            >
+              Limpar
             </Button>
           </DialogFooter>
         </DialogContent>

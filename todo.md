@@ -7541,3 +7541,4 @@
 - [x] Instalar Framer Motion e adicionar transições suaves no Kanban de pedidos
 - [x] Animação fade+slide ao mover card entre colunas (Novos→Preparo→Prontos→Completos)
 - [x] Animação ao entrar pedido novo e ao reordenar dentro da mesma coluna
+- [x] Adicionar modal de confirmação ao limpar pedidos completos/cancelados no Kanban para evitar cliques acidentais
