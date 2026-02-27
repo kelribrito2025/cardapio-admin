@@ -2638,6 +2638,7 @@ export default function Pedidos() {
 
             return (
               <>
+                <DialogTitle className="sr-only">{cfg.title}</DialogTitle>
                 <div className="px-6 pt-5 pb-6">
                   {/* Header com ícone */}
                   <div className="flex items-start gap-3 mb-4">
