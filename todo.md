@@ -7582,3 +7582,11 @@
 - [x] Unificar regra: mínimo >= 1 → obrigatório automaticamente, mínimo = 0 → opcional
 - [x] Ajustar lógica no admin para sincronizar campo obrigatório com mínimo
 - [x] Ajustar validação no checkout para usar mínimo como fonte de verdade
+
+## Variável {{customerAddress}} nos Templates WhatsApp
+- [x] Criar variável {{customerAddress}} que exibe endereço completo do cliente
+- [x] Formatar com asteriscos para negrito no WhatsApp (Rua, Número, Bairro, Complemento, Ponto de referência)
+- [x] Adicionar substituição no resolveTemplate do backend (envio real)
+- [x] Adicionar substituição no preview dos modais de onboarding
+- [x] Adicionar variável na lista de variáveis disponíveis na UI de configuração de templates
+- [x] Omitir campos vazios (complemento, ponto de referência) quando não preenchidos

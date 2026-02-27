@@ -2021,6 +2021,7 @@ export const appRouter = router({
                     orderTotal: order.total,
                     paymentMethod: order.paymentMethod,
                     cashbackInfo,
+                    customerAddress: order.customerAddress,
                   }
                 );
               }
@@ -2153,6 +2154,7 @@ export const appRouter = router({
                       })),
                       orderTotal: order.total,
                       paymentMethod: order.paymentMethod,
+                      customerAddress: order.customerAddress,
                     }
                   );
                 }
@@ -2207,6 +2209,7 @@ export const appRouter = router({
                       })),
                       orderTotal: order.total,
                       paymentMethod: order.paymentMethod,
+                      customerAddress: order.customerAddress,
                     }
                   );
                   customerNotified = true;
@@ -2321,6 +2324,7 @@ export const appRouter = router({
                   })),
                   orderTotal: order.total,
                   paymentMethod: order.paymentMethod,
+                  customerAddress: order.customerAddress,
                 }
               );
             }

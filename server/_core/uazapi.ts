@@ -438,7 +438,8 @@ export function generateStatusMessage(
   cashbackInfo?: {
     cashbackEarned: string;
     cashbackTotal: string;
-  } | null
+  } | null,
+  customerAddress?: string | null
 ): string {
   // Default templates
   const defaultTemplates: Record<string, string> = {
@@ -592,6 +593,82 @@ export function generateStatusMessage(
   // Substituir variável {{totalPagamento}} ou remover se vazia
   messageTemplate = messageTemplate.replace(/{{totalPagamento}}/g, totalPagamentoText);
   
+  // Gerar bloco de endereço formatado para WhatsApp (com asteriscos para negrito)
+  let customerAddressText = '';
+  if (customerAddress && customerAddress.trim()) {
+    // Parse address: "Rua X, 123 - Complemento, Bairro Y (Ref: ponto ref)"
+    const addr = customerAddress.trim();
+    
+    // Extrair referência (Ref: ...)
+    let reference = '';
+    let addrWithoutRef = addr;
+    const refMatch = addr.match(/\(Ref:\s*(.+?)\)/);
+    if (refMatch) {
+      reference = refMatch[1].trim();
+      addrWithoutRef = addr.replace(/\s*\(Ref:\s*.+?\)/, '').trim();
+    }
+    
+    // Separar por vírgulas
+    const parts = addrWithoutRef.split(',').map(p => p.trim()).filter(Boolean);
+    
+    let street = '';
+    let number = '';
+    let complement = '';
+    let neighborhood = '';
+    
+    if (parts.length >= 1) {
+      // Primeira parte: rua (pode conter " - complemento")
+      const firstPart = parts[0];
+      street = firstPart;
+    }
+    if (parts.length >= 2) {
+      // Segunda parte: número (pode conter " - complemento")
+      const secondPart = parts[1];
+      if (secondPart.includes(' - ')) {
+        const [num, comp] = secondPart.split(' - ').map(s => s.trim());
+        number = num;
+        complement = comp;
+      } else {
+        number = secondPart;
+      }
+    }
+    if (parts.length >= 3) {
+      // Terceira parte: bairro (ou complemento se não detectado)
+      const thirdPart = parts[2];
+      if (thirdPart.includes(' - ') && !complement) {
+        const [comp, bairro] = thirdPart.split(' - ').map(s => s.trim());
+        complement = comp;
+        neighborhood = bairro;
+      } else {
+        neighborhood = thirdPart;
+      }
+    }
+    if (parts.length >= 4 && !neighborhood) {
+      neighborhood = parts[3];
+    }
+    
+    // Montar bloco formatado
+    const lines: string[] = [];
+    lines.push('\ud83d\udccc *Endere\u00e7o:*');
+    if (street) {
+      lines.push(`*Rua:* ${street}${number ? ' | N.\u00ba ' + number : ''}`);
+    }
+    if (neighborhood) {
+      lines.push(`*Bairro:* ${neighborhood}`);
+    }
+    if (complement) {
+      lines.push(`*Complemento:* ${complement}`);
+    }
+    if (reference) {
+      lines.push(`*Ponto de refer\u00eancia:* ${reference}`);
+    }
+    
+    customerAddressText = lines.join('\n');
+  }
+  
+  // Substituir variável {{customerAddress}} ou remover se vazia
+  messageTemplate = messageTemplate.replace(/{{customerAddress}}/g, customerAddressText);
+  
   // Limpar linhas em branco consecutivas (mais de 2 quebras de linha seguidas)
   messageTemplate = messageTemplate.replace(/\n{3,}/g, '\n\n');
   
@@ -648,6 +725,7 @@ export async function sendOrderStatusNotification(
       cashbackEarned: string;
       cashbackTotal: string;
     } | null;
+    customerAddress?: string | null;
   }
 ): Promise<SendTextResponse> {
   const message = generateStatusMessage(
@@ -663,7 +741,8 @@ export async function sendOrderStatusNotification(
     data.timezone,
     data.paymentMethod,
     data.schedulingInfo,
-    data.cashbackInfo
+    data.cashbackInfo,
+    data.customerAddress
   );
   
   return sendTextMessage(instanceToken, phone, message);

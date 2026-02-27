@@ -132,6 +132,7 @@ const VARIABLES = [
   { name: '{{totalPagamento}}', label: 'Total + Pagamento', description: 'Exibe o total do pedido e a forma de pagamento' },
   { name: '{{cashbackEarned}}', label: 'Cashback ganho', description: 'Valor de cashback ganho neste pedido' },
   { name: '{{cashbackTotal}}', label: 'Cashback acumulado', description: 'Saldo total de cashback do cliente' },
+  { name: '{{customerAddress}}', label: 'Endereço', description: 'Endereço completo do cliente (Rua, Nº, Bairro, Complemento, Ref)' },
 ];
 
 const RESERVATION_VARIABLES = [
@@ -156,6 +157,7 @@ function formatWhatsAppText(text: string): React.ReactNode {
     .replace(/\{\{totalPagamento\}\}/g, '🧾 Total: R$ 129,00\n💰 Pagamento via: PIX')
     .replace(/\{\{cashbackEarned\}\}/g, 'Cashback ganho: R$0,15')
     .replace(/\{\{cashbackTotal\}\}/g, 'Cashback acumulado: R$0,35')
+    .replace(/\{\{customerAddress\}\}/g, '\ud83d\udccc *Endere\u00e7o:*\n*Rua:* Lindolfo Veras | N.\u00ba 1876\n*Bairro:* Cidade Nova\n*Complemento:* Casa verde\n*Ponto de refer\u00eancia:* Ao lado de casa')
     .replace(/\{\{mesa\}\}/g, '5')
     .replace(/\{\{cliente\}\}/g, 'Maria Silva')
     .replace(/\{\{horario\}\}/g, '19:30')

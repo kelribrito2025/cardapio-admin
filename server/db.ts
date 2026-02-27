@@ -3676,6 +3676,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
               orderTotal: data.total,
               paymentMethod: data.paymentMethod,
               schedulingInfo,
+              customerAddress: data.customerAddress,
             }
           );
           
