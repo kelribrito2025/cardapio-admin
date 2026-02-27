@@ -7547,3 +7547,4 @@
 - [x] Indicador de progresso animado no stepper do onboarding — transição suave ao avançar/voltar entre passos
 - [x] Bug: Número do step piscando ao digitar nos campos do onboarding (animate-ping re-renderiza)
 - [x] Aumentar espaçamento entre círculo do step e label no stepper do onboarding
+- [x] Remover badge "Breve" do item Mapa de mesas no menu lateral
