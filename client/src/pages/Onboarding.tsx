@@ -338,87 +338,103 @@ export default function Onboarding() {
     });
   };
 
-  // Step indicator component
+  // Step indicator component with smooth animations
+  const steps = [
+    { number: 1, label: "Dados" },
+    { number: 2, label: "Atendimento" },
+    { number: 3, label: "Objetivos" },
+    { number: 4, label: "Plano" },
+  ];
+
   const StepIndicator = () => (
     <div className="flex items-center justify-center gap-0.5 sm:gap-1 xl:gap-2 mb-2 lg:mb-4 xl:mb-5 2xl:mb-6 flex-wrap">
-      {/* Step 1 */}
-      <div className="flex items-center gap-1">
-        <div className={`w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-semibold transition-all ${
-          currentStep >= 1 
-            ? "bg-primary text-white" 
-            : "bg-muted-foreground/20 text-muted-foreground"
-        }`}>
-          {currentStep > 1 ? <Check className="h-3 w-3" /> : "1"}
-        </div>
-        <span className={`text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium hidden sm:block ${
-          currentStep >= 1 ? "text-foreground" : "text-muted-foreground"
-        }`}>
-          Dados
-        </span>
-      </div>
+      {steps.map((step, idx) => {
+        const isCompleted = currentStep > step.number;
+        const isActive = currentStep === step.number;
+        const isReached = currentStep >= step.number;
 
-      {/* Connector 1-2 */}
-      <div className={`w-3 sm:w-4 lg:w-6 xl:w-8 2xl:w-10 h-0.5 transition-all ${
-        currentStep > 1 ? "bg-primary" : "bg-muted-foreground/20"
-      }`} />
+        return (
+          <div key={step.number} className="flex items-center">
+            {/* Step circle + label */}
+            <div className="flex items-center gap-1">
+              <div className="relative">
+                {/* Pulse ring for active step */}
+                {isActive && (
+                  <span className="absolute inset-0 rounded-full animate-ping bg-primary/30" style={{ animationDuration: '2s' }} />
+                )}
+                {/* Subtle glow for active step */}
+                {isActive && (
+                  <span className="absolute -inset-1 rounded-full bg-primary/15 animate-pulse" style={{ animationDuration: '2.5s' }} />
+                )}
+                <div
+                  className={[
+                    "relative w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-semibold",
+                    "transition-all duration-500 ease-out",
+                    isActive ? "scale-110" : "scale-100",
+                    isReached
+                      ? "bg-primary text-white shadow-md shadow-primary/30"
+                      : "bg-muted-foreground/20 text-muted-foreground",
+                  ].join(" ")}
+                >
+                  {isCompleted ? (
+                    <Check
+                      className="h-3 w-3 transition-all duration-300"
+                      style={{
+                        animation: 'stepCheckIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+                      }}
+                    />
+                  ) : (
+                    <span
+                      className="transition-all duration-300"
+                      style={{
+                        animation: isActive ? 'stepNumberIn 0.35s ease-out forwards' : undefined,
+                      }}
+                    >
+                      {step.number}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <span
+                className={[
+                  "text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium hidden sm:block",
+                  "transition-all duration-400 ease-out",
+                  isReached ? "text-foreground" : "text-muted-foreground",
+                ].join(" ")}
+              >
+                {step.label}
+              </span>
+            </div>
 
-      {/* Step 2 */}
-      <div className="flex items-center gap-1">
-        <div className={`w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-semibold transition-all ${
-          currentStep >= 2 
-            ? "bg-primary text-white" 
-            : "bg-muted-foreground/20 text-muted-foreground"
-        }`}>
-          {currentStep > 2 ? <Check className="h-3 w-3" /> : "2"}
-        </div>
-        <span className={`text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium hidden sm:block ${
-          currentStep >= 2 ? "text-foreground" : "text-muted-foreground"
-        }`}>
-          Atendimento
-        </span>
-      </div>
+            {/* Connector bar (not after last step) */}
+            {idx < steps.length - 1 && (
+              <div className="w-3 sm:w-4 lg:w-6 xl:w-8 2xl:w-10 h-0.5 mx-0.5 sm:mx-1 bg-muted-foreground/20 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full transition-all ease-out"
+                  style={{
+                    width: currentStep > step.number ? '100%' : '0%',
+                    transitionDuration: '600ms',
+                    transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        );
+      })}
 
-      {/* Connector 2-3 */}
-      <div className={`w-3 sm:w-4 lg:w-6 xl:w-8 2xl:w-10 h-0.5 transition-all ${
-        currentStep > 2 ? "bg-primary" : "bg-muted-foreground/20"
-      }`} />
-
-      {/* Step 3 */}
-      <div className="flex items-center gap-1">
-        <div className={`w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-semibold transition-all ${
-          currentStep >= 3 
-            ? "bg-primary text-white" 
-            : "bg-muted-foreground/20 text-muted-foreground"
-        }`}>
-          {currentStep > 3 ? <Check className="h-3 w-3" /> : "3"}
-        </div>
-        <span className={`text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium hidden sm:block ${
-          currentStep >= 3 ? "text-foreground" : "text-muted-foreground"
-        }`}>
-          Objetivos
-        </span>
-      </div>
-
-      {/* Connector 3-4 */}
-      <div className={`w-3 sm:w-4 lg:w-6 xl:w-8 2xl:w-10 h-0.5 transition-all ${
-        currentStep > 3 ? "bg-primary" : "bg-muted-foreground/20"
-      }`} />
-
-      {/* Step 4 */}
-      <div className="flex items-center gap-1">
-        <div className={`w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-semibold transition-all ${
-          currentStep >= 4 
-            ? "bg-primary text-white" 
-            : "bg-muted-foreground/20 text-muted-foreground"
-        }`}>
-          4
-        </div>
-        <span className={`text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium hidden sm:block ${
-          currentStep >= 4 ? "text-foreground" : "text-muted-foreground"
-        }`}>
-          Plano
-        </span>
-      </div>
+      {/* Keyframe animations injected via style tag */}
+      <style>{`
+        @keyframes stepCheckIn {
+          0% { opacity: 0; transform: scale(0) rotate(-45deg); }
+          60% { opacity: 1; transform: scale(1.2) rotate(0deg); }
+          100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        @keyframes stepNumberIn {
+          0% { opacity: 0; transform: scale(0.5) translateY(4px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+      `}</style>
     </div>
   );
 

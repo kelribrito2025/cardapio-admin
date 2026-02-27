@@ -7544,3 +7544,4 @@
 - [x] Adicionar modal de confirmação ao limpar pedidos completos/cancelados no Kanban para evitar cliques acidentais
 - [x] Remover card "Conta criada com sucesso!" da tela de onboarding
 - [x] Mover botão "Voltar" para ao lado esquerdo do botão "Continuar" em todas as telas do onboarding
+- [x] Indicador de progresso animado no stepper do onboarding — transição suave ao avançar/voltar entre passos
