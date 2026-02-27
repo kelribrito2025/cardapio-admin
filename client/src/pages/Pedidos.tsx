@@ -2580,6 +2580,52 @@ export default function Pedidos() {
           style={{ borderRadius: '16px' }}
         >
           {statusOnboardingModal.statusType && (() => {
+            // Buscar o pedido para saber o tipo (delivery/pickup/dine_in)
+            const currentOrder = allOrders.find((o: any) => o.id === statusOnboardingModal.orderId);
+            const isPickupOrDineIn = currentOrder?.deliveryType === 'pickup' || currentOrder?.deliveryType === 'dine_in';
+
+            // Templates padrão (fallback)
+            const defaultTemplates = {
+              preparing: '👨‍🍳 *{{customerName}},* seu pedido *{{orderNumber}}* está sendo preparado!',
+              ready: '✅ Seu pedido *{{orderNumber}}* está pronto!\n\n{{deliveryMessage}}',
+              readyPickup: '✅ Seu pedido *{{orderNumber}}* está pronto!\n\n{{pickupMessage}}',
+              completed: 'Seu pedido {{orderNumber}} foi finalizado!\n\n📌 Atualização de fidelidade\n\n*+1 carimbo* adicionado ao seu cartão.\n\n❤️ Obrigado pela preferência!\n\n*{{establishmentName}}*',
+            };
+
+            // Obter template real salvo ou usar padrão
+            const getTemplateForStatus = (statusType: string): string => {
+              if (statusType === 'preparing') {
+                return (whatsappConfig as any)?.templatePreparing || defaultTemplates.preparing;
+              }
+              if (statusType === 'ready') {
+                if (isPickupOrDineIn) {
+                  return (whatsappConfig as any)?.templateReadyPickup || defaultTemplates.readyPickup;
+                }
+                return (whatsappConfig as any)?.templateReady || defaultTemplates.ready;
+              }
+              if (statusType === 'completed') {
+                return (whatsappConfig as any)?.templateCompleted || defaultTemplates.completed;
+              }
+              return '';
+            };
+
+            // Substituir variáveis do template por valores de exemplo
+            const resolveTemplate = (template: string): string => {
+              return template
+                .replace(/\{\{customerName\}\}/g, 'João Silva')
+                .replace(/\{\{orderNumber\}\}/g, '#1234')
+                .replace(/\{\{establishmentName\}\}/g, establishment?.name || 'Restaurante')
+                .replace(/\{\{greeting\}\}/g, 'Boa tarde')
+                .replace(/\{\{deliveryMessage\}\}/g, '🛵 Nosso entregador já está a caminho.')
+                .replace(/\{\{pickupMessage\}\}/g, 'Você já pode vir retirar. 😄')
+                .replace(/\{\{cancellationReason\}\}/g, 'Item indisponível')
+                .replace(/\{\{itensPedido\}\}/g, '• 1x Pizza Margherita\n• 1x Refrigerante')
+                .replace(/\{\{totalPagamento\}\}/g, '🧾 Total: R$ 129,00\n💰 Pagamento via: PIX');
+            };
+
+            const rawTemplate = getTemplateForStatus(statusOnboardingModal.statusType!);
+            const resolvedMessage = resolveTemplate(rawTemplate);
+
             const modalConfig = {
               preparing: {
                 borderClass: 'border-t-4 border-t-red-500',
@@ -2588,7 +2634,7 @@ export default function Pedidos() {
                 icon: ChefHat,
                 title: 'Pedido em preparo',
                 description: 'Ao aceitar, o cliente será avisado via WhatsApp que o pedido está em preparo.',
-                messagePreview: '👨\u200d🍳 *João Silva,* seu pedido *#1234* está sendo preparado!\n\n🔔 Você será notificado por aqui em cada etapa.',
+                messagePreview: resolvedMessage,
                 buttonLabel: 'Entendi, aceitar pedido',
               },
               ready: {
@@ -2597,8 +2643,10 @@ export default function Pedidos() {
                 iconColor: 'text-emerald-600',
                 icon: Package,
                 title: 'Pedido pronto',
-                description: 'Ao marcar como pronto, o cliente será avisado via WhatsApp que o pedido está pronto.',
-                messagePreview: '✅ *João Silva,* seu pedido *#1234* está pronto!\n\n🛵 Nosso entregador já está a caminho.',
+                description: isPickupOrDineIn
+                  ? 'Ao marcar como pronto, o cliente será avisado via WhatsApp que o pedido está pronto para retirada.'
+                  : 'Ao marcar como pronto, o cliente será avisado via WhatsApp que o pedido está pronto.',
+                messagePreview: resolvedMessage,
                 buttonLabel: 'Entendi, marcar como pronto',
               },
               completed: {
@@ -2608,7 +2656,7 @@ export default function Pedidos() {
                 icon: CheckCircle,
                 title: 'Pedido finalizado',
                 description: 'Ao finalizar, o cliente será avisado via WhatsApp que o pedido foi concluído.',
-                messagePreview: '❤️ *João Silva,* seu pedido *#1234* foi finalizado!\n\nObrigado pela preferência! Esperamos você novamente. 😄',
+                messagePreview: resolvedMessage,
                 buttonLabel: 'Entendi, finalizar pedido',
               },
             };
