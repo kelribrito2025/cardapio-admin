@@ -23,6 +23,8 @@ import {
   Loader2,
   Bell,
   Clock,
+  Info,
+  Users,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -47,6 +49,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -535,9 +542,27 @@ export default function Entregadores() {
   const [editingDriver, setEditingDriver] = useState<any | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [driverToDelete, setDriverToDelete] = useState<any | null>(null);
+  const [multiDriverModalOpen, setMultiDriverModalOpen] = useState(false);
 
   const { data: driversList, isLoading: driversLoading, refetch: refetchDrivers } = trpc.driver.list.useQuery();
   const { data: metrics, isLoading: metricsLoading, refetch: refetchMetrics } = trpc.driver.metrics.useQuery();
+  const { data: establishment } = trpc.establishment.get.useQuery();
+
+  // localStorage helpers for multi-driver onboarding modal
+  const getMultiDriverDismissKey = () => {
+    const estId = establishment?.id || 'default';
+    return `multiDriverOnboarding_dismissed_${estId}`;
+  };
+  const isMultiDriverDismissed = () => {
+    try {
+      return localStorage.getItem(getMultiDriverDismissKey()) === 'true';
+    } catch { return false; }
+  };
+  const dismissMultiDriverModal = () => {
+    try {
+      localStorage.setItem(getMultiDriverDismissKey(), 'true');
+    } catch {}
+  };
 
   const deleteMutation = trpc.driver.delete.useMutation();
   const toggleMutation = trpc.driver.update.useMutation();
@@ -553,6 +578,24 @@ export default function Entregadores() {
   };
 
   const handleNew = () => {
+    // Interceptar: se há exatamente 1 entregador e o modal não foi dismissado, mostrar modal informativo
+    if (driversList && driversList.length === 1 && !isMultiDriverDismissed()) {
+      setMultiDriverModalOpen(true);
+      return;
+    }
+    setEditingDriver(null);
+    setSheetOpen(true);
+  };
+
+  const handleMultiDriverConfirm = () => {
+    setMultiDriverModalOpen(false);
+    setEditingDriver(null);
+    setSheetOpen(true);
+  };
+
+  const handleMultiDriverDismiss = () => {
+    dismissMultiDriverModal();
+    setMultiDriverModalOpen(false);
     setEditingDriver(null);
     setSheetOpen(true);
   };
@@ -825,6 +868,82 @@ export default function Entregadores() {
         editingDriver={editingDriver}
         onSuccess={handleRefresh}
       />
+
+      {/* Multi-Driver Onboarding Modal */}
+      <Dialog
+        open={multiDriverModalOpen}
+        onOpenChange={(open) => {
+          if (!open) setMultiDriverModalOpen(false);
+        }}
+      >
+        <DialogContent
+          className="sm:max-w-[440px] p-0 overflow-hidden border-t-4 border-t-blue-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Múltiplos entregadores</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            {/* Header com ícone */}
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-blue-100 dark:bg-blue-950/50">
+                <Users className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Múltiplos entregadores</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Agora que você possui mais de um entregador cadastrado, sempre que um pedido for aceito ou marcado como pronto, será exibido um modal para selecionar o entregador responsável pela entrega.
+                </p>
+              </div>
+            </div>
+
+            {/* Ilustração visual */}
+            <div className="rounded-xl border border-border bg-muted/30 p-4 mb-5">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center text-white font-semibold text-sm">
+                  {driversList?.[0]?.name?.charAt(0)?.toUpperCase() || 'A'}
+                </div>
+                <div>
+                  <p className="font-medium text-sm">{driversList?.[0]?.name || 'Entregador 1'}</p>
+                  <p className="text-xs text-muted-foreground">Já cadastrado</p>
+                </div>
+                <Badge className="ml-auto bg-emerald-100 text-emerald-700 hover:bg-emerald-100">Ativo</Badge>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold text-sm">
+                  <Plus className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm text-blue-600">Novo entregador</p>
+                  <p className="text-xs text-muted-foreground">Sendo cadastrado agora</p>
+                </div>
+              </div>
+              <div className="mt-3 pt-3 border-t border-border/50">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Info className="h-3.5 w-3.5 text-blue-500 flex-shrink-0" />
+                  <span>Na página de pedidos, você escolherá qual entregador receberá cada pedido.</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Botão "Não mostrar novamente" - estilo vazado/outline */}
+            <Button
+              variant="outline"
+              className="w-full rounded-xl h-10 font-medium mb-2.5 border-border text-muted-foreground hover:bg-muted/50"
+              onClick={handleMultiDriverDismiss}
+            >
+              Não mostrar este aviso novamente
+            </Button>
+
+            {/* Botão de confirmação principal */}
+            <Button
+              className="w-full rounded-xl h-10 font-semibold bg-blue-500 hover:bg-blue-600 text-white"
+              onClick={handleMultiDriverConfirm}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Entendi, cadastrar entregador
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

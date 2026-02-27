@@ -7568,3 +7568,11 @@
 - [x] Modal de onboarding: remover variáveis {{cashbackEarned}} e {{cashbackTotal}} do preview quando cashback não está ativo
 - [x] Modal de onboarding: quando cashback NÃO está ativo, remover linhas com {{cashbackEarned}} e {{cashbackTotal}} em vez de substituí-las por valores de exemplo
 - [x] Modal Meus Pedidos (menu público): adicionar botão vermelho "Avaliar restaurante" para pedidos entregues, com mesma lógica do modal Acompanhar Pedido (só aparece se não avaliou ou avaliou há mais de 30 dias)
+
+## Modal Informativo na Página /entregadores (Transição 1→2 entregadores)
+- [x] Modal informativo ao cadastrar o segundo entregador (transição 1→2)
+- [x] Mesmo padrão visual dos modais de onboarding da página /pedidos (borda colorida, ícone, botões)
+- [x] Texto explicando que com múltiplos entregadores, será exibido modal de seleção ao aceitar/pronto
+- [x] Botão "Entendi" como ação principal
+- [x] Botão "Não mostrar este aviso novamente" com persistência em localStorage por estabelecimento
+- [x] Modal só aparece na transição de 1→2 e se não foi dismissado
