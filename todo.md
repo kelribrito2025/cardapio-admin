@@ -7535,3 +7535,9 @@
 - [x] Escrever testes vitest para isScheduleAvailable (normal, meia-noite, timezone, edge cases)
 - [x] Corrigir caracteres Unicode escapados no modal de agendamento de categorias (ex: \u00e9 → é)
 - [x] Trocar ícone do badge "Agendado" de Clock para CalendarClock para melhor identificação visual
+- [ ] Implementar conversão HTML→bitmap no servidor para impressão em segundo plano via Mindi Printer
+
+## Animações Kanban de Pedidos
+- [x] Instalar Framer Motion e adicionar transições suaves no Kanban de pedidos
+- [x] Animação fade+slide ao mover card entre colunas (Novos→Preparo→Prontos→Completos)
+- [x] Animação ao entrar pedido novo e ao reordenar dentro da mesma coluna

@@ -77,6 +77,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 type OrderStatus = "new" | "preparing" | "ready" | "out_for_delivery" | "completed" | "cancelled";
 
@@ -1313,8 +1314,9 @@ export default function Pedidos() {
                     ))}
                   </div>
                 ) : columnOrders.length > 0 ? (
-                  // Order cards
-                  columnOrders.map((order: OrderItem) => {
+                  // Order cards with animations
+                  <AnimatePresence mode="popLayout" initial={false}>
+                  {columnOrders.map((order: OrderItem) => {
                     // Na coluna "Prontos", usar sempre a cor verde da coluna (ready) em vez da cor individual do status
                     const displayStatus = column.id === 'ready' ? 'ready' : order.status;
                     const config = statusConfig[displayStatus as OrderStatus];
@@ -1322,9 +1324,19 @@ export default function Pedidos() {
                     const PaymentIcon = paymentMethodLabels[order.paymentMethod]?.icon || CreditCard;
 
                     return (
-                      <div
+                      <motion.div
                         key={order.id}
-                        className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-soft hover:shadow-elevated transition-all duration-200" style={{height: '136px'}}
+                        layout
+                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                        transition={{
+                          layout: { type: "spring", stiffness: 500, damping: 35 },
+                          opacity: { duration: 0.2, ease: "easeInOut" },
+                          y: { duration: 0.2, ease: "easeOut" },
+                          scale: { duration: 0.15, ease: "easeOut" },
+                        }}
+                        className="bg-card rounded-xl border border-border/50 overflow-hidden shadow-soft hover:shadow-elevated transition-shadow duration-200" style={{height: '136px'}}
                       >
                         {/* Header colorido com ícone - estilo original */}
                         <div className={cn("px-3 py-2 flex items-center justify-between rounded-t-xl", config.bgColor)} style={{height: '48px'}}>
@@ -1503,9 +1515,10 @@ export default function Pedidos() {
                             )}
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     );
-                  })
+                  })}
+                  </AnimatePresence>
                 ) : (
                   // Empty state placeholder - informativo, não clicável
                   <div 
