@@ -121,25 +121,25 @@ const TEMPLATE_CONFIG: Record<TemplateType, {
 };
 
 const VARIABLES = [
-  { name: '{{customerName}}', label: 'Nome do cliente', description: 'Nome completo do cliente' },
-  { name: '{{orderNumber}}', label: 'Nº do pedido', description: 'Número único do pedido' },
-  { name: '{{establishmentName}}', label: 'Nome da loja', description: 'Nome do seu estabelecimento' },
-  { name: '{{greeting}}', label: 'Saudação', description: 'Bom dia, Boa tarde ou Boa noite' },
-  { name: '{{deliveryMessage}}', label: 'Msg delivery', description: 'Mensagem automática para pedidos delivery' },
-  { name: '{{pickupMessage}}', label: 'Msg retirada/local', description: 'Mensagem automática para retirada ou consumo no local' },
-  { name: '{{cancellationReason}}', label: 'Motivo cancelamento', description: 'Razão do cancelamento' },
-  { name: '{{itensPedido}}', label: 'Itens do pedido', description: 'Lista de itens do pedido' },
-  { name: '{{totalPagamento}}', label: 'Total + Pagamento', description: 'Exibe o total do pedido e a forma de pagamento' },
-  { name: '{{cashbackEarned}}', label: 'Cashback ganho', description: 'Valor de cashback ganho neste pedido' },
-  { name: '{{cashbackTotal}}', label: 'Cashback acumulado', description: 'Saldo total de cashback do cliente' },
-  { name: '{{customerAddress}}', label: 'Endereço', description: 'Endereço completo do cliente (Rua, Nº, Bairro, Complemento, Ref)' },
+  { name: '{{customerName}}', label: 'Nome do Cliente', description: 'Insere automaticamente o nome do cliente que fez o pedido' },
+  { name: '{{orderNumber}}', label: 'Número do Pedido', description: 'Insere o número identificador do pedido' },
+  { name: '{{establishmentName}}', label: 'Nome do Restaurante', description: 'Insere o nome do seu estabelecimento' },
+  { name: '{{greeting}}', label: 'Saudação', description: 'Insere automaticamente Bom dia, Boa tarde ou Boa noite conforme o horário' },
+  { name: '{{deliveryMessage}}', label: 'Mensagem de Entrega', description: 'Mensagem automática exibida quando o pedido é para entrega (delivery)' },
+  { name: '{{pickupMessage}}', label: 'Mensagem de Retirada', description: 'Mensagem automática exibida quando o pedido é para retirada ou consumo no local' },
+  { name: '{{cancellationReason}}', label: 'Motivo do Cancelamento', description: 'Insere o motivo informado ao cancelar o pedido' },
+  { name: '{{itensPedido}}', label: 'Itens do Pedido', description: 'Insere a lista completa de itens do pedido com quantidades e complementos' },
+  { name: '{{totalPagamento}}', label: 'Total do Pedido', description: 'Exibe o valor total do pedido e a forma de pagamento escolhida' },
+  { name: '{{cashbackEarned}}', label: 'Cashback Ganho', description: 'Valor de cashback que o cliente ganhou neste pedido' },
+  { name: '{{cashbackTotal}}', label: 'Cashback Acumulado', description: 'Saldo total de cashback acumulado pelo cliente' },
+  { name: '{{customerAddress}}', label: 'Endereço do Cliente', description: 'Insere o endereço completo do cliente (Rua, Nº, Bairro, Complemento, Referência)' },
 ];
 
 const RESERVATION_VARIABLES = [
-  { name: '{{mesa}}', label: 'Nº da mesa', description: 'Número da mesa reservada' },
-  { name: '{{cliente}}', label: 'Nome do cliente', description: 'Nome do cliente da reserva' },
-  { name: '{{horario}}', label: 'Horário', description: 'Horário da reserva' },
-  { name: '{{pessoas}}', label: 'Qtd pessoas', description: 'Quantidade de pessoas' },
+  { name: '{{mesa}}', label: 'Número da Mesa', description: 'Insere o número da mesa reservada' },
+  { name: '{{cliente}}', label: 'Nome do Cliente', description: 'Insere o nome do cliente que fez a reserva' },
+  { name: '{{horario}}', label: 'Horário da Reserva', description: 'Insere o horário agendado para a reserva' },
+  { name: '{{pessoas}}', label: 'Quantidade de Pessoas', description: 'Insere a quantidade de pessoas da reserva' },
 ];
 
 // Função para formatar texto estilo WhatsApp
@@ -324,23 +324,32 @@ export function TemplatesEditor({
         </div>
         <div className="flex flex-wrap gap-2">
           {(activeTemplate === 'reservation' ? RESERVATION_VARIABLES : VARIABLES).map((v) => (
-            <button
-              key={v.name}
-              onClick={() => handleInsertVariable(v.name)}
-              className={`group relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                copiedVar === v.name
-                  ? 'bg-green-500 text-white scale-95'
-                  : 'bg-muted text-muted-foreground hover:bg-blue-500 hover:text-white hover:shadow-md'
-              }`}
-              title={v.description}
-            >
-              <span className="font-mono text-xs">{v.name.replace(/\{\{|\}\}/g, '')}</span>
-              {copiedVar === v.name && (
-                <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground text-background text-xs px-2 py-1 rounded whitespace-nowrap">
-                  Inserido!
-                </span>
-              )}
-            </button>
+            <div key={v.name} className="relative group">
+              <button
+                onClick={() => handleInsertVariable(v.name)}
+                className={`relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  copiedVar === v.name
+                    ? 'bg-green-500 text-white scale-95'
+                    : 'bg-muted text-muted-foreground hover:bg-blue-500 hover:text-white hover:shadow-md'
+                }`}
+              >
+                <span className="text-xs">{v.label}</span>
+                {copiedVar === v.name && (
+                  <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground text-background text-xs px-2 py-1 rounded whitespace-nowrap z-20">
+                    Inserido!
+                  </span>
+                )}
+              </button>
+              {/* Tooltip */}
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex flex-col items-center z-30 pointer-events-none">
+                <div className="bg-foreground text-background text-xs px-3 py-2 rounded-lg shadow-lg max-w-[220px] text-center whitespace-normal">
+                  <div className="font-semibold mb-0.5">{v.label}</div>
+                  <div className="opacity-80">{v.description}</div>
+                  <div className="mt-1 font-mono text-[10px] opacity-60">{v.name}</div>
+                </div>
+                <div className="w-2 h-2 bg-foreground rotate-45 -mt-1"></div>
+              </div>
+            </div>
           ))}
         </div>
       </div>

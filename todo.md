@@ -7594,3 +7594,8 @@
 ## Cabeçalho na variável {{itensPedido}}
 - [x] Adicionar "📦 *Itens do pedido:*" como cabeçalho antes da lista de itens no backend (generateStatusMessage)
 - [x] Atualizar preview no TemplatesEditor.tsx
+
+## Exibição das variáveis em português no TemplatesEditor
+- [x] Mostrar nomes das variáveis em português amigável (ex: customerName → Nome do Cliente)
+- [x] Adicionar tooltips explicativos ao passar o mouse sobre cada variável
+- [x] Manter inserção do código técnico ao clicar (ex: {{customerName}})
