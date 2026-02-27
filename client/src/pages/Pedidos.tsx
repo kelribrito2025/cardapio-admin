@@ -2751,7 +2751,7 @@ export default function Pedidos() {
                       }
                     }}
                   >
-                    Não mostrar novamente
+                    Não mostrar este aviso novamente
                   </Button>
 
                   {/* Botão de confirmação principal */}
