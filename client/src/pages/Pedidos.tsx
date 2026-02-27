@@ -1157,7 +1157,7 @@ export default function Pedidos() {
                     /* Desconectado */
                     <>
                       <span className="w-4 h-4 rounded-full bg-red-500 flex-shrink-0" style={{width: '10px', height: '10px'}} />
-                      <span>Desconectado</span>
+                      <span>Offline</span>
                     </>
                   )}
                 </div>
