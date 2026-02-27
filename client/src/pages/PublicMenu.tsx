@@ -182,6 +182,8 @@ export default function PublicMenu() {
   const [showOrdersModal, setShowOrdersModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set());
+  // Track canReview status per order in history: { orderId: { checked: boolean, canReview: boolean } }
+  const [historyCanReview, setHistoryCanReview] = useState<Record<string, { checked: boolean; canReview: boolean }>>({});
   const [userOrders, setUserOrders] = useState<UserOrder[]>([]);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   
@@ -5403,6 +5405,30 @@ setOnlinePaymentUrl(null);
                                     newSet.delete(order.id);
                                   } else {
                                     newSet.add(order.id);
+                                    // Check canReview when expanding a delivered order
+                                    if (order.status === 'delivered' && establishment?.reviewsEnabled !== false && !historyCanReview[order.id]?.checked) {
+                                      setHistoryCanReview(prev => ({ ...prev, [order.id]: { checked: false, canReview: true } }));
+                                      const checkUrl = `/api/trpc/publicMenu.canReview?input=${encodeURIComponent(JSON.stringify({
+                                        json: {
+                                          establishmentId: establishment.id,
+                                          customerPhone: order.customerPhone
+                                        }
+                                      }))}`;
+                                      fetch(checkUrl)
+                                        .then(res => res.json())
+                                        .then(result => {
+                                          let val = true;
+                                          if (result?.result?.data?.json?.canReview !== undefined) val = result.result.data.json.canReview;
+                                          else if (result?.result?.data?.canReview !== undefined) val = result.result.data.canReview;
+                                          else if (result?.data?.json?.canReview !== undefined) val = result.data.json.canReview;
+                                          else if (result?.data?.canReview !== undefined) val = result.data.canReview;
+                                          else if (result?.canReview !== undefined) val = result.canReview;
+                                          setHistoryCanReview(prev => ({ ...prev, [order.id]: { checked: true, canReview: val } }));
+                                        })
+                                        .catch(() => {
+                                          setHistoryCanReview(prev => ({ ...prev, [order.id]: { checked: true, canReview: true } }));
+                                        });
+                                    }
                                   }
                                   return newSet;
                                 });
@@ -5461,6 +5487,34 @@ setOnlinePaymentUrl(null);
                                     </div>
                                   ))}
                                 </div>
+                                {/* Botão Avaliar restaurante - só para pedidos entregues, se reviews habilitadas e pode avaliar */}
+                                {order.status === 'delivered' && establishment?.reviewsEnabled !== false && (
+                                  <>
+                                    {historyCanReview[order.id]?.checked && historyCanReview[order.id]?.canReview && (
+                                      <button
+                                        onClick={() => {
+                                          setSelectedOrderId(order.orderId ? order.orderId.toString() : order.id);
+                                          setShowOrdersModal(false);
+                                          setShowRatingModal(true);
+                                        }}
+                                        className="mt-3 w-full py-2 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
+                                      >
+                                        <Star className="h-4 w-4" />
+                                        Avaliar restaurante
+                                      </button>
+                                    )}
+                                    {historyCanReview[order.id]?.checked && !historyCanReview[order.id]?.canReview && (
+                                      <div className="mt-3 text-center py-2 px-4 bg-gray-100 rounded-lg">
+                                        <p className="text-xs text-gray-500">Você já avaliou este restaurante nos últimos 30 dias.</p>
+                                      </div>
+                                    )}
+                                    {!historyCanReview[order.id]?.checked && (
+                                      <div className="mt-3 text-center py-2 px-4 bg-gray-100 rounded-lg animate-pulse">
+                                        <p className="text-xs text-gray-400">Verificando avaliação...</p>
+                                      </div>
+                                    )}
+                                  </>
+                                )}
                                 {/* Botão Pedir novamente - para todos os pedidos do histórico */}
                                 <button
                                     onClick={() => {

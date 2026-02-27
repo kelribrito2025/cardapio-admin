@@ -7567,3 +7567,4 @@
 - [x] Modal de onboarding: usar os templates reais de Configurações → WhatsApp → Templates no preview, respeitando tipo entrega vs retirada
 - [x] Modal de onboarding: remover variáveis {{cashbackEarned}} e {{cashbackTotal}} do preview quando cashback não está ativo
 - [x] Modal de onboarding: quando cashback NÃO está ativo, remover linhas com {{cashbackEarned}} e {{cashbackTotal}} em vez de substituí-las por valores de exemplo
+- [x] Modal Meus Pedidos (menu público): adicionar botão vermelho "Avaliar restaurante" para pedidos entregues, com mesma lógica do modal Acompanhar Pedido (só aparece se não avaliou ou avaliou há mais de 30 dias)
