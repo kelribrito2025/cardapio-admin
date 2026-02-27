@@ -7556,3 +7556,9 @@
 - [x] Modal informativo ao finalizar pedido (com verificação de notificação ativa)
 - [x] Checkbox "Não mostrar novamente" com persistência em localStorage por estabelecimento
 - [x] Borda colorida do modal conforme status (vermelho, verde, cinza)
+
+## Refinamento dos Modais de Onboarding de Status
+- [x] Atualizar texto do modal preparing: "Ao aceitar, o cliente será avisado via WhatsApp que o pedido está em preparo."
+- [x] Redesenhar card WhatsApp no estilo /configuracoes (header verde com foto, nome do restaurante e "online", badge "HOJE")
+- [x] Trocar checkbox "Não mostrar novamente" por botão vazado branco acima do botão principal
+- [x] Aplicar mesmas mudanças de estilo nos modais de ready e completed

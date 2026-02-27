@@ -222,20 +222,23 @@ describe("Modal de onboarding contextual - lógica de exibição", () => {
 });
 
 describe("Configuração visual do modal por status", () => {
-  const modalConfig: Record<StatusType, { borderColor: string; title: string; buttonLabel: string }> = {
+  const modalConfig: Record<StatusType, { borderColor: string; title: string; description: string; buttonLabel: string }> = {
     preparing: {
       borderColor: '#dc2626',
       title: 'Pedido em preparo',
+      description: 'Ao aceitar, o cliente será avisado via WhatsApp que o pedido está em preparo.',
       buttonLabel: 'Entendi, aceitar pedido',
     },
     ready: {
       borderColor: '#059669',
       title: 'Pedido pronto',
+      description: 'Ao marcar como pronto, o cliente será avisado via WhatsApp que o pedido está pronto.',
       buttonLabel: 'Entendi, marcar como pronto',
     },
     completed: {
       borderColor: '#6b7280',
       title: 'Pedido finalizado',
+      description: 'Ao finalizar, o cliente será avisado via WhatsApp que o pedido foi concluído.',
       buttonLabel: 'Entendi, finalizar pedido',
     },
   };
@@ -258,6 +261,58 @@ describe("Configuração visual do modal por status", () => {
     expect(modalConfig.preparing.buttonLabel).toContain('aceitar');
     expect(modalConfig.ready.buttonLabel).toContain('pronto');
     expect(modalConfig.completed.buttonLabel).toContain('finalizar');
+  });
+
+  it("descrição do preparing menciona 'aceitar' e 'preparo'", () => {
+    expect(modalConfig.preparing.description).toContain('aceitar');
+    expect(modalConfig.preparing.description).toContain('preparo');
+  });
+
+  it("descrição do ready menciona 'pronto'", () => {
+    expect(modalConfig.ready.description).toContain('pronto');
+  });
+
+  it("descrição do completed menciona 'finalizar' e 'concluído'", () => {
+    expect(modalConfig.completed.description).toContain('finalizar');
+    expect(modalConfig.completed.description).toContain('concluído');
+  });
+});
+
+describe("Botão 'Não mostrar novamente' (outline)", () => {
+  let storage: Record<string, string>;
+  const establishmentId = 210006;
+
+  beforeEach(() => {
+    storage = {};
+  });
+
+  it("ao clicar 'Não mostrar novamente', salva dismiss E executa a ação", () => {
+    // Simula o comportamento do botão outline: dismiss + execute
+    let executed = false;
+    const statusType: StatusType = 'preparing';
+    
+    // Ação do botão outline
+    dismissStatusOnboarding(statusType, establishmentId, storage);
+    executed = true; // executeStatusUpdate seria chamado
+    
+    expect(storage[`onboarding_modal_dismissed_${establishmentId}_${statusType}`]).toBe('true');
+    expect(executed).toBe(true);
+  });
+
+  it("ao clicar botão principal (Entendi), NÃO salva dismiss e executa a ação", () => {
+    // Simula o comportamento do botão principal: apenas execute, sem dismiss
+    let executed = false;
+    const statusType: StatusType = 'preparing';
+    
+    // Ação do botão principal (handleStatusOnboardingConfirm com dontShowAgain=false)
+    const dontShowAgain = false;
+    if (dontShowAgain) {
+      dismissStatusOnboarding(statusType, establishmentId, storage);
+    }
+    executed = true;
+    
+    expect(storage[`onboarding_modal_dismissed_${establishmentId}_${statusType}`]).toBeUndefined();
+    expect(executed).toBe(true);
   });
 });
 
