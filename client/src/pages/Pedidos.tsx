@@ -2611,7 +2611,7 @@ export default function Pedidos() {
 
             // Substituir variáveis do template por valores de exemplo
             const resolveTemplate = (template: string): string => {
-              return template
+              let resolved = template
                 .replace(/\{\{customerName\}\}/g, 'João Silva')
                 .replace(/\{\{orderNumber\}\}/g, '#1234')
                 .replace(/\{\{establishmentName\}\}/g, establishment?.name || 'Restaurante')
@@ -2620,7 +2620,14 @@ export default function Pedidos() {
                 .replace(/\{\{pickupMessage\}\}/g, 'Você já pode vir retirar. 😄')
                 .replace(/\{\{cancellationReason\}\}/g, 'Item indisponível')
                 .replace(/\{\{itensPedido\}\}/g, '• 1x Pizza Margherita\n• 1x Refrigerante')
-                .replace(/\{\{totalPagamento\}\}/g, '🧾 Total: R$ 129,00\n💰 Pagamento via: PIX');
+                .replace(/\{\{totalPagamento\}\}/g, '🧾 Total: R$ 129,00\n💰 Pagamento via: PIX')
+                .replace(/\{\{cashbackEarned\}\}/g, 'Cashback ganho: R$0,15')
+                .replace(/\{\{cashbackTotal\}\}/g, 'Cashback acumulado: R$0,35');
+              // Remover linhas que contêm variáveis não resolvidas (ex: {{algo}})
+              resolved = resolved.split('\n').filter(line => !/\{\{[^}]+\}\}/.test(line)).join('\n');
+              // Limpar linhas vazias consecutivas (máx 2)
+              resolved = resolved.replace(/\n{3,}/g, '\n\n');
+              return resolved.trim();
             };
 
             const rawTemplate = getTemplateForStatus(statusOnboardingModal.statusType!);

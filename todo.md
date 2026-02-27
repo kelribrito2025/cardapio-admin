@@ -7565,3 +7565,4 @@
 - [x] Corrigir borda do modal de onboarding: borda grossa (h-1.5) deve ser fina como a dos cards Kanban
 - [x] Modal de "Pedido pronto": mostrar mensagem de retirada quando pedido é para retirada, e mensagem de entrega quando é para entrega
 - [x] Modal de onboarding: usar os templates reais de Configurações → WhatsApp → Templates no preview, respeitando tipo entrega vs retirada
+- [x] Modal de onboarding: remover variáveis {{cashbackEarned}} e {{cashbackTotal}} do preview quando cashback não está ativo
