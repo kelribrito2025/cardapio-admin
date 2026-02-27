@@ -7545,3 +7545,5 @@
 - [x] Remover card "Conta criada com sucesso!" da tela de onboarding
 - [x] Mover botão "Voltar" para ao lado esquerdo do botão "Continuar" em todas as telas do onboarding
 - [x] Indicador de progresso animado no stepper do onboarding — transição suave ao avançar/voltar entre passos
+- [x] Bug: Número do step piscando ao digitar nos campos do onboarding (animate-ping re-renderiza)
+- [x] Aumentar espaçamento entre círculo do step e label no stepper do onboarding

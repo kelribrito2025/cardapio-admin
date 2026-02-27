@@ -338,7 +338,7 @@ export default function Onboarding() {
     });
   };
 
-  // Step indicator component with smooth animations
+  // Step indicator data (stable reference, never changes)
   const steps = [
     { number: 1, label: "Dados" },
     { number: 2, label: "Atendimento" },
@@ -347,7 +347,7 @@ export default function Onboarding() {
   ];
 
   const StepIndicator = () => (
-    <div className="flex items-center justify-center gap-0.5 sm:gap-1 xl:gap-2 mb-2 lg:mb-4 xl:mb-5 2xl:mb-6 flex-wrap">
+    <div className="flex items-center justify-center gap-0.5 sm:gap-1 xl:gap-2 mb-2 lg:mb-4 xl:mb-5 2xl:mb-6 flex-nowrap">
       {steps.map((step, idx) => {
         const isCompleted = currentStep > step.number;
         const isActive = currentStep === step.number;
@@ -356,16 +356,15 @@ export default function Onboarding() {
         return (
           <div key={step.number} className="flex items-center">
             {/* Step circle + label */}
-            <div className="flex items-center gap-1">
-              <div className="relative">
-                {/* Pulse ring for active step */}
-                {isActive && (
-                  <span className="absolute inset-0 rounded-full animate-ping bg-primary/30" style={{ animationDuration: '2s' }} />
-                )}
-                {/* Subtle glow for active step */}
-                {isActive && (
-                  <span className="absolute -inset-1 rounded-full bg-primary/15 animate-pulse" style={{ animationDuration: '2.5s' }} />
-                )}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className={["relative", isActive ? "mr-0.5" : ""].join(" ")}>
+                {/* Subtle glow ring for active step — CSS-only, no re-trigger on re-render */}
+                <span
+                  className={[
+                    "absolute -inset-1 rounded-full transition-opacity duration-500",
+                    isActive ? "opacity-100 step-glow-ring" : "opacity-0",
+                  ].join(" ")}
+                />
                 <div
                   className={[
                     "relative w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-semibold",
@@ -377,28 +376,16 @@ export default function Onboarding() {
                   ].join(" ")}
                 >
                   {isCompleted ? (
-                    <Check
-                      className="h-3 w-3 transition-all duration-300"
-                      style={{
-                        animation: 'stepCheckIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-                      }}
-                    />
+                    <Check className="h-3 w-3" />
                   ) : (
-                    <span
-                      className="transition-all duration-300"
-                      style={{
-                        animation: isActive ? 'stepNumberIn 0.35s ease-out forwards' : undefined,
-                      }}
-                    >
-                      {step.number}
-                    </span>
+                    <span>{step.number}</span>
                   )}
                 </div>
               </div>
               <span
                 className={[
                   "text-[10px] lg:text-xs xl:text-sm 2xl:text-base font-medium hidden sm:block",
-                  "transition-all duration-400 ease-out",
+                  "transition-colors duration-400 ease-out",
                   isReached ? "text-foreground" : "text-muted-foreground",
                 ].join(" ")}
               >
@@ -423,16 +410,15 @@ export default function Onboarding() {
         );
       })}
 
-      {/* Keyframe animations injected via style tag */}
+      {/* CSS-only animations — no JS re-trigger on state changes */}
       <style>{`
-        @keyframes stepCheckIn {
-          0% { opacity: 0; transform: scale(0) rotate(-45deg); }
-          60% { opacity: 1; transform: scale(1.2) rotate(0deg); }
-          100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        .step-glow-ring {
+          background: oklch(0.637 0.237 25.331 / 0.15);
+          animation: stepGlow 2.5s ease-in-out infinite;
         }
-        @keyframes stepNumberIn {
-          0% { opacity: 0; transform: scale(0.5) translateY(4px); }
-          100% { opacity: 1; transform: scale(1) translateY(0); }
+        @keyframes stepGlow {
+          0%, 100% { opacity: 0.4; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.1); }
         }
       `}</style>
     </div>
