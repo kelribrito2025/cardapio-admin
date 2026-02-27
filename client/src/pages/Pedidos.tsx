@@ -2577,7 +2577,7 @@ export default function Pedidos() {
           {statusOnboardingModal.statusType && (() => {
             const modalConfig = {
               preparing: {
-                borderColor: '#dc2626',
+                borderClass: 'border-t-4 border-t-red-500',
                 iconBg: 'bg-red-100 dark:bg-red-950/50',
                 iconColor: 'text-red-600',
                 icon: ChefHat,
@@ -2587,7 +2587,7 @@ export default function Pedidos() {
                 buttonLabel: 'Entendi, aceitar pedido',
               },
               ready: {
-                borderColor: '#059669',
+                borderClass: 'border-t-4 border-t-emerald-500',
                 iconBg: 'bg-emerald-100 dark:bg-emerald-950/50',
                 iconColor: 'text-emerald-600',
                 icon: Package,
@@ -2597,7 +2597,7 @@ export default function Pedidos() {
                 buttonLabel: 'Entendi, marcar como pronto',
               },
               completed: {
-                borderColor: '#6b7280',
+                borderClass: 'border-t-4 border-t-muted-foreground/50',
                 iconBg: 'bg-gray-100 dark:bg-gray-800',
                 iconColor: 'text-gray-600',
                 icon: CheckCircle,
@@ -2633,10 +2633,7 @@ export default function Pedidos() {
 
             return (
               <>
-                {/* Barra colorida no topo */}
-                <div className="h-1.5 w-full" style={{ backgroundColor: cfg.borderColor }} />
-                
-                <div className="px-6 pt-5 pb-6">
+                <div className={cn("px-6 pt-5 pb-6", cfg.borderClass)}>
                   {/* Header com ícone */}
                   <div className="flex items-start gap-3 mb-4">
                     <div className={cn("p-2.5 rounded-xl flex-shrink-0", cfg.iconBg)}>
@@ -2753,8 +2750,12 @@ export default function Pedidos() {
 
                   {/* Botão de confirmação principal */}
                   <Button
-                    className="w-full rounded-xl h-10 font-semibold"
-                    style={{ backgroundColor: cfg.borderColor, color: '#ffffff' }}
+                    className={cn(
+                      "w-full rounded-xl h-10 font-semibold",
+                      statusOnboardingModal.statusType === 'preparing' && 'bg-red-500 hover:bg-red-600 text-white',
+                      statusOnboardingModal.statusType === 'ready' && 'bg-emerald-500 hover:bg-emerald-600 text-white',
+                      statusOnboardingModal.statusType === 'completed' && 'bg-gray-500 hover:bg-gray-600 text-white',
+                    )}
                     onClick={handleStatusOnboardingConfirm}
                   >
                     <Send className="h-4 w-4 mr-2" />

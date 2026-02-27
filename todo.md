@@ -7562,3 +7562,4 @@
 - [x] Redesenhar card WhatsApp no estilo /configuracoes (header verde com foto, nome do restaurante e "online", badge "HOJE")
 - [x] Trocar checkbox "Não mostrar novamente" por botão vazado branco acima do botão principal
 - [x] Aplicar mesmas mudanças de estilo nos modais de ready e completed
+- [x] Corrigir borda do modal de onboarding: borda grossa (h-1.5) deve ser fina como a dos cards Kanban
