@@ -1046,7 +1046,7 @@ export default function InlineComplementsDropdown({
                         Pausado
                       </span>
                     )}
-                    {group.isRequired ? (
+                    {(group.isRequired || group.minQuantity >= 1) ? (
                       <span className="text-[10px] md:text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full font-medium">
                         Obrigatório
                       </span>
@@ -1121,9 +1121,14 @@ export default function InlineComplementsDropdown({
                     <input
                       type="checkbox"
                       id={`required-${group.id}`}
-                      checked={!!group.isRequired}
+                      checked={group.minQuantity >= 1}
                       onChange={(e) => {
-                        updateGroupMutation.mutate({ id: group.id, isRequired: e.target.checked });
+                        const newRequired = e.target.checked;
+                        updateGroupMutation.mutate({ 
+                          id: group.id, 
+                          isRequired: newRequired,
+                          minQuantity: newRequired ? Math.max(group.minQuantity || 0, 1) : 0,
+                        });
                       }}
                       className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
                     />

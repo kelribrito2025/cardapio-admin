@@ -440,7 +440,7 @@ export function MobilePDVModal({
     // Verificar complementos obrigatórios
     if (productComplements) {
       for (const group of productComplements) {
-        if (group.isRequired) {
+        if (group.minQuantity > 0) {
           const selectedInGroup = selectedComplements.get(group.id);
           const totalSelected = selectedInGroup
             ? Array.from(selectedInGroup.values()).reduce((a, b) => a + b, 0)
@@ -1007,9 +1007,13 @@ export function MobilePDVModal({
                         <div className="bg-muted/50 px-4 py-3 border-b border-border" style={{paddingTop: '8px', height: '58px'}}>
                           <div className="flex items-center justify-between">
                             <h4 className="font-semibold text-foreground">{group.name}</h4>
-                            {group.isRequired && (
+                            {(group.isRequired || group.minQuantity >= 1) ? (
                               <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
                                 Obrigatório
+                              </span>
+                            ) : (
+                              <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-medium">
+                                Opcional
                               </span>
                             )}
                           </div>
@@ -1216,10 +1220,10 @@ export function MobilePDVModal({
                 let requiredGroupsMet = true;
                 if (productComplements) {
                   productComplements.forEach((group) => {
-                    if (group.isRequired || group.minQuantity > 0) {
+                    if (group.minQuantity > 0) {
                       const selectedInGroup = selectedComplements.get(group.id);
                       const selectedCount = selectedInGroup ? Array.from(selectedInGroup.values()).reduce((a, b) => a + b, 0) : 0;
-                      if (selectedCount < (group.minQuantity || 1)) {
+                      if (selectedCount < group.minQuantity) {
                         requiredGroupsMet = false;
                       }
                     }

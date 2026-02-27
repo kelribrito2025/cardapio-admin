@@ -2895,9 +2895,14 @@ export default function PublicMenu() {
                                   Completo
                                 </span>
                               )}
-                              {!isGroupComplete && group.isRequired && (
+                              {!isGroupComplete && (group.minQuantity >= 1) && (
                                 <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
                                   Obrigatório
+                                </span>
+                              )}
+                              {!isGroupComplete && group.minQuantity === 0 && (
+                                <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">
+                                  Opcional
                                 </span>
                               )}
                             </div>
@@ -3234,11 +3239,11 @@ export default function PublicMenu() {
                 let requiredGroupsMet = true;
                 if (productComplements) {
                   productComplements.forEach((group) => {
-                    if (group.isRequired || group.minQuantity > 0) {
+                    if (group.minQuantity > 0) {
                       const selectedInGroup = selectedComplements.get(group.id);
                       // Contar total de itens selecionados no grupo
                       const selectedCount = selectedInGroup ? Array.from(selectedInGroup.values()).reduce((a, b) => a + b, 0) : 0;
-                      if (selectedCount < (group.minQuantity || 1)) {
+                      if (selectedCount < group.minQuantity) {
                         requiredGroupsMet = false;
                       }
                     }

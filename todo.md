@@ -7576,3 +7576,9 @@
 - [x] Botão "Entendi" como ação principal
 - [x] Botão "Não mostrar este aviso novamente" com persistência em localStorage por estabelecimento
 - [x] Modal só aparece na transição de 1→2 e se não foi dismissado
+
+## Ajuste de Badges Obrigatório/Opcional nos Complementos
+- [x] Exibir badge "Opcional" no menu público quando grupo tem mínimo = 0
+- [x] Unificar regra: mínimo >= 1 → obrigatório automaticamente, mínimo = 0 → opcional
+- [x] Ajustar lógica no admin para sincronizar campo obrigatório com mínimo
+- [x] Ajustar validação no checkout para usar mínimo como fonte de verdade

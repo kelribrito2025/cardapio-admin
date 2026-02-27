@@ -911,7 +911,12 @@ export const appRouter = router({
         isRequired: z.boolean().default(false),
       }))
       .mutation(async ({ input }) => {
-        const id = await db.createComplementGroup(input);
+        // Auto-sync: isRequired is derived from minQuantity
+        const syncedInput = {
+          ...input,
+          isRequired: input.minQuantity >= 1,
+        };
+        const id = await db.createComplementGroup(syncedInput);
         return { id };
       }),
     
@@ -925,6 +930,10 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
+        // Auto-sync: isRequired is derived from minQuantity
+        if (data.minQuantity !== undefined) {
+          data.isRequired = data.minQuantity >= 1;
+        }
         // Cada grupo é independente por produto - sem sincronização global
         await db.updateComplementGroup(id, data);
         return { success: true };
@@ -1081,6 +1090,10 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         const { establishmentId, groupName, newName, ...data } = input;
+        // Auto-sync: isRequired is derived from minQuantity
+        if (data.minQuantity !== undefined) {
+          data.isRequired = data.minQuantity >= 1;
+        }
         const updateData = { ...data, ...(newName ? { name: newName } : {}) };
         await db.updateComplementGroupRulesByName(establishmentId, groupName, updateData);
         return { success: true };

@@ -824,9 +824,13 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <span className="font-semibold text-sm">{group.name}</span>
-                            {group.isRequired && (
+                            {(group.isRequired || group.minQuantity >= 1) ? (
                               <span className="text-[10px] bg-red-100 text-red-700 dark:bg-red-950/30 dark:text-red-400 px-1.5 py-0.5 rounded font-medium">
                                 Obrigatório
+                              </span>
+                            ) : (
+                              <span className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400 px-1.5 py-0.5 rounded font-medium">
+                                Opcional
                               </span>
                             )}
                           </div>
