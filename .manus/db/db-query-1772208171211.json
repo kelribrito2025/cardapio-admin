@@ -1,0 +1,26 @@
+{
+  "query": "\nSELECT 'Categories' as entity, COUNT(*) as count FROM categories WHERE establishmentId = 210006\nUNION ALL\nSELECT 'Products', COUNT(*) FROM products WHERE establishmentId = 210006\nUNION ALL\nSELECT 'Complement Groups', COUNT(*) FROM complementGroups WHERE productId IN (SELECT id FROM products WHERE establishmentId = 210006)\nUNION ALL\nSELECT 'Complement Items', COUNT(*) FROM complementItems WHERE groupId IN (SELECT id FROM complementGroups WHERE productId IN (SELECT id FROM products WHERE establishmentId = 210006));\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute \nSELECT 'Categories' as entity, COUNT(*) as count FROM categories WHERE establishmentId = 210006\nUNION ALL\nSELECT 'Products', COUNT(*) FROM products WHERE establishmentId = 210006\nUNION ALL\nSELECT 'Complement Groups', COUNT(*) FROM complementGroups WHERE productId IN (SELECT id FROM products WHERE establishmentId = 210006)\nUNION ALL\nSELECT 'Complement Items', COUNT(*) FROM complementItems WHERE groupId IN (SELECT id FROM complementGroups WHERE productId IN (SELECT id FROM products WHERE establishmentId = 210006));\n",
+  "rows": [
+    {
+      "entity": "Categories",
+      "count": "9"
+    },
+    {
+      "entity": "Products",
+      "count": "53"
+    },
+    {
+      "entity": "Complement Groups",
+      "count": "94"
+    },
+    {
+      "entity": "Complement Items",
+      "count": "1045"
+    }
+  ],
+  "messages": [],
+  "stdout": "entity\tcount\nCategories\t9\nProducts\t53\nComplement Groups\t94\nComplement Items\t1045\n",
+  "stderr": "",
+  "execution_time_ms": 152
+}

@@ -1,0 +1,55 @@
+{
+  "query": "\nSELECT c.name as categoria, COUNT(p.id) as produtos, c.sortOrder \nFROM categories c \nLEFT JOIN products p ON p.categoryId = c.id \nWHERE c.establishmentId = 210006 \nGROUP BY c.id, c.name, c.sortOrder \nORDER BY c.sortOrder;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute \nSELECT c.name as categoria, COUNT(p.id) as produtos, c.sortOrder \nFROM categories c \nLEFT JOIN products p ON p.categoryId = c.id \nWHERE c.establishmentId = 210006 \nGROUP BY c.id, c.name, c.sortOrder \nORDER BY c.sortOrder;\n",
+  "rows": [
+    {
+      "categoria": "Categoria teste",
+      "produtos": "1",
+      "sortOrder": "0"
+    },
+    {
+      "categoria": "Econômico",
+      "produtos": "8",
+      "sortOrder": "0"
+    },
+    {
+      "categoria": "Combo",
+      "produtos": "4",
+      "sortOrder": "1"
+    },
+    {
+      "categoria": "Sanduíche",
+      "produtos": "20",
+      "sortOrder": "2"
+    },
+    {
+      "categoria": "Artesanal",
+      "produtos": "5",
+      "sortOrder": "3"
+    },
+    {
+      "categoria": "Monte o Seu",
+      "produtos": "1",
+      "sortOrder": "4"
+    },
+    {
+      "categoria": "Porção",
+      "produtos": "2",
+      "sortOrder": "5"
+    },
+    {
+      "categoria": "Bebidas",
+      "produtos": "9",
+      "sortOrder": "6"
+    },
+    {
+      "categoria": "Bebidas Alcoólicas",
+      "produtos": "3",
+      "sortOrder": "7"
+    }
+  ],
+  "messages": [],
+  "stdout": "categoria\tprodutos\tsortOrder\nCategoria teste\t1\t0\nEconômico\t8\t0\nCombo\t4\t1\nSanduíche\t20\t2\nArtesanal\t5\t3\nMonte o Seu\t1\t4\nPorção\t2\t5\nBebidas\t9\t6\nBebidas Alcoólicas\t3\t7\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}

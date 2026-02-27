@@ -1,0 +1,14 @@
+{
+  "query": "\nSELECT 'Categories' as entity, COUNT(*) as total FROM categories WHERE establishmentId = 210006;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute \nSELECT 'Categories' as entity, COUNT(*) as total FROM categories WHERE establishmentId = 210006;\n",
+  "rows": [
+    {
+      "entity": "Categories",
+      "total": "9"
+    }
+  ],
+  "messages": [],
+  "stdout": "entity\ttotal\nCategories\t9\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}
