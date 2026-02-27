@@ -493,28 +493,6 @@ export default function Onboarding() {
       <div className="w-full lg:w-1/2 xl:w-[45%] bg-muted/50 h-full flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 lg:p-6 xl:p-8 2xl:p-10 flex items-start xl:items-center justify-center">
           <div className="w-full max-w-md xl:max-w-lg 2xl:max-w-xl py-4 xl:py-6 2xl:py-8">
-          {/* Success Badge - Only show on Step 1 */}
-          {showSuccessBadge && currentStep === 1 && (
-            <div className="mb-2 lg:mb-4 bg-green-50 border border-green-200 rounded-lg p-2 lg:p-3 relative">
-              <button
-                onClick={() => setShowSuccessBadge(false)}
-                className="absolute top-1.5 right-1.5 lg:top-2 lg:right-2 text-green-600 hover:text-green-800 transition-colors"
-              >
-                <X className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
-              </button>
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 lg:w-8 lg:h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <CheckCircle2 className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-green-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-green-800 text-xs lg:text-sm">Conta criada com sucesso!</h3>
-                  <p className="text-[10px] lg:text-xs xl:text-sm 2xl:text-base text-green-700">
-                    Agora vamos cadastrar seu restaurante
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Logo - Mobile only */}
           <div className="flex items-center gap-2 mb-2 lg:mb-4 lg:hidden">
@@ -705,26 +683,24 @@ export default function Onboarding() {
                   </div>
                 </div>
 
-                {/* Next button */}
-                <div className="pt-2 lg:pt-4">
+                {/* Navigation buttons */}
+                <div className="pt-2 lg:pt-4 flex items-center gap-3">
+                  <a
+                    href="/login"
+                    className="flex items-center justify-center gap-1.5 h-10 lg:h-12 xl:h-13 2xl:h-14 px-4 lg:px-6 rounded-lg border border-border text-sm lg:text-base xl:text-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200"
+                  >
+                    <ArrowLeft className="h-4 w-4 lg:h-5 lg:w-5" />
+                    Voltar
+                  </a>
                   <Button
                     type="button"
                     onClick={handleNextStep}
                     disabled={!isStep1Valid}
-                    className="w-full h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base xl:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                    className="flex-1 h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base xl:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                   >
                     Continuar
                     <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
                   </Button>
-                  
-                  {/* Link para voltar ao login */}
-                  <a
-                    href="/login"
-                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-muted-foreground hover:text-foreground transition-colors mt-3 lg:mt-4"
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
-                    Voltar
-                  </a>
                 </div>
               </div>
             )}
@@ -912,26 +888,24 @@ export default function Onboarding() {
                 </div>
 
                 {/* Buttons */}
-                <div className="flex flex-col items-center pt-2">
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={handlePrevStep}
+                    className="flex items-center justify-center gap-1.5 h-10 lg:h-12 xl:h-13 2xl:h-14 px-4 lg:px-6 rounded-lg border border-border text-sm lg:text-base xl:text-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200"
+                  >
+                    <ArrowLeft className="h-4 w-4 lg:h-5 lg:w-5" />
+                    Voltar
+                  </button>
                   <Button
                     type="button"
                     onClick={handleNextStep}
                     disabled={!isStep2Valid}
-                    className="w-full h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base xl:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                    className="flex-1 h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base xl:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                   >
                     Continuar
                     <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
                   </Button>
-                  
-                  {/* Link para voltar */}
-                  <button
-                    type="button"
-                    onClick={handlePrevStep}
-                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-muted-foreground hover:text-foreground transition-colors mt-3 lg:mt-4"
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
-                    Voltar
-                  </button>
                 </div>
               </div>
             )}
@@ -1030,26 +1004,24 @@ export default function Onboarding() {
                 </div>
 
                 {/* Buttons */}
-                <div className="flex flex-col items-center pt-2">
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={handlePrevStep}
+                    className="flex items-center justify-center gap-1.5 h-10 lg:h-12 xl:h-13 2xl:h-14 px-4 lg:px-6 rounded-lg border border-border text-sm lg:text-base xl:text-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200"
+                  >
+                    <ArrowLeft className="h-4 w-4 lg:h-5 lg:w-5" />
+                    Voltar
+                  </button>
                   <Button
                     type="button"
                     onClick={handleNextStep}
                     disabled={!isStep3Valid}
-                    className="w-full h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base xl:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                    className="flex-1 h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base xl:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                   >
                     Continuar
                     <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
                   </Button>
-                  
-                  {/* Link para voltar */}
-                  <button
-                    type="button"
-                    onClick={handlePrevStep}
-                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-muted-foreground hover:text-foreground transition-colors mt-3 lg:mt-4"
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
-                    Voltar
-                  </button>
                 </div>
               </div>
             )}
@@ -1130,11 +1102,19 @@ export default function Onboarding() {
                 </div>
 
                 {/* Buttons */}
-                <div className="flex flex-col items-center pt-2">
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={handlePrevStep}
+                    className="flex items-center justify-center gap-1.5 h-10 lg:h-12 xl:h-13 2xl:h-14 px-4 lg:px-6 rounded-lg border border-border text-sm lg:text-base xl:text-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200"
+                  >
+                    <ArrowLeft className="h-4 w-4 lg:h-5 lg:w-5" />
+                    Voltar
+                  </button>
                   <Button
                     type="submit"
                     disabled={createEstablishmentMutation.isPending || !isStep4Valid}
-                    className="w-full h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base xl:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                    className="flex-1 h-10 lg:h-12 xl:h-13 2xl:h-14 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-sm lg:text-base xl:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                   >
                     {createEstablishmentMutation.isPending ? (
                       <>
@@ -1148,16 +1128,6 @@ export default function Onboarding() {
                       </>
                     )}
                   </Button>
-                  
-                  {/* Link para voltar */}
-                  <button
-                    type="button"
-                    onClick={handlePrevStep}
-                    className="flex items-center justify-center gap-1.5 text-xs lg:text-sm xl:text-base text-muted-foreground hover:text-foreground transition-colors mt-3 lg:mt-4"
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
-                    Voltar
-                  </button>
                 </div>
 
                 <p className="text-[10px] lg:text-xs xl:text-sm 2xl:text-base text-center text-muted-foreground">

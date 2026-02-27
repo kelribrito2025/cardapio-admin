@@ -7542,3 +7542,5 @@
 - [x] Animação fade+slide ao mover card entre colunas (Novos→Preparo→Prontos→Completos)
 - [x] Animação ao entrar pedido novo e ao reordenar dentro da mesma coluna
 - [x] Adicionar modal de confirmação ao limpar pedidos completos/cancelados no Kanban para evitar cliques acidentais
+- [x] Remover card "Conta criada com sucesso!" da tela de onboarding
+- [x] Mover botão "Voltar" para ao lado esquerdo do botão "Continuar" em todas as telas do onboarding
