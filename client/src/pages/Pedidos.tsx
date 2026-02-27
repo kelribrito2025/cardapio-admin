@@ -2598,7 +2598,7 @@ export default function Pedidos() {
                 icon: Package,
                 title: 'Pedido pronto',
                 description: 'Ao marcar como pronto, o cliente será avisado via WhatsApp que o pedido está pronto.',
-                messagePreview: '✅ *João Silva,* seu pedido *#1234* está pronto!\n\n🛥 Nosso entregador já está a caminho.',
+                messagePreview: '✅ *João Silva,* seu pedido *#1234* está pronto!\n\n🛵 Nosso entregador já está a caminho.',
                 buttonLabel: 'Entendi, marcar como pronto',
               },
               completed: {
