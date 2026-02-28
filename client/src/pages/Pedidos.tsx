@@ -695,7 +695,7 @@ export default function Pedidos() {
       }).join('') || '';
       
       const discount = orderData.discount ? Number(orderData.discount) : 0;
-      const deliveryBadge = orderData.deliveryType === 'delivery' ? 'ENTREGA' : orderData.deliveryType === 'dine_in' ? 'CONSUMO LOCAL' : 'RETIRADA';
+      const deliveryBadge = orderData.deliveryType === 'delivery' ? (orderData.status === 'completed' ? 'ENTREGUE' : 'ENTREGA') : orderData.deliveryType === 'dine_in' ? 'CONSUMO LOCAL' : 'RETIRADA';
       const deliveryText = orderData.deliveryType === 'delivery' 
         ? `Entrega: ${orderData.customerAddress || 'Endereço não informado'}` 
         : orderData.deliveryType === 'dine_in'
@@ -1461,8 +1461,8 @@ export default function Pedidos() {
                                   </span>
                                 )}
                               </div>
-                              <span className={cn("py-0.5 font-bold uppercase tracking-wide", order.deliveryType === "delivery" && "animate-pulse")} style={{borderRadius: '5px', fontSize: '8px', height: '16px', paddingRight: '5px', paddingLeft: '5px', color: config.badgeText, backgroundColor: config.badgeBg}}>
-                                {order.deliveryType === "delivery" ? "Entrega" : order.deliveryType === "dine_in" ? "Consumo" : "Retirada"}
+                              <span className={cn("py-0.5 font-bold uppercase tracking-wide", order.deliveryType === "delivery" && column.id !== 'completed' && "animate-pulse")} style={{borderRadius: '5px', fontSize: '8px', height: '16px', paddingRight: '5px', paddingLeft: '5px', color: config.badgeText, backgroundColor: config.badgeBg}}>
+                                {order.deliveryType === "delivery" ? (column.id === 'completed' ? "Entregue" : "Entrega") : order.deliveryType === "dine_in" ? "Consumo" : "Retirada"}
                               </span>
                             </div>
                           </div>
@@ -1802,7 +1802,7 @@ export default function Pedidos() {
                       className="inline-flex items-center justify-center py-0.5 font-bold uppercase tracking-wide w-fit"
                       style={{ borderRadius: '5px', fontSize: '9px', height: '18px', paddingRight: '6px', paddingLeft: '6px', color: config.badgeText, backgroundColor: config.badgeBg }}
                     >
-                      {order.deliveryType === 'delivery' ? 'Entrega' : order.deliveryType === 'dine_in' ? 'Consumo' : 'Retirada'}
+                      {order.deliveryType === 'delivery' ? (order.status === 'completed' ? 'Entregue' : 'Entrega') : order.deliveryType === 'dine_in' ? 'Consumo' : 'Retirada'}
                     </span>
 
                     {/* Pagamento */}

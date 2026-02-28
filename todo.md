@@ -7639,3 +7639,5 @@
 
 ## Cor Modal Entregador
 - [x] Mudar cor do modal de entregador de laranja para verde #059669
+## Badge Entrega nos Pedidos Completos
+- [x] Mudar badge de "ENTREGA" para "ENTREGUE" nos pedidos da coluna Completos (status finished)
