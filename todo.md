@@ -7650,3 +7650,5 @@
 - [x] Adicionar res.flush() após res.write() em todas as funções SSE (sendEvent, sendPrinterEvent, sendOrderEvent, sendOrderIdEvent, sendCustomerEvent)
 - [x] Reduzir heartbeat de 30s para 15s
 - [x] Adicionar Transfer-Encoding: chunked nos headers SSE
+## Bug: Mensagens de confirmação ao entregador não chegam
+- [x] Investigar e corrigir por que o entregador não recebe mensagem de confirmação ao clicar "Sair para entrega" e "Pedido entregue"

@@ -2670,9 +2670,16 @@ async function startServer() {
           // ========== ENTREGADOR: SAIR PARA ENTREGA ==========
           const orderNumber = deliveryStartMatch[1];
           console.log('[WhatsApp Webhook] Entregador saiu para entrega:', orderNumber);
+          console.log('[Delivery Start] senderPhone extraído:', senderPhone);
+          console.log('[Delivery Start] Body completo para debug:', JSON.stringify({
+            sender: body?.sender, from: body?.from,
+            msgSender: message?.sender, msgFrom: message?.from,
+            participant: message?.participant || body?.participant,
+            remoteJid: message?.key?.remoteJid || body?.key?.remoteJid,
+          }));
           
           try {
-            const { getPublicOrderByNumber, getWhatsappConfig, getEstablishmentById, getOrderItems, updateOrderStatus, getCashbackTransactionByOrderId, getCashbackBalance } = await import('../db');
+            const { getPublicOrderByNumber, getWhatsappConfig, getEstablishmentById, getOrderItems, updateOrderStatus, getDeliveryByOrderId, getDriverById, getCashbackTransactionByOrderId, getCashbackBalance } = await import('../db');
             const orderData = await getPublicOrderByNumber(orderNumber, establishmentId);
             
             if (!orderData) {
@@ -2722,18 +2729,53 @@ async function startServer() {
                 }
               }
               
-              // Confirmar ao entregador
-              if (senderPhone) {
-                const config = await getWhatsappConfig(establishmentId);
-                if (config?.instanceToken) {
-                  const { sendTextMessage } = await import('./uazapi');
-                  const phone = senderPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
-                  await sendTextMessage(
-                    config.instanceToken,
-                    phone,
-                    `🛵 Entrega ${orderNumber} iniciada.\n👤 Cliente informado que o pedido está a caminho.\n📦 Status atualizado para: "Em Rota".`
-                  );
+              // Confirmar ao entregador - tentar senderPhone primeiro, fallback para buscar do DB
+              const config = await getWhatsappConfig(establishmentId);
+              if (config?.instanceToken) {
+                const { sendTextMessage } = await import('./uazapi');
+                
+                // Extrair telefone do remetente de múltiplas fontes possíveis
+                let driverPhone = senderPhone 
+                  || message?.participant 
+                  || body?.participant 
+                  || message?.key?.remoteJid 
+                  || body?.key?.remoteJid;
+                
+                // Fallback: buscar telefone do entregador pelo pedido no banco de dados
+                if (!driverPhone) {
+                  console.log('[Delivery Start] senderPhone não encontrado, buscando entregador no DB...');
+                  try {
+                    const delivery = await getDeliveryByOrderId(orderData.id);
+                    if (delivery?.driverId) {
+                      const driver = await getDriverById(delivery.driverId);
+                      if (driver?.whatsapp) {
+                        driverPhone = driver.whatsapp;
+                        console.log('[Delivery Start] Telefone do entregador encontrado no DB:', driverPhone);
+                      }
+                    }
+                  } catch (dbErr) {
+                    console.error('[Delivery Start] Erro ao buscar entregador no DB:', dbErr);
+                  }
                 }
+                
+                if (driverPhone) {
+                  const phone = driverPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
+                  console.log('[Delivery Start] Enviando confirmação ao entregador:', phone);
+                  try {
+                    await sendTextMessage(
+                      config.instanceToken,
+                      phone,
+                      `🛵 Entrega ${orderNumber} iniciada.\n👤 Cliente informado que o pedido está a caminho.\n📦 Status atualizado para: "Em Rota".`
+                    );
+                    console.log('[Delivery Start] ✅ Confirmação enviada ao entregador com sucesso');
+                  } catch (sendErr) {
+                    console.error('[Delivery Start] ❌ Erro ao enviar confirmação ao entregador:', sendErr);
+                  }
+                } else {
+                  console.error('[Delivery Start] ❌ Não foi possível determinar o telefone do entregador');
+                }
+              } else {
+                console.error('[Delivery Start] ❌ Config WhatsApp não encontrada ou sem instanceToken');
               }
             }
           } catch (err) {
@@ -2813,18 +2855,54 @@ async function startServer() {
                 }
               }
               
-              // Confirmar ao entregador
-              if (senderPhone) {
-                const config = await getWhatsappConfig(establishmentId);
-                if (config?.instanceToken) {
-                  const { sendTextMessage } = await import('./uazapi');
-                  const phone = senderPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
-                  await sendTextMessage(
-                    config.instanceToken,
-                    phone,
-                    `✅ Entrega ${orderNumber} concluída com sucesso!\n👤 Cliente notificado sobre a conclusão.\n📦 Pedido encerrado no sistema.`
-                  );
+              // Confirmar ao entregador - tentar senderPhone primeiro, fallback para buscar do DB
+              const configDriver = await getWhatsappConfig(establishmentId);
+              if (configDriver?.instanceToken) {
+                const { sendTextMessage } = await import('./uazapi');
+                
+                // Extrair telefone do remetente de múltiplas fontes possíveis
+                let driverPhone = senderPhone 
+                  || message?.participant 
+                  || body?.participant 
+                  || message?.key?.remoteJid 
+                  || body?.key?.remoteJid;
+                
+                // Fallback: buscar telefone do entregador pelo pedido no banco de dados
+                if (!driverPhone) {
+                  console.log('[Delivery Done] senderPhone não encontrado, buscando entregador no DB...');
+                  try {
+                    const { getDeliveryByOrderId, getDriverById } = await import('../db');
+                    const delivery = await getDeliveryByOrderId(orderData.id);
+                    if (delivery?.driverId) {
+                      const driver = await getDriverById(delivery.driverId);
+                      if (driver?.whatsapp) {
+                        driverPhone = driver.whatsapp;
+                        console.log('[Delivery Done] Telefone do entregador encontrado no DB:', driverPhone);
+                      }
+                    }
+                  } catch (dbErr) {
+                    console.error('[Delivery Done] Erro ao buscar entregador no DB:', dbErr);
+                  }
                 }
+                
+                if (driverPhone) {
+                  const phone = driverPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
+                  console.log('[Delivery Done] Enviando confirmação ao entregador:', phone);
+                  try {
+                    await sendTextMessage(
+                      configDriver.instanceToken,
+                      phone,
+                      `✅ Entrega ${orderNumber} concluída com sucesso!\n👤 Cliente notificado sobre a conclusão.\n📦 Pedido encerrado no sistema.`
+                    );
+                    console.log('[Delivery Done] ✅ Confirmação enviada ao entregador com sucesso');
+                  } catch (sendErr) {
+                    console.error('[Delivery Done] ❌ Erro ao enviar confirmação ao entregador:', sendErr);
+                  }
+                } else {
+                  console.error('[Delivery Done] ❌ Não foi possível determinar o telefone do entregador');
+                }
+              } else {
+                console.error('[Delivery Done] ❌ Config WhatsApp não encontrada ou sem instanceToken');
               }
             }
           } catch (err) {
