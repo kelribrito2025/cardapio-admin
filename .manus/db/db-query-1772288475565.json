@@ -1,0 +1,60 @@
+{
+  "query": "SELECT id, name, pixKey FROM establishments LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, pixKey FROM establishments LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Burger House Gourmet",
+      "pixKey": "pix@burgerhouse.com.br"
+    },
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "pixKey": "88997904278"
+    },
+    {
+      "id": "60018",
+      "name": "Big Norte",
+      "pixKey": "34002837000191"
+    },
+    {
+      "id": "90001",
+      "name": "Palácio do Açai",
+      "pixKey": "2799503-5451"
+    },
+    {
+      "id": "150004",
+      "name": "Potim Açai",
+      "pixKey": "34 99778-6737"
+    },
+    {
+      "id": "210001",
+      "name": "Sr. Macarrão",
+      "pixKey": "34997813557"
+    },
+    {
+      "id": "210002",
+      "name": "Açai Roxedo",
+      "pixKey": "98991660471"
+    },
+    {
+      "id": "210003",
+      "name": "Lanche PS",
+      "pixKey": "NULL"
+    },
+    {
+      "id": "210004",
+      "name": "Casa de Carnes",
+      "pixKey": "NULL"
+    },
+    {
+      "id": "210005",
+      "name": "Wood Restaurante",
+      "pixKey": "44119631000108"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tpixKey\n1\tBurger House Gourmet\tpix@burgerhouse.com.br\n30001\tSushi Haruno\t88997904278\n60018\tBig Norte\t34002837000191\n90001\tPalácio do Açai\t2799503-5451\n150004\tPotim Açai\t34 99778-6737\n210001\tSr. Macarrão\t34997813557\n210002\tAçai Roxedo\t98991660471\n210003\tLanche PS\tNULL\n210004\tCasa de Carnes\tNULL\n210005\tWood Restaurante\t44119631000108\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

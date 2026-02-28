@@ -861,7 +861,7 @@ export async function sendOrderConfirmationRequest(
 
 /**
  * Send a PIX copy button via WhatsApp
- * Uses UAZAPI native /send/pix endpoint that creates a WhatsApp native PIX button
+ * Uses UAZAPI native /send/pix-button endpoint that creates a WhatsApp native PIX button
  * When the client taps the button, the PIX key is copied to clipboard
  */
 export async function sendPixButton(
@@ -869,7 +869,7 @@ export async function sendPixButton(
   phone: string,
   pixKey: string,
   pixKeyType?: string,
-  merchantName?: string
+  pixName?: string
 ): Promise<SendTextResponse> {
   try {
     // Format phone number (remove non-digits and ensure country code)
@@ -881,39 +881,39 @@ export async function sendPixButton(
     }
     
     // Detect PIX key type if not provided
-    let type = pixKeyType || 'EVP';
+    let pixType = pixKeyType || 'EVP';
     if (!pixKeyType) {
       const cleanKey = pixKey.replace(/\D/g, '');
       if (pixKey.includes('@')) {
-        type = 'EMAIL';
+        pixType = 'EMAIL';
       } else if (cleanKey.length === 11 && !pixKey.includes('+')) {
         // Could be CPF or phone - check if starts with valid phone prefix
-        type = 'CPF';
+        pixType = 'CPF';
       } else if (cleanKey.length === 14) {
-        type = 'CNPJ';
+        pixType = 'CNPJ';
       } else if (pixKey.startsWith('+') || (cleanKey.length >= 10 && cleanKey.length <= 13)) {
-        type = 'PHONE';
+        pixType = 'PHONE';
       } else {
-        type = 'EVP'; // Random key (UUID format)
+        pixType = 'EVP'; // Random key (UUID format)
       }
     }
     
-    console.log('[UAZAPI] Enviando botão PIX para:', formattedPhone, '| tipo:', type);
+    console.log('[UAZAPI] Enviando botão PIX para:', formattedPhone, '| pixType:', pixType, '| pixKey:', pixKey);
     
     const body: Record<string, unknown> = {
       number: formattedPhone,
       pixKey: pixKey,
-      type: type,
+      pixType: pixType,
     };
     
-    if (merchantName) {
-      body.merchantName = merchantName;
+    if (pixName) {
+      body.pixName = pixName;
     }
     
     const response = await makeInstanceRequest<{
       id?: string;
       message?: string;
-    }>(instanceToken, '/send/pix', 'POST', body);
+    }>(instanceToken, '/send/pix-button', 'POST', body);
     
     console.log('[UAZAPI] ✅ Botão PIX enviado com sucesso:', { phone: formattedPhone, messageId: response.id });
     

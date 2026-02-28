@@ -3683,7 +3683,7 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           if (sendResult.success) {
             console.log('[DB:createPublicOrder] ✅ Notificação WhatsApp NOVO PEDIDO enviada com sucesso:', orderNumber, 'messageId:', sendResult.messageId);
             
-            // Enviar mensagem separada com chave PIX se pagamento for PIX e chave estiver cadastrada
+            // Enviar botão PIX nativo se pagamento for PIX e chave estiver cadastrada
             if (data.paymentMethod === 'pix' && establishment?.pixKey) {
               try {
                 const { sendPixButton } = await import('./_core/uazapi');
