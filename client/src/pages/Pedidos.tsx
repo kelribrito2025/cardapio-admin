@@ -1589,8 +1589,8 @@ export default function Pedidos() {
                             </Button>
                             {nextAction && (
                               nextAction.driverControlled ? (
-                                <div className="flex-1 h-8 rounded-lg shadow-sm text-xs flex items-center justify-center gap-1.5 bg-amber-100 text-amber-800 border border-amber-200 cursor-default" title="A finalização do pedido é realizada pelo entregador após marcar como entregue.">
-                                  <Bike className="h-3.5 w-3.5" />
+                                <div className="flex-1 h-8 rounded-lg shadow-sm text-xs font-semibold flex items-center justify-center bg-amber-100 text-amber-800 border border-amber-200 cursor-default" title="A finalização do pedido é realizada pelo entregador após marcar como entregue.">
+                                  Entregador
                                 </div>
                               ) : (
                                 <Button
@@ -1812,9 +1812,8 @@ export default function Pedidos() {
                     <div className="flex items-center gap-1 justify-end" onClick={(e) => e.stopPropagation()}>
                       {nextAction && (
                         nextAction.driverControlled ? (
-                          <div className="h-8 px-4 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 bg-amber-100 text-amber-800 border border-amber-200 cursor-default" title="A finalização do pedido é realizada pelo entregador após marcar como entregue.">
-                            <Bike className="h-3.5 w-3.5" />
-                            <span>Entregador</span>
+                          <div className="h-8 px-4 rounded-lg text-xs font-semibold flex items-center justify-center bg-amber-100 text-amber-800 border border-amber-200 cursor-default" title="A finalização do pedido é realizada pelo entregador após marcar como entregue.">
+                            Entregador
                           </div>
                         ) : (
                           <Button
