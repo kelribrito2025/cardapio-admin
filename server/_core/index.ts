@@ -2717,7 +2717,7 @@ async function startServer() {
                   await sendTextMessage(
                     config.instanceToken,
                     phone,
-                    `✅ Entrega do pedido ${orderNumber} iniciada! O cliente foi notificado.`
+                    `🛵 Entrega ${orderNumber} iniciada.\n👤 Cliente informado que o pedido está a caminho.\n📦 Status atualizado para: "Em Rota".`
                   );
                 }
               }
@@ -2808,7 +2808,7 @@ async function startServer() {
                   await sendTextMessage(
                     config.instanceToken,
                     phone,
-                    `✅ Pedido ${orderNumber} marcado como entregue! Obrigado.`
+                    `✅ Entrega ${orderNumber} concluída com sucesso!\n👤 Cliente notificado sobre a conclusão.\n📦 Pedido encerrado no sistema.`
                   );
                 }
               }

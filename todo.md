@@ -7641,3 +7641,6 @@
 - [x] Mudar cor do modal de entregador de laranja para verde #059669
 ## Badge Entrega nos Pedidos Completos
 - [x] Mudar badge de "ENTREGA" para "ENTREGUE" nos pedidos da coluna Completos (status finished)
+## Mensagens de Confirmação ao Entregador
+- [x] Enviar mensagem de confirmação ao entregador quando clicar "Sair para entrega" (🛵 Entrega iniciada, cliente informado, status atualizado)
+- [x] Enviar mensagem de confirmação ao entregador quando clicar "Pedido entregue" (✅ Entrega concluída, cliente notificado, pedido encerrado)
