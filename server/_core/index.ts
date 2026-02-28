@@ -2617,6 +2617,102 @@ async function startServer() {
           if (result.success) {
             console.log('[WhatsApp Webhook] Pedido confirmado com sucesso, sem mensagem automática');
           }
+        } else if (buttonId.match(/delivery_start_(#P\d+)/)) {
+          // === ENTREGADOR CLICOU "SAIR PARA ENTREGA" ===
+          const deliveryMatch = buttonId.match(/delivery_start_(#P\d+)/);
+          const orderNumber = deliveryMatch[1];
+          console.log('[WhatsApp Webhook] Entregador saiu para entrega:', orderNumber);
+          
+          try {
+            const { getPublicOrderByNumber, updateOrderStatus, getWhatsappConfig, getEstablishmentById, getOrderItems, getDeliveryFinisher, getCashbackTransactionByOrderId, getCashbackBalance } = await import('../db');
+            const { sendOrderStatusNotification, sendTextMessage: sendText } = await import('./uazapi');
+            
+            // Buscar pedido pelo número
+            const orderData = await getPublicOrderByNumber(orderNumber, establishmentId);
+            if (!orderData) {
+              console.log('[WhatsApp Webhook] Pedido não encontrado:', orderNumber);
+            } else {
+              // Verificar se deliveryFinisher é "driver"
+              const finisher = await getDeliveryFinisher(establishmentId);
+              if (finisher !== 'driver') {
+                console.log('[WhatsApp Webhook] deliveryFinisher não é driver, ignorando botão');
+              } else if (orderData.status !== 'out_for_delivery' && orderData.status !== 'ready') {
+                console.log('[WhatsApp Webhook] Pedido não está em status válido para finalizar:', orderData.status);
+              } else {
+                // Atualizar status para completed
+                await updateOrderStatus(orderData.id, 'completed');
+                console.log('[WhatsApp Webhook] Pedido finalizado pelo entregador:', orderNumber);
+                
+                // Enviar notificação ao cliente (template "completed")
+                if (orderData.customerPhone) {
+                  const config = await getWhatsappConfig(establishmentId);
+                  if (config && config.instanceToken && config.status === 'connected' && config.notifyOnCompleted) {
+                    const est = await getEstablishmentById(establishmentId);
+                    const items = await getOrderItems(orderData.id);
+                    
+                    // Buscar info de cashback
+                    let cashbackInfo: { cashbackEarned: string; cashbackTotal: string } | null = null;
+                    try {
+                      if (est?.cashbackEnabled && est?.rewardProgramType === 'cashback') {
+                        const cashbackTx = await getCashbackTransactionByOrderId(orderData.id);
+                        if (cashbackTx && parseFloat(cashbackTx.amount) > 0) {
+                          const balance = await getCashbackBalance(establishmentId, orderData.customerPhone);
+                          cashbackInfo = {
+                            cashbackEarned: cashbackTx.amount,
+                            cashbackTotal: balance?.balance || '0.00',
+                          };
+                        }
+                      }
+                    } catch (cbErr) {
+                      console.error('[WhatsApp Webhook] Erro ao buscar cashback:', cbErr);
+                    }
+                    
+                    await sendOrderStatusNotification(
+                      config.instanceToken,
+                      orderData.customerPhone,
+                      'completed',
+                      {
+                        customerName: orderData.customerName || 'Cliente',
+                        orderNumber: orderData.orderNumber,
+                        establishmentName: est?.name || 'Restaurante',
+                        template: config.templateCompleted,
+                        deliveryType: orderData.deliveryType as 'delivery' | 'pickup' | null,
+                        cancellationReason: null,
+                        orderItems: items.map(item => ({
+                          productName: item.productName,
+                          quantity: item.quantity ?? 1,
+                          unitPrice: item.unitPrice,
+                          totalPrice: item.totalPrice,
+                          complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
+                          notes: item.notes,
+                        })),
+                        orderTotal: orderData.total,
+                        paymentMethod: orderData.paymentMethod,
+                        cashbackInfo,
+                        customerAddress: orderData.customerAddress,
+                      }
+                    );
+                    console.log('[WhatsApp Webhook] Notificação de conclusão enviada ao cliente');
+                  }
+                }
+                
+                // Confirmar ao entregador
+                if (senderPhone) {
+                  const config = await getWhatsappConfig(establishmentId);
+                  if (config?.instanceToken) {
+                    const phone = senderPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
+                    await sendText(
+                      config.instanceToken,
+                      phone,
+                      `✅ Pedido ${orderNumber} finalizado com sucesso! Obrigado pela entrega.`
+                    );
+                  }
+                }
+              }
+            }
+          } catch (deliveryError) {
+            console.error('[WhatsApp Webhook] Erro ao processar entrega:', deliveryError);
+          }
         } else if (cancelMatch) {
           const orderNumber = cancelMatch[1];
           console.log('[WhatsApp Webhook] Pedido cancelado pelo cliente:', orderNumber);

@@ -8569,6 +8569,22 @@ export async function updateDriverNotifyTiming(establishmentId: number, timing: 
   await db.update(establishments).set({ driverNotifyTiming: timing }).where(eq(establishments.id, establishmentId));
 }
 
+export async function getDeliveryFinisher(establishmentId: number): Promise<"attendant" | "driver"> {
+  const db = await getDb();
+  if (!db) return "attendant";
+  const [result] = await db.select({ deliveryFinisher: establishments.deliveryFinisher })
+    .from(establishments)
+    .where(eq(establishments.id, establishmentId))
+    .limit(1);
+  return (result?.deliveryFinisher as "attendant" | "driver") || "attendant";
+}
+
+export async function updateDeliveryFinisher(establishmentId: number, finisher: "attendant" | "driver") {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(establishments).set({ deliveryFinisher: finisher }).where(eq(establishments.id, establishmentId));
+}
+
 export async function markOrderDeliveryNotified(orderId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");

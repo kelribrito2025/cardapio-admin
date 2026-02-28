@@ -7606,3 +7606,14 @@
 - [x] Implementar botão PIX nativo via endpoint /send/pix da UAZAPI (botão de copiar nativo do WhatsApp)
 - [x] Auto-detecção do tipo de chave PIX (CPF, CNPJ, EMAIL, PHONE, EVP)
 - [x] Testar envio com e sem chave PIX cadastrada
+
+## Fluxo de Entrega com Botão "Sair para Entrega" no WhatsApp
+- [x] Adicionar campo 'deliveryFinisher' (attendant/driver) no schema do estabelecimento
+- [x] Migrar schema com pnpm db:push
+- [x] Adicionar UI de seleção "Quem finaliza o pedido?" no modal de cadastro/edição de entregador
+- [x] Enviar botão "Sair para entrega" na mensagem ao entregador quando configurado para entregador
+- [x] Implementar webhook para processar clique do botão e atualizar status para Finalizado
+- [x] Enviar template "Pronto (Delivery)" ao cliente quando entregador clicar no botão
+- [x] Bloquear botão "Finalizado" no admin quando configurado para entregador (mostrar ícone de entregador)
+- [x] Se "Atendente" selecionado: manter comportamento atual sem botão no WhatsApp
+- [x] Escrever testes vitest

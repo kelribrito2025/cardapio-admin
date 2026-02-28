@@ -468,6 +468,10 @@ export default function Pedidos() {
   // Verificar se o usuário tem API Key gerada (Mindi Printer conectado)
   const hasMindiPrinterApiKey = !!printerSettings?.printerApiKey;
 
+  // Query para saber quem finaliza o pedido (atendente ou entregador)
+  const { data: deliveryFinisherData } = trpc.driver.getDeliveryFinisher.useQuery();
+  const deliveryFinisher = deliveryFinisherData?.finisher || 'attendant';
+
   // Hook para gerenciar contagem de pedidos novos na sidebar
   const { decrementCount } = useNewOrders();
 
@@ -996,15 +1000,18 @@ export default function Pedidos() {
     },
   });
 
-  const getNextAction = (status: OrderStatus): { label: string; newStatus: OrderStatus } | null => {
+  const getNextAction = (status: OrderStatus): { label: string; newStatus: OrderStatus; disabled?: boolean; disabledLabel?: string } | null => {
     switch (status) {
       case "new":
         return { label: "Aceitar", newStatus: "preparing" };
       case "preparing":
         return { label: "Pronto", newStatus: "ready" };
       case "ready":
-        return { label: "Finalizar", newStatus: "completed" };
       case "out_for_delivery":
+        // Se deliveryFinisher é "driver", bloquear botão Finalizar no admin
+        if (deliveryFinisher === 'driver') {
+          return { label: "Entregador", newStatus: "completed", disabled: true, disabledLabel: "Entregador finaliza" };
+        }
         return { label: "Finalizar", newStatus: "completed" };
       default:
         return null;
@@ -1566,19 +1573,36 @@ export default function Pedidos() {
                               Ver detalhes
                             </Button>
                             {nextAction && (
-                              <Button
-                                size="sm"
-                                className="flex-1 h-8 rounded-lg shadow-sm text-xs hover:opacity-90"
-                                style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
-                                onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
-                                disabled={loadingOrderId !== null}
-                              >
-                                {loadingOrderId === order.id ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  nextAction.label
-                                )}
-                              </Button>
+                              nextAction.disabled ? (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="flex-1 h-8 rounded-lg text-xs gap-1.5 cursor-not-allowed opacity-70 border-border/50"
+                                      disabled
+                                    >
+                                      <Bike className="h-3.5 w-3.5" />
+                                      {nextAction.disabledLabel || nextAction.label}
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>O entregador finaliza o pedido pelo WhatsApp</TooltipContent>
+                                </Tooltip>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  className="flex-1 h-8 rounded-lg shadow-sm text-xs hover:opacity-90"
+                                  style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
+                                  onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
+                                  disabled={loadingOrderId !== null}
+                                >
+                                  {loadingOrderId === order.id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    nextAction.label
+                                  )}
+                                </Button>
+                              )
                             )}
                             {order.status !== "completed" && order.status !== "cancelled" && (
                               <Button
@@ -1783,19 +1807,36 @@ export default function Pedidos() {
                     {/* Ações */}
                     <div className="flex items-center gap-1 justify-end" onClick={(e) => e.stopPropagation()}>
                       {nextAction && (
-                        <Button
-                          size="sm"
-                          className="h-8 px-4 rounded-lg text-xs font-semibold shadow-sm hover:opacity-90"
-                          style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
-                          onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
-                          disabled={loadingOrderId !== null}
-                        >
-                          {loadingOrderId === order.id ? (
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                          ) : (
-                            nextAction.label
-                          )}
-                        </Button>
+                        nextAction.disabled ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 px-4 rounded-lg text-xs font-semibold gap-1.5 cursor-not-allowed opacity-70 border-border/50"
+                                disabled
+                              >
+                                <Bike className="h-3.5 w-3.5" />
+                                {nextAction.disabledLabel || nextAction.label}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>O entregador finaliza o pedido pelo WhatsApp</TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          <Button
+                            size="sm"
+                            className="h-8 px-4 rounded-lg text-xs font-semibold shadow-sm hover:opacity-90"
+                            style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
+                            onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
+                            disabled={loadingOrderId !== null}
+                          >
+                            {loadingOrderId === order.id ? (
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                            ) : (
+                              nextAction.label
+                            )}
+                          </Button>
+                        )
                       )}
                       {order.status !== 'completed' && order.status !== 'cancelled' && (
                         <Button

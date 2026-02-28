@@ -2067,8 +2067,20 @@ export const appRouter = router({
                     const config = await db.getWhatsappConfig(estId);
                     if (config && config.instanceToken && config.status === 'connected') {
                       const message = buildDriverDeliveryMessage(order, deliveryFee);
-                      const { sendTextMessage } = await import('./_core/uazapi');
-                      await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+                      const finisherOnAccept = await db.getDeliveryFinisher(estId);
+                      if (finisherOnAccept === 'driver') {
+                        const { sendButtonMessage } = await import('./_core/uazapi');
+                        await sendButtonMessage(
+                          config.instanceToken,
+                          driver.whatsapp,
+                          message,
+                          [{ text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` }],
+                          'Clique quando sair para a entrega'
+                        );
+                      } else {
+                        const { sendTextMessage } = await import('./_core/uazapi');
+                        await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+                      }
                       await db.markDeliveryWhatsappSent(deliveryId);
                     }
                     await db.markOrderDeliveryNotified(input.id);
@@ -2279,9 +2291,22 @@ export const appRouter = router({
             const config = await db.getWhatsappConfig(establishment.id);
             if (config && config.instanceToken && config.status === 'connected') {
               const message = buildDriverDeliveryMessage(order, deliveryFee);
+              const finisher = await db.getDeliveryFinisher(establishment.id);
 
-              const { sendTextMessage } = await import('./_core/uazapi');
-              await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+              if (finisher === 'driver') {
+                // Send message with "Sair para entrega" button
+                const { sendButtonMessage } = await import('./_core/uazapi');
+                await sendButtonMessage(
+                  config.instanceToken,
+                  driver.whatsapp,
+                  message,
+                  [{ text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` }],
+                  'Clique quando sair para a entrega'
+                );
+              } else {
+                const { sendTextMessage } = await import('./_core/uazapi');
+                await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+              }
               await db.markDeliveryWhatsappSent(deliveryId);
               whatsappSent = true;
             }
@@ -5255,9 +5280,20 @@ export const appRouter = router({
               const config = await db.getWhatsappConfig(establishment.id);
               if (config && config.instanceToken && config.status === 'connected') {
                 const message = buildDriverDeliveryMessage(order, deliveryFee);
-                
-                const { sendTextMessage } = await import('./_core/uazapi');
-                await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+                const finisherAssign = await db.getDeliveryFinisher(establishment.id);
+                if (finisherAssign === 'driver') {
+                  const { sendButtonMessage } = await import('./_core/uazapi');
+                  await sendButtonMessage(
+                    config.instanceToken,
+                    driver.whatsapp,
+                    message,
+                    [{ text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` }],
+                    'Clique quando sair para a entrega'
+                  );
+                } else {
+                  const { sendTextMessage } = await import('./_core/uazapi');
+                  await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+                }
                 await db.markDeliveryWhatsappSent(deliveryId);
                 whatsappSent = true;
               }
@@ -5335,8 +5371,20 @@ export const appRouter = router({
         const message = buildDriverDeliveryMessage(order);
         
         try {
-          const { sendTextMessage } = await import('./_core/uazapi');
-          await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+          const finisherResend = await db.getDeliveryFinisher(order.establishmentId);
+          if (finisherResend === 'driver') {
+            const { sendButtonMessage } = await import('./_core/uazapi');
+            await sendButtonMessage(
+              config.instanceToken,
+              driver.whatsapp,
+              message,
+              [{ text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` }],
+              'Clique quando sair para a entrega'
+            );
+          } else {
+            const { sendTextMessage } = await import('./_core/uazapi');
+            await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+          }
           await db.markDeliveryWhatsappSent(input.deliveryId);
           return { success: true };
         } catch (error) {
@@ -5401,6 +5449,25 @@ export const appRouter = router({
         const establishment = await db.getEstablishmentByUserId(ctx.user.id);
         if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
         await db.updateDriverNotifyTiming(establishment.id, input.timing);
+        return { success: true };
+      }),
+
+    // Get delivery finisher setting (who finalizes the order: attendant or driver)
+    getDeliveryFinisher: protectedProcedure
+      .query(async ({ ctx }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        const finisher = await db.getDeliveryFinisher(establishment.id);
+        return { finisher };
+      }),
+
+    // Update delivery finisher setting
+    updateDeliveryFinisher: protectedProcedure
+      .input(z.object({ finisher: z.enum(["attendant", "driver"]) }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
+        await db.updateDeliveryFinisher(establishment.id, input.finisher);
         return { success: true };
       }),
   }),

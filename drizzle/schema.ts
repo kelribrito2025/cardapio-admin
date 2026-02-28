@@ -111,6 +111,8 @@ export const establishments = mysqlTable("establishments", {
   planActivatedAt: timestamp("planActivatedAt"),
   // Configuração de acionamento do entregador
   driverNotifyTiming: mysqlEnum("driverNotifyTiming", ["on_accepted", "on_ready"]).default("on_ready").notNull(),
+  // Quem finaliza o pedido: atendente (admin) ou entregador (via botão WhatsApp)
+  deliveryFinisher: mysqlEnum("deliveryFinisher", ["attendant", "driver"]).default("attendant").notNull(),
   // Avaliações
   ownerDisplayName: varchar("ownerDisplayName", { length: 11 }),
   reviewsEnabled: boolean("reviewsEnabled").default(true).notNull(),
