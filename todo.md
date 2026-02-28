@@ -7636,3 +7636,6 @@
 
 ## Estilo Botão Entregador
 - [x] Mudar botão "Entregador" para mesmo estilo do "Finalizar" (fundo verde, texto branco)
+
+## Cor Modal Entregador
+- [x] Mudar cor do modal de entregador de laranja para verde #059669

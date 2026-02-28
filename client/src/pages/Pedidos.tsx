@@ -2883,15 +2883,15 @@ export default function Pedidos() {
         onOpenChange={setDriverInfoModalOpen}
       >
         <DialogContent
-          className="sm:max-w-[440px] p-0 overflow-hidden border-t-4 border-t-orange-500"
-          style={{ borderRadius: '16px' }}
+          className="sm:max-w-[440px] p-0 overflow-hidden border-t-4"
+          style={{ borderTopColor: '#059669', borderRadius: '16px' }}
         >
           <DialogTitle className="sr-only">Entregador responsável</DialogTitle>
           <div className="px-6 pt-5 pb-6">
             {/* Header com ícone */}
             <div className="flex items-start gap-3 mb-4">
-              <div className="p-2.5 rounded-xl flex-shrink-0 bg-orange-100 dark:bg-orange-950/50">
-                <Bike className="h-6 w-6 text-orange-600" />
+              <div className="p-2.5 rounded-xl flex-shrink-0" style={{ backgroundColor: '#05966915' }}>
+                <Bike className="h-6 w-6" style={{ color: '#059669' }} />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-foreground">Entregador responsável</h3>
@@ -2903,9 +2903,9 @@ export default function Pedidos() {
 
             {/* Info detalhada */}
             <div className="space-y-3 mb-5">
-              <div className="flex items-start gap-2.5 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-lg px-3 py-2.5">
-                <Send className="h-4 w-4 text-orange-500 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-orange-700 dark:text-orange-300 leading-relaxed">
+              <div className="flex items-start gap-2.5 rounded-lg px-3 py-2.5" style={{ backgroundColor: '#05966910', border: '1px solid #05966930' }}>
+                <Send className="h-4 w-4 flex-shrink-0 mt-0.5" style={{ color: '#059669' }} />
+                <p className="text-xs leading-relaxed" style={{ color: '#047857' }}>
                   O entregador receberá uma mensagem via WhatsApp com os botões <strong>"Sair para entrega"</strong> e <strong>"O pedido foi entregue"</strong>.
                 </p>
               </div>
@@ -2925,7 +2925,7 @@ export default function Pedidos() {
 
             {/* Botão fechar */}
             <Button
-              className="w-full rounded-xl h-10 font-semibold bg-orange-500 hover:bg-orange-600 text-white"
+              className="w-full rounded-xl h-10 font-semibold text-white hover:opacity-90" style={{ backgroundColor: '#059669' }}
               onClick={() => setDriverInfoModalOpen(false)}
             >
               Entendi
