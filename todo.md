@@ -7616,3 +7616,11 @@
 - [x] Frontend: Desabilitar botão Finalizar na página /pedidos quando existem entregadores (ícone entregador + tooltip)
 - [x] Frontend: Não exibir modal de "Pedido pronto" quando existem entregadores (marcar direto)
 - [x] Testes vitest para o fluxo completo
+
+## Bug Fix - Webhook Entregador v5
+- [x] Corrigir: botão "Sair para entrega" não envia notificação ao cliente via WhatsApp
+- [x] Corrigir: botão "O pedido foi entregue" não envia notificação ao cliente via WhatsApp
+- [x] Mover auto-reconfiguração do webhook para fora da condição de mudança de status
+- [x] Remover excludeMessages que bloqueava respostas de botão
+- [x] Adicionar proteção contra loops (ignorar fromMe sem buttonId)
+- [x] Adicionar logging detalhado no webhook handler

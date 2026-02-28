@@ -943,7 +943,7 @@ export async function configureWebhook(
       enabled: true,
       url: webhookUrl,
       events: ['messages'],
-      excludeMessages: ['wasSentByApi'], // Avoid loops
+      // NÃO excluir wasSentByApi pois respostas de botão podem ser filtradas
     });
     
     console.log('[UAZAPI] Webhook configured:', { url: webhookUrl });

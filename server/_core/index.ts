@@ -2582,7 +2582,14 @@ async function startServer() {
       const establishmentId = parseInt(req.params.establishmentId);
       const body = req.body;
       
-      console.log('[WhatsApp Webhook] Recebido para establishment:', establishmentId);
+      console.log('[WhatsApp Webhook] Recebido para establishment:', establishmentId, 'body keys:', Object.keys(body));
+      console.log('[WhatsApp Webhook] Body resumo:', JSON.stringify({
+        hasMessage: !!body.message,
+        hasData: !!body.data,
+        fromMe: body.fromMe || body.message?.fromMe,
+        buttonOrListid: body.buttonOrListid || body.message?.buttonOrListid || body.data?.buttonOrListid,
+        messageType: body.message?.type || body.type,
+      }));
       
       // PROXY: Encaminhar para o n8n em background (não bloquear a resposta)
       const N8N_WEBHOOK_URL = 'https://webn8n.granaupvps.shop/webhook/mindi';
@@ -2596,6 +2603,13 @@ async function startServer() {
       const message = body.message || body.data || body;
       
       const buttonId = message?.buttonOrListid || message?.buttonId || message?.selectedButtonId || message?.selectedId || body?.buttonOrListid;
+      
+      // Proteção contra loops: ignorar mensagens enviadas pela API (exceto respostas de botão)
+      const isFromApi = message?.fromMe === true || body?.fromMe === true;
+      if (isFromApi && !buttonId) {
+        console.log('[WhatsApp Webhook] Mensagem enviada pela API (sem botão), ignorando para evitar loop');
+        return res.status(200).json({ success: true });
+      }
       const messageText = message?.text || message?.body || message?.conversation;
       const senderPhone = message?.sender || message?.from || body?.sender || body?.from;
       

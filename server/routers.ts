@@ -3638,16 +3638,20 @@ export const appRouter = router({
               console.error('[WhatsApp] Erro ao garantir API key não-global (não bloqueante):', err);
             }
             
-            // AUTO-RECONFIGURAR webhook para nosso endpoint (migração de instâncias antigas)
-            try {
-              const { configureWebhook } = await import('./_core/uazapi');
-              const appUrl = process.env.VITE_APP_URL || 'https://mindi.manus.space';
-              const APP_WEBHOOK_URL = `${appUrl}/api/webhook/whatsapp/${establishment.id}`;
-              await configureWebhook(config.instanceToken, APP_WEBHOOK_URL);
-              console.log('[WhatsApp] Webhook auto-reconfigurado para:', APP_WEBHOOK_URL);
-            } catch (whErr) {
-              console.error('[WhatsApp] Erro ao auto-reconfigurar webhook (não bloqueante):', whErr);
-            }
+          }
+        }
+        
+        // AUTO-RECONFIGURAR webhook para nosso endpoint SEMPRE que conectado
+        // (fora da condição de mudança de status para garantir migração)
+        if (result.status === 'connected') {
+          try {
+            const { configureWebhook } = await import('./_core/uazapi');
+            const appUrl = process.env.VITE_APP_URL || 'https://mindi.manus.space';
+            const APP_WEBHOOK_URL = `${appUrl}/api/webhook/whatsapp/${establishment.id}`;
+            await configureWebhook(config.instanceToken, APP_WEBHOOK_URL);
+            console.log('[WhatsApp] Webhook auto-reconfigurado para:', APP_WEBHOOK_URL);
+          } catch (whErr) {
+            console.error('[WhatsApp] Erro ao auto-reconfigurar webhook (não bloqueante):', whErr);
           }
         }
         
