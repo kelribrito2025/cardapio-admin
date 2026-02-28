@@ -2698,8 +2698,12 @@ export default function Pedidos() {
                 title: 'Pedido pronto',
                 description: isPickupOrDineIn
                   ? 'Ao marcar como pronto, o cliente será avisado via WhatsApp que o pedido está pronto para retirada.'
-                  : 'Ao marcar como pronto, o cliente será avisado via WhatsApp que o pedido está pronto.',
-                messagePreview: resolvedMessage,
+                  : (deliveryFinisher === 'driver' && currentOrder?.deliveryType === 'delivery'
+                    ? 'Ao marcar como pronto, o entregador receberá uma notificação de nova entrega via WhatsApp. O cliente só será notificado quando o entregador clicar em "Sair para entrega".'
+                    : 'Ao marcar como pronto, o cliente será avisado via WhatsApp que o pedido está pronto.'),
+                messagePreview: (deliveryFinisher === 'driver' && currentOrder?.deliveryType === 'delivery' && !isPickupOrDineIn)
+                  ? resolveTemplate('🚀 *Nova entrega!*\n\nPedido *#1234* está pronto.\n\n📍 Endereço de entrega do cliente\n\n🔘 Botão: *Sair para entrega*')
+                  : resolvedMessage,
                 buttonLabel: 'Entendi, marcar como pronto',
               },
               completed: {

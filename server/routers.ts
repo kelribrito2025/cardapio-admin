@@ -1957,12 +1957,22 @@ export const appRouter = router({
             const config = await db.getWhatsappConfig(order.establishmentId);
             if (config && config.status === 'connected') {
               // Verificar se deve notificar para este status
-              const shouldNotify = 
+              let shouldNotify = 
                 (input.status === 'preparing' && config.notifyOnPreparing) ||
                 (input.status === 'ready' && config.notifyOnReady) ||
                 (input.status === 'out_for_delivery' && (config.notifyOnOutForDelivery !== false)) ||
                 (input.status === 'completed' && config.notifyOnCompleted) ||
                 (input.status === 'cancelled' && config.notifyOnCancelled);
+              
+              // Se deliveryFinisher é 'driver' e pedido é delivery, suprimir notificação 'ready' ao cliente
+              // O cliente só será notificado quando o entregador clicar "Sair para entrega"
+              if (input.status === 'ready' && order.deliveryType === 'delivery') {
+                const finisher = await db.getDeliveryFinisher(order.establishmentId);
+                if (finisher === 'driver') {
+                  shouldNotify = false;
+                  console.log('[WhatsApp] Notificação ready suprimida - entregador finaliza o pedido');
+                }
+              }
               
               if (shouldNotify && config.instanceToken) {
                 const { sendOrderStatusNotification } = await import('./_core/uazapi');
@@ -2137,42 +2147,49 @@ export const appRouter = router({
           if (order.deliveryNotified) {
             await db.updateOrderStatus(input.orderId, 'out_for_delivery');
             
-            // Enviar notificação ao cliente usando o template "Pronto (Delivery)"
-            try {
-              if (order.customerPhone) {
-                const config = await db.getWhatsappConfig(establishment.id);
-                if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
-                  const { sendOrderStatusNotification } = await import('./_core/uazapi');
-                  const est = await db.getEstablishmentById(order.establishmentId);
-                  const orderItems = await db.getOrderItems(order.id);
-                  await sendOrderStatusNotification(
-                    config.instanceToken,
-                    order.customerPhone,
-                    'ready',
-                    {
-                      customerName: order.customerName || 'Cliente',
-                      orderNumber: order.orderNumber,
-                      establishmentName: est?.name || 'Restaurante',
-                      template: config.templateReady,
-                      deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
-                      cancellationReason: null,
-                      orderItems: orderItems.map(item => ({
-                        productName: item.productName,
-                        quantity: item.quantity ?? 1,
-                        unitPrice: item.unitPrice,
-                        totalPrice: item.totalPrice,
-                        complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
-                        notes: item.notes,
-                      })),
-                      orderTotal: order.total,
-                      paymentMethod: order.paymentMethod,
-                      customerAddress: order.customerAddress,
-                    }
-                  );
+            // Verificar se o entregador finaliza - se sim, NÃO enviar notificação ao cliente agora
+            // O cliente só será notificado quando o entregador clicar "Sair para entrega"
+            const finisherSetting = await db.getDeliveryFinisher(establishment.id);
+            if (finisherSetting !== 'driver') {
+              // Enviar notificação ao cliente usando o template "Pronto (Delivery)"
+              try {
+                if (order.customerPhone) {
+                  const config = await db.getWhatsappConfig(establishment.id);
+                  if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
+                    const { sendOrderStatusNotification } = await import('./_core/uazapi');
+                    const est = await db.getEstablishmentById(order.establishmentId);
+                    const orderItems = await db.getOrderItems(order.id);
+                    await sendOrderStatusNotification(
+                      config.instanceToken,
+                      order.customerPhone,
+                      'ready',
+                      {
+                        customerName: order.customerName || 'Cliente',
+                        orderNumber: order.orderNumber,
+                        establishmentName: est?.name || 'Restaurante',
+                        template: config.templateReady,
+                        deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
+                        cancellationReason: null,
+                        orderItems: orderItems.map(item => ({
+                          productName: item.productName,
+                          quantity: item.quantity ?? 1,
+                          unitPrice: item.unitPrice,
+                          totalPrice: item.totalPrice,
+                          complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
+                          notes: item.notes,
+                        })),
+                        orderTotal: order.total,
+                        paymentMethod: order.paymentMethod,
+                        customerAddress: order.customerAddress,
+                      }
+                    );
+                  }
                 }
+              } catch (error) {
+                console.error('[WhatsApp] Erro ao notificar cliente (Pronto Delivery - on_accepted):', error);
               }
-            } catch (error) {
-              console.error('[WhatsApp] Erro ao notificar cliente (Pronto Delivery - on_accepted):', error);
+            } else {
+              console.log('[WhatsApp] Notificação ready suprimida (on_accepted) - entregador finaliza o pedido');
             }
             
             return { action: 'assigned', driverId: existingDelivery.driverId, whatsappSent: true, deliveryId: existingDelivery.id };
@@ -2319,43 +2336,52 @@ export const appRouter = router({
         }
 
         // Also send customer notification for "ready" status
-        try {
-          if (order.customerPhone) {
-            const config = await db.getWhatsappConfig(establishment.id);
-            if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
-              const { sendOrderStatusNotification } = await import('./_core/uazapi');
-              const est = await db.getEstablishmentById(order.establishmentId);
-              const orderItems = await db.getOrderItems(order.id);
-              await sendOrderStatusNotification(
-                config.instanceToken,
-                order.customerPhone,
-                'ready',
-                {
-                  customerName: order.customerName || 'Cliente',
-                  orderNumber: order.orderNumber,
-                  establishmentName: est?.name || 'Restaurante',
-                  template: ((order.deliveryType as string) === 'pickup' || (order.deliveryType as string) === 'dine_in')
-                    ? (config.templateReadyPickup || config.templateReady)
-                    : config.templateReady,
-                  deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
-                  cancellationReason: null,
-                  orderItems: orderItems.map(item => ({
-                    productName: item.productName,
-                    quantity: item.quantity ?? 1,
-                    unitPrice: item.unitPrice,
-                    totalPrice: item.totalPrice,
-                    complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
-                    notes: item.notes,
-                  })),
-                  orderTotal: order.total,
-                  paymentMethod: order.paymentMethod,
-                  customerAddress: order.customerAddress,
-                }
-              );
+        // Se deliveryFinisher é 'driver' e pedido é delivery, NÃO enviar ao cliente agora
+        // O cliente só será notificado quando o entregador clicar "Sair para entrega"
+        const finisherForCustomerNotif = await db.getDeliveryFinisher(establishment.id);
+        const shouldNotifyCustomerReady = !(finisherForCustomerNotif === 'driver' && order.deliveryType === 'delivery');
+        
+        if (shouldNotifyCustomerReady) {
+          try {
+            if (order.customerPhone) {
+              const config = await db.getWhatsappConfig(establishment.id);
+              if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
+                const { sendOrderStatusNotification } = await import('./_core/uazapi');
+                const est = await db.getEstablishmentById(order.establishmentId);
+                const orderItems = await db.getOrderItems(order.id);
+                await sendOrderStatusNotification(
+                  config.instanceToken,
+                  order.customerPhone,
+                  'ready',
+                  {
+                    customerName: order.customerName || 'Cliente',
+                    orderNumber: order.orderNumber,
+                    establishmentName: est?.name || 'Restaurante',
+                    template: ((order.deliveryType as string) === 'pickup' || (order.deliveryType as string) === 'dine_in')
+                      ? (config.templateReadyPickup || config.templateReady)
+                      : config.templateReady,
+                    deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
+                    cancellationReason: null,
+                    orderItems: orderItems.map(item => ({
+                      productName: item.productName,
+                      quantity: item.quantity ?? 1,
+                      unitPrice: item.unitPrice,
+                      totalPrice: item.totalPrice,
+                      complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
+                      notes: item.notes,
+                    })),
+                    orderTotal: order.total,
+                    paymentMethod: order.paymentMethod,
+                    customerAddress: order.customerAddress,
+                  }
+                );
+              }
             }
+          } catch (error) {
+            console.error('[WhatsApp] Erro ao notificar cliente:', error);
           }
-        } catch (error) {
-          console.error('[WhatsApp] Erro ao notificar cliente:', error);
+        } else {
+          console.log('[WhatsApp] Notificação ready ao cliente suprimida (markReadyAndAssign) - entregador finaliza o pedido');
         }
 
         return { action: 'assigned', driverId, whatsappSent, deliveryId };

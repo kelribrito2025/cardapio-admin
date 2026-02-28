@@ -7617,3 +7617,8 @@
 - [x] Bloquear botão "Finalizado" no admin quando configurado para entregador (mostrar ícone de entregador)
 - [x] Se "Atendente" selecionado: manter comportamento atual sem botão no WhatsApp
 - [x] Escrever testes vitest
+
+## Correção do Fluxo de Entrega - Modal e Notificações
+- [x] Atualizar modal "Pedido pronto" para mostrar mensagem sobre entregador quando deliveryFinisher=driver
+- [x] Suprimir notificação ao cliente (template Pronto/Delivery) quando deliveryFinisher=driver ao marcar como pronto
+- [x] Notificação ao cliente só deve ser enviada quando entregador clicar "Sair para entrega" no WhatsApp
