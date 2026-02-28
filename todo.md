@@ -7630,3 +7630,6 @@
 - [ ] Verificar formato do payload da UAZAPI para respostas de botão
 - [ ] Testar endpoint diretamente com curl
 - [ ] Corrigir o que for necessário
+
+## Modal Informativo Entregador
+- [x] Tornar botão "Entregador" clicável com modal informativo no estilo do modal "Pedido em preparo"

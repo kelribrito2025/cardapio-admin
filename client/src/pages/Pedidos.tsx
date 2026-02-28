@@ -258,6 +258,9 @@ export default function Pedidos() {
     dontShowAgain: boolean;
   }>({ open: false, statusType: null, orderId: null, dontShowAgain: false });
 
+  // Estado para modal informativo do entregador
+  const [driverInfoModalOpen, setDriverInfoModalOpen] = useState(false);
+
   // Carrossel de mensagens do modal WhatsApp (estabilizado com useMemo)
   const whatsappMessages = useMemo(() => [
     {
@@ -1589,7 +1592,10 @@ export default function Pedidos() {
                             </Button>
                             {nextAction && (
                               nextAction.driverControlled ? (
-                                <div className="flex-1 h-8 rounded-lg text-xs flex items-center justify-center border border-border/50 bg-background text-muted-foreground cursor-default" title="A finalização do pedido é realizada pelo entregador após marcar como entregue.">
+                                <div
+                                  className="flex-1 h-8 rounded-lg text-xs flex items-center justify-center border border-border/50 bg-background text-muted-foreground cursor-pointer hover:bg-accent transition-colors"
+                                  onClick={() => setDriverInfoModalOpen(true)}
+                                >
                                   Entregador
                                 </div>
                               ) : (
@@ -1812,7 +1818,10 @@ export default function Pedidos() {
                     <div className="flex items-center gap-1 justify-end" onClick={(e) => e.stopPropagation()}>
                       {nextAction && (
                         nextAction.driverControlled ? (
-                          <div className="h-8 px-4 rounded-lg text-xs flex items-center justify-center border border-border/50 bg-background text-muted-foreground cursor-default" title="A finalização do pedido é realizada pelo entregador após marcar como entregue.">
+                          <div
+                            className="h-8 px-4 rounded-lg text-xs flex items-center justify-center border border-border/50 bg-background text-muted-foreground cursor-pointer hover:bg-accent transition-colors"
+                            onClick={() => setDriverInfoModalOpen(true)}
+                          >
                             Entregador
                           </div>
                         ) : (
@@ -2865,6 +2874,63 @@ export default function Pedidos() {
               </>
             );
           })()}
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal informativo do entregador */}
+      <Dialog
+        open={driverInfoModalOpen}
+        onOpenChange={setDriverInfoModalOpen}
+      >
+        <DialogContent
+          className="sm:max-w-[440px] p-0 overflow-hidden border-t-4 border-t-orange-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Entregador responsável</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            {/* Header com ícone */}
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-orange-100 dark:bg-orange-950/50">
+                <Bike className="h-6 w-6 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Entregador responsável</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  A finalização deste pedido é de responsabilidade do entregador.
+                </p>
+              </div>
+            </div>
+
+            {/* Info detalhada */}
+            <div className="space-y-3 mb-5">
+              <div className="flex items-start gap-2.5 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-lg px-3 py-2.5">
+                <Send className="h-4 w-4 text-orange-500 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-orange-700 dark:text-orange-300 leading-relaxed">
+                  O entregador receberá uma mensagem via WhatsApp com os botões <strong>"Sair para entrega"</strong> e <strong>"O pedido foi entregue"</strong>.
+                </p>
+              </div>
+              <div className="flex items-start gap-2.5 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg px-3 py-2.5">
+                <Info className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                  Ao clicar em <strong>"Sair para entrega"</strong>, o cliente será notificado automaticamente que o pedido está a caminho.
+                </p>
+              </div>
+              <div className="flex items-start gap-2.5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg px-3 py-2.5">
+                <CheckCircle className="h-4 w-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-emerald-700 dark:text-emerald-300 leading-relaxed">
+                  Ao clicar em <strong>"O pedido foi entregue"</strong>, o pedido será finalizado automaticamente no sistema.
+                </p>
+              </div>
+            </div>
+
+            {/* Botão fechar */}
+            <Button
+              className="w-full rounded-xl h-10 font-semibold bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={() => setDriverInfoModalOpen(false)}
+            >
+              Entendi
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </AdminLayout>
