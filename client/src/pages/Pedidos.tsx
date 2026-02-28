@@ -1593,7 +1593,7 @@ export default function Pedidos() {
                             {nextAction && (
                               nextAction.driverControlled ? (
                                 <div
-                                  className="flex-1 h-8 rounded-lg text-xs font-semibold flex items-center justify-center shadow-sm cursor-pointer hover:opacity-90 transition-opacity bg-emerald-500 text-white"
+                                  className="flex-1 h-8 rounded-lg text-xs font-semibold flex items-center justify-center shadow-sm cursor-pointer hover:opacity-90 transition-opacity text-white" style={{ backgroundColor: '#059669' }}
                                   onClick={() => setDriverInfoModalOpen(true)}
                                 >
                                   Entregador
@@ -1819,7 +1819,7 @@ export default function Pedidos() {
                       {nextAction && (
                         nextAction.driverControlled ? (
                           <div
-                            className="h-8 px-4 rounded-lg text-xs font-semibold flex items-center justify-center shadow-sm cursor-pointer hover:opacity-90 transition-opacity bg-emerald-500 text-white"
+                            className="h-8 px-4 rounded-lg text-xs font-semibold flex items-center justify-center shadow-sm cursor-pointer hover:opacity-90 transition-opacity text-white" style={{ backgroundColor: '#059669' }}
                             onClick={() => setDriverInfoModalOpen(true)}
                           >
                             Entregador
