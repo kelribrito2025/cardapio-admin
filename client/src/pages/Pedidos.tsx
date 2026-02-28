@@ -1589,7 +1589,7 @@ export default function Pedidos() {
                             </Button>
                             {nextAction && (
                               nextAction.driverControlled ? (
-                                <div className="flex-1 h-8 rounded-lg shadow-sm text-xs font-semibold flex items-center justify-center bg-amber-100 text-amber-800 border border-amber-200 cursor-default" title="A finalização do pedido é realizada pelo entregador após marcar como entregue.">
+                                <div className="flex-1 h-8 rounded-lg text-xs flex items-center justify-center border border-border/50 bg-background text-muted-foreground cursor-default" title="A finalização do pedido é realizada pelo entregador após marcar como entregue.">
                                   Entregador
                                 </div>
                               ) : (
@@ -1812,7 +1812,7 @@ export default function Pedidos() {
                     <div className="flex items-center gap-1 justify-end" onClick={(e) => e.stopPropagation()}>
                       {nextAction && (
                         nextAction.driverControlled ? (
-                          <div className="h-8 px-4 rounded-lg text-xs font-semibold flex items-center justify-center bg-amber-100 text-amber-800 border border-amber-200 cursor-default" title="A finalização do pedido é realizada pelo entregador após marcar como entregue.">
+                          <div className="h-8 px-4 rounded-lg text-xs flex items-center justify-center border border-border/50 bg-background text-muted-foreground cursor-default" title="A finalização do pedido é realizada pelo entregador após marcar como entregue.">
                             Entregador
                           </div>
                         ) : (
