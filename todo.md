@@ -7599,3 +7599,9 @@
 - [x] Mostrar nomes das variáveis em português amigável (ex: customerName → Nome do Cliente)
 - [x] Adicionar tooltips explicativos ao passar o mouse sobre cada variável
 - [x] Manter inserção do código técnico ao clicar (ex: {{customerName}})
+
+## Botão "Copiar chave PIX" na mensagem WhatsApp de novo pedido
+- [x] Localizar campo de chave PIX nas configurações de atendimento
+- [x] Adicionar chave PIX na mensagem WhatsApp de novo pedido quando cadastrada
+- [x] Implementar mensagem separada com chave PIX para facilitar cópia (WhatsApp não suporta botão de copiar nativo)
+- [x] Testar envio com e sem chave PIX cadastrada

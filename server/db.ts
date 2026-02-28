@@ -3682,6 +3682,26 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
           
           if (sendResult.success) {
             console.log('[DB:createPublicOrder] ✅ Notificação WhatsApp NOVO PEDIDO enviada com sucesso:', orderNumber, 'messageId:', sendResult.messageId);
+            
+            // Enviar mensagem separada com chave PIX se pagamento for PIX e chave estiver cadastrada
+            if (data.paymentMethod === 'pix' && establishment?.pixKey) {
+              try {
+                const { sendTextMessage } = await import('./_core/uazapi');
+                const pixMessage = `🔑 *Chave PIX para pagamento:*\n\n${establishment.pixKey}\n\n_Copie a chave acima para realizar o pagamento_ 💰`;
+                const pixResult = await sendTextMessage(
+                  whatsappConfig.instanceToken,
+                  data.customerPhone,
+                  pixMessage
+                );
+                if (pixResult.success) {
+                  console.log('[DB:createPublicOrder] ✅ Chave PIX enviada com sucesso:', orderNumber);
+                } else {
+                  console.error('[DB:createPublicOrder] ❌ FALHA ao enviar chave PIX:', pixResult.message);
+                }
+              } catch (pixError) {
+                console.error('[DB:createPublicOrder] Erro ao enviar chave PIX:', pixError);
+              }
+            }
           } else {
             console.error('[DB:createPublicOrder] ❌ FALHA ao enviar notificação WhatsApp NOVO PEDIDO:', orderNumber, 'erro:', sendResult.message);
           }
