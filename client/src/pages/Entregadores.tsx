@@ -890,7 +890,7 @@ export default function Entregadores() {
               <div>
                 <h3 className="text-lg font-semibold text-foreground">Múltiplos entregadores</h3>
                 <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                  Agora que você terá mais de um entregador, será necessário selecionar quem fará a entrega ao aceitar ou marcar o pedido como pronto.
+                  Ao aceitar ou marcar como pronto o pedido, defina qual entregador será responsável.
                 </p>
               </div>
             </div>
