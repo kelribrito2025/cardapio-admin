@@ -7633,3 +7633,6 @@
 
 ## Modal Informativo Entregador
 - [x] Tornar botão "Entregador" clicável com modal informativo no estilo do modal "Pedido em preparo"
+
+## Estilo Botão Entregador
+- [x] Mudar botão "Entregador" para mesmo estilo do "Finalizar" (fundo verde, texto branco)
