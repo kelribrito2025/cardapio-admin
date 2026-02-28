@@ -2086,7 +2086,7 @@ export const appRouter = router({
                           driver.whatsapp,
                           message,
                           [
-                            { text: '🚵 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
+                            { text: '🛵 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
                             { text: '✅ O pedido foi entregue', id: `delivery_done_${order.orderNumber}` },
                           ],
                           'Clique para atualizar o status'
@@ -2277,7 +2277,7 @@ export const appRouter = router({
                   driver.whatsapp,
                   message,
                   [
-                    { text: '🚵 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
+                    { text: '🛵 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
                     { text: '✅ O pedido foi entregue', id: `delivery_done_${order.orderNumber}` },
                   ],
                   'Clique para atualizar o status'
@@ -5248,7 +5248,7 @@ export const appRouter = router({
                     driver.whatsapp,
                     message,
                     [
-                      { text: '🚵 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
+                      { text: '🛵 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
                       { text: '✅ O pedido foi entregue', id: `delivery_done_${order.orderNumber}` },
                     ],
                     'Clique para atualizar o status'
@@ -5342,7 +5342,7 @@ export const appRouter = router({
               driver.whatsapp,
               message,
               [
-                { text: '🚵 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
+                { text: '🛵 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
                 { text: '✅ O pedido foi entregue', id: `delivery_done_${order.orderNumber}` },
               ],
               'Clique para atualizar o status'
