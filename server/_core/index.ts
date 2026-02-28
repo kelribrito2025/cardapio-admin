@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import compression from "compression";
 import cookieParser from "cookie-parser";
 import { createServer } from "http";
 import net from "net";
@@ -1694,6 +1695,16 @@ async function startServer() {
     }
   });
   
+  // Compression middleware - exclui SSE endpoints para evitar buffering
+  app.use(compression({
+    filter: (req, res) => {
+      // Não comprimir SSE streams - compressão causa buffering
+      if (req.headers.accept === 'text/event-stream') return false;
+      if (req.url?.includes('/stream') || req.url?.includes('/sse')) return false;
+      return compression.filter(req, res);
+    }
+  }));
+  
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
@@ -1745,8 +1756,9 @@ async function startServer() {
       
       // Configurar headers SSE
       res.setHeader("Content-Type", "text/event-stream");
-      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Cache-Control", "no-cache, no-transform");
       res.setHeader("Connection", "keep-alive");
+      res.setHeader("Transfer-Encoding", "chunked");
       res.setHeader("X-Accel-Buffering", "no"); // Para nginx
       res.flushHeaders();
       
@@ -1756,10 +1768,10 @@ async function startServer() {
       // Adicionar conexão ao pool
       addConnection(establishment.id, res);
       
-      // Configurar heartbeat a cada 30 segundos
+      // Configurar heartbeat a cada 15 segundos (reduzido para evitar buffering)
       const heartbeatInterval = setInterval(() => {
         sendHeartbeat(establishment.id);
-      }, 30000);
+      }, 15000);
       
       // Cleanup quando conexão fechar
       req.on("close", () => {
@@ -1794,8 +1806,9 @@ async function startServer() {
       console.log(`[SSE-Order] Iniciando conexão por orderId para pedidos: ${orderIds.join(', ')}`);
       
       res.setHeader("Content-Type", "text/event-stream");
-      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Cache-Control", "no-cache, no-transform");
       res.setHeader("Connection", "keep-alive");
+      res.setHeader("Transfer-Encoding", "chunked");
       res.setHeader("X-Accel-Buffering", "no");
       res.flushHeaders();
       
@@ -1828,7 +1841,7 @@ async function startServer() {
         } catch (error) {
           console.error("[SSE-Order] Erro ao enviar heartbeat:", error);
         }
-      }, 30000);
+      }, 15000);
       
       req.on("close", () => {
         clearInterval(heartbeatInterval);
@@ -1866,8 +1879,9 @@ async function startServer() {
       
       // Configurar headers SSE
       res.setHeader("Content-Type", "text/event-stream");
-      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Cache-Control", "no-cache, no-transform");
       res.setHeader("Connection", "keep-alive");
+      res.setHeader("Transfer-Encoding", "chunked");
       res.setHeader("X-Accel-Buffering", "no"); // Para nginx
       res.flushHeaders();
       
@@ -1904,7 +1918,7 @@ async function startServer() {
         } catch (error) {
           console.error("[SSE-Order] Erro ao enviar heartbeat:", error);
         }
-      }, 30000);
+      }, 15000);
       
       // Cleanup quando conexão fechar
       req.on("close", () => {
@@ -2864,8 +2878,9 @@ async function startServer() {
       
       // Configurar headers SSE
       res.setHeader("Content-Type", "text/event-stream");
-      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Cache-Control", "no-cache, no-transform");
       res.setHeader("Connection", "keep-alive");
+      res.setHeader("Transfer-Encoding", "chunked");
       res.setHeader("X-Accel-Buffering", "no");
       res.setHeader("Access-Control-Allow-Origin", "*");
       res.flushHeaders();
@@ -2883,7 +2898,7 @@ async function startServer() {
         } catch (e) {
           clearInterval(heartbeatInterval);
         }
-      }, 30000);
+      }, 15000);
       
       // Cleanup quando conexão fechar
       req.on("close", () => {

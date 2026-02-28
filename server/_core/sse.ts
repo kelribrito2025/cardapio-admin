@@ -56,6 +56,10 @@ export function sendEvent(establishmentId: number, eventType: string, data: unkn
   establishmentConnections.forEach((res) => {
     try {
       res.write(message);
+      // Flush imediato para evitar buffering - garante entrega em tempo real
+      if (typeof (res as any).flush === 'function') {
+        (res as any).flush();
+      }
     } catch (error) {
       console.error(`[SSE] Erro ao enviar evento:`, error);
       removeConnection(establishmentId, res);
@@ -120,6 +124,9 @@ function sendPrinterEvent(establishmentId: number, eventType: string, data: unkn
   printerConns.forEach((res) => {
     try {
       res.write(message);
+      if (typeof (res as any).flush === 'function') {
+        (res as any).flush();
+      }
     } catch (error) {
       console.error(`[SSE-Printer] Erro ao enviar evento:`, error);
       removePrinterConnection(establishmentId, res);
@@ -278,6 +285,9 @@ export function sendOrderIdEvent(orderId: string, eventType: string, data: unkno
   conns.forEach((res) => {
     try {
       res.write(message);
+      if (typeof (res as any).flush === 'function') {
+        (res as any).flush();
+      }
     } catch (error) {
       console.error(`[SSE-Order] Erro ao enviar evento por orderId:`, error);
       removeOrderIdConnection(orderId, res);
@@ -342,6 +352,9 @@ export function sendOrderEvent(orderNumber: string, eventType: string, data: unk
   pedidoConnections.forEach((res) => {
     try {
       res.write(message);
+      if (typeof (res as any).flush === 'function') {
+        (res as any).flush();
+      }
     } catch (error) {
       console.error(`[SSE-Order] Erro ao enviar evento:`, error);
       removeOrderConnection(orderNumber, res);
@@ -442,6 +455,9 @@ export function sendCustomerEvent(customerPhone: string, eventType: string, data
   clientConnections.forEach((res) => {
     try {
       res.write(message);
+      if (typeof (res as any).flush === 'function') {
+        (res as any).flush();
+      }
     } catch (error) {
       console.error(`[SSE-Customer] Erro ao enviar evento:`, error);
       removeCustomerConnection(customerPhone, res);

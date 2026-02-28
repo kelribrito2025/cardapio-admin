@@ -7646,3 +7646,7 @@
 - [x] Enviar mensagem de confirmação ao entregador quando clicar "Pedido entregue" (✅ Entrega concluída, cliente notificado, pedido encerrado)
 ## Badge EM ROTA nos Pedidos Out for Delivery
 - [x] Mudar badge de "ENTREGA" para "EM ROTA" quando pedido estiver com status out_for_delivery (visual only)
+## Fix: Pedidos atrasados no Admin (SSE buffering)
+- [x] Adicionar res.flush() após res.write() em todas as funções SSE (sendEvent, sendPrinterEvent, sendOrderEvent, sendOrderIdEvent, sendCustomerEvent)
+- [x] Reduzir heartbeat de 30s para 15s
+- [x] Adicionar Transfer-Encoding: chunked nos headers SSE
