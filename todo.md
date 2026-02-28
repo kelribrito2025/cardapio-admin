@@ -7624,3 +7624,9 @@
 - [x] Remover excludeMessages que bloqueava respostas de botão
 - [x] Adicionar proteção contra loops (ignorar fromMe sem buttonId)
 - [x] Adicionar logging detalhado no webhook handler
+
+## Bug Fix - Webhook Entregador v6 (Deep Debug)
+- [ ] Investigar se webhook UAZAPI está a chegar ao endpoint
+- [ ] Verificar formato do payload da UAZAPI para respostas de botão
+- [ ] Testar endpoint diretamente com curl
+- [ ] Corrigir o que for necessário
