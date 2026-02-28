@@ -7622,3 +7622,9 @@
 - [x] Atualizar modal "Pedido pronto" para mostrar mensagem sobre entregador quando deliveryFinisher=driver
 - [x] Suprimir notificação ao cliente (template Pronto/Delivery) quando deliveryFinisher=driver ao marcar como pronto
 - [x] Notificação ao cliente só deve ser enviada quando entregador clicar "Sair para entrega" no WhatsApp
+
+## Correção Fluxo Entrega v2 - Modal, Notificação e Botão Entregue
+- [x] Quando entregador notificado no aceite + entregador finaliza: não exibir modal de "Pedido pronto"
+- [x] Corrigir envio do template "Pronto (Delivery)" ao cliente quando entregador clica "Sair para entrega"
+- [x] Adicionar botão "Marcar como entregue" na mensagem WhatsApp do entregador (acima de "Sair para entrega")
+- [x] Implementar webhook handler para "Marcar como entregue" que finaliza o pedido no admin

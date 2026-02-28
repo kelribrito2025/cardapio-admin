@@ -68,7 +68,12 @@ describe("Delivery Finisher Feature", () => {
 
     it("should send button message with delivery_start_ prefix when finisher is driver", () => {
       const matches = routerContent.match(/delivery_start_/g);
-      // Should appear in multiple notification points
+      expect(matches).not.toBeNull();
+      expect(matches!.length).toBeGreaterThanOrEqual(4);
+    });
+
+    it("should send button message with delivery_done_ prefix for Marcar como entregue", () => {
+      const matches = routerContent.match(/delivery_done_/g);
       expect(matches).not.toBeNull();
       expect(matches!.length).toBeGreaterThanOrEqual(4);
     });
@@ -79,8 +84,13 @@ describe("Delivery Finisher Feature", () => {
       expect(matches!.length).toBeGreaterThanOrEqual(4);
     });
 
+    it("should include 'Marcar como entregue' button text", () => {
+      const matches = routerContent.match(/Marcar como entregue/g);
+      expect(matches).not.toBeNull();
+      expect(matches!.length).toBeGreaterThanOrEqual(4);
+    });
+
     it("should check deliveryFinisher setting before sending button", () => {
-      // Each notification point should check getDeliveryFinisher
       const matches = routerContent.match(/getDeliveryFinisher/g);
       expect(matches).not.toBeNull();
       expect(matches!.length).toBeGreaterThanOrEqual(4);
@@ -89,10 +99,15 @@ describe("Delivery Finisher Feature", () => {
     it("should fall back to text message when finisher is attendant", () => {
       expect(routerContent).toContain("sendTextMessage(config.instanceToken, driver.whatsapp, message)");
     });
+
+    it("should suppress customer ready notification when deliveryFinisher is driver", () => {
+      // Check that the router suppresses customer notification on ready when driver finishes
+      expect(routerContent).toContain("Se deliveryFinisher é 'driver' e pedido é delivery, NÃO enviar ao cliente agora");
+    });
   });
 
   // ---- Webhook Handler Tests ----
-  describe("Webhook Handler - Delivery Start Button", () => {
+  describe("Webhook Handler - Delivery Start Button (Sair para entrega)", () => {
     const indexContent = fs.readFileSync(
       path.resolve(__dirname, "./_core/index.ts"),
       "utf-8"
@@ -102,26 +117,66 @@ describe("Delivery Finisher Feature", () => {
       expect(indexContent).toContain("delivery_start_");
     });
 
-    it("should update order status to completed when driver clicks button", () => {
-      expect(indexContent).toMatch(/delivery_start_[\s\S]*?updateOrderStatus[\s\S]*?completed/);
+    it("should NOT update order status to completed when driver clicks Sair para entrega", () => {
+      // The delivery_start handler should NOT call updateOrderStatus('completed')
+      // It should only notify the customer
+      const deliveryStartSection = indexContent.split("ENTREGADOR CLICOU \"SAIR PARA ENTREGA\"")[1].split("ENTREGADOR CLICOU \"MARCAR COMO ENTREGUE\"")[0];
+      expect(deliveryStartSection).toContain("N\u00C3O finaliza o pedido");
+      expect(deliveryStartSection).not.toContain("updateOrderStatus(orderData.id, 'completed')");
     });
 
-    it("should send customer notification on delivery start", () => {
-      expect(indexContent).toMatch(/delivery_start_[\s\S]*?sendOrderStatusNotification/);
+    it("should send customer notification using ready template (Pronto Delivery)", () => {
+      // After delivery_start, should send 'ready' status notification, not 'completed'
+      const deliveryStartSection = indexContent.split("ENTREGADOR CLICOU \"SAIR PARA ENTREGA\"")[1].split("ENTREGADOR CLICOU \"MARCAR COMO ENTREGUE\"")[0];
+      expect(deliveryStartSection).toContain("'ready'");
+      expect(deliveryStartSection).toContain("templateReady");
     });
 
     it("should verify deliveryFinisher is driver before processing", () => {
       expect(indexContent).toMatch(/delivery_start_[\s\S]*?getDeliveryFinisher/);
     });
 
-    it("should send confirmation message to driver after processing", () => {
-      expect(indexContent).toContain("Pedido");
-      expect(indexContent).toContain("finalizado com sucesso");
+    it("should send confirmation message to driver after Sair para entrega", () => {
+      expect(indexContent).toContain("Entrega do pedido");
+      expect(indexContent).toContain("O cliente foi notificado");
+    });
+  });
+
+  describe("Webhook Handler - Delivery Done Button (Marcar como entregue)", () => {
+    const indexContent = fs.readFileSync(
+      path.resolve(__dirname, "./_core/index.ts"),
+      "utf-8"
+    );
+
+    it("should handle delivery_done_ button clicks in webhook", () => {
+      expect(indexContent).toContain("delivery_done_");
     });
 
-    it("should check order status is valid before finalizing", () => {
-      expect(indexContent).toContain("out_for_delivery");
-      expect(indexContent).toContain("ready");
+    it("should update order status to completed when driver clicks Marcar como entregue", () => {
+      const deliveryDoneSection = indexContent.split("ENTREGADOR CLICOU \"MARCAR COMO ENTREGUE\"")[1];
+      expect(deliveryDoneSection).toContain("updateOrderStatus");
+      expect(deliveryDoneSection).toContain("'completed'");
+    });
+
+    it("should send completed notification to customer on delivery done", () => {
+      const deliveryDoneSection = indexContent.split("ENTREGADOR CLICOU \"MARCAR COMO ENTREGUE\"")[1];
+      expect(deliveryDoneSection).toContain("sendOrderStatusNotification");
+      expect(deliveryDoneSection).toContain("templateCompleted");
+    });
+
+    it("should handle already completed/cancelled orders gracefully", () => {
+      const deliveryDoneSection = indexContent.split("ENTREGADOR CLICOU \"MARCAR COMO ENTREGUE\"")[1];
+      expect(deliveryDoneSection).toContain("já finalizado/cancelado");
+    });
+
+    it("should send confirmation message to driver after marking as delivered", () => {
+      expect(indexContent).toContain("marcado como entregue");
+    });
+
+    it("should include cashback info in completed notification", () => {
+      const deliveryDoneSection = indexContent.split("ENTREGADOR CLICOU \"MARCAR COMO ENTREGUE\"")[1];
+      expect(deliveryDoneSection).toContain("cashbackInfo");
+      expect(deliveryDoneSection).toContain("getCashbackTransactionByOrderId");
     });
   });
 
@@ -163,6 +218,10 @@ describe("Delivery Finisher Feature", () => {
       expect(pedidosContent).toContain("trpc.driver.getDeliveryFinisher.useQuery");
     });
 
+    it("should query driverNotifyTiming setting", () => {
+      expect(pedidosContent).toContain("trpc.driver.getNotifyTiming.useQuery");
+    });
+
     it("should disable Finalizar button when driver finishes", () => {
       expect(pedidosContent).toContain("disabled: true");
       expect(pedidosContent).toContain("Entregador finaliza");
@@ -174,6 +233,17 @@ describe("Delivery Finisher Feature", () => {
 
     it("should show tooltip explaining driver finishes via WhatsApp", () => {
       expect(pedidosContent).toContain("O entregador finaliza o pedido pelo WhatsApp");
+    });
+
+    it("should skip ready modal when driver notified on accept and driver finishes", () => {
+      // When driverNotifyTiming is on_accepted and deliveryFinisher is driver,
+      // the ready modal should be skipped for delivery orders
+      expect(pedidosContent).toContain("driverNotifyTiming === 'on_accepted'");
+      expect(pedidosContent).toContain("deliveryFinisher === 'driver'");
+    });
+
+    it("should show driver-specific message in ready modal when driver finishes", () => {
+      expect(pedidosContent).toContain("entregador receberá uma notificação de nova entrega");
     });
   });
 });

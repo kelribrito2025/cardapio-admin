@@ -472,6 +472,10 @@ export default function Pedidos() {
   const { data: deliveryFinisherData } = trpc.driver.getDeliveryFinisher.useQuery();
   const deliveryFinisher = deliveryFinisherData?.finisher || 'attendant';
 
+  // Query para saber quando o entregador é notificado (no aceite ou quando pronto)
+  const { data: notifyTimingData } = trpc.driver.getNotifyTiming.useQuery();
+  const driverNotifyTiming = notifyTimingData?.timing || 'on_ready';
+
   // Hook para gerenciar contagem de pedidos novos na sidebar
   const { decrementCount } = useNewOrders();
 
@@ -898,6 +902,18 @@ export default function Pedidos() {
   const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
     // Verificar se devemos mostrar o modal de onboarding contextual
     const statusType = newStatus as 'preparing' | 'ready' | 'completed';
+    
+    // Se entregador notificado no aceite + entregador finaliza + pedido é delivery:
+    // Pular o modal de "Pedido pronto" pois o cliente NÃO recebe notificação neste momento
+    if (statusType === 'ready' && deliveryFinisher === 'driver' && driverNotifyTiming === 'on_accepted') {
+      const order = allOrders.find((o: any) => o.id === orderId);
+      if (order?.deliveryType === 'delivery') {
+        // Executar diretamente sem modal
+        executeStatusUpdate(orderId, newStatus);
+        return;
+      }
+    }
+    
     if (
       (statusType === 'preparing' || statusType === 'ready' || statusType === 'completed') &&
       isNotificationActive(statusType) &&

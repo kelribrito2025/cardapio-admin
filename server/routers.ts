@@ -2084,8 +2084,11 @@ export const appRouter = router({
                           config.instanceToken,
                           driver.whatsapp,
                           message,
-                          [{ text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` }],
-                          'Clique quando sair para a entrega'
+                          [
+                            { text: '✅ Marcar como entregue', id: `delivery_done_${order.orderNumber}` },
+                            { text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
+                          ],
+                          'Clique quando sair ou entregar'
                         );
                       } else {
                         const { sendTextMessage } = await import('./_core/uazapi');
@@ -2317,8 +2320,11 @@ export const appRouter = router({
                   config.instanceToken,
                   driver.whatsapp,
                   message,
-                  [{ text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` }],
-                  'Clique quando sair para a entrega'
+                  [
+                    { text: '✅ Marcar como entregue', id: `delivery_done_${order.orderNumber}` },
+                    { text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
+                  ],
+                  'Clique quando sair ou entregar'
                 );
               } else {
                 const { sendTextMessage } = await import('./_core/uazapi');
@@ -5313,8 +5319,11 @@ export const appRouter = router({
                     config.instanceToken,
                     driver.whatsapp,
                     message,
-                    [{ text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` }],
-                    'Clique quando sair para a entrega'
+                    [
+                      { text: '✅ Marcar como entregue', id: `delivery_done_${order.orderNumber}` },
+                      { text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
+                    ],
+                    'Clique quando sair ou entregar'
                   );
                 } else {
                   const { sendTextMessage } = await import('./_core/uazapi');
@@ -5404,8 +5413,11 @@ export const appRouter = router({
               config.instanceToken,
               driver.whatsapp,
               message,
-              [{ text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` }],
-              'Clique quando sair para a entrega'
+              [
+                { text: '✅ Marcar como entregue', id: `delivery_done_${order.orderNumber}` },
+                { text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
+              ],
+              'Clique quando sair ou entregar'
             );
           } else {
             const { sendTextMessage } = await import('./_core/uazapi');
