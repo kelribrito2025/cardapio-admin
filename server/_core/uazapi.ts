@@ -860,6 +860,78 @@ export async function sendOrderConfirmationRequest(
 }
 
 /**
+ * Send a PIX copy button via WhatsApp
+ * Uses UAZAPI native /send/pix endpoint that creates a WhatsApp native PIX button
+ * When the client taps the button, the PIX key is copied to clipboard
+ */
+export async function sendPixButton(
+  instanceToken: string,
+  phone: string,
+  pixKey: string,
+  pixKeyType?: string,
+  merchantName?: string
+): Promise<SendTextResponse> {
+  try {
+    // Format phone number (remove non-digits and ensure country code)
+    let formattedPhone = phone.replace(/\D/g, '');
+    
+    // Add Brazil country code if not present
+    if (!formattedPhone.startsWith('55')) {
+      formattedPhone = '55' + formattedPhone;
+    }
+    
+    // Detect PIX key type if not provided
+    let type = pixKeyType || 'EVP';
+    if (!pixKeyType) {
+      const cleanKey = pixKey.replace(/\D/g, '');
+      if (pixKey.includes('@')) {
+        type = 'EMAIL';
+      } else if (cleanKey.length === 11 && !pixKey.includes('+')) {
+        // Could be CPF or phone - check if starts with valid phone prefix
+        type = 'CPF';
+      } else if (cleanKey.length === 14) {
+        type = 'CNPJ';
+      } else if (pixKey.startsWith('+') || (cleanKey.length >= 10 && cleanKey.length <= 13)) {
+        type = 'PHONE';
+      } else {
+        type = 'EVP'; // Random key (UUID format)
+      }
+    }
+    
+    console.log('[UAZAPI] Enviando botão PIX para:', formattedPhone, '| tipo:', type);
+    
+    const body: Record<string, unknown> = {
+      number: formattedPhone,
+      pixKey: pixKey,
+      type: type,
+    };
+    
+    if (merchantName) {
+      body.merchantName = merchantName;
+    }
+    
+    const response = await makeInstanceRequest<{
+      id?: string;
+      message?: string;
+    }>(instanceToken, '/send/pix', 'POST', body);
+    
+    console.log('[UAZAPI] ✅ Botão PIX enviado com sucesso:', { phone: formattedPhone, messageId: response.id });
+    
+    return {
+      success: true,
+      messageId: response.id,
+      message: response.message,
+    };
+  } catch (error) {
+    console.error('[UAZAPI] ❌ Falha ao enviar botão PIX:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to send PIX button',
+    };
+  }
+}
+
+/**
  * Configure webhook for an instance to receive message responses
  */
 export async function configureWebhook(

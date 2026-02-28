@@ -3686,20 +3686,21 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
             // Enviar mensagem separada com chave PIX se pagamento for PIX e chave estiver cadastrada
             if (data.paymentMethod === 'pix' && establishment?.pixKey) {
               try {
-                const { sendTextMessage } = await import('./_core/uazapi');
-                const pixMessage = `🔑 *Chave PIX para pagamento:*\n\n${establishment.pixKey}\n\n_Copie a chave acima para realizar o pagamento_ 💰`;
-                const pixResult = await sendTextMessage(
+                const { sendPixButton } = await import('./_core/uazapi');
+                const pixResult = await sendPixButton(
                   whatsappConfig.instanceToken,
                   data.customerPhone,
-                  pixMessage
+                  establishment.pixKey,
+                  undefined, // auto-detect key type
+                  establishment.name || undefined // merchantName
                 );
                 if (pixResult.success) {
-                  console.log('[DB:createPublicOrder] ✅ Chave PIX enviada com sucesso:', orderNumber);
+                  console.log('[DB:createPublicOrder] ✅ Botão PIX nativo enviado com sucesso:', orderNumber);
                 } else {
-                  console.error('[DB:createPublicOrder] ❌ FALHA ao enviar chave PIX:', pixResult.message);
+                  console.error('[DB:createPublicOrder] ❌ FALHA ao enviar botão PIX:', pixResult.message);
                 }
               } catch (pixError) {
-                console.error('[DB:createPublicOrder] Erro ao enviar chave PIX:', pixError);
+                console.error('[DB:createPublicOrder] Erro ao enviar botão PIX:', pixError);
               }
             }
           } else {
