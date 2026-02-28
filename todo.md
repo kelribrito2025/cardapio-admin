@@ -7606,3 +7606,13 @@
 - [x] Implementar botão PIX nativo via endpoint /send/pix da UAZAPI (botão de copiar nativo do WhatsApp)
 - [x] Auto-detecção do tipo de chave PIX (CPF, CNPJ, EMAIL, PHONE, EVP)
 - [x] Testar envio com e sem chave PIX cadastrada
+
+## Fluxo Inteligente de Entrega (v4 - Clean Implementation)
+- [x] Backend: Suprimir envio de template ao cliente quando admin marca como Pronto E existem entregadores cadastrados
+- [x] Backend: Enviar 2 botões ao entregador na notificação (🚵 Sair para entrega + ✅ O pedido foi entregue)
+- [x] Backend: Webhook handler - botão "Sair para entrega" envia template Pronto (Delivery) ao cliente
+- [x] Backend: Webhook handler - botão "O pedido foi entregue" atualiza status para Finalizado + envia template Finalizado ao cliente
+- [x] Backend: Configurar webhook UAZAPI para nosso endpoint (com proxy para n8n)
+- [x] Frontend: Desabilitar botão Finalizar na página /pedidos quando existem entregadores (ícone entregador + tooltip)
+- [x] Frontend: Não exibir modal de "Pedido pronto" quando existem entregadores (marcar direto)
+- [x] Testes vitest para o fluxo completo

@@ -438,6 +438,13 @@ export default function Pedidos() {
     { enabled: !!establishmentId && establishmentId > 0 }
   );
 
+  // Query para verificar se existem entregadores ativos (fluxo inteligente de entrega)
+  const { data: activeDriversList } = trpc.driver.listActive.useQuery(
+    undefined,
+    { enabled: !!establishmentId && establishmentId > 0 }
+  );
+  const hasActiveDrivers = (activeDriversList?.length ?? 0) > 0;
+
   // Mutation para atualizar método de impressão favorito
   const updatePrintMethodMutation = trpc.printer.saveSettings.useMutation({
     onSuccess: () => {
@@ -894,6 +901,18 @@ export default function Pedidos() {
   const handleStatusUpdate = (orderId: number, newStatus: OrderStatus) => {
     // Verificar se devemos mostrar o modal de onboarding contextual
     const statusType = newStatus as 'preparing' | 'ready' | 'completed';
+    
+    // Se existem entregadores e o pedido é delivery, pular o modal de "Pronto"
+    // O entregador controla o fluxo via WhatsApp
+    if (statusType === 'ready' && hasActiveDrivers) {
+      const order = allOrders.find((o: OrderItem) => o.id === orderId);
+      if (order?.deliveryType === 'delivery') {
+        // Executar diretamente sem modal
+        executeStatusUpdate(orderId, newStatus);
+        return;
+      }
+    }
+    
     if (
       (statusType === 'preparing' || statusType === 'ready' || statusType === 'completed') &&
       isNotificationActive(statusType) &&
@@ -996,15 +1015,18 @@ export default function Pedidos() {
     },
   });
 
-  const getNextAction = (status: OrderStatus): { label: string; newStatus: OrderStatus } | null => {
+  const getNextAction = (status: OrderStatus, order?: OrderItem): { label: string; newStatus: OrderStatus; disabled?: boolean; driverControlled?: boolean } | null => {
     switch (status) {
       case "new":
         return { label: "Aceitar", newStatus: "preparing" };
       case "preparing":
         return { label: "Pronto", newStatus: "ready" };
       case "ready":
-        return { label: "Finalizar", newStatus: "completed" };
       case "out_for_delivery":
+        // Se existem entregadores e o pedido é delivery, o entregador controla a finalização
+        if (hasActiveDrivers && order?.deliveryType === 'delivery') {
+          return { label: "Entregador", newStatus: "completed", disabled: true, driverControlled: true };
+        }
         return { label: "Finalizar", newStatus: "completed" };
       default:
         return null;
@@ -1400,7 +1422,7 @@ export default function Pedidos() {
                     // Na coluna "Prontos", usar sempre a cor verde da coluna (ready) em vez da cor individual do status
                     const displayStatus = column.id === 'ready' ? 'ready' : order.status;
                     const config = statusConfig[displayStatus as OrderStatus];
-                    const nextAction = getNextAction(order.status as OrderStatus);
+                    const nextAction = getNextAction(order.status as OrderStatus, order);
                     const PaymentIcon = paymentMethodLabels[order.paymentMethod]?.icon || CreditCard;
 
                     return (
@@ -1566,19 +1588,26 @@ export default function Pedidos() {
                               Ver detalhes
                             </Button>
                             {nextAction && (
-                              <Button
-                                size="sm"
-                                className="flex-1 h-8 rounded-lg shadow-sm text-xs hover:opacity-90"
-                                style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
-                                onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
-                                disabled={loadingOrderId !== null}
-                              >
-                                {loadingOrderId === order.id ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  nextAction.label
-                                )}
-                              </Button>
+                              nextAction.driverControlled ? (
+                                <div className="flex-1 h-8 rounded-lg shadow-sm text-xs flex items-center justify-center gap-1.5 bg-amber-100 text-amber-800 border border-amber-200 cursor-default" title="A finalização do pedido é realizada pelo entregador após marcar como entregue.">
+                                  <Bike className="h-3.5 w-3.5" />
+                                  <span>Entregador</span>
+                                </div>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  className="flex-1 h-8 rounded-lg shadow-sm text-xs hover:opacity-90"
+                                  style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
+                                  onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
+                                  disabled={loadingOrderId !== null}
+                                >
+                                  {loadingOrderId === order.id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    nextAction.label
+                                  )}
+                                </Button>
+                              )
                             )}
                             {order.status !== "completed" && order.status !== "cancelled" && (
                               <Button
@@ -1723,7 +1752,7 @@ export default function Pedidos() {
 
               return listOrders.map((order: OrderItem) => {
                 const config = statusConfig[order.status as OrderStatus];
-                const nextAction = getNextAction(order.status as OrderStatus);
+                const nextAction = getNextAction(order.status as OrderStatus, order);
                 const PaymentIcon = paymentMethodLabels[order.paymentMethod]?.icon || CreditCard;
                 const diffMs = Date.now() - new Date(order.createdAt).getTime();
                 const diffMins = Math.floor(diffMs / 60000);
@@ -1783,19 +1812,26 @@ export default function Pedidos() {
                     {/* Ações */}
                     <div className="flex items-center gap-1 justify-end" onClick={(e) => e.stopPropagation()}>
                       {nextAction && (
-                        <Button
-                          size="sm"
-                          className="h-8 px-4 rounded-lg text-xs font-semibold shadow-sm hover:opacity-90"
-                          style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
-                          onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
-                          disabled={loadingOrderId !== null}
-                        >
-                          {loadingOrderId === order.id ? (
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                          ) : (
-                            nextAction.label
-                          )}
-                        </Button>
+                        nextAction.driverControlled ? (
+                          <div className="h-8 px-4 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 bg-amber-100 text-amber-800 border border-amber-200 cursor-default" title="A finalização do pedido é realizada pelo entregador após marcar como entregue.">
+                            <Bike className="h-3.5 w-3.5" />
+                            <span>Entregador</span>
+                          </div>
+                        ) : (
+                          <Button
+                            size="sm"
+                            className="h-8 px-4 rounded-lg text-xs font-semibold shadow-sm hover:opacity-90"
+                            style={{ backgroundColor: config.badgeBg, color: config.badgeText }}
+                            onClick={() => handleStatusUpdate(order.id, nextAction.newStatus)}
+                            disabled={loadingOrderId !== null}
+                          >
+                            {loadingOrderId === order.id ? (
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                            ) : (
+                              nextAction.label
+                            )}
+                          </Button>
+                        )
                       )}
                       {order.status !== 'completed' && order.status !== 'cancelled' && (
                         <Button

@@ -2576,63 +2576,59 @@ async function startServer() {
   });
 
   // Webhook para receber respostas dos botões do WhatsApp (UAZAPI)
+  // Este endpoint recebe TODOS os webhooks e encaminha para o n8n automaticamente
   app.post("/api/webhook/whatsapp/:establishmentId", express.json(), async (req, res) => {
     try {
       const establishmentId = parseInt(req.params.establishmentId);
       const body = req.body;
       
-      console.log('[WhatsApp Webhook] Recebido:', JSON.stringify(body, null, 2));
+      console.log('[WhatsApp Webhook] Recebido para establishment:', establishmentId);
+      
+      // PROXY: Encaminhar para o n8n em background (não bloquear a resposta)
+      const N8N_WEBHOOK_URL = 'https://webn8n.granaupvps.shop/webhook/mindi';
+      fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }).catch(err => console.error('[WhatsApp Webhook] Erro ao encaminhar para n8n:', err));
       
       // Verificar se é uma resposta de botão
-      // A UAZAPI envia o payload em diferentes formatos:
-      // - Direto no body (quando addUrlEvents está ativo)
-      // - Em body.message ou body.data
       const message = body.message || body.data || body;
       
-      // O campo correto para botões na UAZAPI é 'buttonOrListid'
-      // Também verificamos outros campos possíveis para compatibilidade
       const buttonId = message?.buttonOrListid || message?.buttonId || message?.selectedButtonId || message?.selectedId || body?.buttonOrListid;
       const messageText = message?.text || message?.body || message?.conversation;
       const senderPhone = message?.sender || message?.from || body?.sender || body?.from;
       
       if (buttonId) {
-        console.log('[WhatsApp Webhook] Botão clicado:', buttonId);
-        console.log('[WhatsApp Webhook] Sender phone:', senderPhone);
+        console.log('[WhatsApp Webhook] Botão clicado:', buttonId, 'sender:', senderPhone);
         
-        // Extrair o número do pedido do buttonId
-        // Formato: confirm_order_#P123 ou cancel_order_#P123
+        // ========== BOTÕES DE CONFIRMAÇÃO/CANCELAMENTO DE PEDIDO ==========
         const confirmMatch = buttonId.match(/confirm_order_(#P\d+)/);
         const cancelMatch = buttonId.match(/cancel_order_(#P\d+)/);
+        
+        // ========== BOTÕES DO ENTREGADOR ==========
+        const deliveryStartMatch = buttonId.match(/delivery_start_(#P\d+)/);
+        const deliveryDoneMatch = buttonId.match(/delivery_done_(#P\d+)/);
         
         if (confirmMatch) {
           const orderNumber = confirmMatch[1];
           console.log('[WhatsApp Webhook] Pedido confirmado:', orderNumber);
-          
-          // Buscar e atualizar o pedido
           const { confirmOrderByNumber } = await import('../db');
           const result = await confirmOrderByNumber(establishmentId, orderNumber);
           console.log('[WhatsApp Webhook] Resultado confirmação:', result);
-          
-          // Mensagem de confirmação removida - o estabelecimento pode configurar suas próprias notificações
           if (result.success) {
-            console.log('[WhatsApp Webhook] Pedido confirmado com sucesso, sem mensagem automática');
+            console.log('[WhatsApp Webhook] Pedido confirmado com sucesso');
           }
         } else if (cancelMatch) {
           const orderNumber = cancelMatch[1];
           console.log('[WhatsApp Webhook] Pedido cancelado pelo cliente:', orderNumber);
-          
-          // Buscar e cancelar o pedido
           const { cancelOrderByNumber } = await import('../db');
           const result = await cancelOrderByNumber(establishmentId, orderNumber, 'Cancelado pelo cliente via WhatsApp');
           console.log('[WhatsApp Webhook] Resultado cancelamento:', result);
-          
           if (result.success) {
-            // Enviar mensagem de cancelamento
             const { getWhatsappConfig } = await import('../db');
             const { sendTextMessage } = await import('./uazapi');
             const config = await getWhatsappConfig(establishmentId);
-            
-            // Usar senderPhone que já foi extraído acima
             if (config?.instanceToken && senderPhone) {
               const phone = senderPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
               await sendTextMessage(
@@ -2642,10 +2638,173 @@ async function startServer() {
               );
             }
           }
+        } else if (deliveryStartMatch) {
+          // ========== ENTREGADOR: SAIR PARA ENTREGA ==========
+          const orderNumber = deliveryStartMatch[1];
+          console.log('[WhatsApp Webhook] Entregador saiu para entrega:', orderNumber);
+          
+          try {
+            const { getPublicOrderByNumber, getWhatsappConfig, getEstablishmentById, getOrderItems, updateOrderStatus, getCashbackTransactionByOrderId, getCashbackBalance } = await import('../db');
+            const orderData = await getPublicOrderByNumber(orderNumber, establishmentId);
+            
+            if (!orderData) {
+              console.error('[Delivery Start] Pedido não encontrado:', orderNumber);
+            } else if (orderData.status === 'completed' || orderData.status === 'cancelled') {
+              console.log('[Delivery Start] Pedido já finalizado/cancelado, ignorando:', orderNumber);
+            } else {
+              // Atualizar status para out_for_delivery
+              await updateOrderStatus(orderData.id, 'out_for_delivery');
+              console.log('[Delivery Start] Status atualizado para out_for_delivery:', orderNumber);
+              
+              // Enviar template "Pronto (Delivery)" ao cliente
+              if (orderData.customerPhone) {
+                const config = await getWhatsappConfig(establishmentId);
+                if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
+                  const { sendOrderStatusNotification } = await import('./uazapi');
+                  const est = await getEstablishmentById(establishmentId);
+                  const orderItems = await getOrderItems(orderData.id);
+                  
+                  await sendOrderStatusNotification(
+                    config.instanceToken,
+                    orderData.customerPhone,
+                    'ready',
+                    {
+                      customerName: orderData.customerName || 'Cliente',
+                      orderNumber: orderData.orderNumber,
+                      establishmentName: est?.name || 'Restaurante',
+                      template: config.templateReady,
+                      deliveryType: orderData.deliveryType as 'delivery' | 'pickup' | null,
+                      cancellationReason: null,
+                      orderItems: orderItems.map((item: any) => ({
+                        productName: item.productName,
+                        quantity: item.quantity ?? 1,
+                        unitPrice: item.unitPrice,
+                        totalPrice: item.totalPrice,
+                        complements: item.complements,
+                        notes: item.notes,
+                      })),
+                      orderTotal: orderData.total,
+                      paymentMethod: orderData.paymentMethod,
+                      customerAddress: orderData.customerAddress,
+                    }
+                  );
+                  console.log('[Delivery Start] Template Pronto (Delivery) enviado ao cliente');
+                } else {
+                  console.log('[Delivery Start] Notificação ao cliente não enviada (config desativada ou não conectado)');
+                }
+              }
+              
+              // Confirmar ao entregador
+              if (senderPhone) {
+                const config = await getWhatsappConfig(establishmentId);
+                if (config?.instanceToken) {
+                  const { sendTextMessage } = await import('./uazapi');
+                  const phone = senderPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
+                  await sendTextMessage(
+                    config.instanceToken,
+                    phone,
+                    `✅ Entrega do pedido ${orderNumber} iniciada! O cliente foi notificado.`
+                  );
+                }
+              }
+            }
+          } catch (err) {
+            console.error('[Delivery Start] Erro ao processar:', err);
+          }
+        } else if (deliveryDoneMatch) {
+          // ========== ENTREGADOR: PEDIDO ENTREGUE ==========
+          const orderNumber = deliveryDoneMatch[1];
+          console.log('[WhatsApp Webhook] Entregador marcou como entregue:', orderNumber);
+          
+          try {
+            const { getPublicOrderByNumber, getWhatsappConfig, getEstablishmentById, getOrderItems, updateOrderStatus, getCashbackTransactionByOrderId, getCashbackBalance } = await import('../db');
+            const orderData = await getPublicOrderByNumber(orderNumber, establishmentId);
+            
+            if (!orderData) {
+              console.error('[Delivery Done] Pedido não encontrado:', orderNumber);
+            } else if (orderData.status === 'completed' || orderData.status === 'cancelled') {
+              console.log('[Delivery Done] Pedido já finalizado/cancelado, ignorando:', orderNumber);
+            } else {
+              // Atualizar status para completed (finalizado)
+              await updateOrderStatus(orderData.id, 'completed');
+              console.log('[Delivery Done] Status atualizado para completed:', orderNumber);
+              
+              // Enviar template "Finalizado" ao cliente
+              if (orderData.customerPhone) {
+                const config = await getWhatsappConfig(establishmentId);
+                if (config && config.status === 'connected' && config.notifyOnCompleted && config.instanceToken) {
+                  const { sendOrderStatusNotification } = await import('./uazapi');
+                  const est = await getEstablishmentById(establishmentId);
+                  const orderItems = await getOrderItems(orderData.id);
+                  
+                  // Buscar info de cashback
+                  let cashbackInfo: { cashbackEarned: string; cashbackTotal: string } | null = null;
+                  try {
+                    if (est?.cashbackEnabled && est?.rewardProgramType === 'cashback') {
+                      const cashbackTx = await getCashbackTransactionByOrderId(orderData.id);
+                      if (cashbackTx && parseFloat(cashbackTx.amount) > 0) {
+                        const balance = await getCashbackBalance(establishmentId, orderData.customerPhone);
+                        cashbackInfo = {
+                          cashbackEarned: cashbackTx.amount,
+                          cashbackTotal: balance?.balance || '0.00',
+                        };
+                      }
+                    }
+                  } catch (cbErr) {
+                    console.error('[Delivery Done] Erro ao buscar cashback:', cbErr);
+                  }
+                  
+                  await sendOrderStatusNotification(
+                    config.instanceToken,
+                    orderData.customerPhone,
+                    'completed',
+                    {
+                      customerName: orderData.customerName || 'Cliente',
+                      orderNumber: orderData.orderNumber,
+                      establishmentName: est?.name || 'Restaurante',
+                      template: config.templateCompleted,
+                      deliveryType: orderData.deliveryType as 'delivery' | 'pickup' | null,
+                      cancellationReason: null,
+                      orderItems: orderItems.map((item: any) => ({
+                        productName: item.productName,
+                        quantity: item.quantity ?? 1,
+                        unitPrice: item.unitPrice,
+                        totalPrice: item.totalPrice,
+                        complements: item.complements,
+                        notes: item.notes,
+                      })),
+                      orderTotal: orderData.total,
+                      paymentMethod: orderData.paymentMethod,
+                      cashbackInfo,
+                      customerAddress: orderData.customerAddress,
+                    }
+                  );
+                  console.log('[Delivery Done] Template Finalizado enviado ao cliente');
+                } else {
+                  console.log('[Delivery Done] Notificação ao cliente não enviada (config desativada ou não conectado)');
+                }
+              }
+              
+              // Confirmar ao entregador
+              if (senderPhone) {
+                const config = await getWhatsappConfig(establishmentId);
+                if (config?.instanceToken) {
+                  const { sendTextMessage } = await import('./uazapi');
+                  const phone = senderPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
+                  await sendTextMessage(
+                    config.instanceToken,
+                    phone,
+                    `✅ Pedido ${orderNumber} marcado como entregue! Obrigado.`
+                  );
+                }
+              }
+            }
+          } catch (err) {
+            console.error('[Delivery Done] Erro ao processar:', err);
+          }
         }
       } else {
-        // Log para debug quando não encontrar buttonId
-        console.log('[WhatsApp Webhook] Nenhum buttonId encontrado. Campos disponíveis:', {
+        console.log('[WhatsApp Webhook] Nenhum buttonId encontrado. Campos:', {
           hasMessage: !!body.message,
           hasData: !!body.data,
           messageKeys: body.message ? Object.keys(body.message) : [],

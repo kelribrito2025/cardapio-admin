@@ -1957,9 +1957,20 @@ export const appRouter = router({
             const config = await db.getWhatsappConfig(order.establishmentId);
             if (config && config.status === 'connected') {
               // Verificar se deve notificar para este status
+              // Quando existem entregadores e pedido é delivery, suprimir notificação 'ready' ao cliente
+              // O entregador é quem controla: ao clicar "Sair para entrega" o cliente será notificado
+              let suppressReadyForDriver = false;
+              if (input.status === 'ready' && order.deliveryType === 'delivery') {
+                const activeDrivers = await db.getActiveDriversByEstablishment(order.establishmentId);
+                if (activeDrivers.length > 0) {
+                  suppressReadyForDriver = true;
+                  console.log('[WhatsApp] Notificação ready suprimida - entregador controla o fluxo');
+                }
+              }
+              
               const shouldNotify = 
                 (input.status === 'preparing' && config.notifyOnPreparing) ||
-                (input.status === 'ready' && config.notifyOnReady) ||
+                (input.status === 'ready' && config.notifyOnReady && !suppressReadyForDriver) ||
                 (input.status === 'out_for_delivery' && (config.notifyOnOutForDelivery !== false)) ||
                 (input.status === 'completed' && config.notifyOnCompleted) ||
                 (input.status === 'cancelled' && config.notifyOnCancelled);
@@ -2067,8 +2078,23 @@ export const appRouter = router({
                     const config = await db.getWhatsappConfig(estId);
                     if (config && config.instanceToken && config.status === 'connected') {
                       const message = buildDriverDeliveryMessage(order, deliveryFee);
-                      const { sendTextMessage } = await import('./_core/uazapi');
-                      await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+                      const { sendTextMessage, sendButtonMessage } = await import('./_core/uazapi');
+                      // Enviar com botões para o entregador controlar o fluxo
+                      try {
+                        await sendButtonMessage(
+                          config.instanceToken,
+                          driver.whatsapp,
+                          message,
+                          [
+                            { text: '🚵 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
+                            { text: '✅ O pedido foi entregue', id: `delivery_done_${order.orderNumber}` },
+                          ],
+                          'Clique para atualizar o status'
+                        );
+                      } catch (btnErr) {
+                        console.warn('[Driver Notify] Falha ao enviar botões, enviando texto simples:', btnErr);
+                        await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+                      }
                       await db.markDeliveryWhatsappSent(deliveryId);
                     }
                     await db.markOrderDeliveryNotified(input.id);
@@ -2121,47 +2147,11 @@ export const appRouter = router({
         // Check if delivery already exists
         const existingDelivery = await db.getDeliveryByOrderId(input.orderId);
         if (existingDelivery) {
-          // Se já foi atribuído (ex: on_accepted), marcar como saiu para entrega e enviar template "Pronto (Delivery)" ao cliente
+          // Se já foi atribuído (ex: on_accepted), marcar como pronto
+          // NÃO enviar notificação ao cliente - o entregador controla o fluxo via botões WhatsApp
           if (order.deliveryNotified) {
-            await db.updateOrderStatus(input.orderId, 'out_for_delivery');
-            
-            // Enviar notificação ao cliente usando o template "Pronto (Delivery)"
-            try {
-              if (order.customerPhone) {
-                const config = await db.getWhatsappConfig(establishment.id);
-                if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
-                  const { sendOrderStatusNotification } = await import('./_core/uazapi');
-                  const est = await db.getEstablishmentById(order.establishmentId);
-                  const orderItems = await db.getOrderItems(order.id);
-                  await sendOrderStatusNotification(
-                    config.instanceToken,
-                    order.customerPhone,
-                    'ready',
-                    {
-                      customerName: order.customerName || 'Cliente',
-                      orderNumber: order.orderNumber,
-                      establishmentName: est?.name || 'Restaurante',
-                      template: config.templateReady,
-                      deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
-                      cancellationReason: null,
-                      orderItems: orderItems.map(item => ({
-                        productName: item.productName,
-                        quantity: item.quantity ?? 1,
-                        unitPrice: item.unitPrice,
-                        totalPrice: item.totalPrice,
-                        complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
-                        notes: item.notes,
-                      })),
-                      orderTotal: order.total,
-                      paymentMethod: order.paymentMethod,
-                      customerAddress: order.customerAddress,
-                    }
-                  );
-                }
-              }
-            } catch (error) {
-              console.error('[WhatsApp] Erro ao notificar cliente (Pronto Delivery - on_accepted):', error);
-            }
+            await db.updateOrderStatus(input.orderId, 'ready');
+            console.log('[markReadyAndAssign] Pedido marcado como pronto - entregador controla o fluxo via WhatsApp');
             
             return { action: 'assigned', driverId: existingDelivery.driverId, whatsappSent: true, deliveryId: existingDelivery.id };
           }
@@ -2279,9 +2269,23 @@ export const appRouter = router({
             const config = await db.getWhatsappConfig(establishment.id);
             if (config && config.instanceToken && config.status === 'connected') {
               const message = buildDriverDeliveryMessage(order, deliveryFee);
-
-              const { sendTextMessage } = await import('./_core/uazapi');
-              await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+              const { sendTextMessage, sendButtonMessage } = await import('./_core/uazapi');
+              // Enviar com botões para o entregador controlar o fluxo
+              try {
+                await sendButtonMessage(
+                  config.instanceToken,
+                  driver.whatsapp,
+                  message,
+                  [
+                    { text: '🚵 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
+                    { text: '✅ O pedido foi entregue', id: `delivery_done_${order.orderNumber}` },
+                  ],
+                  'Clique para atualizar o status'
+                );
+              } catch (btnErr) {
+                console.warn('[Driver WhatsApp] Falha ao enviar botões, enviando texto simples:', btnErr);
+                await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+              }
               await db.markDeliveryWhatsappSent(deliveryId);
               whatsappSent = true;
             }
@@ -2293,45 +2297,9 @@ export const appRouter = router({
           whatsappSent = true; // Já foi enviado no aceite
         }
 
-        // Also send customer notification for "ready" status
-        try {
-          if (order.customerPhone) {
-            const config = await db.getWhatsappConfig(establishment.id);
-            if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
-              const { sendOrderStatusNotification } = await import('./_core/uazapi');
-              const est = await db.getEstablishmentById(order.establishmentId);
-              const orderItems = await db.getOrderItems(order.id);
-              await sendOrderStatusNotification(
-                config.instanceToken,
-                order.customerPhone,
-                'ready',
-                {
-                  customerName: order.customerName || 'Cliente',
-                  orderNumber: order.orderNumber,
-                  establishmentName: est?.name || 'Restaurante',
-                  template: ((order.deliveryType as string) === 'pickup' || (order.deliveryType as string) === 'dine_in')
-                    ? (config.templateReadyPickup || config.templateReady)
-                    : config.templateReady,
-                  deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
-                  cancellationReason: null,
-                  orderItems: orderItems.map(item => ({
-                    productName: item.productName,
-                    quantity: item.quantity ?? 1,
-                    unitPrice: item.unitPrice,
-                    totalPrice: item.totalPrice,
-                    complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
-                    notes: item.notes,
-                  })),
-                  orderTotal: order.total,
-                  paymentMethod: order.paymentMethod,
-                  customerAddress: order.customerAddress,
-                }
-              );
-            }
-          }
-        } catch (error) {
-          console.error('[WhatsApp] Erro ao notificar cliente:', error);
-        }
+        // NÃO enviar notificação ao cliente no status 'ready' quando há entregadores
+        // O entregador controla o fluxo: ao clicar "Sair para entrega" o cliente será notificado
+        console.log('[markReadyAndAssign] Notificação ready suprimida - entregador controla o fluxo via WhatsApp');
 
         return { action: 'assigned', driverId, whatsappSent, deliveryId };
       }),
@@ -3557,14 +3525,15 @@ export const appRouter = router({
             instanceToken: instanceResult.instanceToken,
           });
           
-          // Configurar webhook padrão do n8n automaticamente
+          // Configurar webhook para nosso endpoint (que encaminha para n8n automaticamente)
           if (instanceResult.instanceToken) {
-            const N8N_WEBHOOK_URL = 'https://webn8n.granaupvps.shop/webhook/mindi';
+            const appUrl = process.env.VITE_APP_URL || 'https://mindi.manus.space';
+            const APP_WEBHOOK_URL = `${appUrl}/api/webhook/whatsapp/${establishment.id}`;
             try {
-              const webhookResult = await configureWebhook(instanceResult.instanceToken, N8N_WEBHOOK_URL);
-              console.log('[WhatsApp] Webhook n8n configurado automaticamente:', webhookResult.success ? 'OK' : webhookResult.message);
+              const webhookResult = await configureWebhook(instanceResult.instanceToken, APP_WEBHOOK_URL);
+              console.log('[WhatsApp] Webhook app configurado automaticamente:', webhookResult.success ? 'OK' : webhookResult.message, 'URL:', APP_WEBHOOK_URL);
             } catch (webhookError) {
-              console.error('[WhatsApp] Erro ao configurar webhook n8n (não bloqueante):', webhookError);
+              console.error('[WhatsApp] Erro ao configurar webhook app (não bloqueante):', webhookError);
             }
           }
           
@@ -3606,14 +3575,15 @@ export const appRouter = router({
         // Conectar instância
         const result = await connectInstance(config.instanceToken);
         
-        // Configurar webhook padrão do n8n em toda conexão/reconexão
+        // Configurar webhook para nosso endpoint (que encaminha para n8n automaticamente)
         {
-          const N8N_WEBHOOK_URL = 'https://webn8n.granaupvps.shop/webhook/mindi';
+          const appUrl = process.env.VITE_APP_URL || 'https://mindi.manus.space';
+          const APP_WEBHOOK_URL = `${appUrl}/api/webhook/whatsapp/${establishment.id}`;
           try {
-            const webhookResult = await configureWebhook(config.instanceToken, N8N_WEBHOOK_URL);
-            console.log('[WhatsApp] Webhook n8n configurado na conexão:', webhookResult.success ? 'OK' : webhookResult.message);
+            const webhookResult = await configureWebhook(config.instanceToken, APP_WEBHOOK_URL);
+            console.log('[WhatsApp] Webhook app configurado na conexão:', webhookResult.success ? 'OK' : webhookResult.message, 'URL:', APP_WEBHOOK_URL);
           } catch (webhookError) {
-            console.error('[WhatsApp] Erro ao configurar webhook n8n na conexão (não bloqueante):', webhookError);
+            console.error('[WhatsApp] Erro ao configurar webhook app na conexão (não bloqueante):', webhookError);
           }
         }
         
@@ -3666,6 +3636,17 @@ export const appRouter = router({
               await db.ensureNonGlobalBotApiKey(establishment.id, establishment.name);
             } catch (err) {
               console.error('[WhatsApp] Erro ao garantir API key não-global (não bloqueante):', err);
+            }
+            
+            // AUTO-RECONFIGURAR webhook para nosso endpoint (migração de instâncias antigas)
+            try {
+              const { configureWebhook } = await import('./_core/uazapi');
+              const appUrl = process.env.VITE_APP_URL || 'https://mindi.manus.space';
+              const APP_WEBHOOK_URL = `${appUrl}/api/webhook/whatsapp/${establishment.id}`;
+              await configureWebhook(config.instanceToken, APP_WEBHOOK_URL);
+              console.log('[WhatsApp] Webhook auto-reconfigurado para:', APP_WEBHOOK_URL);
+            } catch (whErr) {
+              console.error('[WhatsApp] Erro ao auto-reconfigurar webhook (não bloqueante):', whErr);
             }
           }
         }
@@ -5255,9 +5236,23 @@ export const appRouter = router({
               const config = await db.getWhatsappConfig(establishment.id);
               if (config && config.instanceToken && config.status === 'connected') {
                 const message = buildDriverDeliveryMessage(order, deliveryFee);
-                
-                const { sendTextMessage } = await import('./_core/uazapi');
-                await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+                const { sendTextMessage, sendButtonMessage } = await import('./_core/uazapi');
+                // Enviar com botões para o entregador controlar o fluxo
+                try {
+                  await sendButtonMessage(
+                    config.instanceToken,
+                    driver.whatsapp,
+                    message,
+                    [
+                      { text: '🚵 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
+                      { text: '✅ O pedido foi entregue', id: `delivery_done_${order.orderNumber}` },
+                    ],
+                    'Clique para atualizar o status'
+                  );
+                } catch (btnErr) {
+                  console.warn('[Driver WhatsApp] Falha ao enviar botões, enviando texto simples:', btnErr);
+                  await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+                }
                 await db.markDeliveryWhatsappSent(deliveryId);
                 whatsappSent = true;
               }
@@ -5335,8 +5330,23 @@ export const appRouter = router({
         const message = buildDriverDeliveryMessage(order);
         
         try {
-          const { sendTextMessage } = await import('./_core/uazapi');
-          await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+          const { sendTextMessage, sendButtonMessage } = await import('./_core/uazapi');
+          // Enviar com botões para o entregador controlar o fluxo
+          try {
+            await sendButtonMessage(
+              config.instanceToken,
+              driver.whatsapp,
+              message,
+              [
+                { text: '🚵 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
+                { text: '✅ O pedido foi entregue', id: `delivery_done_${order.orderNumber}` },
+              ],
+              'Clique para atualizar o status'
+            );
+          } catch (btnErr) {
+            console.warn('[Driver WhatsApp] Falha ao enviar botões, enviando texto simples:', btnErr);
+            await sendTextMessage(config.instanceToken, driver.whatsapp, message);
+          }
           await db.markDeliveryWhatsappSent(input.deliveryId);
           return { success: true };
         } catch (error) {
