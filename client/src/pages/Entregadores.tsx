@@ -25,8 +25,6 @@ import {
   Clock,
   Info,
   Users,
-  UserCog,
-  Truck,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -135,11 +133,6 @@ function DriverFormSheet({
   const updateNotifyTimingMutation = trpc.driver.updateNotifyTiming.useMutation();
   const utils = trpc.useUtils();
   const [notifyTiming, setNotifyTiming] = useState<"on_accepted" | "on_ready">("on_ready");
-
-  // Configuração de quem finaliza o pedido (atendente ou entregador)
-  const { data: deliveryFinisherData } = trpc.driver.getDeliveryFinisher.useQuery();
-  const updateDeliveryFinisherMutation = trpc.driver.updateDeliveryFinisher.useMutation();
-  const [deliveryFinisher, setDeliveryFinisher] = useState<"attendant" | "driver">("attendant");
   
   // Sync local state with server data
   useEffect(() => {
@@ -147,12 +140,6 @@ function DriverFormSheet({
       setNotifyTiming(notifyTimingData.timing);
     }
   }, [notifyTimingData?.timing]);
-
-  useEffect(() => {
-    if (deliveryFinisherData?.finisher) {
-      setDeliveryFinisher(deliveryFinisherData.finisher);
-    }
-  }, [deliveryFinisherData?.finisher]);
   const [saving, setSaving] = useState(false);
   const [whatsappStatus, setWhatsappStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid' | 'error'>('idle');
   const [whatsappName, setWhatsappName] = useState<string | null>(null);
@@ -446,60 +433,6 @@ function DriverFormSheet({
                   <div>
                     <span className="text-sm font-medium">Quando o pedido for aceito</span>
                     <p className="text-xs text-muted-foreground">Agiliza a entrega. O entregador é acionado assim que o restaurante aceita o pedido.</p>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            {/* Quem finaliza o pedido */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Truck className="h-4 w-4 text-red-500" />
-                <Label className="text-sm font-medium">Quem finaliza o pedido?</Label>
-              </div>
-              <p className="text-xs text-muted-foreground -mt-1">Define quem marca o pedido como finalizado após sair para entrega.</p>
-              <div className="space-y-2">
-                <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${deliveryFinisher === "attendant" ? "border-red-400 bg-red-50 shadow-sm" : "border-border/50 hover:border-red-300 bg-muted/30 hover:bg-muted/50"}`}>
-                  <input
-                    type="radio"
-                    name="deliveryFinisher"
-                    value="attendant"
-                    checked={deliveryFinisher === "attendant"}
-                    onChange={async () => {
-                      setDeliveryFinisher("attendant");
-                      try {
-                        await updateDeliveryFinisherMutation.mutateAsync({ finisher: "attendant" });
-                        utils.driver.getDeliveryFinisher.invalidate();
-                        toast.success("Configuração atualizada");
-                      } catch { toast.error("Erro ao salvar configuração"); }
-                    }}
-                    className="mt-0.5 accent-red-500"
-                  />
-                  <div>
-                    <span className="text-sm font-medium">Atendente finaliza</span>
-                    <p className="text-xs text-muted-foreground">O atendente clica em "Finalizar" na página de pedidos para concluir.</p>
-                  </div>
-                </label>
-
-                <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${deliveryFinisher === "driver" ? "border-red-400 bg-red-50 shadow-sm" : "border-border/50 hover:border-red-300 bg-muted/30 hover:bg-muted/50"}`}>
-                  <input
-                    type="radio"
-                    name="deliveryFinisher"
-                    value="driver"
-                    checked={deliveryFinisher === "driver"}
-                    onChange={async () => {
-                      setDeliveryFinisher("driver");
-                      try {
-                        await updateDeliveryFinisherMutation.mutateAsync({ finisher: "driver" });
-                        utils.driver.getDeliveryFinisher.invalidate();
-                        toast.success("Configuração atualizada");
-                      } catch { toast.error("Erro ao salvar configuração"); }
-                    }}
-                    className="mt-0.5 accent-red-500"
-                  />
-                  <div>
-                    <span className="text-sm font-medium">Entregador finaliza via WhatsApp</span>
-                    <p className="text-xs text-muted-foreground">O entregador recebe um botão "Sair para entrega" no WhatsApp. Ao clicar, o pedido é finalizado automaticamente e o cliente é notificado.</p>
                   </div>
                 </label>
               </div>

@@ -1957,22 +1957,12 @@ export const appRouter = router({
             const config = await db.getWhatsappConfig(order.establishmentId);
             if (config && config.status === 'connected') {
               // Verificar se deve notificar para este status
-              let shouldNotify = 
+              const shouldNotify = 
                 (input.status === 'preparing' && config.notifyOnPreparing) ||
                 (input.status === 'ready' && config.notifyOnReady) ||
                 (input.status === 'out_for_delivery' && (config.notifyOnOutForDelivery !== false)) ||
                 (input.status === 'completed' && config.notifyOnCompleted) ||
                 (input.status === 'cancelled' && config.notifyOnCancelled);
-              
-              // Se deliveryFinisher é 'driver' e pedido é delivery, suprimir notificação 'ready' ao cliente
-              // O cliente só será notificado quando o entregador clicar "Sair para entrega"
-              if (input.status === 'ready' && order.deliveryType === 'delivery') {
-                const finisher = await db.getDeliveryFinisher(order.establishmentId);
-                if (finisher === 'driver') {
-                  shouldNotify = false;
-                  console.log('[WhatsApp] Notificação ready suprimida - entregador finaliza o pedido');
-                }
-              }
               
               if (shouldNotify && config.instanceToken) {
                 const { sendOrderStatusNotification } = await import('./_core/uazapi');
@@ -2077,23 +2067,8 @@ export const appRouter = router({
                     const config = await db.getWhatsappConfig(estId);
                     if (config && config.instanceToken && config.status === 'connected') {
                       const message = buildDriverDeliveryMessage(order, deliveryFee);
-                      const finisherOnAccept = await db.getDeliveryFinisher(estId);
-                      if (finisherOnAccept === 'driver') {
-                        const { sendButtonMessage } = await import('./_core/uazapi');
-                        await sendButtonMessage(
-                          config.instanceToken,
-                          driver.whatsapp,
-                          message,
-                          [
-                            { text: '✅ Marcar como entregue', id: `delivery_done_${order.orderNumber}` },
-                            { text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
-                          ],
-                          'Clique quando sair ou entregar'
-                        );
-                      } else {
-                        const { sendTextMessage } = await import('./_core/uazapi');
-                        await sendTextMessage(config.instanceToken, driver.whatsapp, message);
-                      }
+                      const { sendTextMessage } = await import('./_core/uazapi');
+                      await sendTextMessage(config.instanceToken, driver.whatsapp, message);
                       await db.markDeliveryWhatsappSent(deliveryId);
                     }
                     await db.markOrderDeliveryNotified(input.id);
@@ -2150,49 +2125,42 @@ export const appRouter = router({
           if (order.deliveryNotified) {
             await db.updateOrderStatus(input.orderId, 'out_for_delivery');
             
-            // Verificar se o entregador finaliza - se sim, NÃO enviar notificação ao cliente agora
-            // O cliente só será notificado quando o entregador clicar "Sair para entrega"
-            const finisherSetting = await db.getDeliveryFinisher(establishment.id);
-            if (finisherSetting !== 'driver') {
-              // Enviar notificação ao cliente usando o template "Pronto (Delivery)"
-              try {
-                if (order.customerPhone) {
-                  const config = await db.getWhatsappConfig(establishment.id);
-                  if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
-                    const { sendOrderStatusNotification } = await import('./_core/uazapi');
-                    const est = await db.getEstablishmentById(order.establishmentId);
-                    const orderItems = await db.getOrderItems(order.id);
-                    await sendOrderStatusNotification(
-                      config.instanceToken,
-                      order.customerPhone,
-                      'ready',
-                      {
-                        customerName: order.customerName || 'Cliente',
-                        orderNumber: order.orderNumber,
-                        establishmentName: est?.name || 'Restaurante',
-                        template: config.templateReady,
-                        deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
-                        cancellationReason: null,
-                        orderItems: orderItems.map(item => ({
-                          productName: item.productName,
-                          quantity: item.quantity ?? 1,
-                          unitPrice: item.unitPrice,
-                          totalPrice: item.totalPrice,
-                          complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
-                          notes: item.notes,
-                        })),
-                        orderTotal: order.total,
-                        paymentMethod: order.paymentMethod,
-                        customerAddress: order.customerAddress,
-                      }
-                    );
-                  }
+            // Enviar notificação ao cliente usando o template "Pronto (Delivery)"
+            try {
+              if (order.customerPhone) {
+                const config = await db.getWhatsappConfig(establishment.id);
+                if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
+                  const { sendOrderStatusNotification } = await import('./_core/uazapi');
+                  const est = await db.getEstablishmentById(order.establishmentId);
+                  const orderItems = await db.getOrderItems(order.id);
+                  await sendOrderStatusNotification(
+                    config.instanceToken,
+                    order.customerPhone,
+                    'ready',
+                    {
+                      customerName: order.customerName || 'Cliente',
+                      orderNumber: order.orderNumber,
+                      establishmentName: est?.name || 'Restaurante',
+                      template: config.templateReady,
+                      deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
+                      cancellationReason: null,
+                      orderItems: orderItems.map(item => ({
+                        productName: item.productName,
+                        quantity: item.quantity ?? 1,
+                        unitPrice: item.unitPrice,
+                        totalPrice: item.totalPrice,
+                        complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
+                        notes: item.notes,
+                      })),
+                      orderTotal: order.total,
+                      paymentMethod: order.paymentMethod,
+                      customerAddress: order.customerAddress,
+                    }
+                  );
                 }
-              } catch (error) {
-                console.error('[WhatsApp] Erro ao notificar cliente (Pronto Delivery - on_accepted):', error);
               }
-            } else {
-              console.log('[WhatsApp] Notificação ready suprimida (on_accepted) - entregador finaliza o pedido');
+            } catch (error) {
+              console.error('[WhatsApp] Erro ao notificar cliente (Pronto Delivery - on_accepted):', error);
             }
             
             return { action: 'assigned', driverId: existingDelivery.driverId, whatsappSent: true, deliveryId: existingDelivery.id };
@@ -2311,25 +2279,9 @@ export const appRouter = router({
             const config = await db.getWhatsappConfig(establishment.id);
             if (config && config.instanceToken && config.status === 'connected') {
               const message = buildDriverDeliveryMessage(order, deliveryFee);
-              const finisher = await db.getDeliveryFinisher(establishment.id);
 
-              if (finisher === 'driver') {
-                // Send message with "Sair para entrega" button
-                const { sendButtonMessage } = await import('./_core/uazapi');
-                await sendButtonMessage(
-                  config.instanceToken,
-                  driver.whatsapp,
-                  message,
-                  [
-                    { text: '✅ Marcar como entregue', id: `delivery_done_${order.orderNumber}` },
-                    { text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
-                  ],
-                  'Clique quando sair ou entregar'
-                );
-              } else {
-                const { sendTextMessage } = await import('./_core/uazapi');
-                await sendTextMessage(config.instanceToken, driver.whatsapp, message);
-              }
+              const { sendTextMessage } = await import('./_core/uazapi');
+              await sendTextMessage(config.instanceToken, driver.whatsapp, message);
               await db.markDeliveryWhatsappSent(deliveryId);
               whatsappSent = true;
             }
@@ -2342,52 +2294,43 @@ export const appRouter = router({
         }
 
         // Also send customer notification for "ready" status
-        // Se deliveryFinisher é 'driver' e pedido é delivery, NÃO enviar ao cliente agora
-        // O cliente só será notificado quando o entregador clicar "Sair para entrega"
-        const finisherForCustomerNotif = await db.getDeliveryFinisher(establishment.id);
-        const shouldNotifyCustomerReady = !(finisherForCustomerNotif === 'driver' && order.deliveryType === 'delivery');
-        
-        if (shouldNotifyCustomerReady) {
-          try {
-            if (order.customerPhone) {
-              const config = await db.getWhatsappConfig(establishment.id);
-              if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
-                const { sendOrderStatusNotification } = await import('./_core/uazapi');
-                const est = await db.getEstablishmentById(order.establishmentId);
-                const orderItems = await db.getOrderItems(order.id);
-                await sendOrderStatusNotification(
-                  config.instanceToken,
-                  order.customerPhone,
-                  'ready',
-                  {
-                    customerName: order.customerName || 'Cliente',
-                    orderNumber: order.orderNumber,
-                    establishmentName: est?.name || 'Restaurante',
-                    template: ((order.deliveryType as string) === 'pickup' || (order.deliveryType as string) === 'dine_in')
-                      ? (config.templateReadyPickup || config.templateReady)
-                      : config.templateReady,
-                    deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
-                    cancellationReason: null,
-                    orderItems: orderItems.map(item => ({
-                      productName: item.productName,
-                      quantity: item.quantity ?? 1,
-                      unitPrice: item.unitPrice,
-                      totalPrice: item.totalPrice,
-                      complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
-                      notes: item.notes,
-                    })),
-                    orderTotal: order.total,
-                    paymentMethod: order.paymentMethod,
-                    customerAddress: order.customerAddress,
-                  }
-                );
-              }
+        try {
+          if (order.customerPhone) {
+            const config = await db.getWhatsappConfig(establishment.id);
+            if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
+              const { sendOrderStatusNotification } = await import('./_core/uazapi');
+              const est = await db.getEstablishmentById(order.establishmentId);
+              const orderItems = await db.getOrderItems(order.id);
+              await sendOrderStatusNotification(
+                config.instanceToken,
+                order.customerPhone,
+                'ready',
+                {
+                  customerName: order.customerName || 'Cliente',
+                  orderNumber: order.orderNumber,
+                  establishmentName: est?.name || 'Restaurante',
+                  template: ((order.deliveryType as string) === 'pickup' || (order.deliveryType as string) === 'dine_in')
+                    ? (config.templateReadyPickup || config.templateReady)
+                    : config.templateReady,
+                  deliveryType: order.deliveryType as 'delivery' | 'pickup' | null,
+                  cancellationReason: null,
+                  orderItems: orderItems.map(item => ({
+                    productName: item.productName,
+                    quantity: item.quantity ?? 1,
+                    unitPrice: item.unitPrice,
+                    totalPrice: item.totalPrice,
+                    complements: item.complements as Array<{ name: string; price: number; quantity: number }> | string | null,
+                    notes: item.notes,
+                  })),
+                  orderTotal: order.total,
+                  paymentMethod: order.paymentMethod,
+                  customerAddress: order.customerAddress,
+                }
+              );
             }
-          } catch (error) {
-            console.error('[WhatsApp] Erro ao notificar cliente:', error);
           }
-        } else {
-          console.log('[WhatsApp] Notificação ready ao cliente suprimida (markReadyAndAssign) - entregador finaliza o pedido');
+        } catch (error) {
+          console.error('[WhatsApp] Erro ao notificar cliente:', error);
         }
 
         return { action: 'assigned', driverId, whatsappSent, deliveryId };
@@ -5312,23 +5255,9 @@ export const appRouter = router({
               const config = await db.getWhatsappConfig(establishment.id);
               if (config && config.instanceToken && config.status === 'connected') {
                 const message = buildDriverDeliveryMessage(order, deliveryFee);
-                const finisherAssign = await db.getDeliveryFinisher(establishment.id);
-                if (finisherAssign === 'driver') {
-                  const { sendButtonMessage } = await import('./_core/uazapi');
-                  await sendButtonMessage(
-                    config.instanceToken,
-                    driver.whatsapp,
-                    message,
-                    [
-                      { text: '✅ Marcar como entregue', id: `delivery_done_${order.orderNumber}` },
-                      { text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
-                    ],
-                    'Clique quando sair ou entregar'
-                  );
-                } else {
-                  const { sendTextMessage } = await import('./_core/uazapi');
-                  await sendTextMessage(config.instanceToken, driver.whatsapp, message);
-                }
+                
+                const { sendTextMessage } = await import('./_core/uazapi');
+                await sendTextMessage(config.instanceToken, driver.whatsapp, message);
                 await db.markDeliveryWhatsappSent(deliveryId);
                 whatsappSent = true;
               }
@@ -5406,23 +5335,8 @@ export const appRouter = router({
         const message = buildDriverDeliveryMessage(order);
         
         try {
-          const finisherResend = await db.getDeliveryFinisher(order.establishmentId);
-          if (finisherResend === 'driver') {
-            const { sendButtonMessage } = await import('./_core/uazapi');
-            await sendButtonMessage(
-              config.instanceToken,
-              driver.whatsapp,
-              message,
-              [
-                { text: '✅ Marcar como entregue', id: `delivery_done_${order.orderNumber}` },
-                { text: '🚚 Sair para entrega', id: `delivery_start_${order.orderNumber}` },
-              ],
-              'Clique quando sair ou entregar'
-            );
-          } else {
-            const { sendTextMessage } = await import('./_core/uazapi');
-            await sendTextMessage(config.instanceToken, driver.whatsapp, message);
-          }
+          const { sendTextMessage } = await import('./_core/uazapi');
+          await sendTextMessage(config.instanceToken, driver.whatsapp, message);
           await db.markDeliveryWhatsappSent(input.deliveryId);
           return { success: true };
         } catch (error) {
@@ -5487,25 +5401,6 @@ export const appRouter = router({
         const establishment = await db.getEstablishmentByUserId(ctx.user.id);
         if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
         await db.updateDriverNotifyTiming(establishment.id, input.timing);
-        return { success: true };
-      }),
-
-    // Get delivery finisher setting (who finalizes the order: attendant or driver)
-    getDeliveryFinisher: protectedProcedure
-      .query(async ({ ctx }) => {
-        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
-        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
-        const finisher = await db.getDeliveryFinisher(establishment.id);
-        return { finisher };
-      }),
-
-    // Update delivery finisher setting
-    updateDeliveryFinisher: protectedProcedure
-      .input(z.object({ finisher: z.enum(["attendant", "driver"]) }))
-      .mutation(async ({ ctx, input }) => {
-        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
-        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento não encontrado' });
-        await db.updateDeliveryFinisher(establishment.id, input.finisher);
         return { success: true };
       }),
   }),
