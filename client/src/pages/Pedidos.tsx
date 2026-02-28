@@ -1462,7 +1462,7 @@ export default function Pedidos() {
                                 )}
                               </div>
                               <span className={cn("py-0.5 font-bold uppercase tracking-wide", order.deliveryType === "delivery" && column.id !== 'completed' && "animate-pulse")} style={{borderRadius: '5px', fontSize: '8px', height: '16px', paddingRight: '5px', paddingLeft: '5px', color: config.badgeText, backgroundColor: config.badgeBg}}>
-                                {order.deliveryType === "delivery" ? (column.id === 'completed' ? "Entregue" : "Entrega") : order.deliveryType === "dine_in" ? "Consumo" : "Retirada"}
+                                {order.deliveryType === "delivery" ? (order.status === 'out_for_delivery' ? "Em Rota" : column.id === 'completed' ? "Entregue" : "Entrega") : order.deliveryType === "dine_in" ? "Consumo" : "Retirada"}
                               </span>
                             </div>
                           </div>
@@ -1802,7 +1802,7 @@ export default function Pedidos() {
                       className="inline-flex items-center justify-center py-0.5 font-bold uppercase tracking-wide w-fit"
                       style={{ borderRadius: '5px', fontSize: '9px', height: '18px', paddingRight: '6px', paddingLeft: '6px', color: config.badgeText, backgroundColor: config.badgeBg }}
                     >
-                      {order.deliveryType === 'delivery' ? (order.status === 'completed' ? 'Entregue' : 'Entrega') : order.deliveryType === 'dine_in' ? 'Consumo' : 'Retirada'}
+                      {order.deliveryType === 'delivery' ? (order.status === 'out_for_delivery' ? 'Em Rota' : order.status === 'completed' ? 'Entregue' : 'Entrega') : order.deliveryType === 'dine_in' ? 'Consumo' : 'Retirada'}
                     </span>
 
                     {/* Pagamento */}

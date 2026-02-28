@@ -7644,3 +7644,5 @@
 ## Mensagens de Confirmação ao Entregador
 - [x] Enviar mensagem de confirmação ao entregador quando clicar "Sair para entrega" (🛵 Entrega iniciada, cliente informado, status atualizado)
 - [x] Enviar mensagem de confirmação ao entregador quando clicar "Pedido entregue" (✅ Entrega concluída, cliente notificado, pedido encerrado)
+## Badge EM ROTA nos Pedidos Out for Delivery
+- [x] Mudar badge de "ENTREGA" para "EM ROTA" quando pedido estiver com status out_for_delivery (visual only)
