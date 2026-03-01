@@ -22,9 +22,11 @@ export function WhatsAppDisconnectedBanner() {
   });
 
   // Determinar se o WhatsApp está desconectado
-  // Só mostrar se o WhatsApp foi configurado (tem instanceToken) mas está desconectado
-  const isConfigured = config && config.instanceToken;
-  const isDisconnected = isConfigured && config.status !== "connected";
+  // Só mostrar o banner se:
+  // 1. O usuário já conectou pelo menos uma vez (tem instanceToken)
+  // 2. E agora está desconectado (status !== 'connected')
+  const hasEverConnected = config && config.instanceToken;
+  const isDisconnected = hasEverConnected && config.status !== "connected";
 
   // Quando chega um novo pedido, re-verificar e forçar exibição se desconectado
   const handleNewOrder = useCallback(() => {

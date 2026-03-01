@@ -7769,3 +7769,6 @@
 - [x] Mostrar banner ao navegar nas páginas (Pedidos, Dashboard) quando desconectado
 - [x] Mostrar banner ao receber novo pedido via SSE quando desconectado
 - [x] Botão "Reconectar agora" que leva à página de configurações do WhatsApp
+
+## Ajustes do Banner de WhatsApp
+- [x] Banner de WhatsApp desconectado só deve aparecer se já foi conectado pelo menos uma vez
