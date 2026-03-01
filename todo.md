@@ -7815,3 +7815,6 @@
 
 ## Validação Mín/Máx
 - [x] Adicionar validação para impedir que o mínimo seja maior que o máximo nos campos de complementos
+
+## Heatmap de Acessos ao Cardápio
+- [x] Alterar ordem das horas no heatmap para começar às 7h e terminar às 6h
