@@ -73,6 +73,7 @@ import {
   Video,
   AlertTriangle,
   Ban,
+  UtensilsCrossed,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "wouter";
@@ -1505,7 +1506,7 @@ export default function Pedidos() {
                                   {item.productImage ? (
                                     <img src={item.productImage} alt="" className="h-full w-full object-cover" />
                                   ) : (
-                                    <Camera className="h-3 w-3 text-white" />
+                                    <UtensilsCrossed className="h-3 w-3 text-white" />
                                   )}
                                 </div>
                               ))}

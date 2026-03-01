@@ -7806,3 +7806,6 @@
 
 ## Setas de Navegação de Fotos no Menu Público
 - [x] Adicionar setas de navegação (voltar/avançar) no modal de detalhes do item quando tiver mais de 1 foto
+
+## Bug Fix - Camera not defined
+- [x] Corrigir erro "Camera is not defined" na página de Pedidos (import faltando)
