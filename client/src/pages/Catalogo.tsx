@@ -1595,16 +1595,6 @@ export default function Catalogo() {
               />
             </div>
 
-            {/* Botão Cancelar */}
-            <Button
-              variant="outline"
-              className="w-full rounded-xl h-10 font-medium mb-2.5 border-border text-muted-foreground hover:bg-muted/50"
-              onClick={() => setCategoryDialogOpen(false)}
-              disabled={createCategoryMutation.isPending}
-            >
-              Cancelar
-            </Button>
-
             {/* Botão Criar */}
             <Button
               className="w-full rounded-xl h-10 font-semibold bg-red-500 hover:bg-red-600 text-white"

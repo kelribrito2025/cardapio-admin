@@ -2599,18 +2599,6 @@ export default function Pedidos() {
               ))}
             </div>
 
-            {/* Botão Cancelar */}
-            <Button
-              variant="outline"
-              className="w-full rounded-xl h-10 font-medium border-border text-muted-foreground hover:bg-muted/50"
-              onClick={() => {
-                setDriverModalOpen(false);
-                setDriverModalOrderId(null);
-              }}
-              disabled={assigningDriverId !== null}
-            >
-              Cancelar
-            </Button>
           </div>
         </DialogContent>
       </Dialog>

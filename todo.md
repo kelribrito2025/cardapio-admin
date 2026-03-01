@@ -7720,3 +7720,4 @@
 ## Toggle Expandir/Minimizar Categoria por Click no Header
 - [x] Clicar no header da categoria (nome, ícone, contagem) deve alternar expandir/minimizar
 - [x] Não deve interferir com botões (Criar Combo, editar, drag handle, dropdown, etc.)
+- [x] Remover botão Cancelar dos modais padronizados (Nova Categoria, Seleção de Entregador, Criar Mesas)
