@@ -7762,3 +7762,8 @@
 - [x] Configuracoes.tsx - Exclusão de Impressora
 - [x] Financas.tsx - Histórico de Alterações, Exclusão de Despesa
 - [x] Campanhas.tsx - Modelos Sugeridos
+
+## Efeito Pulsante em Produtos Sem Foto + Modal Informativo
+- [x] Adicionar efeito pulsante (ripple vermelho) no ícone do placeholder de produtos sem foto
+- [x] Criar modal informativo ao clicar no ícone pulsante (fotos vendem 3x mais)
+- [x] Modal com header colorido, estatísticas, cards informativos e botão de ação

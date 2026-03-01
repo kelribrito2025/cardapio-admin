@@ -44,6 +44,11 @@ import {
   FolderPlus,
   Clock,
   CalendarClock,
+  Camera,
+  TrendingUp,
+  Eye,
+  ShieldCheck,
+  ImagePlus,
 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback, startTransition, type FocusEvent } from "react";
 import { useLocation } from "wouter";
@@ -88,6 +93,7 @@ function SortableProductItem({
   onUpdateInline,
   establishmentId,
   categoryIsActive = true,
+  onPhotoTip,
 }: {
   product: any;
   isDragDisabled: boolean;
@@ -101,6 +107,7 @@ function SortableProductItem({
   onUpdateInline?: (id: number, data: { price?: string; stockQuantity?: number | null; hasStock?: boolean }) => void;
   establishmentId?: number;
   categoryIsActive?: boolean;
+  onPhotoTip?: (productId: number) => void;
 }) {
   const {
     attributes,
@@ -227,7 +234,16 @@ function SortableProductItem({
                 sizes="48px"
               />
             ) : (
-              <UtensilsCrossed className="h-5 w-5 text-white animate-placeholder-pulse" />
+              <div
+                className="photo-pulse-wrapper h-full w-full flex items-center justify-center rounded-lg"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPhotoTip?.(product.id);
+                }}
+                title="Adicionar foto"
+              >
+                <Camera className="h-5 w-5 text-white animate-placeholder-pulse" />
+              </div>
             )}
           </div>
           <div className="flex-1 min-w-0">
@@ -769,6 +785,10 @@ export default function Catalogo() {
   const [schedAvailabilityType, setSchedAvailabilityType] = useState<"always" | "scheduled">("always");
   const [schedSelectedDays, setSchedSelectedDays] = useState<number[]>([]);
   const [schedHoursConfig, setSchedHoursConfig] = useState<{ day: number; startTime: string; endTime: string }[]>([]);
+
+  // Photo tip modal state
+  const [photoTipModalOpen, setPhotoTipModalOpen] = useState(false);
+  const [photoTipProductId, setPhotoTipProductId] = useState<number | null>(null);
 
   // Combo Sheet state
   const [comboSheetOpen, setComboSheetOpen] = useState(false);
@@ -1468,6 +1488,7 @@ export default function Catalogo() {
                         onUpdateInline={handleInlineUpdate}
                         establishmentId={establishmentId || undefined}
                         categoryIsActive={category.isActive}
+                        onPhotoTip={(id) => { setPhotoTipProductId(id); setPhotoTipModalOpen(true); }}
                       />
                     ))}
                   </div>
@@ -1523,6 +1544,7 @@ export default function Catalogo() {
                       onToggleComplements={handleToggleComplements}
                       onUpdateInline={handleInlineUpdate}
                       establishmentId={establishmentId || undefined}
+                      onPhotoTip={(id) => { setPhotoTipProductId(id); setPhotoTipModalOpen(true); }}
                     />
                   ))}
                 </div>
@@ -1810,6 +1832,100 @@ export default function Catalogo() {
             >
               {scheduleCategoryMutation.isPending ? "Salvando..." : "Salvar"}
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Photo Tip Modal */}
+      <Dialog open={photoTipModalOpen} onOpenChange={(open) => { setPhotoTipModalOpen(open); if (!open) setPhotoTipProductId(null); }}>
+        <DialogContent className="p-0 border-t-4 border-t-red-600 overflow-hidden" style={{ borderRadius: 16 }}>
+          {/* Header */}
+          <div className="bg-gradient-to-br from-red-600 to-red-700 px-6 pt-6 pb-5 text-white">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+                <Camera className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold">Aumente suas vendas!</h3>
+                <p className="text-sm text-white/80">Uma dica importante para o seu cardápio</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="px-6 pb-6 pt-4 space-y-4">
+            {/* Big stat */}
+            <div className="text-center py-3">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <TrendingUp className="h-8 w-8 text-red-600" />
+                <span className="text-5xl font-extrabold text-red-600">3x</span>
+              </div>
+              <p className="text-sm font-semibold text-foreground">mais vendas com fotos</p>
+              <p className="text-xs text-muted-foreground mt-1">Produtos com fotos vendem até 3 vezes mais que produtos sem imagem</p>
+            </div>
+
+            {/* Info cards */}
+            <div className="space-y-2.5">
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30">
+                <div className="h-8 w-8 rounded-lg bg-red-100 dark:bg-red-900/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Eye className="h-4 w-4 text-red-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Primeira impressão conta</p>
+                  <p className="text-xs text-muted-foreground">Clientes decidem em segundos. Uma boa foto faz toda a diferença na escolha.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-orange-50 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/30">
+                <div className="h-8 w-8 rounded-lg bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <TrendingUp className="h-4 w-4 text-orange-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Destaque no cardápio</p>
+                  <p className="text-xs text-muted-foreground">Produtos com foto aparecem com mais destaque e atraem mais cliques.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-green-50 dark:bg-green-950/20 border border-green-100 dark:border-green-900/30">
+                <div className="h-8 w-8 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <ShieldCheck className="h-4 w-4 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Mais confiança</p>
+                  <p className="text-xs text-muted-foreground">Fotos reais geram confiança e reduzem dúvidas dos clientes sobre o prato.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Tip */}
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-muted/50 border border-border/50">
+              <div className="h-6 w-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center flex-shrink-0">
+                <span className="text-xs font-bold text-blue-600">i</span>
+              </div>
+              <p className="text-xs text-muted-foreground"><strong>Dica:</strong> Tire fotos com boa iluminação e fundo limpo para melhores resultados!</p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2 pt-1">
+              <Button
+                variant="outline"
+                className="flex-1 rounded-xl h-10 font-semibold"
+                onClick={() => setPhotoTipModalOpen(false)}
+              >
+                Entendi
+              </Button>
+              <Button
+                className="flex-1 rounded-xl h-10 font-semibold bg-red-600 hover:bg-red-700 text-white"
+                onClick={() => {
+                  setPhotoTipModalOpen(false);
+                  if (photoTipProductId) {
+                    navigate(`/catalogo/editar/${photoTipProductId}`);
+                  }
+                }}
+              >
+                <ImagePlus className="h-4 w-4 mr-2" />
+                Adicionar Foto
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
