@@ -7725,3 +7725,10 @@
 ## Revisão de Botões Cancelar em Modais da Plataforma
 - [x] Identificar todos os modais com botão Cancelar desnecessário
 - [x] Remover botões Cancelar desnecessários (manter apenas em confirmações destrutivas)
+
+## Padronização de Modais de Confirmação Destrutiva
+- [x] Padronizar modal de excluir produto (Catalogo.tsx) com estilo FeedbackModal
+- [x] Padronizar modal de excluir categoria (Catalogo.tsx) com estilo FeedbackModal
+- [x] Padronizar modal de agendar disponibilidade (Catalogo.tsx) com estilo FeedbackModal
+- [x] Padronizar modal de cancelar pedido (Pedidos.tsx) com estilo FeedbackModal
+- [x] Padronizar modal de limpar coluna (Pedidos.tsx) com estilo FeedbackModal

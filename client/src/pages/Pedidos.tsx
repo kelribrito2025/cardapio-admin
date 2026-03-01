@@ -71,6 +71,8 @@ import {
   Info,
   Send,
   Video,
+  AlertTriangle,
+  Ban,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "wouter";
@@ -2297,70 +2299,88 @@ export default function Pedidos() {
         setCancelDialogOpen(open);
         if (!open) setCancellationReason("");
       }}>
-        <DialogContent className="rounded-2xl">
-          <DialogHeader>
-            <DialogTitle>Cancelar pedido</DialogTitle>
-            <DialogDescription>
-              Tem certeza que deseja cancelar este pedido? Esta ação não pode ser desfeita.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Motivo do cancelamento (obrigatório)
-            </label>
-            <textarea
-              value={cancellationReason}
-              onChange={(e) => setCancellationReason(e.target.value)}
-              placeholder="Ex: Produto indisponível, cliente solicitou cancelamento..."
-              className="w-full px-4 py-3 border border-border rounded-xl text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
-              rows={3}
-            />
-          </div>
-          <DialogFooter className="gap-3">
-            <Button variant="outline" onClick={() => setCancelDialogOpen(false)} className="rounded-xl">
-              Voltar
-            </Button>
+        <DialogContent
+          className="sm:max-w-md p-0 overflow-hidden border-t-4 border-t-red-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Cancelar pedido</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <Ban className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Cancelar pedido</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Tem certeza que deseja cancelar este pedido? Esta ação não pode ser desfeita.
+                </p>
+              </div>
+            </div>
+
+            <div className="mb-5">
+              <label className="text-sm font-medium text-foreground mb-1.5 block">
+                Motivo do cancelamento <span className="text-destructive">*</span>
+              </label>
+              <textarea
+                value={cancellationReason}
+                onChange={(e) => setCancellationReason(e.target.value)}
+                placeholder="Ex: Produto indisponível, cliente solicitou cancelamento..."
+                className="w-full px-4 py-3 border border-border rounded-xl text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
+                rows={3}
+              />
+            </div>
+
             <Button
-              variant="destructive"
+              className="w-full rounded-xl h-10 font-semibold bg-red-500 hover:bg-red-600 text-white"
               onClick={handleCancelOrder}
               disabled={updateStatusMutation.isPending || !cancellationReason.trim()}
-              className="rounded-xl"
             >
               {updateStatusMutation.isPending ? "Cancelando..." : "Cancelar Pedido"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Modal de confirmação para limpar pedidos */}
       <Dialog open={clearConfirmOpen} onOpenChange={setClearConfirmOpen}>
-        <DialogContent className="rounded-2xl sm:max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle>Limpar pedidos</DialogTitle>
-            <DialogDescription>
-              {clearColumnTarget === "completed"
-                ? "Tem certeza que deseja limpar todos os pedidos completos da tela?"
-                : "Tem certeza que deseja limpar todos os pedidos cancelados da tela?"}
-            </DialogDescription>
-          </DialogHeader>
-          <p className="text-xs text-muted-foreground">
-            Os pedidos não serão apagados do sistema, apenas removidos da visualização atual.
-          </p>
-          <DialogFooter className="gap-3">
-            <Button variant="outline" onClick={() => setClearConfirmOpen(false)} className="rounded-xl">
-              Cancelar
-            </Button>
+        <DialogContent
+          className="sm:max-w-md p-0 overflow-hidden border-t-4 border-t-amber-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Limpar pedidos</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-amber-100 dark:bg-amber-950/50">
+                <AlertTriangle className="h-6 w-6 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Limpar pedidos</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  {clearColumnTarget === "completed"
+                    ? "Tem certeza que deseja limpar todos os pedidos completos da tela?"
+                    : "Tem certeza que deseja limpar todos os pedidos cancelados da tela?"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg px-3 py-2.5 mb-5">
+              <Info className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                Os pedidos não serão apagados do sistema, apenas removidos da visualização atual.
+              </p>
+            </div>
+
             <Button
+              className="w-full rounded-xl h-10 font-semibold bg-amber-500 hover:bg-amber-600 text-white"
               onClick={() => {
                 if (clearColumnTarget) handleManualClear(clearColumnTarget);
                 setClearConfirmOpen(false);
                 setClearColumnTarget(null);
               }}
-              className="rounded-xl"
             >
-              Limpar
+              Limpar Pedidos
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 

@@ -1537,26 +1537,32 @@ export default function Catalogo() {
 
       {/* Delete Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="rounded-2xl">
-          <DialogHeader>
-            <DialogTitle>Excluir produto</DialogTitle>
-            <DialogDescription>
-              Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} className="rounded-xl">
-              Cancelar
-            </Button>
+        <DialogContent
+          className="sm:max-w-md p-0 overflow-hidden border-t-4 border-t-red-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Excluir produto</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Excluir produto</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.
+                </p>
+              </div>
+            </div>
+
             <Button
-              variant="destructive"
+              className="w-full rounded-xl h-10 font-semibold bg-red-500 hover:bg-red-600 text-white"
               onClick={handleDelete}
               disabled={deleteMutation.isPending}
-              className="rounded-xl"
             >
-              {deleteMutation.isPending ? "Excluindo..." : "Excluir"}
+              {deleteMutation.isPending ? "Excluindo..." : "Excluir Produto"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -1613,37 +1619,43 @@ export default function Catalogo() {
 
       {/* Delete Category Dialog */}
       <Dialog open={deleteCategoryDialogOpen} onOpenChange={setDeleteCategoryDialogOpen}>
-        <DialogContent className="rounded-2xl">
-          <DialogHeader>
-            <DialogTitle>Excluir categoria</DialogTitle>
-            <DialogDescription>
-              {categoryToDelete?.productCount && categoryToDelete.productCount > 0 ? (
-                <>
-                  A categoria <strong>"{categoryToDelete?.name}"</strong> possui <strong>{categoryToDelete?.productCount} {categoryToDelete?.productCount === 1 ? 'produto' : 'produtos'}</strong>. 
-                  Ao excluir, os produtos serão movidos para "Sem categoria".
-                </>
-              ) : (
-                <>Tem certeza que deseja excluir a categoria <strong>"{categoryToDelete?.name}"</strong>?</>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setDeleteCategoryDialogOpen(false)} className="rounded-xl">
-              Cancelar
-            </Button>
+        <DialogContent
+          className="sm:max-w-md p-0 overflow-hidden border-t-4 border-t-red-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Excluir categoria</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Excluir categoria</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  {categoryToDelete?.productCount && categoryToDelete.productCount > 0 ? (
+                    <>
+                      A categoria <strong>"{categoryToDelete?.name}"</strong> possui <strong>{categoryToDelete?.productCount} {categoryToDelete?.productCount === 1 ? 'produto' : 'produtos'}</strong>. 
+                      Ao excluir, os produtos serão movidos para "Sem categoria".
+                    </>
+                  ) : (
+                    <>Tem certeza que deseja excluir a categoria <strong>"{categoryToDelete?.name}"</strong>?</>
+                  )}
+                </p>
+              </div>
+            </div>
+
             <Button
-              variant="destructive"
+              className="w-full rounded-xl h-10 font-semibold bg-red-500 hover:bg-red-600 text-white"
               onClick={() => {
                 if (categoryToDelete) {
                   deleteCategoryMutation.mutate({ id: categoryToDelete.id });
                 }
               }}
               disabled={deleteCategoryMutation.isPending}
-              className="rounded-xl"
             >
-              {deleteCategoryMutation.isPending ? "Excluindo..." : "Excluir"}
+              {deleteCategoryMutation.isPending ? "Excluindo..." : "Excluir Categoria"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -1681,17 +1693,24 @@ export default function Catalogo() {
 
       {/* Category Scheduling Dialog */}
       <Dialog open={scheduleDialogOpen} onOpenChange={setScheduleDialogOpen}>
-        <DialogContent className="rounded-2xl max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-blue-600" />
-              Agendar disponibilidade
-            </DialogTitle>
-            <DialogDescription>
-              Configure quando a categoria <strong>"{schedulingCategory?.name}"</strong> aparece no menu público.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
+        <DialogContent
+          className="sm:max-w-md p-0 overflow-hidden border-t-4 border-t-blue-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Agendar disponibilidade</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-blue-100 dark:bg-blue-950/50">
+                <CalendarClock className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Agendar disponibilidade</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Configure quando a categoria <strong>"{schedulingCategory?.name}"</strong> aparece no menu público.
+                </p>
+              </div>
+            </div>
+          <div className="space-y-4 mb-5">
             {/* Radio buttons */}
             <div className="space-y-2">
               <label className="flex items-start gap-3 cursor-pointer p-3 rounded-xl hover:bg-muted/50 transition-colors border border-transparent has-[:checked]:border-blue-200 has-[:checked]:bg-blue-50/50">
@@ -1783,15 +1802,15 @@ export default function Catalogo() {
               </div>
             )}
           </div>
-          <DialogFooter className="gap-2">
+
             <Button
+              className="w-full rounded-xl h-10 font-semibold bg-blue-500 hover:bg-blue-600 text-white"
               onClick={handleSaveSchedule}
               disabled={scheduleCategoryMutation.isPending || (schedAvailabilityType === "scheduled" && schedSelectedDays.length === 0)}
-              className="rounded-xl bg-red-700 hover:bg-red-800 text-white"
             >
               {scheduleCategoryMutation.isPending ? "Salvando..." : "Salvar"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </AdminLayout>
