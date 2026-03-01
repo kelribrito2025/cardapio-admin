@@ -7710,4 +7710,4 @@
 - [x] Auto-scroll para nova categoria após criação
 - [x] Modal de Novo Produto abre com categoria pré-selecionada ao clicar em "Adicionar Produto"
 - [x] Opção "Adicionar Produto" no dropdown mobile para categorias vazias
-- [ ] Remover botão vermelho "Adicionar Produto" do header da categoria vazia (manter apenas o do empty state)
+- [x] Remover botão vermelho "Adicionar Produto" do header da categoria vazia (manter apenas o do empty state)

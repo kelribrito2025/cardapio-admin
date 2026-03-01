@@ -594,20 +594,6 @@ function SortableCategoryItem({
           )}
         </div>
         <div className="flex items-center gap-1">
-          {/* Botão Adicionar Produto - visible when category is empty */}
-          {categoryProducts.length === 0 && (
-            <Button
-              size="sm"
-              className="h-8 rounded-lg text-xs font-medium px-3 hidden sm:inline-flex bg-red-600 hover:bg-red-700 text-white"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCreateProduct(category.id);
-              }}
-            >
-              <Plus className="h-3.5 w-3.5 mr-1" />
-              Adicionar Produto
-            </Button>
-          )}
           {/* Botão Criar Combo - hidden on mobile */}
           <Button
             variant="outline"
@@ -668,15 +654,6 @@ function SortableCategoryItem({
                   <><Play className="h-4 w-4 mr-2" />Ativar categoria</>
                 )}
               </DropdownMenuItem>
-              {categoryProducts.length === 0 && (
-                <DropdownMenuItem
-                  className="sm:hidden text-red-600 focus:text-red-600"
-                  onClick={() => onCreateProduct(category.id)}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adicionar Produto
-                </DropdownMenuItem>
-              )}
               <DropdownMenuItem
                 className="sm:hidden"
                 onClick={() => onCreateCombo(category.id, category.name)}
