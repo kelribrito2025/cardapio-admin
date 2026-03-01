@@ -7658,3 +7658,5 @@
 - [x] Verificar logs de produção e diagnosticar ponto exato da falha - CAUSA: sender vinha como LID (@lid) inválido, corrigido para usar chatid
 ## Atualizar textos das mensagens de confirmação ao entregador
 - [x] Alterar texto de "Sair para entrega" e "Pedido entregue" para novo modelo
+## Remoção do endpoint de debug
+- - [x] Remover /api/debug/webhook-logs e código de intercepção de logs (monkey-patch console.log)
