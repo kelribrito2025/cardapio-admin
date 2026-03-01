@@ -44,6 +44,7 @@ import {
   FolderPlus,
   Clock,
   CalendarClock,
+  Camera,
 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback, startTransition, type FocusEvent } from "react";
 import { useLocation } from "wouter";
@@ -227,7 +228,7 @@ function SortableProductItem({
                 sizes="48px"
               />
             ) : (
-              <UtensilsCrossed className="h-5 w-5 text-white animate-placeholder-pulse" />
+              <Camera className="h-5 w-5 text-white animate-placeholder-pulse" />
             )}
           </div>
           <div className="flex-1 min-w-0">

@@ -1497,6 +1497,23 @@ export default function Pedidos() {
 
                         {/* Content */}
                         <div className="px-3" style={{height: '83px', paddingTop: '9px', paddingBottom: '9px'}}>
+                          {/* Miniaturas dos itens */}
+                          {order.items && order.items.length > 0 && (
+                            <div className="flex items-center gap-1.5 mb-2">
+                              {order.items.slice(0, 4).map((item: any, idx: number) => (
+                                <div key={idx} className="h-6 w-6 rounded-md bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center overflow-hidden flex-shrink-0 border border-white/20">
+                                  {item.productImage ? (
+                                    <img src={item.productImage} alt="" className="h-full w-full object-cover" />
+                                  ) : (
+                                    <Camera className="h-3 w-3 text-white" />
+                                  )}
+                                </div>
+                              ))}
+                              {order.items.length > 4 && (
+                                <span className="text-[10px] text-muted-foreground ml-1">+{order.items.length - 4}</span>
+                              )}
+                            </div>
+                          )}
                           {/* Linha compacta com todas as informações */}
                           <div className="flex items-center justify-between gap-2 flex-wrap">
                             <div className="flex items-center gap-2 min-w-0 flex-1">

@@ -7778,3 +7778,6 @@
 
 ## Animação do Banner de WhatsApp
 - [x] Ocultar banner com animação suave de fade-out quando WhatsApp reconectar
+
+## Ícone de Câmera para Itens sem Foto
+- [x] Adicionar ícone de câmera para itens sem foto na página de Catálogo (Menu)
