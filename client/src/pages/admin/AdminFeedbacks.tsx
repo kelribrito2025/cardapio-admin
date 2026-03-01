@@ -5,8 +5,6 @@ import {
   MessageSquare,
   Bug,
   Lightbulb,
-  HelpCircle,
-  MessageCircle,
   Clock,
   CheckCircle2,
   Loader2,
@@ -45,8 +43,6 @@ import { cn } from "@/lib/utils";
 const typeConfig = {
   bug: { label: "Bug", icon: Bug, color: "text-red-600", bg: "bg-red-100", border: "border-red-200" },
   suggestion: { label: "Sugestão", icon: Lightbulb, color: "text-amber-600", bg: "bg-amber-100", border: "border-amber-200" },
-  question: { label: "Dúvida", icon: HelpCircle, color: "text-blue-600", bg: "bg-blue-100", border: "border-blue-200" },
-  other: { label: "Outro", icon: MessageCircle, color: "text-gray-600", bg: "bg-gray-100", border: "border-gray-200" },
 } as const;
 
 const statusConfig = {
@@ -158,8 +154,6 @@ export default function AdminFeedbacks() {
               <SelectItem value="all">Todos os tipos</SelectItem>
               <SelectItem value="bug">Bug</SelectItem>
               <SelectItem value="suggestion">Sugestão</SelectItem>
-              <SelectItem value="question">Dúvida</SelectItem>
-              <SelectItem value="other">Outro</SelectItem>
             </SelectContent>
           </Select>
           <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as any)}>
@@ -197,7 +191,7 @@ export default function AdminFeedbacks() {
           <div className="space-y-3">
             {filteredFeedbacks.map((item: any) => {
               const fb = item.feedback;
-              const tc = typeConfig[fb.type as FeedbackType] || typeConfig.other;
+              const tc = typeConfig[fb.type as FeedbackType] || typeConfig.bug;
               const sc = statusConfig[fb.status as StatusType] || statusConfig.new;
               const TypeIcon = tc.icon;
 
@@ -281,7 +275,7 @@ export default function AdminFeedbacks() {
           <DialogContent className="sm:max-w-[600px]">
             {selectedFeedback && (() => {
               const fb = selectedFeedback.feedback;
-              const tc = typeConfig[fb.type as FeedbackType] || typeConfig.other;
+              const tc = typeConfig[fb.type as FeedbackType] || typeConfig.bug;
               const sc = statusConfig[fb.status as StatusType] || statusConfig.new;
               const TypeIcon = tc.icon;
 
@@ -338,11 +332,17 @@ export default function AdminFeedbacks() {
                       </div>
                     </div>
 
-                    {/* Screenshot */}
+                    {/* Fotos */}
                     {fb.screenshotUrl && (
                       <div>
-                        <h4 className="text-sm font-medium mb-2">Screenshot</h4>
-                        <img src={fb.screenshotUrl} alt="Screenshot" className="rounded-lg border max-h-64 object-contain" />
+                        <h4 className="text-sm font-medium mb-2">Fotos anexadas</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {fb.screenshotUrl.split(",").filter(Boolean).map((url: string, idx: number) => (
+                            <a key={idx} href={url.trim()} target="_blank" rel="noopener noreferrer">
+                              <img src={url.trim()} alt={`Foto ${idx + 1}`} className="rounded-lg border max-h-32 object-contain hover:opacity-80 transition-opacity cursor-pointer" />
+                            </a>
+                          ))}
+                        </div>
                       </div>
                     )}
 

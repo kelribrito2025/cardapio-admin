@@ -6222,10 +6222,10 @@ export const appRouter = router({
     submit: protectedProcedure
       .input(z.object({
         establishmentId: z.number().optional(),
-        type: z.enum(["bug", "suggestion", "question", "other"]),
+        type: z.enum(["bug", "suggestion"]),
         subject: z.string().min(1, "Assunto é obrigatório").max(255),
         message: z.string().min(1, "Mensagem é obrigatória"),
-        screenshotUrl: z.string().nullable().optional(),
+        imageUrls: z.array(z.string()).max(7).optional(),
         page: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
@@ -6235,14 +6235,14 @@ export const appRouter = router({
           type: input.type,
           subject: input.subject,
           message: input.message,
-          screenshotUrl: input.screenshotUrl ?? null,
+          screenshotUrl: input.imageUrls?.join(",") ?? null,
           page: input.page ?? null,
           status: "new",
         });
         // Notificar owner
         try {
           const { notifyOwner } = await import("./_core/notification");
-          const typeLabels: Record<string, string> = { bug: "Bug", suggestion: "Sugestão", question: "Dúvida", other: "Outro" };
+          const typeLabels: Record<string, string> = { bug: "Bug", suggestion: "Sugestão" };
           await notifyOwner({
             title: `Novo Feedback: ${typeLabels[input.type] || input.type}`,
             content: `**${input.subject}**\n\n${input.message}\n\n_Enviado por: ${ctx.user.name || ctx.user.email}_`,

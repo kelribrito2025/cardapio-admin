@@ -7683,3 +7683,7 @@
 - [x] Criar painel admin para visualizar e gerenciar feedbacks recebidos (/admin/feedbacks)
 - [x] Notificar owner quando novo feedback for recebido (via notifyOwner)
 - [x] Escrever testes vitest para os endpoints de feedback (11 testes passando)
+## Melhorias no Modal de Feedback
+- [x] Remover botões Dúvida e Outro (manter apenas Reportar Bug e Sugestão)
+- [x] Adicionar upload de até 7 fotos no feedback (com preview, remoção individual, upload via S3)
+- [x] Padronizar visual do modal com o estilo do modal de aceitar pedido (border-t-4, rounded-xl, layout header com ícone)

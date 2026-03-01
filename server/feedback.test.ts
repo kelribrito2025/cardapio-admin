@@ -130,17 +130,32 @@ describe("feedback.submit", () => {
     expect(result).toHaveProperty("id");
   });
 
-  it("should accept question type", async () => {
+  it("should accept imageUrls array", async () => {
     const ctx = createAuthContext();
     const caller = appRouter.createCaller(ctx);
 
     const result = await caller.feedback.submit({
-      type: "question",
-      subject: "Como configurar entrega?",
-      message: "Não consigo encontrar as configurações de entrega",
+      type: "bug",
+      subject: "Erro visual",
+      message: "Botão desalinhado na página",
+      imageUrls: ["https://example.com/img1.webp", "https://example.com/img2.webp"],
     });
 
     expect(result).toHaveProperty("id");
+  });
+
+  it("should reject more than 7 images", async () => {
+    const ctx = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    await expect(
+      caller.feedback.submit({
+        type: "bug",
+        subject: "Muitas fotos",
+        message: "Teste com mais de 7 fotos",
+        imageUrls: Array(8).fill("https://example.com/img.webp"),
+      })
+    ).rejects.toThrow();
   });
 
   it("should reject empty subject", async () => {
