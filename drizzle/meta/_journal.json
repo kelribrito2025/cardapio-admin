@@ -799,6 +799,13 @@
       "when": 1772375703605,
       "tag": "0113_familiar_robin_chapel",
       "breakpoints": true
+    },
+    {
+      "idx": 114,
+      "version": "5",
+      "when": 1772378726992,
+      "tag": "0114_quick_giant_man",
+      "breakpoints": true
     }
   ]
 }

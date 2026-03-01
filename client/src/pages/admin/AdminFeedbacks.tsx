@@ -13,6 +13,7 @@ import {
   Filter,
   Search,
   X,
+  ThumbsUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,8 +42,9 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const typeConfig = {
-  bug: { label: "Bug", icon: Bug, color: "text-red-600", bg: "bg-red-100", border: "border-red-200" },
+  bug: { label: "Problema", icon: Bug, color: "text-red-600", bg: "bg-red-100", border: "border-red-200" },
   suggestion: { label: "Sugestão", icon: Lightbulb, color: "text-amber-600", bg: "bg-amber-100", border: "border-amber-200" },
+  praise: { label: "Elogio", icon: ThumbsUp, color: "text-green-600", bg: "bg-green-100", border: "border-green-200" },
 } as const;
 
 const statusConfig = {

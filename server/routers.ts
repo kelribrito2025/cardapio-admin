@@ -6222,7 +6222,7 @@ export const appRouter = router({
     submit: protectedProcedure
       .input(z.object({
         establishmentId: z.number().optional(),
-        type: z.enum(["bug", "suggestion"]),
+        type: z.enum(["bug", "suggestion", "praise"]),
         subject: z.string().min(1, "Assunto é obrigatório").max(255),
         message: z.string().min(1, "Mensagem é obrigatória"),
         imageUrls: z.array(z.string()).max(7).optional(),
@@ -6242,7 +6242,7 @@ export const appRouter = router({
         // Notificar owner
         try {
           const { notifyOwner } = await import("./_core/notification");
-          const typeLabels: Record<string, string> = { bug: "Bug", suggestion: "Sugestão" };
+          const typeLabels: Record<string, string> = { bug: "Problema", suggestion: "Sugestão", praise: "Elogio" };
           await notifyOwner({
             title: `Novo Feedback: ${typeLabels[input.type] || input.type}`,
             content: `**${input.subject}**\n\n${input.message}\n\n_Enviado por: ${ctx.user.name || ctx.user.email}_`,

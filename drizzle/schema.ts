@@ -1097,7 +1097,7 @@ export const feedbacks = mysqlTable("feedbacks", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(),
   establishmentId: int("establishmentId"),
-  type: mysqlEnum("type", ["bug", "suggestion", "question", "other"]).default("suggestion").notNull(),
+  type: mysqlEnum("type", ["bug", "suggestion", "question", "other", "praise"]).default("suggestion").notNull(),
   subject: varchar("subject", { length: 255 }).notNull(),
   message: text("message").notNull(),
   screenshotUrl: text("screenshotUrl"),

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Bug, Lightbulb, Send, Loader2, ImagePlus, X, MessageSquarePlus, Info } from "lucide-react";
+import { Bug, Lightbulb, Send, Loader2, ImagePlus, X, MessageSquarePlus, Info, ThumbsUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const MAX_PHOTOS = 7;
@@ -19,7 +19,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const feedbackTypes = [
   {
     value: "bug" as const,
-    label: "Reportar Bug",
+    label: "Reportar Problema",
     icon: Bug,
     color: "text-red-600",
     bgColor: "bg-red-100 dark:bg-red-950/50",
@@ -35,6 +35,15 @@ const feedbackTypes = [
     borderColor: "border-amber-500",
     description: "Ideia para melhorar a plataforma",
   },
+  {
+    value: "praise" as const,
+    label: "Elogio",
+    icon: ThumbsUp,
+    color: "text-green-600",
+    bgColor: "bg-green-100 dark:bg-green-950/50",
+    borderColor: "border-green-500",
+    description: "Algo que gostou na plataforma",
+  },
 ];
 
 interface FeedbackModalProps {
@@ -46,7 +55,7 @@ interface FeedbackModalProps {
 
 export function FeedbackModal({ open, onOpenChange, establishmentId, establishmentName }: FeedbackModalProps) {
   const { user } = useAuth();
-  const [type, setType] = useState<"bug" | "suggestion">("suggestion");
+  const [type, setType] = useState<"bug" | "suggestion" | "praise">("suggestion");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [photos, setPhotos] = useState<{ file: File; preview: string }[]>([]);
@@ -164,7 +173,7 @@ export function FeedbackModal({ open, onOpenChange, establishmentId, establishme
       <DialogContent
         className={cn(
           "sm:max-w-[440px] p-0 overflow-hidden border-t-4",
-          type === "bug" ? "border-t-red-500" : "border-t-amber-500",
+          type === "bug" ? "border-t-red-500" : type === "praise" ? "border-t-green-500" : "border-t-amber-500",
         )}
         style={{ borderRadius: '16px' }}
       >
@@ -178,13 +187,13 @@ export function FeedbackModal({ open, onOpenChange, establishmentId, establishme
             <div>
               <h3 className="text-lg font-semibold text-foreground">Enviar Feedback</h3>
               <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                Relate um problema ou sugira melhorias. Sua opinião é muito importante.
+                Relate um problema, sugira melhorias ou envie um elogio. Sua opinião é muito importante.
               </p>
             </div>
           </div>
 
-          {/* Tipo de feedback - 2 botões lado a lado */}
-          <div className="grid grid-cols-2 gap-2 mb-4">
+          {/* Tipo de feedback - 3 botões lado a lado */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
             {feedbackTypes.map((ft) => {
               const Icon = ft.icon;
               const isSelected = type === ft.value;
@@ -218,7 +227,9 @@ export function FeedbackModal({ open, onOpenChange, establishmentId, establishme
               placeholder={
                 type === "bug"
                   ? "Ex: Erro ao salvar produto..."
-                  : "Ex: Adicionar filtro por data..."
+                  : type === "praise"
+                    ? "Ex: Adorei a nova funcionalidade..."
+                    : "Ex: Adicionar filtro por data..."
               }
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
@@ -236,7 +247,9 @@ export function FeedbackModal({ open, onOpenChange, establishmentId, establishme
               placeholder={
                 type === "bug"
                   ? "Descreva o problema: o que aconteceu, o que esperava, e os passos para reproduzir..."
-                  : "Descreva sua sugestão: o que gostaria de ver melhorado e como isso ajudaria..."
+                  : type === "praise"
+                    ? "Conte o que gostou e como isso ajudou no seu dia a dia..."
+                    : "Descreva sua sugestão: o que gostaria de ver melhorado e como isso ajudaria..."
               }
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -310,7 +323,9 @@ export function FeedbackModal({ open, onOpenChange, establishmentId, establishme
               "w-full rounded-xl h-10 font-semibold",
               type === "bug"
                 ? "bg-red-500 hover:bg-red-600 text-white"
-                : "bg-amber-500 hover:bg-amber-600 text-white",
+                : type === "praise"
+                  ? "bg-green-500 hover:bg-green-600 text-white"
+                  : "bg-amber-500 hover:bg-amber-600 text-white",
             )}
             onClick={handleSubmit}
             disabled={isSubmitting || !subject.trim() || !message.trim()}

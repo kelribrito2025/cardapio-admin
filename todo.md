@@ -7690,3 +7690,6 @@
 ## Contador de feedbacks novos no painel admin
 - [x] Criar endpoint para contar feedbacks com status "new" (reutilizado feedback.stats existente)
 - [x] Adicionar badge com contagem na sidebar do painel admin junto ao item Feedbacks (badge vermelho, auto-refresh 60s + refetch on focus)
+## Ajustes no modal de feedback
+- [x] Renomear "Reportar Bug" para "Reportar Problema"
+- [x] Adicionar nova opção "Elogio" no modal de feedback (tipo praise, cor verde, ícone ThumbsUp)
