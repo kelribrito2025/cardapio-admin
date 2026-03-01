@@ -1,0 +1,70 @@
+{
+  "query": "SELECT p.id, p.name, p.price, c.name as categoryName FROM products p LEFT JOIN categories c ON p.categoryId = c.id WHERE p.establishmentId = 210007 AND c.name LIKE '%ebida%' ORDER BY p.sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.price, c.name as categoryName FROM products p LEFT JOIN categories c ON p.categoryId = c.id WHERE p.establishmentId = 210007 AND c.name LIKE '%ebida%' ORDER BY p.sortOrder;",
+  "rows": [
+    {
+      "id": "680110",
+      "name": "Refri lata 220ml",
+      "price": "4.00",
+      "categoryName": "BEBIDAS"
+    },
+    {
+      "id": "680111",
+      "name": "Refri lata 310ml",
+      "price": "6.00",
+      "categoryName": "BEBIDAS"
+    },
+    {
+      "id": "680112",
+      "name": "Refri 600ml",
+      "price": "8.00",
+      "categoryName": "BEBIDAS"
+    },
+    {
+      "id": "680114",
+      "name": "Refri 1,5L",
+      "price": "11.00",
+      "categoryName": "BEBIDAS"
+    },
+    {
+      "id": "680113",
+      "name": "Refri 1L",
+      "price": "10.00",
+      "categoryName": "BEBIDAS"
+    },
+    {
+      "id": "680115",
+      "name": "Refrigerante 2 litros",
+      "price": "12.00",
+      "categoryName": "BEBIDAS"
+    },
+    {
+      "id": "680116",
+      "name": "Suco Del vale 1 litro",
+      "price": "12.00",
+      "categoryName": "BEBIDAS"
+    },
+    {
+      "id": "680117",
+      "name": "Suco Natural de Limão 450ml",
+      "price": "10.00",
+      "categoryName": "BEBIDAS"
+    },
+    {
+      "id": "680118",
+      "name": "Água 500ml",
+      "price": "4.00",
+      "categoryName": "BEBIDAS"
+    },
+    {
+      "id": "680119",
+      "name": "Suco natural de laranja - 450ml",
+      "price": "10.00",
+      "categoryName": "BEBIDAS"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprice\tcategoryName\n680110\tRefri lata 220ml\t4.00\tBEBIDAS\n680111\tRefri lata 310ml\t6.00\tBEBIDAS\n680112\tRefri 600ml\t8.00\tBEBIDAS\n680114\tRefri 1,5L\t11.00\tBEBIDAS\n680113\tRefri 1L\t10.00\tBEBIDAS\n680115\tRefrigerante 2 litros\t12.00\tBEBIDAS\n680116\tSuco Del vale 1 litro\t12.00\tBEBIDAS\n680117\tSuco Natural de Limão 450ml\t10.00\tBEBIDAS\n680118\tÁgua 500ml\t4.00\tBEBIDAS\n680119\tSuco natural de laranja - 450ml\t10.00\tBEBIDAS\n",
+  "stderr": "",
+  "execution_time_ms": 538
+}

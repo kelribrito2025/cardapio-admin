@@ -1,0 +1,19 @@
+{
+  "query": "SELECT id, name, deliveryFeeType, deliveryFeeFixed, deliveryTimeEnabled, deliveryTimeMin, deliveryTimeMax FROM establishments WHERE id = 210007;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, deliveryFeeType, deliveryFeeFixed, deliveryTimeEnabled, deliveryTimeMin, deliveryTimeMax FROM establishments WHERE id = 210007;",
+  "rows": [
+    {
+      "id": "210007",
+      "name": "Tchê Restaurante",
+      "deliveryFeeType": "byNeighborhood",
+      "deliveryFeeFixed": "0.00",
+      "deliveryTimeEnabled": "1",
+      "deliveryTimeMin": "40",
+      "deliveryTimeMax": "80"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tdeliveryFeeType\tdeliveryFeeFixed\tdeliveryTimeEnabled\tdeliveryTimeMin\tdeliveryTimeMax\n210007\tTchê Restaurante\tbyNeighborhood\t0.00\t1\t40\t80\n",
+  "stderr": "",
+  "execution_time_ms": 383
+}

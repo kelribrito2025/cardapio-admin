@@ -7667,3 +7667,9 @@
 - [x] Cadastrar tudo no sistema para o estabelecimento ID 210007 (2 categorias, 15 produtos)
 ## Bug: Nome do responsável não aparece nas Configurações
 - [x] Campo "Nome do responsável" na página de configurações mostra slug em vez do nome cadastrado no onboarding (corrigido: onboarding agora salva em responsibleName + fallback para ownerDisplayName)
+## Inserir bairros e taxas de entrega para estabelecimento 210007
+- [x] Acessar painel de produção e extrair bairros e taxas do Tche Restaurante (87 bairros extraídos via portal.mindi.com.br)
+- [x] Inserir 87 bairros e taxas no banco de dados (neighborhoodFees) para estabelecimento 210007
+## Adicionar complementos às bebidas do estabelecimento 210007
+- [x] Acessar cardápio antigo (menu.mindi.com.br/tche-restaurante) e extrair grupos de complementos das bebidas (10 produtos verificados)
+- [x] Inserir 15 grupos de complementos e 30 opções no banco de dados para 8 produtos de bebida (Suco Limão e Suco Laranja não têm complementos)
