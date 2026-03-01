@@ -7652,3 +7652,5 @@
 - [x] Adicionar Transfer-Encoding: chunked nos headers SSE
 ## Bug: Mensagens de confirmação ao entregador não chegam
 - [x] Investigar e corrigir por que o entregador não recebe mensagem de confirmação ao clicar "Sair para entrega" e "Pedido entregue"
+## Bug: Mensagens de confirmação ao entregador ainda não chegam (v2)
+- [x] Verificar logs em produção e corrigir definitivamente o envio de confirmação ao entregador

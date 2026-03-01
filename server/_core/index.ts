@@ -2691,91 +2691,106 @@ async function startServer() {
               await updateOrderStatus(orderData.id, 'out_for_delivery');
               console.log('[Delivery Start] Status atualizado para out_for_delivery:', orderNumber);
               
-              // Enviar template "Pronto (Delivery)" ao cliente
-              if (orderData.customerPhone) {
-                const config = await getWhatsappConfig(establishmentId);
-                if (config && config.status === 'connected' && config.notifyOnReady && config.instanceToken) {
-                  const { sendOrderStatusNotification } = await import('./uazapi');
-                  const est = await getEstablishmentById(establishmentId);
-                  const orderItems = await getOrderItems(orderData.id);
-                  
-                  await sendOrderStatusNotification(
-                    config.instanceToken,
-                    orderData.customerPhone,
-                    'ready',
-                    {
-                      customerName: orderData.customerName || 'Cliente',
-                      orderNumber: orderData.orderNumber,
-                      establishmentName: est?.name || 'Restaurante',
-                      template: config.templateReady,
-                      deliveryType: orderData.deliveryType as 'delivery' | 'pickup' | null,
-                      cancellationReason: null,
-                      orderItems: orderItems.map((item: any) => ({
-                        productName: item.productName,
-                        quantity: item.quantity ?? 1,
-                        unitPrice: item.unitPrice,
-                        totalPrice: item.totalPrice,
-                        complements: item.complements,
-                        notes: item.notes,
-                      })),
-                      orderTotal: orderData.total,
-                      paymentMethod: orderData.paymentMethod,
-                      customerAddress: orderData.customerAddress,
-                    }
-                  );
-                  console.log('[Delivery Start] Template Pronto (Delivery) enviado ao cliente');
-                } else {
-                  console.log('[Delivery Start] Notificação ao cliente não enviada (config desativada ou não conectado)');
+              // Enviar template "Pronto (Delivery)" ao cliente (em try-catch para não bloquear confirmação ao entregador)
+              try {
+                if (orderData.customerPhone) {
+                  const configClient = await getWhatsappConfig(establishmentId);
+                  if (configClient && configClient.status === 'connected' && configClient.notifyOnReady && configClient.instanceToken) {
+                    const { sendOrderStatusNotification } = await import('./uazapi');
+                    const est = await getEstablishmentById(establishmentId);
+                    const orderItems = await getOrderItems(orderData.id);
+                    
+                    await sendOrderStatusNotification(
+                      configClient.instanceToken,
+                      orderData.customerPhone,
+                      'ready',
+                      {
+                        customerName: orderData.customerName || 'Cliente',
+                        orderNumber: orderData.orderNumber,
+                        establishmentName: est?.name || 'Restaurante',
+                        template: configClient.templateReady,
+                        deliveryType: orderData.deliveryType as 'delivery' | 'pickup' | null,
+                        cancellationReason: null,
+                        orderItems: orderItems.map((item: any) => ({
+                          productName: item.productName,
+                          quantity: item.quantity ?? 1,
+                          unitPrice: item.unitPrice,
+                          totalPrice: item.totalPrice,
+                          complements: item.complements,
+                          notes: item.notes,
+                        })),
+                        orderTotal: orderData.total,
+                        paymentMethod: orderData.paymentMethod,
+                        customerAddress: orderData.customerAddress,
+                      }
+                    );
+                    console.log('[Delivery Start] Template Pronto (Delivery) enviado ao cliente');
+                  } else {
+                    console.log('[Delivery Start] Notificação ao cliente não enviada (config desativada ou não conectado)');
+                  }
                 }
+              } catch (clientErr) {
+                console.error('[Delivery Start] Erro ao notificar cliente (não impede confirmação ao entregador):', clientErr);
               }
               
-              // Confirmar ao entregador - tentar senderPhone primeiro, fallback para buscar do DB
-              const config = await getWhatsappConfig(establishmentId);
-              if (config?.instanceToken) {
-                const { sendTextMessage } = await import('./uazapi');
+              // Confirmar ao entregador - SEMPRE tenta enviar, independente da notificação ao cliente
+              try {
+                const configDriver = await getWhatsappConfig(establishmentId);
+                console.log('[Delivery Start] Config WhatsApp para entregador:', {
+                  hasConfig: !!configDriver,
+                  hasToken: !!configDriver?.instanceToken,
+                  status: configDriver?.status,
+                });
                 
-                // Extrair telefone do remetente de múltiplas fontes possíveis
-                let driverPhone = senderPhone 
-                  || message?.participant 
-                  || body?.participant 
-                  || message?.key?.remoteJid 
-                  || body?.key?.remoteJid;
-                
-                // Fallback: buscar telefone do entregador pelo pedido no banco de dados
-                if (!driverPhone) {
-                  console.log('[Delivery Start] senderPhone não encontrado, buscando entregador no DB...');
-                  try {
+                if (configDriver?.instanceToken) {
+                  const { sendTextMessage } = await import('./uazapi');
+                  
+                  // Extrair telefone do remetente de múltiplas fontes possíveis
+                  let driverPhone = senderPhone 
+                    || message?.participant 
+                    || body?.participant 
+                    || message?.key?.remoteJid 
+                    || body?.key?.remoteJid;
+                  
+                  console.log('[Delivery Start] Fontes de telefone:', {
+                    senderPhone,
+                    participant: message?.participant || body?.participant,
+                    remoteJid: message?.key?.remoteJid || body?.key?.remoteJid,
+                    driverPhoneResolved: driverPhone,
+                  });
+                  
+                  // Fallback: buscar telefone do entregador pelo pedido no banco de dados
+                  if (!driverPhone) {
+                    console.log('[Delivery Start] senderPhone não encontrado em nenhuma fonte, buscando entregador no DB...');
                     const delivery = await getDeliveryByOrderId(orderData.id);
+                    console.log('[Delivery Start] Delivery encontrada:', delivery ? { id: delivery.id, driverId: delivery.driverId } : null);
                     if (delivery?.driverId) {
                       const driver = await getDriverById(delivery.driverId);
+                      console.log('[Delivery Start] Driver encontrado:', driver ? { id: driver.id, whatsapp: driver.whatsapp } : null);
                       if (driver?.whatsapp) {
                         driverPhone = driver.whatsapp;
                         console.log('[Delivery Start] Telefone do entregador encontrado no DB:', driverPhone);
                       }
                     }
-                  } catch (dbErr) {
-                    console.error('[Delivery Start] Erro ao buscar entregador no DB:', dbErr);
                   }
-                }
-                
-                if (driverPhone) {
-                  const phone = driverPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
-                  console.log('[Delivery Start] Enviando confirmação ao entregador:', phone);
-                  try {
+                  
+                  if (driverPhone) {
+                    const phone = driverPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
+                    console.log('[Delivery Start] Enviando confirmação ao entregador:', phone);
                     await sendTextMessage(
-                      config.instanceToken,
+                      configDriver.instanceToken,
                       phone,
                       `🛵 Entrega ${orderNumber} iniciada.\n👤 Cliente informado que o pedido está a caminho.\n📦 Status atualizado para: "Em Rota".`
                     );
                     console.log('[Delivery Start] ✅ Confirmação enviada ao entregador com sucesso');
-                  } catch (sendErr) {
-                    console.error('[Delivery Start] ❌ Erro ao enviar confirmação ao entregador:', sendErr);
+                  } else {
+                    console.error('[Delivery Start] ❌ Não foi possível determinar o telefone do entregador de nenhuma fonte');
                   }
                 } else {
-                  console.error('[Delivery Start] ❌ Não foi possível determinar o telefone do entregador');
+                  console.error('[Delivery Start] ❌ Config WhatsApp não encontrada ou sem instanceToken');
                 }
-              } else {
-                console.error('[Delivery Start] ❌ Config WhatsApp não encontrada ou sem instanceToken');
+              } catch (driverErr) {
+                console.error('[Delivery Start] ❌ Erro ao enviar confirmação ao entregador:', driverErr);
               }
             }
           } catch (err) {
@@ -2799,110 +2814,125 @@ async function startServer() {
               await updateOrderStatus(orderData.id, 'completed');
               console.log('[Delivery Done] Status atualizado para completed:', orderNumber);
               
-              // Enviar template "Finalizado" ao cliente
-              if (orderData.customerPhone) {
-                const config = await getWhatsappConfig(establishmentId);
-                if (config && config.status === 'connected' && config.notifyOnCompleted && config.instanceToken) {
-                  const { sendOrderStatusNotification } = await import('./uazapi');
-                  const est = await getEstablishmentById(establishmentId);
-                  const orderItems = await getOrderItems(orderData.id);
-                  
-                  // Buscar info de cashback
-                  let cashbackInfo: { cashbackEarned: string; cashbackTotal: string } | null = null;
-                  try {
-                    if (est?.cashbackEnabled && est?.rewardProgramType === 'cashback') {
-                      const cashbackTx = await getCashbackTransactionByOrderId(orderData.id);
-                      if (cashbackTx && parseFloat(cashbackTx.amount) > 0) {
-                        const balance = await getCashbackBalance(establishmentId, orderData.customerPhone);
-                        cashbackInfo = {
-                          cashbackEarned: cashbackTx.amount,
-                          cashbackTotal: balance?.balance || '0.00',
-                        };
+              // Enviar template "Finalizado" ao cliente (em try-catch para não bloquear confirmação ao entregador)
+              try {
+                if (orderData.customerPhone) {
+                  const configClient = await getWhatsappConfig(establishmentId);
+                  if (configClient && configClient.status === 'connected' && configClient.notifyOnCompleted && configClient.instanceToken) {
+                    const { sendOrderStatusNotification } = await import('./uazapi');
+                    const est = await getEstablishmentById(establishmentId);
+                    const orderItems = await getOrderItems(orderData.id);
+                    
+                    // Buscar info de cashback
+                    let cashbackInfo: { cashbackEarned: string; cashbackTotal: string } | null = null;
+                    try {
+                      if (est?.cashbackEnabled && est?.rewardProgramType === 'cashback') {
+                        const cashbackTx = await getCashbackTransactionByOrderId(orderData.id);
+                        if (cashbackTx && parseFloat(cashbackTx.amount) > 0) {
+                          const balance = await getCashbackBalance(establishmentId, orderData.customerPhone);
+                          cashbackInfo = {
+                            cashbackEarned: cashbackTx.amount,
+                            cashbackTotal: balance?.balance || '0.00',
+                          };
+                        }
                       }
+                    } catch (cbErr) {
+                      console.error('[Delivery Done] Erro ao buscar cashback:', cbErr);
                     }
-                  } catch (cbErr) {
-                    console.error('[Delivery Done] Erro ao buscar cashback:', cbErr);
+                    
+                    await sendOrderStatusNotification(
+                      configClient.instanceToken,
+                      orderData.customerPhone,
+                      'completed',
+                      {
+                        customerName: orderData.customerName || 'Cliente',
+                        orderNumber: orderData.orderNumber,
+                        establishmentName: est?.name || 'Restaurante',
+                        template: configClient.templateCompleted,
+                        deliveryType: orderData.deliveryType as 'delivery' | 'pickup' | null,
+                        cancellationReason: null,
+                        orderItems: orderItems.map((item: any) => ({
+                          productName: item.productName,
+                          quantity: item.quantity ?? 1,
+                          unitPrice: item.unitPrice,
+                          totalPrice: item.totalPrice,
+                          complements: item.complements,
+                          notes: item.notes,
+                        })),
+                        orderTotal: orderData.total,
+                        paymentMethod: orderData.paymentMethod,
+                        cashbackInfo,
+                        customerAddress: orderData.customerAddress,
+                      }
+                    );
+                    console.log('[Delivery Done] Template Finalizado enviado ao cliente');
+                  } else {
+                    console.log('[Delivery Done] Notificação ao cliente não enviada (config desativada ou não conectado)');
                   }
-                  
-                  await sendOrderStatusNotification(
-                    config.instanceToken,
-                    orderData.customerPhone,
-                    'completed',
-                    {
-                      customerName: orderData.customerName || 'Cliente',
-                      orderNumber: orderData.orderNumber,
-                      establishmentName: est?.name || 'Restaurante',
-                      template: config.templateCompleted,
-                      deliveryType: orderData.deliveryType as 'delivery' | 'pickup' | null,
-                      cancellationReason: null,
-                      orderItems: orderItems.map((item: any) => ({
-                        productName: item.productName,
-                        quantity: item.quantity ?? 1,
-                        unitPrice: item.unitPrice,
-                        totalPrice: item.totalPrice,
-                        complements: item.complements,
-                        notes: item.notes,
-                      })),
-                      orderTotal: orderData.total,
-                      paymentMethod: orderData.paymentMethod,
-                      cashbackInfo,
-                      customerAddress: orderData.customerAddress,
-                    }
-                  );
-                  console.log('[Delivery Done] Template Finalizado enviado ao cliente');
-                } else {
-                  console.log('[Delivery Done] Notificação ao cliente não enviada (config desativada ou não conectado)');
                 }
+              } catch (clientErr) {
+                console.error('[Delivery Done] Erro ao notificar cliente (não impede confirmação ao entregador):', clientErr);
               }
               
-              // Confirmar ao entregador - tentar senderPhone primeiro, fallback para buscar do DB
-              const configDriver = await getWhatsappConfig(establishmentId);
-              if (configDriver?.instanceToken) {
-                const { sendTextMessage } = await import('./uazapi');
+              // Confirmar ao entregador - SEMPRE tenta enviar, independente da notificação ao cliente
+              try {
+                const configDriver = await getWhatsappConfig(establishmentId);
+                console.log('[Delivery Done] Config WhatsApp para entregador:', {
+                  hasConfig: !!configDriver,
+                  hasToken: !!configDriver?.instanceToken,
+                  status: configDriver?.status,
+                });
                 
-                // Extrair telefone do remetente de múltiplas fontes possíveis
-                let driverPhone = senderPhone 
-                  || message?.participant 
-                  || body?.participant 
-                  || message?.key?.remoteJid 
-                  || body?.key?.remoteJid;
-                
-                // Fallback: buscar telefone do entregador pelo pedido no banco de dados
-                if (!driverPhone) {
-                  console.log('[Delivery Done] senderPhone não encontrado, buscando entregador no DB...');
-                  try {
+                if (configDriver?.instanceToken) {
+                  const { sendTextMessage } = await import('./uazapi');
+                  
+                  // Extrair telefone do remetente de múltiplas fontes possíveis
+                  let driverPhone = senderPhone 
+                    || message?.participant 
+                    || body?.participant 
+                    || message?.key?.remoteJid 
+                    || body?.key?.remoteJid;
+                  
+                  console.log('[Delivery Done] Fontes de telefone:', {
+                    senderPhone,
+                    participant: message?.participant || body?.participant,
+                    remoteJid: message?.key?.remoteJid || body?.key?.remoteJid,
+                    driverPhoneResolved: driverPhone,
+                  });
+                  
+                  // Fallback: buscar telefone do entregador pelo pedido no banco de dados
+                  if (!driverPhone) {
+                    console.log('[Delivery Done] senderPhone não encontrado em nenhuma fonte, buscando entregador no DB...');
                     const { getDeliveryByOrderId, getDriverById } = await import('../db');
                     const delivery = await getDeliveryByOrderId(orderData.id);
+                    console.log('[Delivery Done] Delivery encontrada:', delivery ? { id: delivery.id, driverId: delivery.driverId } : null);
                     if (delivery?.driverId) {
                       const driver = await getDriverById(delivery.driverId);
+                      console.log('[Delivery Done] Driver encontrado:', driver ? { id: driver.id, whatsapp: driver.whatsapp } : null);
                       if (driver?.whatsapp) {
                         driverPhone = driver.whatsapp;
                         console.log('[Delivery Done] Telefone do entregador encontrado no DB:', driverPhone);
                       }
                     }
-                  } catch (dbErr) {
-                    console.error('[Delivery Done] Erro ao buscar entregador no DB:', dbErr);
                   }
-                }
-                
-                if (driverPhone) {
-                  const phone = driverPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
-                  console.log('[Delivery Done] Enviando confirmação ao entregador:', phone);
-                  try {
+                  
+                  if (driverPhone) {
+                    const phone = driverPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
+                    console.log('[Delivery Done] Enviando confirmação ao entregador:', phone);
                     await sendTextMessage(
                       configDriver.instanceToken,
                       phone,
                       `✅ Entrega ${orderNumber} concluída com sucesso!\n👤 Cliente notificado sobre a conclusão.\n📦 Pedido encerrado no sistema.`
                     );
                     console.log('[Delivery Done] ✅ Confirmação enviada ao entregador com sucesso');
-                  } catch (sendErr) {
-                    console.error('[Delivery Done] ❌ Erro ao enviar confirmação ao entregador:', sendErr);
+                  } else {
+                    console.error('[Delivery Done] ❌ Não foi possível determinar o telefone do entregador de nenhuma fonte');
                   }
                 } else {
-                  console.error('[Delivery Done] ❌ Não foi possível determinar o telefone do entregador');
+                  console.error('[Delivery Done] ❌ Config WhatsApp não encontrada ou sem instanceToken');
                 }
-              } else {
-                console.error('[Delivery Done] ❌ Config WhatsApp não encontrada ou sem instanceToken');
+              } catch (driverErr) {
+                console.error('[Delivery Done] ❌ Erro ao enviar confirmação ao entregador:', driverErr);
               }
             }
           } catch (err) {
