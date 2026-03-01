@@ -7656,3 +7656,5 @@
 - [x] Verificar logs em produção e corrigir definitivamente o envio de confirmação ao entregador
 ## Bug: Mensagens de confirmação ao entregador ainda não chegam (v3)
 - [x] Verificar logs de produção e diagnosticar ponto exato da falha - CAUSA: sender vinha como LID (@lid) inválido, corrigido para usar chatid
+## Atualizar textos das mensagens de confirmação ao entregador
+- [x] Alterar texto de "Sair para entrega" e "Pedido entregue" para novo modelo

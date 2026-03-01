@@ -2857,7 +2857,7 @@ async function startServer() {
                     const sendResult = await sendTextMessage(
                       configDriver.instanceToken,
                       phone,
-                      `🛵 Entrega ${orderNumber} iniciada.\n👤 Cliente informado que o pedido está a caminho.\n📦 Status atualizado para: "Em Rota".`
+                      `🛵 Entrega *${orderNumber}* iniciada.\n👤 O Cliente foi informado\n📦 Status atualizado para: "Em Rota".`
                     );
                     console.log('[Delivery Start] Resultado do envio ao entregador:', JSON.stringify(sendResult));
                     if (sendResult.success) {
@@ -3017,7 +3017,7 @@ async function startServer() {
                     const sendResult = await sendTextMessage(
                       configDriver.instanceToken,
                       phone,
-                      `✅ Entrega ${orderNumber} concluída com sucesso!\n👤 Cliente notificado sobre a conclusão.\n📦 Pedido encerrado no sistema.`
+                      `✅ Entrega *${orderNumber}* concluída!\n👤 Cliente informado\n📦 Pedido encerrado no sistema.`
                     );
                     console.log('[Delivery Done] Resultado do envio ao entregador:', JSON.stringify(sendResult));
                     if (sendResult.success) {
