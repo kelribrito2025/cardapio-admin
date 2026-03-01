@@ -200,12 +200,9 @@ export function FeedbackModal({ open, onOpenChange, establishmentId }: FeedbackM
                   )}
                 >
                   <Icon className={cn("h-5 w-5 flex-shrink-0", isSelected ? ft.color : "text-muted-foreground")} />
-                  <div>
-                    <span className={cn("text-sm font-medium block", isSelected ? "text-foreground" : "text-muted-foreground")}>
-                      {ft.label}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground leading-tight">{ft.description}</span>
-                  </div>
+                  <span className={cn("text-sm font-medium", isSelected ? "text-foreground" : "text-muted-foreground")}>
+                    {ft.label}
+                  </span>
                 </button>
               );
             })}
