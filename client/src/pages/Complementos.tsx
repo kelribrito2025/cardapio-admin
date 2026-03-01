@@ -1322,19 +1322,24 @@ function GroupCard({
                               updateItemMutation.mutate({ id, ...data });
                               return;
                             }
-                            // If updating price/priceMode, scope to this group's groupIds only
-                            if (data.priceMode !== undefined || data.price !== undefined) {
-                              const itemObj = items.find((i: any) => i.id === id);
-                              if (itemObj) {
-                                updateGlobalMutation.mutate({
-                                  establishmentId,
-                                  complementName: itemObj.name,
-                                  groupIds: group.groupIds,
-                                  ...data,
-                                });
-                              }
+                            // For non-exclusive items, ALL updates should propagate globally
+                            // (name, price, priceMode, badge, availability, etc.)
+                            const itemObj = items.find((i: any) => i.id === id);
+                            if (itemObj) {
+                              updateGlobalMutation.mutate({
+                                establishmentId,
+                                complementName: itemObj.name,
+                                groupIds: group.groupIds,
+                                ...(data.name ? { newName: data.name } : {}),
+                                ...(data.price !== undefined ? { price: data.price } : {}),
+                                ...(data.priceMode !== undefined ? { priceMode: data.priceMode } : {}),
+                                ...(data.badgeText !== undefined ? { badgeText: data.badgeText } : {}),
+                                ...(data.availabilityType !== undefined ? { availabilityType: data.availabilityType } : {}),
+                                ...(data.availableDays !== undefined ? { availableDays: data.availableDays } : {}),
+                                ...(data.availableHours !== undefined ? { availableHours: data.availableHours } : {}),
+                              });
                             } else {
-                              // Update individual item (name, badge, availability)
+                              // Fallback: update individual item
                               updateItemMutation.mutate({ id, ...data });
                             }
                           }}

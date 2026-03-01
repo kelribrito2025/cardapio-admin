@@ -7673,3 +7673,6 @@
 ## Adicionar complementos às bebidas do estabelecimento 210007
 - [x] Acessar cardápio antigo (menu.mindi.com.br/tche-restaurante) e extrair grupos de complementos das bebidas (10 produtos verificados)
 - [x] Inserir 15 grupos de complementos e 30 opções no banco de dados para 8 produtos de bebida (Suco Limão e Suco Laranja não têm complementos)
+## Bug: Edição de complemento global cria duplicata
+- [x] Corrigir edição de item de complemento que cria novo item em vez de atualizar o existente (agora usa updateGlobal para propagar para todos os itens com mesmo nome)
+- [x] Corrigir exclusão do item original que faz o item "editado" desaparecer (resolvido pela propagação global da edição de nome)
