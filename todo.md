@@ -7775,3 +7775,6 @@
 
 ## Ajuste do Botão Reconectar do Banner
 - [x] Botão "Reconectar" deve navegar para Pedidos e abrir o modal de conexão do WhatsApp
+
+## Animação do Banner de WhatsApp
+- [x] Ocultar banner com animação suave de fade-out quando WhatsApp reconectar

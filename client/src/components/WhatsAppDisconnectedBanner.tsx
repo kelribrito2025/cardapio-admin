@@ -14,6 +14,7 @@ export function WhatsAppDisconnectedBanner() {
   });
   const [showBanner, setShowBanner] = useState(false);
   const [forceShow, setForceShow] = useState(false);
+  const [isHiding, setIsHiding] = useState(false);
 
   // Usar o getConfig que já existe — sem chamada extra
   const { data: config, refetch } = trpc.whatsapp.getConfig.useQuery(undefined, {
@@ -53,11 +54,17 @@ export function WhatsAppDisconnectedBanner() {
   useEffect(() => {
     if (isDisconnected && !dismissed) {
       setShowBanner(true);
+      setIsHiding(false);
     } else if (!isDisconnected) {
-      setShowBanner(false);
-      setForceShow(false);
-      // Limpar dismiss quando reconectar
-      sessionStorage.removeItem(DISMISS_KEY);
+      // Iniciar animação de fade-out
+      setIsHiding(true);
+      // Aguardar a animação terminar antes de remover do DOM
+      const timer = setTimeout(() => {
+        setShowBanner(false);
+        setForceShow(false);
+        setIsHiding(false);
+      }, 300); // Duração da animação em ms
+      return () => clearTimeout(timer);
     }
   }, [isDisconnected, dismissed]);
 
@@ -89,7 +96,9 @@ export function WhatsAppDisconnectedBanner() {
       className={cn(
         "relative mx-3 lg:mx-6 mb-3 lg:mb-4 mt-0 rounded-xl overflow-hidden",
         "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg",
-        "animate-in slide-in-from-bottom-2 fade-in duration-300"
+        isHiding
+          ? "animate-out fade-out slide-out-to-bottom-2 duration-300"
+          : "animate-in slide-in-from-bottom-2 fade-in duration-300"
       )}
     >
       {/* Efeito de pulso sutil no fundo */}
