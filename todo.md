@@ -7711,3 +7711,12 @@
 - [x] Modal de Novo Produto abre com categoria pré-selecionada ao clicar em "Adicionar Produto"
 - [x] Opção "Adicionar Produto" no dropdown mobile para categorias vazias
 - [x] Remover botão vermelho "Adicionar Produto" do header da categoria vazia (manter apenas o do empty state)
+
+## Padronização de Modais com Estilo do Feedback
+- [x] Padronizar modal de Seleção de Entregador com estilo do FeedbackModal
+- [x] Padronizar modal de Nova Categoria com estilo do FeedbackModal
+- [x] Padronizar modal de Criar Mesas com estilo do FeedbackModal
+
+## Toggle Expandir/Minimizar Categoria por Click no Header
+- [x] Clicar no header da categoria (nome, ícone, contagem) deve alternar expandir/minimizar
+- [x] Não deve interferir com botões (Criar Combo, editar, drag handle, dropdown, etc.)

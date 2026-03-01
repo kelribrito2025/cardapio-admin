@@ -2537,72 +2537,81 @@ export default function Pedidos() {
           setAssigningDriverId(null);
         }
       }}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Bike className="h-5 w-5 text-orange-500" />
-              Selecionar Entregador
-            </DialogTitle>
-            <DialogDescription>
-              Escolha o entregador para este pedido. A notificação será enviada automaticamente via WhatsApp.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-2 py-2 max-h-[300px] overflow-y-auto">
-            {driverModalDrivers.map((driver) => (
-              <button
-                key={driver.id}
-                disabled={assigningDriverId !== null}
-                onClick={() => {
-                  if (!driverModalOrderId) return;
-                  setAssigningDriverId(driver.id);
-                  if (driverModalContext === 'accept') {
-                    // Fluxo de aceite: apenas atribuir entregador sem mudar status
-                    assignDriverOnAcceptMutation.mutate({
-                      orderId: driverModalOrderId,
-                      driverId: driver.id,
-                    });
-                  } else {
-                    // Fluxo de pronto: marcar como pronto e atribuir
-                    markReadyAndAssignMutation.mutate({
-                      orderId: driverModalOrderId,
-                      driverId: driver.id,
-                    });
-                  }
-                }}
-                className={cn(
-                  "w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left",
-                  assigningDriverId === driver.id
-                    ? "border-orange-500 bg-orange-50 dark:bg-orange-950/30"
-                    : "border-border hover:border-orange-300 hover:bg-orange-50/50 dark:hover:bg-orange-950/20",
-                  assigningDriverId !== null && assigningDriverId !== driver.id && "opacity-50"
-                )}
-              >
-                <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-950/50 flex items-center justify-center flex-shrink-0">
-                  <Bike className="h-5 w-5 text-orange-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm truncate">{driver.name}</p>
-                  <p className="text-xs text-muted-foreground">{driver.whatsapp}</p>
-                </div>
-                {assigningDriverId === driver.id && (
-                  <Loader2 className="h-4 w-4 animate-spin text-orange-500" />
-                )}
-              </button>
-            ))}
-          </div>
-          <DialogFooter>
+        <DialogContent
+          className="sm:max-w-md p-0 overflow-hidden border-t-4 border-t-orange-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Selecionar Entregador</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            {/* Header com ícone */}
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-orange-100 dark:bg-orange-950/50">
+                <Bike className="h-6 w-6 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Selecionar Entregador</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Escolha o entregador para este pedido. A notificação será enviada automaticamente via WhatsApp.
+                </p>
+              </div>
+            </div>
+
+            {/* Lista de entregadores */}
+            <div className="space-y-2 mb-5 max-h-[300px] overflow-y-auto">
+              {driverModalDrivers.map((driver) => (
+                <button
+                  key={driver.id}
+                  disabled={assigningDriverId !== null}
+                  onClick={() => {
+                    if (!driverModalOrderId) return;
+                    setAssigningDriverId(driver.id);
+                    if (driverModalContext === 'accept') {
+                      assignDriverOnAcceptMutation.mutate({
+                        orderId: driverModalOrderId,
+                        driverId: driver.id,
+                      });
+                    } else {
+                      markReadyAndAssignMutation.mutate({
+                        orderId: driverModalOrderId,
+                        driverId: driver.id,
+                      });
+                    }
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left",
+                    assigningDriverId === driver.id
+                      ? "border-orange-500 bg-orange-50 dark:bg-orange-950/30"
+                      : "border-border hover:border-orange-300 hover:bg-orange-50/50 dark:hover:bg-orange-950/20",
+                    assigningDriverId !== null && assigningDriverId !== driver.id && "opacity-50"
+                  )}
+                >
+                  <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-950/50 flex items-center justify-center flex-shrink-0">
+                    <Bike className="h-5 w-5 text-orange-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{driver.name}</p>
+                    <p className="text-xs text-muted-foreground">{driver.whatsapp}</p>
+                  </div>
+                  {assigningDriverId === driver.id && (
+                    <Loader2 className="h-4 w-4 animate-spin text-orange-500" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Botão Cancelar */}
             <Button
               variant="outline"
+              className="w-full rounded-xl h-10 font-medium border-border text-muted-foreground hover:bg-muted/50"
               onClick={() => {
                 setDriverModalOpen(false);
                 setDriverModalOrderId(null);
               }}
               disabled={assigningDriverId !== null}
-              className="rounded-xl"
             >
               Cancelar
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 

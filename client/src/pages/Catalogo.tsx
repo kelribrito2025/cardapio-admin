@@ -508,7 +508,11 @@ function SortableCategoryItem({
           isActive={isDropTarget} 
         />
       )}
-      <div className="flex items-center justify-between p-4 border-b border-border/50 bg-muted/20" style={{height: '52px'}}>
+      <div
+        className="flex items-center justify-between p-4 border-b border-border/50 bg-muted/20 cursor-pointer select-none"
+        style={{height: '52px'}}
+        onClick={() => onToggleCategoryCollapse(category.id)}
+      >
         {/* Drag handle + title area */}
         <div className="flex items-center gap-1.5">
           {/* GripVertical drag handle for category */}
@@ -523,7 +527,7 @@ function SortableCategoryItem({
             </button>
           )}
           {isEditing ? (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
               <Input
                 value={editingName}
                 onChange={(e) => onEditingNameChange(capitalizeFirst(e.target.value))}
@@ -563,7 +567,10 @@ function SortableCategoryItem({
             <>
               <div
                 className="group flex items-center gap-1.5 px-2 py-1 -my-1 rounded-md cursor-pointer hover:bg-muted/50 transition-all duration-200"
-                onClick={() => onStartEditing(category.id, category.name)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStartEditing(category.id, category.name);
+                }}
               >
                 <h3 className={cn(
                   "font-bold text-base group-hover:text-primary transition-colors",
@@ -603,6 +610,7 @@ function SortableCategoryItem({
               e.stopPropagation();
               onCreateCombo(category.id, category.name);
             }}
+            onPointerDown={(e) => e.stopPropagation()}
           >
             Criar Combo
           </Button>
@@ -622,6 +630,7 @@ function SortableCategoryItem({
                   e.stopPropagation();
                   onToggleCategoryStatus(category.id, !category.isActive);
                 }}
+                onPointerDown={(e) => e.stopPropagation()}
                 disabled={toggleCategoryStatusPending}
               >
                 {effectiveIsActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
@@ -637,6 +646,7 @@ function SortableCategoryItem({
                 size="icon"
                 className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
                 onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
               >
                 <MoreVertical className="h-4 w-4" />
               </Button>
@@ -695,6 +705,7 @@ function SortableCategoryItem({
                   e.stopPropagation();
                   onToggleCategoryCollapse(category.id);
                 }}
+                onPointerDown={(e) => e.stopPropagation()}
               >
                 {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
               </Button>
@@ -1551,33 +1562,62 @@ export default function Catalogo() {
 
       {/* Category Dialog */}
       <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
-        <DialogContent className="rounded-2xl">
-          <DialogHeader>
-            <DialogTitle>Nova categoria</DialogTitle>
-            <DialogDescription>
-              Crie uma nova categoria para organizar seus produtos.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Input
-              placeholder="Nome da categoria"
-              value={newCategoryName}
-              onChange={(e) => setNewCategoryName(capitalizeFirst(e.target.value))}
-              className="h-11 rounded-xl"
-            />
-          </div>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setCategoryDialogOpen(false)} className="rounded-xl">
+        <DialogContent
+          className="sm:max-w-md p-0 overflow-hidden border-t-4 border-t-red-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Nova categoria</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            {/* Header com ícone */}
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <FolderPlus className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Nova categoria</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Crie uma nova categoria para organizar seus produtos no cardápio.
+                </p>
+              </div>
+            </div>
+
+            {/* Campo nome */}
+            <div className="mb-5">
+              <label className="text-sm font-medium text-foreground mb-1.5 block">
+                Nome da categoria <span className="text-destructive">*</span>
+              </label>
+              <Input
+                placeholder="Ex: Hambúrgueres, Bebidas, Sobremesas..."
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(capitalizeFirst(e.target.value))}
+                className="h-11 rounded-lg"
+                onKeyDown={(e) => { if (e.key === 'Enter' && newCategoryName.trim()) handleCreateCategory(); }}
+              />
+            </div>
+
+            {/* Botão Cancelar */}
+            <Button
+              variant="outline"
+              className="w-full rounded-xl h-10 font-medium mb-2.5 border-border text-muted-foreground hover:bg-muted/50"
+              onClick={() => setCategoryDialogOpen(false)}
+              disabled={createCategoryMutation.isPending}
+            >
               Cancelar
             </Button>
+
+            {/* Botão Criar */}
             <Button
+              className="w-full rounded-xl h-10 font-semibold bg-red-500 hover:bg-red-600 text-white"
               onClick={handleCreateCategory}
               disabled={!newCategoryName.trim() || createCategoryMutation.isPending}
-              className="rounded-xl"
             >
-              {createCategoryMutation.isPending ? "Criando..." : "Criar"}
+              {createCategoryMutation.isPending ? (
+                <><span className="h-4 w-4 mr-2 animate-spin border-2 border-white border-t-transparent rounded-full inline-block" /> Criando...</>
+              ) : (
+                <><FolderPlus className="h-4 w-4 mr-2" /> Criar Categoria</>
+              )}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 

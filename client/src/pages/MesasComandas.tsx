@@ -7,7 +7,7 @@ import { MobilePDVModal } from "@/components/MobilePDVModal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
@@ -39,6 +39,7 @@ import {
   Phone,
   UserRound,
   Ban,
+  LayoutGrid,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -780,63 +781,86 @@ export default function MesasComandas() {
 
         {/* Dialog para criar mesas */}
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Criar Mesas</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div>
-                <label className="text-sm font-medium text-foreground">Nome do espaço das mesas</label>
-                <Input
-                  type="text"
-                  value={newSpaceName}
-                  onChange={(e) => setNewSpaceName(e.target.value)}
-                  placeholder="Ex: Salão, Varanda, Área Externa..."
-                  className="mt-1"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Opcional. Agrupa as mesas por local físico do restaurante.
-                </p>
+          <DialogContent
+            className="sm:max-w-md p-0 overflow-hidden border-t-4 border-t-primary"
+            style={{ borderRadius: '16px' }}
+          >
+            <DialogTitle className="sr-only">Criar Mesas</DialogTitle>
+            <div className="px-6 pt-5 pb-6">
+              {/* Header com ícone */}
+              <div className="flex items-start gap-3 mb-4">
+                <div className="p-2.5 rounded-xl flex-shrink-0 bg-primary/10">
+                  <LayoutGrid className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">Criar Mesas</h3>
+                  <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                    Configure o espaço e a quantidade de mesas para o seu restaurante.
+                  </p>
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium text-foreground">Quantidade de mesas</label>
-                <Input
-                  type="number"
-                  value={newTableCount}
-                  onChange={(e) => setNewTableCount(parseInt(e.target.value) || 1)}
-                  min={1}
-                  max={100}
-                  className="mt-1"
-                />
+
+              {/* Campos */}
+              <div className="space-y-3 mb-5">
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-1.5 block">Nome do espaço</label>
+                  <Input
+                    type="text"
+                    value={newSpaceName}
+                    onChange={(e) => setNewSpaceName(e.target.value)}
+                    placeholder="Ex: Salão, Varanda, Área Externa..."
+                    className="rounded-lg"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Opcional. Agrupa as mesas por local físico do restaurante.
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-1.5 block">Quantidade de mesas</label>
+                  <Input
+                    type="number"
+                    value={newTableCount}
+                    onChange={(e) => setNewTableCount(parseInt(e.target.value) || 1)}
+                    min={1}
+                    max={100}
+                    className="rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-1.5 block">Capacidade por mesa</label>
+                  <Input
+                    type="number"
+                    value={newTableCapacity}
+                    onChange={(e) => setNewTableCapacity(parseInt(e.target.value) || 4)}
+                    min={1}
+                    max={20}
+                    className="rounded-lg"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium text-foreground">Capacidade por mesa</label>
-                <Input
-                  type="number"
-                  value={newTableCapacity}
-                  onChange={(e) => setNewTableCapacity(parseInt(e.target.value) || 4)}
-                  min={1}
-                  max={20}
-                  className="mt-1"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+
+              {/* Botão Cancelar */}
+              <Button
+                variant="outline"
+                className="w-full rounded-xl h-10 font-medium mb-2.5 border-border text-muted-foreground hover:bg-muted/50"
+                onClick={() => setShowCreateDialog(false)}
+              >
                 Cancelar
               </Button>
-              <Button 
+
+              {/* Botão Criar */}
+              <Button
+                className="w-full rounded-xl h-10 font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
                 onClick={handleCreateTables}
                 disabled={createBatchMutation.isPending}
               >
                 {createBatchMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Criando...</>
                 ) : (
-                  <Plus className="h-4 w-4 mr-2" />
+                  <><Plus className="h-4 w-4 mr-2" /> Criar {newTableCount} Mesas</>
                 )}
-                Criar {newTableCount} Mesas
               </Button>
-            </DialogFooter>
+            </div>
           </DialogContent>
         </Dialog>
       </AdminLayout>
@@ -1441,63 +1465,86 @@ export default function MesasComandas() {
 
       {/* Dialog para criar mesas */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Criar Mesas</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="text-sm font-medium text-foreground">Nome do espaço das mesas</label>
-              <Input
-                type="text"
-                value={newSpaceName}
-                onChange={(e) => setNewSpaceName(e.target.value)}
-                placeholder="Ex: Salão, Varanda, Área Externa..."
-                className="mt-1"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Opcional. Agrupa as mesas por local físico do restaurante.
-              </p>
+        <DialogContent
+          className="sm:max-w-md p-0 overflow-hidden border-t-4 border-t-primary"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Criar Mesas</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            {/* Header com ícone */}
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-primary/10">
+                <LayoutGrid className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Criar Mesas</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Configure o espaço e a quantidade de mesas para o seu restaurante.
+                </p>
+              </div>
             </div>
-            <div>
-              <label className="text-sm font-medium text-foreground">Quantidade de mesas</label>
-              <Input
-                type="number"
-                value={newTableCount}
-                onChange={(e) => setNewTableCount(parseInt(e.target.value) || 1)}
-                min={1}
-                max={100}
-                className="mt-1"
-              />
+
+            {/* Campos */}
+            <div className="space-y-3 mb-5">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">Nome do espaço</label>
+                <Input
+                  type="text"
+                  value={newSpaceName}
+                  onChange={(e) => setNewSpaceName(e.target.value)}
+                  placeholder="Ex: Salão, Varanda, Área Externa..."
+                  className="rounded-lg"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Opcional. Agrupa as mesas por local físico do restaurante.
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">Quantidade de mesas</label>
+                <Input
+                  type="number"
+                  value={newTableCount}
+                  onChange={(e) => setNewTableCount(parseInt(e.target.value) || 1)}
+                  min={1}
+                  max={100}
+                  className="rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">Capacidade por mesa</label>
+                <Input
+                  type="number"
+                  value={newTableCapacity}
+                  onChange={(e) => setNewTableCapacity(parseInt(e.target.value) || 4)}
+                  min={1}
+                  max={20}
+                  className="rounded-lg"
+                />
+              </div>
             </div>
-            <div>
-              <label className="text-sm font-medium text-foreground">Capacidade por mesa</label>
-              <Input
-                type="number"
-                value={newTableCapacity}
-                onChange={(e) => setNewTableCapacity(parseInt(e.target.value) || 4)}
-                min={1}
-                max={20}
-                className="mt-1"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+
+            {/* Botão Cancelar */}
+            <Button
+              variant="outline"
+              className="w-full rounded-xl h-10 font-medium mb-2.5 border-border text-muted-foreground hover:bg-muted/50"
+              onClick={() => setShowCreateDialog(false)}
+            >
               Cancelar
             </Button>
-            <Button 
+
+            {/* Botão Criar */}
+            <Button
+              className="w-full rounded-xl h-10 font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
               onClick={handleCreateTables}
               disabled={createBatchMutation.isPending}
             >
               {createBatchMutation.isPending ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Criando...</>
               ) : (
-                <Plus className="h-4 w-4 mr-2" />
+                <><Plus className="h-4 w-4 mr-2" /> Criar {newTableCount} Mesas</>
               )}
-              Criar {newTableCount} Mesas
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
