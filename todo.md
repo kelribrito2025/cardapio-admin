@@ -7772,3 +7772,6 @@
 
 ## Ajustes do Banner de WhatsApp
 - [x] Banner de WhatsApp desconectado só deve aparecer se já foi conectado pelo menos uma vez
+
+## Ajuste do Botão Reconectar do Banner
+- [x] Botão "Reconectar" deve navegar para Pedidos e abrir o modal de conexão do WhatsApp

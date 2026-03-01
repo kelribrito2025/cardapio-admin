@@ -376,6 +376,20 @@ export default function Pedidos() {
     // Mostrar modal apenas para novos usuários que nunca viram
     setWhatsappInfoModalOpen(true);
   }, [isWhatsappFetched, isWhatsappLoading, whatsappStatus?.status]);
+
+  // Listener para abrir o modal de conexao do WhatsApp (disparado pelo banner)
+  useEffect(() => {
+    const handleOpenWhatsappModal = () => {
+      setQrCodeModalOpen(true);
+      connectWhatsapp.mutate();
+      setIsPollingQrCode(true);
+    };
+
+    window.addEventListener('open-whatsapp-modal', handleOpenWhatsappModal);
+    return () => {
+      window.removeEventListener('open-whatsapp-modal', handleOpenWhatsappModal);
+    };
+  }, [connectWhatsapp]);
   
   // Query para buscar todos os pedidos
   const { data: allOrdersData, refetch: refetchAll, isLoading } = trpc.orders.list.useQuery(

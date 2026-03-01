@@ -76,7 +76,10 @@ export function WhatsAppDisconnectedBanner() {
   };
 
   const handleReconnect = () => {
-    navigate("/configuracoes?section=whatsapp");
+    // Disparar evento para a página de Pedidos abrir o modal de conexão
+    window.dispatchEvent(new CustomEvent('open-whatsapp-modal'));
+    // Navegar para Pedidos
+    navigate("/pedidos");
   };
 
   if (!showBanner) return null;
