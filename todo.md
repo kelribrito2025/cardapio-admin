@@ -7803,3 +7803,6 @@
 
 ## Modal de Enviar Feedback
 - [x] Remover botão "Cancelar" do modal de Enviar Feedback
+
+## Setas de Navegação de Fotos no Menu Público
+- [x] Adicionar setas de navegação (voltar/avançar) no modal de detalhes do item quando tiver mais de 1 foto

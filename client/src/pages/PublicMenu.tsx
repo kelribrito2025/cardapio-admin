@@ -197,6 +197,7 @@ export default function PublicMenu() {
   const [showNavigationModal, setShowNavigationModal] = useState(false);
   const [showFullscreenImage, setShowFullscreenImage] = useState(false);
   const [fullscreenImageIndex, setFullscreenImageIndex] = useState(0);
+  const [modalImageIndex, setModalImageIndex] = useState(0);
   const [selectedComplementImage, setSelectedComplementImage] = useState<string | null>(null);
   const [ratingSuccess, setRatingSuccess] = useState(false);
   const [canReviewChecked, setCanReviewChecked] = useState(false);
@@ -1640,6 +1641,7 @@ export default function PublicMenu() {
                       key={product.id}
                       onClick={() => {
                         if ((product as any).outOfStock) return;
+                        setModalImageIndex(0);
                         setSelectedProduct({
                           id: product.id,
                           name: product.name,
@@ -2152,6 +2154,7 @@ export default function PublicMenu() {
                             if (product.outOfStock) {
                               return; // Produto sem estoque - bloqueado
                             }
+                            setModalImageIndex(0);
                             setSelectedProduct(product);
                             setProductQuantity(1);
                             setProductObservation("");
@@ -2775,8 +2778,11 @@ export default function PublicMenu() {
             {/* Imagem do Produto ou Complemento Selecionado */}
             {(() => {
               // Determinar qual imagem exibir: complemento selecionado ou produto
-              const displayImage = selectedComplementImage || selectedProduct.images?.[0];
+              const productImages = selectedProduct.images || [];
+              const currentModalImage = productImages[modalImageIndex] || productImages[0];
+              const displayImage = selectedComplementImage || currentModalImage;
               const isComplementImage = !!selectedComplementImage;
+              const hasMultipleImages = !isComplementImage && productImages.length > 1;
               
               if (displayImage) {
                 return (
@@ -2787,7 +2793,7 @@ export default function PublicMenu() {
                       className="w-full h-full object-cover cursor-pointer transition-all duration-300"
                       onClick={() => { 
                         if (!isComplementImage) {
-                          setFullscreenImageIndex(0); 
+                          setFullscreenImageIndex(modalImageIndex); 
                           setShowFullscreenImage(true); 
                         }
                       }}
@@ -2796,7 +2802,7 @@ export default function PublicMenu() {
                     {!isComplementImage && (
                       <div 
                         className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
-                        onClick={() => { setFullscreenImageIndex(0); setShowFullscreenImage(true); }}
+                        onClick={() => { setFullscreenImageIndex(modalImageIndex); setShowFullscreenImage(true); }}
                       >
                         <div className="bg-white/80 rounded-full p-3 shadow-lg">
                           <Eye className="h-6 w-6 text-gray-700" />
@@ -2804,11 +2810,30 @@ export default function PublicMenu() {
                       </div>
                     )}
 
-                    {/* Indicador de quantidade de fotos (apenas para imagem do produto) */}
-                    {!isComplementImage && selectedProduct.images && selectedProduct.images.length > 1 && (
-                      <div className="absolute bottom-3 right-3 bg-black/60 text-white px-2.5 py-1 rounded-full text-xs font-medium flex items-center gap-1.5">
-                        <Eye className="h-3.5 w-3.5" />
-                        <span>1/{selectedProduct.images.length}</span>
+                    {/* Setas de navegação - apenas quando há mais de 1 foto do produto */}
+                    {hasMultipleImages && (
+                      <div className="absolute bottom-3 right-3 flex items-center gap-1.5 z-10">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setModalImageIndex((prev) => prev === 0 ? productImages.length - 1 : prev - 1);
+                          }}
+                          className="p-1.5 bg-black/50 hover:bg-black/70 rounded-full transition-colors"
+                        >
+                          <ChevronLeft className="h-4 w-4 text-white" />
+                        </button>
+                        <span className="text-white text-xs font-medium bg-black/50 px-2 py-0.5 rounded-full">
+                          {modalImageIndex + 1}/{productImages.length}
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setModalImageIndex((prev) => prev === productImages.length - 1 ? 0 : prev + 1);
+                          }}
+                          className="p-1.5 bg-black/50 hover:bg-black/70 rounded-full transition-colors"
+                        >
+                          <ChevronRight className="h-4 w-4 text-white" />
+                        </button>
                       </div>
                     )}
                     <button 
