@@ -750,14 +750,24 @@ export default function Estoque() {
 
       {/* New Item Dialog */}
       <Dialog open={isNewItemDialogOpen} onOpenChange={setIsNewItemDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Novo Item de Estoque</DialogTitle>
-            <DialogDescription>
-              Adicione um novo item ao controle de estoque
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
+        <DialogContent
+          className="sm:max-w-[425px] p-0 overflow-hidden border-t-4 border-t-emerald-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Novo Item de Estoque</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-emerald-100 dark:bg-emerald-950/50">
+                <PackagePlus className="h-6 w-6 text-emerald-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Novo Item de Estoque</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Adicione um novo item ao controle de estoque
+                </p>
+              </div>
+            </div>
+          <div className="grid gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="name">Nome do item *</Label>
@@ -849,24 +859,37 @@ export default function Estoque() {
               </div>
             </div>
           </div>
-          <DialogFooter>
-            <Button onClick={handleCreateItem} disabled={createItemMutation.isPending}>
+            <Button
+              className="w-full rounded-xl h-10 font-semibold bg-emerald-600 hover:bg-emerald-700 text-white mt-4"
+              onClick={handleCreateItem}
+              disabled={createItemMutation.isPending}
+            >
               {createItemMutation.isPending ? "Salvando..." : "Adicionar"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Edit Item Dialog */}
       <Dialog open={isEditItemDialogOpen} onOpenChange={setIsEditItemDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Editar Item</DialogTitle>
-            <DialogDescription>
-              Atualize as informações do item
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
+        <DialogContent
+          className="sm:max-w-[425px] p-0 overflow-hidden border-t-4 border-t-blue-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Editar Item</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-blue-100 dark:bg-blue-950/50">
+                <Edit className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Editar Item</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Atualize as informações do item
+                </p>
+              </div>
+            </div>
+          <div className="grid gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="edit-name">Nome do item *</Label>
@@ -928,26 +951,37 @@ export default function Estoque() {
               </div>
             </div>
           </div>
-          <DialogFooter>
-            <Button onClick={handleUpdateItem} disabled={updateItemMutation.isPending}>
+            <Button
+              className="w-full rounded-xl h-10 font-semibold bg-blue-500 hover:bg-blue-600 text-white mt-4"
+              onClick={handleUpdateItem}
+              disabled={updateItemMutation.isPending}
+            >
               {updateItemMutation.isPending ? "Salvando..." : "Salvar"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Movement Dialog */}
       <Dialog open={isMovementDialogOpen} onOpenChange={setIsMovementDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>
-              {movementType === "entry" ? "Adicionar Estoque" : "Registrar Saída"}
-            </DialogTitle>
-            <DialogDescription>
-              {selectedItem?.name} - Atual: {Number(selectedItem?.currentQuantity || 0)} {unitLabels[selectedItem?.unit] || selectedItem?.unit}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
+        <DialogContent
+          className="sm:max-w-[425px] p-0 overflow-hidden border-t-4"
+          style={{ borderRadius: '16px', borderTopColor: movementType === 'entry' ? '#16a34a' : '#dc2626' }}
+        >
+          <DialogTitle className="sr-only">{movementType === "entry" ? "Adicionar Estoque" : "Registrar Saída"}</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className={cn("p-2.5 rounded-xl flex-shrink-0", movementType === 'entry' ? 'bg-green-100 dark:bg-green-950/50' : 'bg-red-100 dark:bg-red-950/50')}>
+                {movementType === 'entry' ? <PackagePlus className="h-6 w-6 text-green-600" /> : <PackageMinus className="h-6 w-6 text-red-600" />}
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">{movementType === "entry" ? "Adicionar Estoque" : "Registrar Saída"}</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  {selectedItem?.name} - Atual: {Number(selectedItem?.currentQuantity || 0)} {unitLabels[selectedItem?.unit] || selectedItem?.unit}
+                </p>
+              </div>
+            </div>
+          <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="movement-quantity">Quantidade *</Label>
               <Input
@@ -968,27 +1002,36 @@ export default function Estoque() {
               />
             </div>
           </div>
-          <DialogFooter>
             <Button
+              className={cn("w-full rounded-xl h-10 font-semibold text-white mt-4", movementType === 'entry' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700')}
               onClick={handleAddMovement}
               disabled={addMovementMutation.isPending}
-              className={movementType === "entry" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"}
             >
               {addMovementMutation.isPending ? "Registrando..." : (movementType === "entry" ? "Adicionar" : "Registrar saída")}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* History Dialog */}
       <Dialog open={isHistoryDialogOpen} onOpenChange={setIsHistoryDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Histórico de Movimentações</DialogTitle>
-            <DialogDescription>
-              {selectedItem?.name}
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent
+          className="sm:max-w-[500px] p-0 overflow-hidden border-t-4 border-t-slate-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Histórico de Movimentações</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-slate-100 dark:bg-slate-950/50">
+                <History className="h-6 w-6 text-slate-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Histórico de Movimentações</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  {selectedItem?.name}
+                </p>
+              </div>
+            </div>
           <div className="max-h-[400px] overflow-y-auto">
             {isLoadingMovements ? (
               <div className="space-y-3">
@@ -1030,24 +1073,37 @@ export default function Estoque() {
               </div>
             )}
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsHistoryDialogOpen(false)}>
+            <Button
+              variant="outline"
+              className="w-full rounded-xl h-10 font-semibold mt-4"
+              onClick={() => setIsHistoryDialogOpen(false)}
+            >
               Fechar
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* New Category Dialog */}
       <Dialog open={isNewCategoryDialogOpen} onOpenChange={setIsNewCategoryDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Nova Categoria de Estoque</DialogTitle>
-            <DialogDescription>
-              Crie uma categoria para organizar os itens do estoque
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
+        <DialogContent
+          className="sm:max-w-[425px] p-0 overflow-hidden border-t-4 border-t-primary"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Nova Categoria de Estoque</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <UtensilsCrossed className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Nova Categoria de Estoque</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Crie uma categoria para organizar os itens do estoque
+                </p>
+              </div>
+            </div>
+          <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="category-name">Nome da categoria *</Label>
               <Input
@@ -1058,8 +1114,8 @@ export default function Estoque() {
               />
             </div>
           </div>
-          <DialogFooter>
             <Button
+              className="w-full rounded-xl h-10 font-semibold bg-red-700 hover:bg-red-800 text-white mt-4"
               onClick={() => {
                 if (!newCategoryName.trim()) {
                   toast.error("Nome da categoria é obrigatório");
@@ -1075,7 +1131,7 @@ export default function Estoque() {
             >
               {createCategoryMutation.isPending ? "Criando..." : "Criar"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </AdminLayout>

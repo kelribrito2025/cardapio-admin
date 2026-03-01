@@ -269,13 +269,24 @@ function ExpenseModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
-            {editingExpense ? "Editar despesa" : "Registrar despesa"}
-          </DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-2">
+      <DialogContent
+        className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto p-0 overflow-hidden border-t-4 border-t-primary"
+        style={{ borderRadius: '16px' }}
+      >
+        <DialogTitle className="sr-only">{editingExpense ? "Editar despesa" : "Registrar despesa"}</DialogTitle>
+        <div className="px-6 pt-5 pb-6">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+              <Receipt className="h-6 w-6 text-red-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">{editingExpense ? "Editar despesa" : "Registrar despesa"}</h3>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                {editingExpense ? "Atualize os dados da despesa" : "Adicione uma nova despesa ao controle financeiro"}
+              </p>
+            </div>
+          </div>
+        <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
               Data *
@@ -518,8 +529,11 @@ function ExpenseModal({
             </div>
           )}
         </div>
-        <DialogFooter>
-          <Button onClick={handleSubmit} disabled={isLoading}>
+          <Button
+            className="w-full rounded-xl h-10 font-semibold bg-red-700 hover:bg-red-800 text-white mt-4"
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
             {isLoading
               ? "Salvando..."
               : editingExpense
@@ -528,7 +542,7 @@ function ExpenseModal({
               ? "Salvar recorrente"
               : "Salvar despesa"}
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -605,11 +619,24 @@ function RecurringEditModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Editar despesa recorrente</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-2">
+      <DialogContent
+        className="max-w-md p-0 overflow-hidden border-t-4 border-t-blue-500"
+        style={{ borderRadius: '16px' }}
+      >
+        <DialogTitle className="sr-only">Editar despesa recorrente</DialogTitle>
+        <div className="px-6 pt-5 pb-6">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="p-2.5 rounded-xl flex-shrink-0 bg-blue-100 dark:bg-blue-950/50">
+              <Repeat className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Editar despesa recorrente</h3>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                Atualize os dados da despesa recorrente
+              </p>
+            </div>
+          </div>
+        <div className="space-y-4">
           <div>
             <Label className="text-xs text-muted-foreground mb-1.5 block">Categoria</Label>
             <Select value={categoryId} onValueChange={setCategoryId}>
@@ -700,11 +727,14 @@ function RecurringEditModal({
             <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notas adicionais..." />
           </div>
         </div>
-        <DialogFooter>
-          <Button onClick={handleSubmit} disabled={updateMutation.isPending}>
+          <Button
+            className="w-full rounded-xl h-10 font-semibold bg-blue-500 hover:bg-blue-600 text-white mt-4"
+            onClick={handleSubmit}
+            disabled={updateMutation.isPending}
+          >
             {updateMutation.isPending ? "Salvando..." : "Atualizar"}
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -749,11 +779,24 @@ function CategoryManagerModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[450px]">
-        <DialogHeader>
-          <DialogTitle>Gerenciar categorias</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-2">
+      <DialogContent
+        className="sm:max-w-[450px] p-0 overflow-hidden border-t-4 border-t-primary"
+        style={{ borderRadius: '16px' }}
+      >
+        <DialogTitle className="sr-only">Gerenciar categorias</DialogTitle>
+        <div className="px-6 pt-5 pb-6">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+              <Tag className="h-6 w-6 text-red-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Gerenciar categorias</h3>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                Crie e gerencie as categorias de despesas
+              </p>
+            </div>
+          </div>
+        <div className="space-y-4">
           <div className="flex gap-2">
             <Input
               value={newCatName}
@@ -815,6 +858,7 @@ function CategoryManagerModal({
             ))}
           </div>
         </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -856,19 +900,28 @@ function GoalModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[400px]">
-        <DialogHeader>
-          <DialogTitle>Meta mensal de lucro</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-2">
-          <p className="text-sm text-muted-foreground">
-            Defina sua meta de lucro líquido para{" "}
-            {new Date(year, month - 1).toLocaleDateString("pt-BR", {
-              month: "long",
-              year: "numeric",
-            })}
-            .
-          </p>
+      <DialogContent
+        className="sm:max-w-[400px] p-0 overflow-hidden border-t-4 border-t-emerald-500"
+        style={{ borderRadius: '16px' }}
+      >
+        <DialogTitle className="sr-only">Meta mensal de lucro</DialogTitle>
+        <div className="px-6 pt-5 pb-6">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="p-2.5 rounded-xl flex-shrink-0 bg-emerald-100 dark:bg-emerald-950/50">
+              <Target className="h-6 w-6 text-emerald-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Meta mensal de lucro</h3>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                Defina sua meta de lucro líquido para{" "}
+                {new Date(year, month - 1).toLocaleDateString("pt-BR", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </p>
+            </div>
+          </div>
+        <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
               Meta de lucro (R$)
@@ -883,8 +936,8 @@ function GoalModal({
             />
           </div>
         </div>
-        <DialogFooter>
           <Button
+            className="w-full rounded-xl h-10 font-semibold bg-emerald-600 hover:bg-emerald-700 text-white mt-4"
             onClick={() => {
               if (!targetProfit) return;
               mutation.mutate({
@@ -898,7 +951,7 @@ function GoalModal({
           >
             {mutation.isPending ? "Salvando..." : "Salvar meta"}
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -968,14 +1021,24 @@ function CustomGoalModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[400px]">
-        <DialogHeader>
-          <DialogTitle>{editingGoal ? "Editar meta" : "Nova meta"}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-2">
-          <p className="text-sm text-muted-foreground">
-            {editingGoal ? "Edite os dados da meta." : `Crie uma nova meta para ${new Date(year, month - 1).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}.`}
-          </p>
+      <DialogContent
+        className="sm:max-w-[400px] p-0 overflow-hidden border-t-4 border-t-amber-500"
+        style={{ borderRadius: '16px' }}
+      >
+        <DialogTitle className="sr-only">{editingGoal ? "Editar meta" : "Nova meta"}</DialogTitle>
+        <div className="px-6 pt-5 pb-6">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="p-2.5 rounded-xl flex-shrink-0 bg-amber-100 dark:bg-amber-950/50">
+              <Target className="h-6 w-6 text-amber-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">{editingGoal ? "Editar meta" : "Nova meta"}</h3>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                {editingGoal ? "Edite os dados da meta" : `Crie uma nova meta para ${new Date(year, month - 1).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}`}
+              </p>
+            </div>
+          </div>
+        <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-muted-foreground mb-1.5 block">
               Nome da meta *
@@ -1000,14 +1063,14 @@ function CustomGoalModal({
             />
           </div>
         </div>
-        <DialogFooter>
           <Button
+            className="w-full rounded-xl h-10 font-semibold bg-amber-500 hover:bg-amber-600 text-white mt-4"
             onClick={handleSubmit}
             disabled={isLoading}
           >
             {isLoading ? "Salvando..." : editingGoal ? "Salvar" : "Criar meta"}
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -3246,13 +3309,23 @@ export default function Financas() {
           />
           {/* Histórico de alterações modal */}
           <Dialog open={historyModalOpen} onOpenChange={setHistoryModalOpen}>
-            <DialogContent className="max-w-lg">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <History className="h-5 w-5 text-muted-foreground" />
-                  Histórico de alterações
-                </DialogTitle>
-              </DialogHeader>
+            <DialogContent
+              className="max-w-lg p-0 overflow-hidden border-t-4 border-t-slate-500"
+              style={{ borderRadius: '16px' }}
+            >
+              <DialogTitle className="sr-only">Histórico de alterações</DialogTitle>
+              <div className="px-6 pt-5 pb-6">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="p-2.5 rounded-xl flex-shrink-0 bg-slate-100 dark:bg-slate-950/50">
+                    <History className="h-6 w-6 text-slate-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground">Histórico de alterações</h3>
+                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                      Veja as alterações feitas nesta despesa recorrente
+                    </p>
+                  </div>
+                </div>
               <div className="max-h-[400px] overflow-y-auto">
                 {recurringHistory && recurringHistory.length > 0 ? (
                   <div className="space-y-3">
@@ -3283,6 +3356,7 @@ export default function Financas() {
                   </div>
                 )}
               </div>
+              </div>
             </DialogContent>
           </Dialog>
           <GoalModal
@@ -3311,15 +3385,25 @@ export default function Financas() {
 
           {/* Diálogo de confirmação antes de marcar como pago */}
           <Dialog open={payConfirmOpen} onOpenChange={(v) => { setPayConfirmOpen(v); if (!v) setPayConfirmItem(null); }}>
-            <DialogContent className="sm:max-w-[400px]">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                  Confirmar pagamento
-                </DialogTitle>
-              </DialogHeader>
+            <DialogContent
+              className="sm:max-w-[400px] p-0 overflow-hidden border-t-4 border-t-emerald-500"
+              style={{ borderRadius: '16px' }}
+            >
+              <DialogTitle className="sr-only">Confirmar pagamento</DialogTitle>
+              <div className="px-6 pt-5 pb-6">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="p-2.5 rounded-xl flex-shrink-0 bg-emerald-100 dark:bg-emerald-950/50">
+                    <CheckCircle2 className="h-6 w-6 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground">Confirmar pagamento</h3>
+                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                      Confirme os dados do pagamento
+                    </p>
+                  </div>
+                </div>
               {payConfirmItem && (
-                <div className="space-y-4 py-2">
+                <div className="space-y-4">
                   <div className="bg-muted/50 rounded-lg p-3">
                     <p className="text-sm font-medium">{payConfirmItem.description}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
@@ -3350,9 +3434,8 @@ export default function Financas() {
                   </div>
                 </div>
               )}
-              <DialogFooter className="gap-2">
                 <Button
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="w-full rounded-xl h-10 font-semibold bg-emerald-600 hover:bg-emerald-700 text-white mt-4"
                   disabled={markAsPaidMutation.isPending || !payConfirmAmount || !payConfirmDate}
                   onClick={() => {
                     if (!payConfirmItem || !payConfirmItem.categoryId) return;
@@ -3371,38 +3454,53 @@ export default function Financas() {
                 >
                   {markAsPaidMutation.isPending ? "Registrando..." : "Confirmar pagamento"}
                 </Button>
-              </DialogFooter>
+              </div>
             </DialogContent>
           </Dialog>
         </>
       )}
       {/* Delete Confirmation Modal */}
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-            <AlertDialogDescription>
-              {deleteConfirmMessage}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setDeleteConfirmOpen(false);
-              setDeleteConfirmAction(null);
-            }}>
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-red-500 hover:bg-red-600 text-white"
-              onClick={() => {
-                deleteConfirmAction?.();
-                setDeleteConfirmOpen(false);
-                setDeleteConfirmAction(null);
-              }}
-            >
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
+        <AlertDialogContent
+          className="p-0 overflow-hidden border-t-4 border-t-red-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <AlertDialogTitle className="sr-only">Confirmar exclusão</AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">Confirmar exclusão do item</AlertDialogDescription>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Confirmar exclusão</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  {deleteConfirmMessage}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <AlertDialogCancel
+                className="flex-1 rounded-xl h-10 font-semibold"
+                onClick={() => {
+                  setDeleteConfirmOpen(false);
+                  setDeleteConfirmAction(null);
+                }}
+              >
+                Cancelar
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="flex-1 rounded-xl h-10 font-semibold bg-red-600 hover:bg-red-700 text-white"
+                onClick={() => {
+                  deleteConfirmAction?.();
+                  setDeleteConfirmOpen(false);
+                  setDeleteConfirmAction(null);
+                }}
+              >
+                Excluir
+              </AlertDialogAction>
+            </div>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
     </AdminLayout>

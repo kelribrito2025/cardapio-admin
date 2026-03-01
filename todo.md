@@ -7732,3 +7732,33 @@
 - [x] Padronizar modal de agendar disponibilidade (Catalogo.tsx) com estilo FeedbackModal
 - [x] Padronizar modal de cancelar pedido (Pedidos.tsx) com estilo FeedbackModal
 - [x] Padronizar modal de limpar coluna (Pedidos.tsx) com estilo FeedbackModal
+
+## Padronização Visual Completa de Todos os Modais
+- [x] Agendados.tsx - Reagendar Pedido
+- [x] Campanhas.tsx - Agendar Campanha
+- [x] Campanhas.tsx - Recarga de Saldo
+- [x] Configuracoes.tsx - Impressora
+- [x] Estoque.tsx - Novo Item
+- [x] Estoque.tsx - Editar Item
+- [x] Estoque.tsx - Movimentação
+- [x] Estoque.tsx - Nova Categoria Estoque
+- [x] Financas.tsx - Registrar/Editar Despesa
+- [x] Financas.tsx - Editar Despesa Recorrente
+- [x] Financas.tsx - Gerenciar Categorias
+- [x] Financas.tsx - Meta Mensal
+- [x] Financas.tsx - Nova/Editar Meta
+- [x] Financas.tsx - Confirmar Pagamento
+- [x] Impressoras.tsx - Nova/Editar Impressora
+- [x] MesasComandas.tsx - Gerenciar Espaços
+- [x] MesasComandas.tsx - Reservar Mesa
+- [x] Complementos.tsx - Excluir Item, Toggle Item, Excluir Grupo, Toggle Grupo
+- [x] Cupons.tsx - Excluir Cupom
+- [x] Entregadores.tsx - Excluir Entregador
+- [x] PDVSlidebar.tsx - Excluir Item Comanda, Configuração da Aba
+- [x] MobilePDVModal.tsx - Excluir Item Comanda
+- [x] PrintLogsTab.tsx - Limpar Logs
+- [x] ImageCropModal.tsx - Recorte de Imagem
+- [x] Pedidos.tsx - QR Code WhatsApp
+- [x] Configuracoes.tsx - Exclusão de Impressora
+- [x] Financas.tsx - Histórico de Alterações, Exclusão de Despesa
+- [x] Campanhas.tsx - Modelos Sugeridos

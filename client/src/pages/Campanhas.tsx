@@ -655,15 +655,24 @@ export default function Campanhas() {
                       Modelos Sugeridos
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2">
-                        <BookOpen className="h-5 w-5" />
-                        Modelos Sugeridos
-                      </DialogTitle>
-                      <p className="text-sm text-muted-foreground">Escolha um modelo para usar como base da sua mensagem</p>
-                    </DialogHeader>
-                    <div className="space-y-3 mt-2">
+                  <DialogContent
+                    className="sm:max-w-lg max-h-[80vh] overflow-y-auto p-0 overflow-hidden border-t-4 border-t-primary"
+                    style={{ borderRadius: '16px' }}
+                  >
+                    <DialogTitle className="sr-only">Modelos Sugeridos</DialogTitle>
+                    <div className="px-6 pt-5 pb-6">
+                      <div className="flex items-start gap-3 mb-4">
+                        <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                          <BookOpen className="h-6 w-6 text-red-600" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-foreground">Modelos Sugeridos</h3>
+                          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                            Escolha um modelo para usar como base da sua mensagem
+                          </p>
+                        </div>
+                      </div>
+                    <div className="space-y-3">
                       {SMS_TEMPLATES.map((template, index) => (
                         <div
                           key={index}
@@ -693,6 +702,7 @@ export default function Campanhas() {
                           </div>
                         </div>
                       ))}
+                    </div>
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -1236,14 +1246,24 @@ export default function Campanhas() {
 
       {/* Modal de Agendamento */}
       <Dialog open={showAgendarModal} onOpenChange={setShowAgendarModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <CalendarClock className="h-5 w-5 text-primary" />
-              Agendar Campanha
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-2">
+        <DialogContent
+          className="sm:max-w-md p-0 overflow-hidden border-t-4 border-t-primary"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Agendar Campanha</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <CalendarClock className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Agendar Campanha</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Defina a data e horário para o envio automático da campanha.
+                </p>
+              </div>
+            </div>
+          <div className="space-y-4">
             <div className="bg-muted/50 rounded-lg p-3 space-y-1">
               <p className="text-sm font-medium">Resumo</p>
               <p className="text-xs text-muted-foreground">
@@ -1288,25 +1308,21 @@ export default function Campanhas() {
               </div>
             </div>
 
-            <div className="flex gap-2 justify-end">
-              <Button
-                onClick={handleAgendarCampanha}
-                disabled={isAgendando || !agendamentoData || !agendamentoHora}
-                className="bg-primary hover:bg-primary/90"
-              >
-                {isAgendando ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Agendando...
-                  </>
-                ) : (
-                  <>
-                    <CalendarClock className="h-4 w-4 mr-2" />
-                    Confirmar agendamento
-                  </>
-                )}
-              </Button>
-            </div>
+            <Button
+              className="w-full rounded-xl h-10 font-semibold bg-red-700 hover:bg-red-800 text-white"
+              onClick={handleAgendarCampanha}
+              disabled={isAgendando || !agendamentoData || !agendamentoHora}
+            >
+              {isAgendando ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Agendando...
+                </>
+              ) : (
+                "Confirmar Agendamento"
+              )}
+            </Button>
+          </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -1320,14 +1336,24 @@ export default function Campanhas() {
           setIsCustomMode(false);
         }
       }}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-emerald-600" />
-              Recarregar Saldo SMS
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-2">
+        <DialogContent
+          className="sm:max-w-lg p-0 overflow-hidden border-t-4 border-t-emerald-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Recarregar Saldo SMS</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-emerald-100 dark:bg-emerald-950/50">
+                <CreditCard className="h-6 w-6 text-emerald-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Recarregar Saldo SMS</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Adicione créditos para enviar campanhas por SMS.
+                </p>
+              </div>
+            </div>
+          <div className="space-y-4">
             <div className="bg-emerald-50 dark:bg-emerald-950/30 rounded-lg p-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-emerald-700 dark:text-emerald-400">Saldo atual</span>
@@ -1509,33 +1535,29 @@ export default function Campanhas() {
               </div>
             </div>
 
-            <div className="flex gap-2 justify-end">
-              <Button
-                onClick={() => {
-                  if (isCustomMode && isCustomValid) {
-                    customCheckoutMutation.mutate({ amountInCents: customAmountCents });
-                  } else if (!isCustomMode && selectedPackage) {
-                    checkoutMutation.mutate({ packageId: selectedPackage });
-                  }
-                }}
-                disabled={
-                  (isCustomMode ? !isCustomValid || customCheckoutMutation.isPending : !selectedPackage || checkoutMutation.isPending)
+            <Button
+              className="w-full rounded-xl h-10 font-semibold bg-emerald-600 hover:bg-emerald-700 text-white"
+              onClick={() => {
+                if (isCustomMode && isCustomValid) {
+                  customCheckoutMutation.mutate({ amountInCents: customAmountCents });
+                } else if (!isCustomMode && selectedPackage) {
+                  checkoutMutation.mutate({ packageId: selectedPackage });
                 }
-                className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
-              >
-                {(checkoutMutation.isPending || customCheckoutMutation.isPending) ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Processando...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="h-4 w-4" />
-                    Pagar com Cartão
-                  </>
-                )}
-              </Button>
-            </div>
+              }}
+              disabled={
+                (isCustomMode ? !isCustomValid || customCheckoutMutation.isPending : !selectedPackage || checkoutMutation.isPending)
+              }
+            >
+              {(checkoutMutation.isPending || customCheckoutMutation.isPending) ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Processando...
+                </>
+              ) : (
+                "Pagar com Cartão"
+              )}
+            </Button>
+          </div>
           </div>
         </DialogContent>
       </Dialog>

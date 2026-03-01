@@ -711,66 +711,81 @@ function SortableComplementItem({
 
       {/* Delete Item Confirmation Dialog */}
       <AlertDialog open={deleteItemDialogOpen} onOpenChange={setDeleteItemDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-destructive" />
-              Excluir "{item.name}"?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {isExclusive
-                ? <>Esta ação irá excluir o complemento exclusivo <strong>"{item.name}"</strong> do produto <strong>"{item.exclusiveProductName}"</strong>. Esta ação não pode ser desfeita.</>
-                : <>Esta ação irá excluir o complemento <strong>"{item.name}"</strong> de <strong>{productCount} produto(s)</strong>. Esta ação não pode ser desfeita.</>}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (isExclusive && onDeleteExclusive) {
-                  onDeleteExclusive(item.id);
-                } else {
-                  onDeleteByName(item.name);
-                }
-                setDeleteItemDialogOpen(false);
-              }}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isExclusive ? "Excluir item exclusivo" : "Excluir de todos os produtos"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
+        <AlertDialogContent
+          className="p-0 overflow-hidden border-t-4 border-t-red-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <AlertDialogTitle className="sr-only">Excluir "{item.name}"?</AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">Confirmar exclusão do complemento</AlertDialogDescription>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Excluir "{item.name}"?</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  {isExclusive
+                    ? <>Esta ação irá excluir o complemento exclusivo <strong>"{item.name}"</strong> do produto <strong>"{item.exclusiveProductName}"</strong>. Esta ação não pode ser desfeita.</>
+                    : <>Esta ação irá excluir o complemento <strong>"{item.name}"</strong> de <strong>{productCount} produto(s)</strong>. Esta ação não pode ser desfeita.</>}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <AlertDialogCancel className="flex-1 rounded-xl h-10 font-semibold">Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  if (isExclusive && onDeleteExclusive) {
+                    onDeleteExclusive(item.id);
+                  } else {
+                    onDeleteByName(item.name);
+                  }
+                  setDeleteItemDialogOpen(false);
+                }}
+                className="flex-1 rounded-xl h-10 font-semibold bg-red-600 hover:bg-red-700 text-white"
+              >
+                {isExclusive ? "Excluir item exclusivo" : "Excluir de todos"}
+              </AlertDialogAction>
+            </div>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
 
       {/* Toggle Item Active Confirmation Dialog */}
       <AlertDialog open={toggleItemDialogOpen} onOpenChange={setToggleItemDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              {item.isActive ? (
-                <><Pause className="h-5 w-5 text-orange-500" /> Pausar "{item.name}"?</>
-              ) : (
-                <><Play className="h-5 w-5 text-emerald-500" /> Ativar "{item.name}"?</>
-              )}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {item.isActive
-                ? <>Esta ação irá <strong>pausar</strong> o complemento <strong>"{item.name}"</strong> em <strong>{productCount} produto(s)</strong>. Ele ficará indisponível para os clientes.</>
-                : <>Esta ação irá <strong>ativar</strong> o complemento <strong>"{item.name}"</strong> em <strong>{productCount} produto(s)</strong>. Ele ficará disponível para os clientes.</>}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                onToggleActive(item.name, !item.isActive);
-                setToggleItemDialogOpen(false);
-              }}
-              className={item.isActive ? "bg-orange-500 text-white hover:bg-orange-600" : "bg-emerald-500 text-white hover:bg-emerald-600"}
-            >
-              {item.isActive ? "Pausar em todos" : "Ativar em todos"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
+        <AlertDialogContent
+          className={cn("p-0 overflow-hidden border-t-4", item.isActive ? "border-t-orange-500" : "border-t-emerald-500")}
+          style={{ borderRadius: '16px' }}
+        >
+          <AlertDialogTitle className="sr-only">{item.isActive ? `Pausar "${item.name}"?` : `Ativar "${item.name}"?`}</AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">Confirmar alteração de status</AlertDialogDescription>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className={cn("p-2.5 rounded-xl flex-shrink-0", item.isActive ? "bg-orange-100 dark:bg-orange-950/50" : "bg-emerald-100 dark:bg-emerald-950/50")}>
+                {item.isActive ? <Pause className="h-6 w-6 text-orange-600" /> : <Play className="h-6 w-6 text-emerald-600" />}
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">{item.isActive ? `Pausar "${item.name}"?` : `Ativar "${item.name}"?`}</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  {item.isActive
+                    ? <>Esta ação irá <strong>pausar</strong> o complemento <strong>"{item.name}"</strong> em <strong>{productCount} produto(s)</strong>. Ele ficará indisponível para os clientes.</>
+                    : <>Esta ação irá <strong>ativar</strong> o complemento <strong>"{item.name}"</strong> em <strong>{productCount} produto(s)</strong>. Ele ficará disponível para os clientes.</>}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <AlertDialogCancel className="flex-1 rounded-xl h-10 font-semibold">Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  onToggleActive(item.name, !item.isActive);
+                  setToggleItemDialogOpen(false);
+                }}
+                className={cn("flex-1 rounded-xl h-10 font-semibold text-white", item.isActive ? "bg-orange-500 hover:bg-orange-600" : "bg-emerald-500 hover:bg-emerald-600")}
+              >
+                {item.isActive ? "Pausar em todos" : "Ativar em todos"}
+              </AlertDialogAction>
+            </div>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
     </>
@@ -1436,57 +1451,72 @@ function GroupCard({
 
       {/* Delete Group Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-destructive" />
-              Excluir grupo "{group.name}"?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta ação irá excluir o grupo <strong>"{group.name}"</strong> e todos os seus complementos de <strong>{group.productCount} produto(s)</strong>. Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteGroup}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Excluir grupo
-            </AlertDialogAction>
-          </AlertDialogFooter>
+        <AlertDialogContent
+          className="p-0 overflow-hidden border-t-4 border-t-red-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <AlertDialogTitle className="sr-only">Excluir grupo "{group.name}"?</AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">Confirmar exclusão do grupo</AlertDialogDescription>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Excluir grupo "{group.name}"?</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Esta ação irá excluir o grupo <strong>"{group.name}"</strong> e todos os seus complementos de <strong>{group.productCount} produto(s)</strong>. Esta ação não pode ser desfeita.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <AlertDialogCancel className="flex-1 rounded-xl h-10 font-semibold">Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteGroup}
+                className="flex-1 rounded-xl h-10 font-semibold bg-red-600 hover:bg-red-700 text-white"
+              >
+                Excluir grupo
+              </AlertDialogAction>
+            </div>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
 
       {/* Toggle Group Active Confirmation Dialog */}
       <AlertDialog open={toggleGroupDialogOpen} onOpenChange={setToggleGroupDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              {group.isActive ? (
-                <><Pause className="h-5 w-5 text-orange-500" /> Pausar grupo "{group.name}"?</>
-              ) : (
-                <><Play className="h-5 w-5 text-emerald-500" /> Ativar grupo "{group.name}"?</>
-              )}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {group.isActive
-                ? <>Esta ação irá <strong>pausar</strong> o grupo <strong>"{group.name}"</strong> e todos os seus complementos em <strong>{group.productCount} produto(s)</strong>. O grupo ficará indisponível para os clientes.</>
-                : <>Esta ação irá <strong>ativar</strong> o grupo <strong>"{group.name}"</strong> em <strong>{group.productCount} produto(s)</strong>. O grupo ficará disponível para os clientes.</>}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                handleToggleGroupActive();
-                setToggleGroupDialogOpen(false);
-              }}
-              className={group.isActive ? "bg-orange-500 text-white hover:bg-orange-600" : "bg-emerald-500 text-white hover:bg-emerald-600"}
-            >
-              {group.isActive ? "Pausar em todos os produtos" : "Ativar em todos os produtos"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
+        <AlertDialogContent
+          className={cn("p-0 overflow-hidden border-t-4", group.isActive ? "border-t-orange-500" : "border-t-emerald-500")}
+          style={{ borderRadius: '16px' }}
+        >
+          <AlertDialogTitle className="sr-only">{group.isActive ? `Pausar grupo "${group.name}"?` : `Ativar grupo "${group.name}"?`}</AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">Confirmar alteração de status do grupo</AlertDialogDescription>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className={cn("p-2.5 rounded-xl flex-shrink-0", group.isActive ? "bg-orange-100 dark:bg-orange-950/50" : "bg-emerald-100 dark:bg-emerald-950/50")}>
+                {group.isActive ? <Pause className="h-6 w-6 text-orange-600" /> : <Play className="h-6 w-6 text-emerald-600" />}
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">{group.isActive ? `Pausar grupo "${group.name}"?` : `Ativar grupo "${group.name}"?`}</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  {group.isActive
+                    ? <>Esta ação irá <strong>pausar</strong> o grupo <strong>"{group.name}"</strong> e todos os seus complementos em <strong>{group.productCount} produto(s)</strong>. O grupo ficará indisponível para os clientes.</>
+                    : <>Esta ação irá <strong>ativar</strong> o grupo <strong>"{group.name}"</strong> em <strong>{group.productCount} produto(s)</strong>. O grupo ficará disponível para os clientes.</>}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <AlertDialogCancel className="flex-1 rounded-xl h-10 font-semibold">Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  handleToggleGroupActive();
+                  setToggleGroupDialogOpen(false);
+                }}
+                className={cn("flex-1 rounded-xl h-10 font-semibold text-white", group.isActive ? "bg-orange-500 hover:bg-orange-600" : "bg-emerald-500 hover:bg-emerald-600")}
+              >
+                {group.isActive ? "Pausar em todos" : "Ativar em todos"}
+              </AlertDialogAction>
+            </div>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
     </>

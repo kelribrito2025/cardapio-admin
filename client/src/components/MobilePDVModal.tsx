@@ -1323,19 +1323,35 @@ export function MobilePDVModal({
 
       {/* Modal de confirmação de exclusão */}
       <AlertDialog open={deleteConfirmItemId !== null} onOpenChange={(open) => { if (!open) { setDeleteConfirmItemId(null); setDeleteConfirmItemName(""); } }}>
-        <AlertDialogContent className="z-[100]">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Excluir item da comanda</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja excluir <strong>{deleteConfirmItemName}</strong> da comanda? Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={cancelTabItemMutation.isPending}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 hover:bg-red-700" disabled={cancelTabItemMutation.isPending} onClick={() => { if (deleteConfirmItemId) cancelTabItemMutation.mutate({ id: deleteConfirmItemId }); }}>
-              {cancelTabItemMutation.isPending ? "Excluindo..." : "Excluir"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
+        <AlertDialogContent
+          className="z-[100] p-0 overflow-hidden border-t-4 border-t-red-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <AlertDialogTitle className="sr-only">Excluir item da comanda</AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">Confirmar exclusão do item</AlertDialogDescription>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Excluir item da comanda</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Tem certeza que deseja excluir <strong>{deleteConfirmItemName}</strong> da comanda? Esta ação não pode ser desfeita.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <AlertDialogCancel className="flex-1 rounded-xl h-10 font-semibold" disabled={cancelTabItemMutation.isPending}>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                className="flex-1 rounded-xl h-10 font-semibold bg-red-600 hover:bg-red-700 text-white"
+                disabled={cancelTabItemMutation.isPending}
+                onClick={() => { if (deleteConfirmItemId) cancelTabItemMutation.mutate({ id: deleteConfirmItemId }); }}
+              >
+                {cancelTabItemMutation.isPending ? "Excluindo..." : "Excluir"}
+              </AlertDialogAction>
+            </div>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
     </>

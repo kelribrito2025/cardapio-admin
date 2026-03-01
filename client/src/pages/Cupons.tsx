@@ -565,22 +565,34 @@ export default function Cupons() {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Excluir cupom?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta ação não pode ser desfeita. O cupom será excluído permanentemente.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
+        <AlertDialogContent
+          className="p-0 overflow-hidden border-t-4 border-t-red-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <AlertDialogTitle className="sr-only">Excluir cupom?</AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">Confirmar exclusão do cupom</AlertDialogDescription>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Excluir cupom?</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Esta ação não pode ser desfeita. O cupom será excluído permanentemente.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <AlertDialogCancel className="flex-1 rounded-xl h-10 font-semibold">Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmDelete}
+                className="flex-1 rounded-xl h-10 font-semibold bg-red-600 hover:bg-red-700 text-white"
+              >
+                Excluir
+              </AlertDialogAction>
+            </div>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
     </AdminLayout>

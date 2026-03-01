@@ -2368,19 +2368,24 @@ export default function Configuracoes() {
 
       {/* Modal de Adicionar/Editar Impressora */}
       <Dialog open={isPrinterModalOpen} onOpenChange={setIsPrinterModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>
-              {editingPrinter ? "Editar Impressora" : "Adicionar Impressora"}
-            </DialogTitle>
-            <DialogDescription>
-              {editingPrinter
-                ? "Atualize as informações da impressora"
-                : "Cadastre uma nova impressora térmica"}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
+        <DialogContent
+          className="sm:max-w-[425px] p-0 overflow-hidden border-t-4 border-t-primary"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">{editingPrinter ? "Editar Impressora" : "Adicionar Impressora"}</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <Printer className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">{editingPrinter ? "Editar Impressora" : "Adicionar Impressora"}</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  {editingPrinter ? "Atualize as informações da impressora" : "Cadastre uma nova impressora térmica"}
+                </p>
+              </div>
+            </div>
+          <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="printerName">Nome da Impressora</Label>
               <Input
@@ -2476,8 +2481,8 @@ export default function Configuracoes() {
 
           </div>
 
-          <DialogFooter>
             <Button
+              className="w-full rounded-xl h-10 font-semibold bg-red-700 hover:bg-red-800 text-white mt-4"
               onClick={handleSavePrinter}
               disabled={createPrinterMutation.isPending || updatePrinterMutation.isPending}
             >
@@ -2485,29 +2490,40 @@ export default function Configuracoes() {
                 ? "Salvando..."
                 : "Salvar"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Dialog de Confirmação de Exclusão de Impressora */}
       <AlertDialog open={printerDeleteConfirmOpen} onOpenChange={setPrinterDeleteConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remover Impressora</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja remover a impressora "{printerToDelete?.name}"?
-              Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDeletePrinter}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Remover
-            </AlertDialogAction>
-          </AlertDialogFooter>
+        <AlertDialogContent
+          className="p-0 overflow-hidden border-t-4 border-t-red-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <AlertDialogTitle className="sr-only">Remover Impressora</AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">Confirmar remoção da impressora</AlertDialogDescription>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Remover Impressora</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Tem certeza que deseja remover a impressora "{printerToDelete?.name}"? Esta ação não pode ser desfeita.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <AlertDialogCancel className="flex-1 rounded-xl h-10 font-semibold">Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmDeletePrinter}
+                className="flex-1 rounded-xl h-10 font-semibold bg-red-600 hover:bg-red-700 text-white"
+              >
+                Remover
+              </AlertDialogAction>
+            </div>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
 

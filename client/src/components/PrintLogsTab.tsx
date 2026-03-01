@@ -351,36 +351,48 @@ export function PrintLogsTab({ establishmentId }: PrintLogsTabProps) {
 
       {/* Dialog de Limpar Logs */}
       <AlertDialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Limpar Logs de Impressão</AlertDialogTitle>
-            <AlertDialogDescription>
-              Remover logs com mais de quantos dias?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="flex items-center gap-3 py-2">
-            <Select value={clearDays.toString()} onValueChange={(v) => setClearDays(parseInt(v))}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7">Mais de 7 dias</SelectItem>
-                <SelectItem value="15">Mais de 15 dias</SelectItem>
-                <SelectItem value="30">Mais de 30 dias</SelectItem>
-                <SelectItem value="0">Todos os logs</SelectItem>
-              </SelectContent>
-            </Select>
+        <AlertDialogContent
+          className="p-0 overflow-hidden border-t-4 border-t-red-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <AlertDialogTitle className="sr-only">Limpar Logs de Impressão</AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">Confirmar limpeza de logs</AlertDialogDescription>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Limpar Logs de Impressão</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Remover logs com mais de quantos dias?
+                </p>
+              </div>
+            </div>
+            <div className="mb-4">
+              <Select value={clearDays.toString()} onValueChange={(v) => setClearDays(parseInt(v))}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7">Mais de 7 dias</SelectItem>
+                  <SelectItem value="15">Mais de 15 dias</SelectItem>
+                  <SelectItem value="30">Mais de 30 dias</SelectItem>
+                  <SelectItem value="0">Todos os logs</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-3">
+              <AlertDialogCancel className="flex-1 rounded-xl h-10 font-semibold">Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => clearMutation.mutate({ establishmentId, olderThanDays: clearDays || undefined })}
+                className="flex-1 rounded-xl h-10 font-semibold bg-red-600 hover:bg-red-700 text-white"
+                disabled={clearMutation.isPending}
+              >
+                {clearMutation.isPending ? "Limpando..." : "Limpar Logs"}
+              </AlertDialogAction>
+            </div>
           </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => clearMutation.mutate({ establishmentId, olderThanDays: clearDays || undefined })}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={clearMutation.isPending}
-            >
-              {clearMutation.isPending ? "Limpando..." : "Limpar Logs"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>

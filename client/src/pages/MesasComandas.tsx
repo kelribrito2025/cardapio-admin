@@ -1532,14 +1532,24 @@ export default function MesasComandas() {
 
       {/* Dialog para gerenciar espaços */}
       <Dialog open={showManageSpacesDialog} onOpenChange={setShowManageSpacesDialog}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <MapPin className="h-5 w-5" />
-              Gerenciar Espaços
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
+        <DialogContent
+          className="max-w-md p-0 overflow-hidden border-t-4 border-t-primary"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Gerenciar Espaços</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+                <MapPin className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Gerenciar Espaços</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Crie e gerencie os espaços do seu estabelecimento
+                </p>
+              </div>
+            </div>
+          <div className="space-y-4">
             {/* Lista de espaços existentes */}
             {spaces.length > 0 ? (
               <div className="space-y-2">
@@ -1637,24 +1647,30 @@ export default function MesasComandas() {
             )}
 
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowManageSpacesDialog(false)}>
-              Fechar
-            </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Dialog para reservar mesa */}
       <Dialog open={showReserveDialog} onOpenChange={setShowReserveDialog}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <CalendarClock className="h-5 w-5 text-blue-500" />
-              Reservar Mesa {reserveTableNumber}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
+        <DialogContent
+          className="max-w-sm p-0 overflow-hidden border-t-4 border-t-blue-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Reservar Mesa {reserveTableNumber}</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-blue-100 dark:bg-blue-950/50">
+                <CalendarClock className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Reservar Mesa {reserveTableNumber}</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Preencha os dados da reserva
+                </p>
+              </div>
+            </div>
+          <div className="space-y-4">
             <div>
               <label className="text-sm font-medium text-foreground">Nome do cliente</label>
               <div className="relative mt-1">
@@ -1718,11 +1734,10 @@ export default function MesasComandas() {
             </div>
             <p className="text-xs text-muted-foreground">Todos os campos são opcionais.</p>
           </div>
-          <DialogFooter>
             <Button
+              className="w-full rounded-xl h-10 font-semibold bg-blue-500 hover:bg-blue-600 text-white mt-4"
               onClick={handleConfirmReservation}
               disabled={updateStatusMutation.isPending}
-              className="bg-blue-500 hover:bg-blue-600 text-white"
             >
               {updateStatusMutation.isPending ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -1731,7 +1746,7 @@ export default function MesasComandas() {
               )}
               Reservar
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 

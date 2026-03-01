@@ -993,36 +993,48 @@ export default function Agendados() {
 
       {/* Reschedule Dialog */}
       <Dialog open={rescheduleOrderId !== null} onOpenChange={(open) => !open && setRescheduleOrderId(null)}>
-        <DialogContent className="sm:max-w-md rounded-xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <RefreshCw className="h-4 w-4" />
-              Reagendar Pedido
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-2">
-              <Label>Nova Data</Label>
-              <Input
-                type="date"
-                value={rescheduleDate}
-                onChange={(e) => setRescheduleDate(e.target.value)}
-                min={new Date().toISOString().split("T")[0]}
-                className="rounded-lg"
-              />
+        <DialogContent
+          className="sm:max-w-md p-0 overflow-hidden border-t-4 border-t-blue-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Reagendar Pedido</DialogTitle>
+          <div className="px-6 pt-5 pb-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-blue-100 dark:bg-blue-950/50">
+                <RefreshCw className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Reagendar Pedido</h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Defina a nova data e horário para este pedido agendado.
+                </p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label>Novo Horário</Label>
-              <Input
-                type="time"
-                value={rescheduleTime}
-                onChange={(e) => setRescheduleTime(e.target.value)}
-                className="rounded-lg"
-              />
+
+            <div className="space-y-3 mb-5">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-foreground">Nova Data</label>
+                <Input
+                  type="date"
+                  value={rescheduleDate}
+                  onChange={(e) => setRescheduleDate(e.target.value)}
+                  min={new Date().toISOString().split("T")[0]}
+                  className="rounded-lg"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-foreground">Novo Horário</label>
+                <Input
+                  type="time"
+                  value={rescheduleTime}
+                  onChange={(e) => setRescheduleTime(e.target.value)}
+                  className="rounded-lg"
+                />
+              </div>
             </div>
-          </div>
-          <DialogFooter>
+
             <Button
+              className="w-full rounded-xl h-10 font-semibold bg-blue-500 hover:bg-blue-600 text-white"
               onClick={() => {
                 if (!rescheduleDate || !rescheduleTime || !rescheduleOrderId) return;
                 const newScheduledAt = new Date(`${rescheduleDate}T${rescheduleTime}:00`);
@@ -1032,11 +1044,10 @@ export default function Agendados() {
                 });
               }}
               disabled={rescheduleOrder.isPending}
-              className="rounded-lg"
             >
-              Confirmar
+              {rescheduleOrder.isPending ? "Reagendando..." : "Confirmar"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </AdminLayout>
