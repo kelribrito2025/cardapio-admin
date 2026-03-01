@@ -7697,3 +7697,17 @@
 - [x] Igualar largura do modal de feedback à largura do modal de Notificações WhatsApp (ambos sm:max-w-md / 448px)
 ## Padronização visual do modal de Notificações WhatsApp
 - [x] Padronizar modal de Notificações WhatsApp com o mesmo modelo visual do modal de Feedback (border-t-4 emerald, p-0, px-6 interno, botões full-width rounded-xl)
+## Melhoria no fluxo de criação de categoria no catálogo
+- [ ] Categoria recém-criada aparece imediatamente na lista com "0 itens"
+- [ ] Scroll automático até a nova categoria após criação
+- [ ] Botão "Adicionar Produto" (vermelho) ao lado de "Criar Combo" em categorias com 0 itens
+- [ ] Ao clicar em "Adicionar Produto", abre o modal de Novo Produto existente
+
+## Categorias Vazias no Catálogo
+- [x] Mostrar categorias vazias (0 ítens) na lista do catálogo em vez de escondê-las
+- [x] Botão vermelho "Adicionar Produto" no header da categoria vazia (ao lado esquerdo do "Criar Combo")
+- [x] Empty state dentro da categoria vazia com ícone, mensagem e botão "Adicionar Produto"
+- [x] Auto-scroll para nova categoria após criação
+- [x] Modal de Novo Produto abre com categoria pré-selecionada ao clicar em "Adicionar Produto"
+- [x] Opção "Adicionar Produto" no dropdown mobile para categorias vazias
+- [ ] Remover botão vermelho "Adicionar Produto" do header da categoria vazia (manter apenas o do empty state)

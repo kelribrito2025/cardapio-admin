@@ -67,9 +67,10 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   establishmentId: number;
   onSuccess: () => void;
+  defaultCategoryId?: number;
 }
 
-export default function CreateProductSheet({ open, onOpenChange, establishmentId, onSuccess }: Props) {
+export default function CreateProductSheet({ open, onOpenChange, establishmentId, onSuccess, defaultCategoryId }: Props) {
   // Step state
   const [step, setStep] = useState<Step>(1);
   const [step2Sub, setStep2Sub] = useState<Step2Sub>("groups-list");
@@ -215,8 +216,12 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
   }, []);
 
   useEffect(() => {
-    if (!open) resetState();
-  }, [open, resetState]);
+    if (!open) {
+      resetState();
+    } else if (defaultCategoryId) {
+      setCategoryId(String(defaultCategoryId));
+    }
+  }, [open, resetState, defaultCategoryId]);
 
   // Image upload handler
   const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {

@@ -433,6 +433,7 @@ function SortableCategoryItem({
   onDuplicateCategory,
   onDeleteCategory,
   onCreateCombo,
+  onCreateProduct,
   onSchedule,
   toggleCategoryStatusPending,
   updateCategoryPending,
@@ -456,6 +457,7 @@ function SortableCategoryItem({
   onDuplicateCategory: (id: number) => void;
   onDeleteCategory: (id: number, name: string, productCount: number) => void;
   onCreateCombo: (categoryId: number, categoryName: string) => void;
+  onCreateProduct: (categoryId: number) => void;
   onSchedule: (category: any) => void;
   toggleCategoryStatusPending: boolean;
   updateCategoryPending: boolean;
@@ -592,6 +594,20 @@ function SortableCategoryItem({
           )}
         </div>
         <div className="flex items-center gap-1">
+          {/* Botão Adicionar Produto - visible when category is empty */}
+          {categoryProducts.length === 0 && (
+            <Button
+              size="sm"
+              className="h-8 rounded-lg text-xs font-medium px-3 hidden sm:inline-flex bg-red-600 hover:bg-red-700 text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCreateProduct(category.id);
+              }}
+            >
+              <Plus className="h-3.5 w-3.5 mr-1" />
+              Adicionar Produto
+            </Button>
+          )}
           {/* Botão Criar Combo - hidden on mobile */}
           <Button
             variant="outline"
@@ -652,6 +668,15 @@ function SortableCategoryItem({
                   <><Play className="h-4 w-4 mr-2" />Ativar categoria</>
                 )}
               </DropdownMenuItem>
+              {categoryProducts.length === 0 && (
+                <DropdownMenuItem
+                  className="sm:hidden text-red-600 focus:text-red-600"
+                  onClick={() => onCreateProduct(category.id)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Produto
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 className="sm:hidden"
                 onClick={() => onCreateCombo(category.id, category.name)}
@@ -702,7 +727,27 @@ function SortableCategoryItem({
         </div>
       </div>
       {/* Products list - hidden when collapsed or when dragging categories */}
-      {!isCollapsed && !isDraggingCategory && children}
+      {!isCollapsed && !isDraggingCategory && (
+        <>
+          {children}
+          {categoryProducts.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
+              <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center mb-3">
+                <UtensilsCrossed className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <p className="text-sm text-muted-foreground mb-3">Nenhum produto nesta categoria</p>
+              <Button
+                size="sm"
+                className="rounded-lg text-xs font-medium bg-red-600 hover:bg-red-700 text-white"
+                onClick={() => onCreateProduct(category.id)}
+              >
+                <Plus className="h-3.5 w-3.5 mr-1" />
+                Adicionar Produto
+              </Button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
@@ -740,6 +785,7 @@ export default function Catalogo() {
   // Combo Sheet state
   const [comboSheetOpen, setComboSheetOpen] = useState(false);
   const [productSheetOpen, setProductSheetOpen] = useState(false);
+  const [productSheetDefaultCategoryId, setProductSheetDefaultCategoryId] = useState<number | undefined>(undefined);
   const [comboSheetCategoryId, setComboSheetCategoryId] = useState<number>(0);
   const [comboSheetCategoryName, setComboSheetCategoryName] = useState("");
   
@@ -907,15 +953,28 @@ export default function Catalogo() {
   });
 
   const createCategoryMutation = trpc.category.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
       refetchCategories();
       setCategoryDialogOpen(false);
       setNewCategoryName("");
       toast.success("Categoria criada");
-      // Scroll to bottom after a short delay to let the new category render
-      setTimeout(() => {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-      }, 500);
+      // Auto-scroll to the new category after it renders
+      const newCatId = data?.id;
+      if (newCatId) {
+        setTimeout(() => {
+          const el = document.querySelector(`[data-category-id="${newCatId}"]`);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else {
+            // Fallback: scroll to bottom
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+          }
+        }, 600);
+      } else {
+        setTimeout(() => {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }, 500);
+      }
     },
     onError: () => toast.error("Erro ao criar categoria"),
   });
@@ -1317,7 +1376,7 @@ export default function Catalogo() {
             </div>
           ))}
         </div>
-      ) : products.length === 0 ? (
+      ) : products.length === 0 && localCategories.length === 0 ? (
         <SectionCard>
           <EmptyState
             icon={UtensilsCrossed}
@@ -1345,8 +1404,7 @@ export default function Catalogo() {
             const categoryProducts = localProductsByCategory[category.id] || [];
             const isDropTarget = activeProduct && activeProductCategoryId !== category.id;
             
-            // Mostrar categoria se tiver produtos OU se estiver arrastando um produto (para mostrar como drop target)
-            if (categoryProducts.length === 0 && !activeProduct) return null;
+            // Mostrar todas as categorias (inclusive vazias)
             
             return (
               <SortableCategoryItem
@@ -1386,6 +1444,10 @@ export default function Catalogo() {
                   setComboSheetCategoryId(id);
                   setComboSheetCategoryName(name);
                   setComboSheetOpen(true);
+                }}
+                onCreateProduct={(categoryId) => {
+                  setProductSheetDefaultCategoryId(categoryId);
+                  setProductSheetOpen(true);
                 }}
                 onSchedule={openScheduleDialog}
                 toggleCategoryStatusPending={toggleCategoryStatusMutation.isPending}
@@ -1582,8 +1644,12 @@ export default function Catalogo() {
       {establishmentId && (
         <CreateProductSheet
           open={productSheetOpen}
-          onOpenChange={setProductSheetOpen}
+          onOpenChange={(open) => {
+            setProductSheetOpen(open);
+            if (!open) setProductSheetDefaultCategoryId(undefined);
+          }}
           establishmentId={establishmentId}
+          defaultCategoryId={productSheetDefaultCategoryId}
           onSuccess={() => {
             refetchProducts();
             refetchCategories();
