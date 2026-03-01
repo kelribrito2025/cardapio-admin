@@ -2667,15 +2667,28 @@ async function startServer() {
       }
       const messageText = message?.text || message?.body || message?.conversation;
       // Extrair telefone de TODAS as fontes possíveis do UAZAPI
-      const senderPhone = message?.sender || message?.from || body?.sender || body?.from 
-        || message?.chatid || body?.chatid || body?.number || message?.number
-        || message?.key?.remoteJid || body?.key?.remoteJid
-        || message?.participant || body?.participant;
+      // IMPORTANTE: Priorizar chatid e chat.wa_chatid sobre sender/from
+      // porque sender pode vir como LID (ex: 68943268040946@lid) que NÃO é um número válido
+      // chatid vem como "558899290004@s.whatsapp.net" que é o número real
+      const rawSender = message?.sender || message?.from || body?.sender || body?.from;
+      const chatId = message?.chatid || body?.chatid || body?.chat?.wa_chatid;
+      const chatPhone = body?.chat?.phone; // ex: "+55 88 9929-0004"
+      
+      // Se rawSender contém @lid, é um Linked ID inválido - usar chatid ou chat.phone
+      let senderPhone: string | undefined;
+      if (rawSender && !rawSender.includes('@lid')) {
+        senderPhone = rawSender;
+      } else {
+        // Fallback: usar chatid (número real) ou chat.phone
+        senderPhone = chatId || chatPhone || rawSender;
+      }
+      
       console.log('[WhatsApp Webhook] senderPhone extraído:', senderPhone, '| fontes:', JSON.stringify({
-        msgSender: message?.sender, msgFrom: message?.from, bodySender: body?.sender, bodyFrom: body?.from,
-        msgChatid: message?.chatid, bodyChatid: body?.chatid, bodyNumber: body?.number, msgNumber: message?.number,
-        remoteJid: message?.key?.remoteJid || body?.key?.remoteJid,
-        participant: message?.participant || body?.participant,
+        rawSender, chatId, chatPhone,
+        isLid: rawSender?.includes('@lid'),
+        msgSender: message?.sender, msgFrom: message?.from,
+        msgChatid: message?.chatid, bodyChatid: body?.chatid,
+        chatWaChatid: body?.chat?.wa_chatid, bodyNumber: body?.number,
       }));
       
       if (buttonId) {
@@ -2796,22 +2809,35 @@ async function startServer() {
                 if (configDriver?.instanceToken) {
                   const { sendTextMessage } = await import('./uazapi');
                   
-                  // Extrair telefone do remetente de múltiplas fontes possíveis
-                  let driverPhone = senderPhone 
+                  // Extrair telefone do remetente - PRIORIZAR chatid sobre sender (sender pode ser LID inválido)
+                  const rawDriverPhone = senderPhone 
                     || message?.participant 
                     || body?.participant 
                     || message?.key?.remoteJid 
                     || body?.key?.remoteJid;
                   
+                  // Se o telefone é um LID (@lid), usar chatid ou chat.phone como fallback
+                  let driverPhone: string | undefined;
+                  if (rawDriverPhone && !rawDriverPhone.includes('@lid')) {
+                    driverPhone = rawDriverPhone;
+                  } else {
+                    // chatid tem o número real (ex: 558899290004@s.whatsapp.net)
+                    driverPhone = message?.chatid || body?.chatid || body?.chat?.wa_chatid || body?.chat?.phone;
+                    console.log('[Delivery Start] Sender era LID, usando chatid como fallback:', driverPhone);
+                  }
+                  
                   console.log('[Delivery Start] Fontes de telefone:', {
                     senderPhone,
-                    participant: message?.participant || body?.participant,
-                    remoteJid: message?.key?.remoteJid || body?.key?.remoteJid,
+                    rawDriverPhone,
+                    isLid: rawDriverPhone?.includes('@lid'),
+                    chatid: message?.chatid || body?.chatid,
+                    chatWaChatid: body?.chat?.wa_chatid,
+                    chatPhone: body?.chat?.phone,
                     driverPhoneResolved: driverPhone,
                   });
                   
                   // Fallback: buscar telefone do entregador pelo pedido no banco de dados
-                  if (!driverPhone) {
+                  if (!driverPhone || driverPhone.includes('@lid')) {
                     console.log('[Delivery Start] senderPhone não encontrado em nenhuma fonte, buscando entregador no DB...');
                     const delivery = await getDeliveryByOrderId(orderData.id);
                     console.log('[Delivery Start] Delivery encontrada:', delivery ? { id: delivery.id, driverId: delivery.driverId } : null);
@@ -2942,22 +2968,35 @@ async function startServer() {
                 if (configDriver?.instanceToken) {
                   const { sendTextMessage } = await import('./uazapi');
                   
-                  // Extrair telefone do remetente de múltiplas fontes possíveis
-                  let driverPhone = senderPhone 
+                  // Extrair telefone do remetente - PRIORIZAR chatid sobre sender (sender pode ser LID inválido)
+                  const rawDriverPhone = senderPhone 
                     || message?.participant 
                     || body?.participant 
                     || message?.key?.remoteJid 
                     || body?.key?.remoteJid;
                   
+                  // Se o telefone é um LID (@lid), usar chatid ou chat.phone como fallback
+                  let driverPhone: string | undefined;
+                  if (rawDriverPhone && !rawDriverPhone.includes('@lid')) {
+                    driverPhone = rawDriverPhone;
+                  } else {
+                    // chatid tem o número real (ex: 558899290004@s.whatsapp.net)
+                    driverPhone = message?.chatid || body?.chatid || body?.chat?.wa_chatid || body?.chat?.phone;
+                    console.log('[Delivery Done] Sender era LID, usando chatid como fallback:', driverPhone);
+                  }
+                  
                   console.log('[Delivery Done] Fontes de telefone:', {
                     senderPhone,
-                    participant: message?.participant || body?.participant,
-                    remoteJid: message?.key?.remoteJid || body?.key?.remoteJid,
+                    rawDriverPhone,
+                    isLid: rawDriverPhone?.includes('@lid'),
+                    chatid: message?.chatid || body?.chatid,
+                    chatWaChatid: body?.chat?.wa_chatid,
+                    chatPhone: body?.chat?.phone,
                     driverPhoneResolved: driverPhone,
                   });
                   
                   // Fallback: buscar telefone do entregador pelo pedido no banco de dados
-                  if (!driverPhone) {
+                  if (!driverPhone || driverPhone.includes('@lid')) {
                     console.log('[Delivery Done] senderPhone não encontrado em nenhuma fonte, buscando entregador no DB...');
                     const { getDeliveryByOrderId, getDriverById } = await import('../db');
                     const delivery = await getDeliveryByOrderId(orderData.id);
