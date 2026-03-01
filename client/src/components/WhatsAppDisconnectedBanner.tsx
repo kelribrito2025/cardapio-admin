@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { trpc } from "@/lib/trpc";
-import { Wifi, WifiOff, X, ArrowRight } from "lucide-react";
+import { WifiOff, X, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
@@ -82,9 +82,9 @@ export function WhatsAppDisconnectedBanner() {
   return (
     <div
       className={cn(
-        "relative mx-3 lg:mx-6 mt-3 lg:mt-0 mb-2 rounded-xl overflow-hidden",
+        "relative mx-3 lg:mx-6 mb-3 lg:mb-4 mt-0 rounded-xl overflow-hidden",
         "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg",
-        "animate-in slide-in-from-top-2 fade-in duration-300"
+        "animate-in slide-in-from-bottom-2 fade-in duration-300"
       )}
     >
       {/* Efeito de pulso sutil no fundo */}

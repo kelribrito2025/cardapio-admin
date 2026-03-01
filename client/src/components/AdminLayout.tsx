@@ -1186,13 +1186,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </div>
         </header>
 
-        {/* Banner de WhatsApp desconectado */}
-        <WhatsAppDisconnectedBanner />
-
         {/* Page content */}
         <main className="flex-1 overflow-auto p-3 lg:p-6 [&:has(>[data-settings-page])]:overflow-hidden [&:has(>[data-settings-page])]:p-0">
           {children}
         </main>
+
+        {/* Banner de WhatsApp desconectado - fixo no inferior */}
+        <WhatsAppDisconnectedBanner />
       </div>
 
       {/* Modal de Feedback */}
