@@ -7695,3 +7695,5 @@
 - [x] Adicionar nova opção "Elogio" no modal de feedback (tipo praise, cor verde, ícone ThumbsUp)
 ## Ajuste de largura do modal de feedback
 - [x] Igualar largura do modal de feedback à largura do modal de Notificações WhatsApp (ambos sm:max-w-md / 448px)
+## Padronização visual do modal de Notificações WhatsApp
+- [x] Padronizar modal de Notificações WhatsApp com o mesmo modelo visual do modal de Feedback (border-t-4 emerald, p-0, px-6 interno, botões full-width rounded-xl)

@@ -2435,21 +2435,23 @@ export default function Pedidos() {
         }
         setWhatsappInfoModalOpen(open);
       }}>
-        <DialogContent className="sm:max-w-md" style={{borderRadius: '16px'}}>
-          <DialogHeader>
-            <div className="flex items-center gap-3 mb-1">
-              <div className="p-2.5 bg-emerald-100 dark:bg-emerald-950/50 rounded-xl">
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden border-t-4 border-t-emerald-500" style={{borderRadius: '16px'}}>
+          <div className="px-6 pt-5">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 bg-emerald-100 dark:bg-emerald-950/50 rounded-xl flex-shrink-0">
                 <MessageCircle className="h-6 w-6 text-emerald-600" />
               </div>
-              <DialogTitle className="text-lg">Notificações de pedidos via WhatsApp</DialogTitle>
+              <div>
+                <DialogTitle className="text-lg font-semibold text-foreground">Notificações de pedidos via WhatsApp</DialogTitle>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Conecte o WhatsApp para notificar seus clientes sobre o status de cada pedido.
+                </p>
+              </div>
             </div>
-            <DialogDescription className="text-sm text-muted-foreground leading-relaxed pt-2">
-              Conecte o WhatsApp para notificar seus clientes sobre o status de cada pedido.
-            </DialogDescription>
-          </DialogHeader>
+          </div>
           
           {/* Card visual de conversa WhatsApp com carrossel */}
-          <div className="py-2">
+          <div className="px-6 py-2">
             <div className="rounded-xl overflow-hidden border border-border shadow-sm">
               {/* Header do WhatsApp */}
               <div className="bg-emerald-700 px-4 py-3 flex items-center gap-3">
@@ -2498,10 +2500,10 @@ export default function Pedidos() {
             </div>
           </div>
 
-          <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-2">
+          <div className="px-6 pb-5 flex flex-col gap-2.5 pt-2">
             <Button
               variant="outline"
-              className="rounded-xl sm:order-1"
+              className="w-full rounded-xl h-10 font-medium border-border text-muted-foreground hover:bg-muted/50"
               onClick={() => {
                 localStorage.setItem('whatsapp-info-modal-seen', 'true');
                 setWhatsappInfoModalOpen(false);
@@ -2510,7 +2512,7 @@ export default function Pedidos() {
               Agora não
             </Button>
             <Button
-              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white gap-2 sm:order-2"
+              className="w-full rounded-xl h-10 font-semibold bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
               onClick={() => {
                 localStorage.setItem('whatsapp-info-modal-seen', 'true');
                 setWhatsappInfoModalOpen(false);
@@ -2523,7 +2525,7 @@ export default function Pedidos() {
               <MessageCircle className="h-4 w-4" />
               Conectar WhatsApp
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
