@@ -207,7 +207,7 @@ export const appRouter = router({
           ...establishmentData,
           street: address || establishmentData.street,
           userId: ctx.user.id,
-          responsibleName: establishmentData.ownerDisplayName || establishmentData.responsibleName || null,
+          responsibleName: establishmentData.ownerDisplayName || null,
         };
         
         const id = await db.createEstablishment(dataToSave);
