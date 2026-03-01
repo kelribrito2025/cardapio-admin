@@ -41,9 +41,10 @@ interface FeedbackModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   establishmentId?: number;
+  establishmentName?: string;
 }
 
-export function FeedbackModal({ open, onOpenChange, establishmentId }: FeedbackModalProps) {
+export function FeedbackModal({ open, onOpenChange, establishmentId, establishmentName }: FeedbackModalProps) {
   const { user } = useAuth();
   const [type, setType] = useState<"bug" | "suggestion">("suggestion");
   const [subject, setSubject] = useState("");
@@ -288,7 +289,7 @@ export function FeedbackModal({ open, onOpenChange, establishmentId }: FeedbackM
             <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg px-3 py-2.5 mb-5">
               <Info className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-                Enviando como <strong>{user.name || user.email}</strong>. Nosso time analisará seu feedback em breve.
+                Enviando como <strong>{establishmentName || user.name || user.email}</strong>. Nosso time analisará seu feedback em breve.
               </p>
             </div>
           )}

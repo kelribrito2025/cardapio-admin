@@ -1196,6 +1196,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         open={feedbackOpen}
         onOpenChange={setFeedbackOpen}
         establishmentId={establishment?.id}
+        establishmentName={establishment?.name}
       />
 
       {/* Modal obrigatório de upgrade quando trial expira */}
