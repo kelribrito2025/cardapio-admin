@@ -7693,3 +7693,5 @@
 ## Ajustes no modal de feedback
 - [x] Renomear "Reportar Bug" para "Reportar Problema"
 - [x] Adicionar nova opção "Elogio" no modal de feedback (tipo praise, cor verde, ícone ThumbsUp)
+## Ajuste de largura do modal de feedback
+- [x] Igualar largura do modal de feedback à largura do modal de Notificações WhatsApp (ambos sm:max-w-md / 448px)

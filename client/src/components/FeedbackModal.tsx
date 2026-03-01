@@ -19,7 +19,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const feedbackTypes = [
   {
     value: "bug" as const,
-    label: "Reportar Problema",
+    label: "Problema",
     icon: Bug,
     color: "text-red-600",
     bgColor: "bg-red-100 dark:bg-red-950/50",
@@ -172,7 +172,7 @@ export function FeedbackModal({ open, onOpenChange, establishmentId, establishme
     <Dialog open={open} onOpenChange={(v) => { if (!isSubmitting) onOpenChange(v); }}>
       <DialogContent
         className={cn(
-          "sm:max-w-[440px] p-0 overflow-hidden border-t-4",
+          "sm:max-w-md p-0 overflow-hidden border-t-4",
           type === "bug" ? "border-t-red-500" : type === "praise" ? "border-t-green-500" : "border-t-amber-500",
         )}
         style={{ borderRadius: '16px' }}
