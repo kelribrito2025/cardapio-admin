@@ -7781,3 +7781,15 @@
 
 ## Ícone de Câmera para Itens sem Foto
 - [x] Adicionar ícone de câmera para itens sem foto na página de Catálogo (Menu)
+
+## Refatoração da Edição de Produtos
+- [x] Modificar clique no item do catálogo para abrir modal de edição
+- [x] Adicionar campo de preço ao modal de edição de produto
+- [x] Remover a página de edição de item (/catalogo/editar/:id)
+
+## Refatoração da Edição de Produtos (Modal)
+- [x] Modificar CreateProductSheet para suportar modo de edição com productId
+- [x] Carregar dados do produto existente no modal ao editar
+- [x] Alterar onEdit no Catálogo para abrir modal em vez de navegar
+- [x] Remover página /catalogo/editar/:id e rota correspondente
+- [x] Testar criação e edição de produtos via modal

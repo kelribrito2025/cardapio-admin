@@ -775,6 +775,7 @@ export default function Catalogo() {
   const [comboSheetOpen, setComboSheetOpen] = useState(false);
   const [productSheetOpen, setProductSheetOpen] = useState(false);
   const [productSheetDefaultCategoryId, setProductSheetDefaultCategoryId] = useState<number | undefined>(undefined);
+  const [editingProductId, setEditingProductId] = useState<number | undefined>(undefined);
   const [comboSheetCategoryId, setComboSheetCategoryId] = useState<number>(0);
   const [comboSheetCategoryName, setComboSheetCategoryName] = useState("");
   
@@ -1460,8 +1461,8 @@ export default function Catalogo() {
                           setDeleteDialogOpen(true);
                         }}
                         onEdit={(id) => {
-                          sessionStorage.setItem('catalogo_scroll_category', String(category.id));
-                          navigate(`/catalogo/editar/${id}`);
+                          setEditingProductId(id);
+                          setProductSheetOpen(true);
                         }}
                         formatCurrency={formatCurrency}
                         expandedComplementProductId={expandedComplementProductId}
@@ -1516,8 +1517,8 @@ export default function Catalogo() {
                         setDeleteDialogOpen(true);
                       }}
                       onEdit={(id) => {
-                        sessionStorage.setItem('catalogo_scroll_category', '0');
-                        navigate(`/catalogo/editar/${id}`);
+                        setEditingProductId(id);
+                        setProductSheetOpen(true);
                       }}
                       formatCurrency={formatCurrency}
                       expandedComplementProductId={expandedComplementProductId}
@@ -1666,10 +1667,14 @@ export default function Catalogo() {
           open={productSheetOpen}
           onOpenChange={(open) => {
             setProductSheetOpen(open);
-            if (!open) setProductSheetDefaultCategoryId(undefined);
+            if (!open) {
+              setProductSheetDefaultCategoryId(undefined);
+              setEditingProductId(undefined);
+            }
           }}
           establishmentId={establishmentId}
           defaultCategoryId={productSheetDefaultCategoryId}
+          productId={editingProductId}
           onSuccess={() => {
             refetchProducts();
             refetchCategories();

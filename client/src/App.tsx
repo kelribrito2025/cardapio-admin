@@ -68,7 +68,7 @@ function AdminRoutes() {
         <Route path="/" component={Dashboard} />
         <Route path="/catalogo" component={Catalogo} />
         <Route path="/catalogo/novo" component={ProductForm} />
-        <Route path="/catalogo/editar/:id" component={ProductForm} />
+        {/* Rota de edição removida - agora usa modal no catálogo */}
         <Route path="/complementos" component={Complementos} />
         <Route path="/pedidos" component={Pedidos} />
         <Route path="/agendados" component={Agendados} />

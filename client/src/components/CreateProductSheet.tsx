@@ -68,12 +68,15 @@ interface Props {
   establishmentId: number;
   onSuccess: () => void;
   defaultCategoryId?: number;
+  productId?: number; // Para edição de produto existente
 }
 
-export default function CreateProductSheet({ open, onOpenChange, establishmentId, onSuccess, defaultCategoryId }: Props) {
+export default function CreateProductSheet({ open, onOpenChange, establishmentId, onSuccess, defaultCategoryId, productId }: Props) {
+  const isEditing = !!productId;
   // Step state
   const [step, setStep] = useState<Step>(1);
   const [step2Sub, setStep2Sub] = useState<Step2Sub>("groups-list");
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // Step 1: Basic info
   const [name, setName] = useState("");
@@ -132,6 +135,18 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
     { enabled: open && !!establishmentId && step2Sub === "copy-group" }
   );
 
+  // Query para buscar produto existente (modo edição)
+  const { data: existingProduct } = trpc.product.get.useQuery(
+    { id: productId! },
+    { enabled: open && isEditing }
+  );
+
+  // Query para buscar complementos do produto (modo edição)
+  const { data: existingGroups } = trpc.complement.listGroups.useQuery(
+    { productId: productId! },
+    { enabled: open && isEditing }
+  );
+
   // Mutations
   const uploadMutation = trpc.upload.image.useMutation();
 
@@ -154,6 +169,35 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
 
   const createGroupMutation = trpc.complement.createGroup.useMutation();
   const createItemMutation = trpc.complement.createItem.useMutation();
+  const deleteGroupMutation = trpc.complement.deleteGroup.useMutation();
+
+  // Mutation de update
+  const updateMutation = trpc.product.update.useMutation({
+    onSuccess: async () => {
+      // Deletar grupos antigos e recriar
+      if (productId && existingGroups) {
+        for (const group of existingGroups) {
+          try {
+            await deleteGroupMutation.mutateAsync({ id: group.id });
+          } catch (e) {
+            console.error("Erro ao deletar grupo:", e);
+          }
+        }
+      }
+      // Salvar novos complementos
+      if (complementGroups.length > 0 && productId) {
+        await saveComplementGroups(productId);
+      }
+      toast.success("Produto atualizado com sucesso!");
+      resetState();
+      onOpenChange(false);
+      onSuccess();
+    },
+    onError: (error) => {
+      toast.error("Erro ao atualizar produto");
+      console.error(error);
+    },
+  });
 
   // Save complement groups after product creation
   const saveComplementGroups = async (productId: number) => {
@@ -218,10 +262,53 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
   useEffect(() => {
     if (!open) {
       resetState();
-    } else if (defaultCategoryId) {
+      setDataLoaded(false);
+    } else if (defaultCategoryId && !isEditing) {
       setCategoryId(String(defaultCategoryId));
     }
-  }, [open, resetState, defaultCategoryId]);
+  }, [open, resetState, defaultCategoryId, isEditing]);
+
+  // Preencher campos com dados do produto existente (modo edição)
+  useEffect(() => {
+    if (open && isEditing && existingProduct && !dataLoaded) {
+      setName(existingProduct.name || "");
+      setDescription(existingProduct.description || "");
+      setCategoryId(existingProduct.categoryId ? String(existingProduct.categoryId) : "none");
+      setStatus((existingProduct.status as "active" | "paused") || "active");
+      setHasStock(existingProduct.hasStock || false);
+      setStockQuantity(existingProduct.stockQuantity !== null && existingProduct.stockQuantity !== undefined ? String(existingProduct.stockQuantity) : "");
+      setImages(existingProduct.images || []);
+      setPrinterId(existingProduct.printerId ? String(existingProduct.printerId) : "none");
+      // Formatar preço
+      if (existingProduct.price) {
+        const cents = Math.round(Number(existingProduct.price) * 100);
+        const reais = cents / 100;
+        setPrice(reais.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+      }
+      setDataLoaded(true);
+    }
+  }, [open, isEditing, existingProduct, dataLoaded]);
+
+  // Carregar complementos existentes (modo edição)
+  useEffect(() => {
+    if (open && isEditing && existingGroups && dataLoaded && complementGroups.length === 0 && existingGroups.length > 0) {
+      const loadedGroups: ComplementGroup[] = existingGroups.map((group: any) => ({
+        name: group.name,
+        isRequired: group.isRequired || group.minQuantity >= 1,
+        minQuantity: group.minQuantity,
+        maxQuantity: group.maxQuantity,
+        items: (group.items || []).map((item: any) => ({
+          uniqueId: `existing-${item.id}-${Math.random().toString(36).substr(2, 9)}`,
+          name: item.name,
+          description: undefined,
+          price: parseFloat(String(item.price || "0")).toFixed(2).replace('.', ','),
+          imageUrl: item.imageUrl || null,
+        })),
+        category: "ingredientes" as GroupCategory,
+      }));
+      setComplementGroups(loadedGroups);
+    }
+  }, [open, isEditing, existingGroups, dataLoaded]);
 
   // Image upload handler
   const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -467,18 +554,33 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
       return;
     }
 
-    createMutation.mutate({
-      establishmentId,
-      name: name.trim(),
-      description: description.trim() || undefined,
-      categoryId: categoryId && categoryId !== "none" ? Number(categoryId) : null,
-      price: parsePriceInput(price),
-      images: images.length > 0 ? images : [],
-      status,
-      hasStock,
-      stockQuantity: stockQuantity ? Number(stockQuantity) : null,
-      printerId: printerId && printerId !== "none" ? Number(printerId) : null,
-    });
+    if (isEditing && productId) {
+      updateMutation.mutate({
+        id: productId,
+        name: name.trim(),
+        description: description.trim() || null,
+        categoryId: categoryId && categoryId !== "none" ? Number(categoryId) : null,
+        price: parsePriceInput(price),
+        images: images.length > 0 ? images : [],
+        status,
+        hasStock,
+        stockQuantity: stockQuantity ? Number(stockQuantity) : null,
+        printerId: printerId && printerId !== "none" ? Number(printerId) : null,
+      });
+    } else {
+      createMutation.mutate({
+        establishmentId,
+        name: name.trim(),
+        description: description.trim() || undefined,
+        categoryId: categoryId && categoryId !== "none" ? Number(categoryId) : null,
+        price: parsePriceInput(price),
+        images: images.length > 0 ? images : [],
+        status,
+        hasStock,
+        stockQuantity: stockQuantity ? Number(stockQuantity) : null,
+        printerId: printerId && printerId !== "none" ? Number(printerId) : null,
+      });
+    }
   };
 
   const stepTitles = ["Informações", "Complementos", "Preço e Disponibilidade"];
@@ -494,7 +596,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
               <Package className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Novo Produto</h2>
+              <h2 className="text-lg font-bold text-white">{isEditing ? "Editar Produto" : "Novo Produto"}</h2>
               <p className="text-sm text-white/80">Passo 1 de 3 — Informações básicas</p>
             </div>
           </div>
@@ -1562,19 +1664,19 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={createMutation.isPending || !price}
+              disabled={(isEditing ? updateMutation.isPending : createMutation.isPending) || !price}
               className="flex-1 rounded-xl h-11"
               style={{ backgroundColor: '#db262f', color: 'white' }}
             >
-              {createMutation.isPending ? (
+              {(isEditing ? updateMutation.isPending : createMutation.isPending) ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Criando...
+                  {isEditing ? "Salvando..." : "Criando..."}
                 </>
               ) : (
                 <>
                   <Check className="h-4 w-4 mr-2" />
-                  Criar produto
+                  {isEditing ? "Salvar alterações" : "Criar produto"}
                 </>
               )}
             </Button>
@@ -1587,8 +1689,8 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-[420px] !p-0 !gap-0 !h-dvh" hideCloseButton>
-        <SheetTitle className="sr-only">Criar produto</SheetTitle>
-        <SheetDescription className="sr-only">Crie um novo produto para o cardápio</SheetDescription>
+        <SheetTitle className="sr-only">{isEditing ? "Editar produto" : "Criar produto"}</SheetTitle>
+        <SheetDescription className="sr-only">{isEditing ? "Edite as informações do produto" : "Crie um novo produto para o cardápio"}</SheetDescription>
         {step === 1 && renderStep1()}
         {step === 2 && renderStep2()}
         {step === 3 && renderStep3()}
