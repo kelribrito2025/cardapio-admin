@@ -2589,9 +2589,48 @@ async function startServer() {
     }
   });
 
+  // Buffer de logs para debug temporário - intercepta console.log dentro do webhook
+  const webhookDebugLogs: Array<{time: string, msg: string}> = [];
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+  let insideWebhook = false;
+  
+  function debugLog(msg: string) {
+    const entry = { time: new Date().toISOString(), msg };
+    webhookDebugLogs.push(entry);
+    if (webhookDebugLogs.length > 200) webhookDebugLogs.shift();
+    originalConsoleLog(msg);
+  }
+  
+  // Monkey-patch console.log/error para capturar logs dentro do webhook
+  const patchedConsoleLog = (...args: any[]) => {
+    const msg = args.map(a => typeof a === 'string' ? a : JSON.stringify(a)).join(' ');
+    if (insideWebhook && (msg.includes('[WhatsApp Webhook]') || msg.includes('[Delivery') || msg.includes('[UAZAPI]'))) {
+      debugLog(msg);
+    } else {
+      originalConsoleLog(...args);
+    }
+  };
+  const patchedConsoleError = (...args: any[]) => {
+    const msg = args.map(a => typeof a === 'string' ? a : JSON.stringify(a)).join(' ');
+    if (insideWebhook && (msg.includes('[WhatsApp Webhook]') || msg.includes('[Delivery') || msg.includes('[UAZAPI]'))) {
+      debugLog('[ERROR] ' + msg);
+    } else {
+      originalConsoleError(...args);
+    }
+  };
+  console.log = patchedConsoleLog as any;
+  console.error = patchedConsoleError as any;
+  
+  // Endpoint temporário para ver logs de debug do webhook
+  app.get("/api/debug/webhook-logs", (_req, res) => {
+    res.json(webhookDebugLogs.slice(-100));
+  });
+
   // Webhook para receber respostas dos botões do WhatsApp (UAZAPI)
   // Este endpoint recebe TODOS os webhooks e encaminha para o n8n automaticamente
   app.post("/api/webhook/whatsapp/:establishmentId", express.json(), async (req, res) => {
+    insideWebhook = true;
     try {
       const establishmentId = parseInt(req.params.establishmentId);
       const body = req.body;
@@ -2976,6 +3015,8 @@ async function startServer() {
     } catch (error) {
       console.error('[WhatsApp Webhook] Erro:', error);
       res.status(200).json({ success: false, error: 'Internal error' });
+    } finally {
+      insideWebhook = false;
     }
   });
 
