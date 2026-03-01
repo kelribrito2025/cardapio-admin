@@ -1,0 +1,64 @@
+{
+  "query": "SELECT id, name, logo, coverImage FROM establishments WHERE (logo IS NOT NULL AND logo != '' AND logo NOT LIKE '%cloudfront.net%') OR (coverImage IS NOT NULL AND coverImage != '' AND coverImage NOT LIKE '%cloudfront.net%');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, logo, coverImage FROM establishments WHERE (logo IS NOT NULL AND logo != '' AND logo NOT LIKE '%cloudfront.net%') OR (coverImage IS NOT NULL AND coverImage != '' AND coverImage NOT LIKE '%cloudfront.net%');",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "logo": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/rIQgrt8T3nvhDXYMzBzFW.webp",
+      "coverImage": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/X2ebYd0TLIE4uqj01TjoJ.webp"
+    },
+    {
+      "id": "60018",
+      "name": "Big Norte",
+      "logo": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/mAFuaKBdijuEUNJdmGc3l.webp",
+      "coverImage": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/OLUXqkfSGwE5puU8ZkD0o.webp"
+    },
+    {
+      "id": "90001",
+      "name": "Palácio do Açai",
+      "logo": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/yHhFaE26o3PkJIaT7uOcb.webp",
+      "coverImage": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/18h0MgNUCWd813cowP0Mf.webp"
+    },
+    {
+      "id": "150004",
+      "name": "Potim Açai",
+      "logo": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/j4ahfOabd4pulgVLqscnS.webp",
+      "coverImage": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/WZfBYSvnB3klY0noRAlgN.webp"
+    },
+    {
+      "id": "210001",
+      "name": "Sr. Macarrão",
+      "logo": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/B22pfZ9TVoVNOgpeAJ0ov.webp",
+      "coverImage": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/0JeYLyM7r6en4nG4pCWFl.webp"
+    },
+    {
+      "id": "210002",
+      "name": "Açai Roxedo",
+      "logo": "NULL",
+      "coverImage": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/nw4VTjO4NWZhGDZzQICU0.webp"
+    },
+    {
+      "id": "210004",
+      "name": "Casa de Carnes",
+      "logo": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/38n5AmWtIH0RYizbjIEt1.webp",
+      "coverImage": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/0juCYjr0OrGR9ogVAkGoi.webp"
+    },
+    {
+      "id": "210005",
+      "name": "Wood Restaurante",
+      "logo": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/YLLDPp19E_qbwoRzj8bJQ.webp",
+      "coverImage": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/GexypY3h-BHfCH_cnQEbP.webp"
+    },
+    {
+      "id": "210006",
+      "name": "Pica Pau Lanches",
+      "logo": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/iCPp9ZbI_GegNhcbshTZr.webp",
+      "coverImage": "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/2QmBH3M2ZUuNnZAZuxM_X.webp"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tlogo\tcoverImage\n30001\tSushi Haruno\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/rIQgrt8T3nvhDXYMzBzFW.webp\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/X2ebYd0TLIE4uqj01TjoJ.webp\n60018\tBig Norte\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/mAFuaKBdijuEUNJdmGc3l.webp\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/OLUXqkfSGwE5puU8ZkD0o.webp\n90001\tPalácio do Açai\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/yHhFaE26o3PkJIaT7uOcb.webp\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/18h0MgNUCWd813cowP0Mf.webp\n150004\tPotim Açai\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/j4ahfOabd4pulgVLqscnS.webp\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/WZfBYSvnB3klY0noRAlgN.webp\n210001\tSr. Macarrão\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/B22pfZ9TVoVNOgpeAJ0ov.webp\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/0JeYLyM7r6en4nG4pCWFl.webp\n210002\tAçai Roxedo\tNULL\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/nw4VTjO4NWZhGDZzQICU0.webp\n210004\tCasa de Carnes\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/38n5AmWtIH0RYizbjIEt1.webp\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/0juCYjr0OrGR9ogVAkGoi.webp\n210005\tWood Restaurante\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/YLLDPp19E_qbwoRzj8bJQ.webp\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/GexypY3h-BHfCH_cnQEbP.webp\n210006\tPica Pau Lanches\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/iCPp9ZbI_GegNhcbshTZr.webp\thttps://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/2QmBH3M2ZUuNnZAZuxM_X.webp\n",
+  "stderr": "",
+  "execution_time_ms": 376
+}

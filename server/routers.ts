@@ -202,10 +202,12 @@ export const appRouter = router({
         const { address, openingTime, closingTime, ...establishmentData } = input;
         
         // Se tiver endereço, colocar no campo street
+        // Se ownerDisplayName foi fornecido, também salvar como responsibleName
         const dataToSave = {
           ...establishmentData,
           street: address || establishmentData.street,
           userId: ctx.user.id,
+          responsibleName: establishmentData.ownerDisplayName || establishmentData.responsibleName || null,
         };
         
         const id = await db.createEstablishment(dataToSave);

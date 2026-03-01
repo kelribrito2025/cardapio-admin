@@ -7660,3 +7660,10 @@
 - [x] Alterar texto de "Sair para entrega" e "Pedido entregue" para novo modelo
 ## Remoção do endpoint de debug
 - - [x] Remover /api/debug/webhook-logs e código de intercepção de logs (monkey-patch console.log)
+## Importar cardápio Tche Restaurante para estabelecimento 210007
+- [x] Extrair foto de perfil e foto de capa do Tche Restaurante
+- [x] Extrair categorias, itens, descrições, preços e fotos dos itens
+- [x] Fazer upload de todas as imagens para o CDN próprio
+- [x] Cadastrar tudo no sistema para o estabelecimento ID 210007 (2 categorias, 15 produtos)
+## Bug: Nome do responsável não aparece nas Configurações
+- [x] Campo "Nome do responsável" na página de configurações mostra slug em vez do nome cadastrado no onboarding (corrigido: onboarding agora salva em responsibleName + fallback para ownerDisplayName)

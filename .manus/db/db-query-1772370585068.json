@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO categories (establishmentId, name, sortOrder, isActive) VALUES (210007, 'BEBIDA', 0, true);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute INSERT INTO categories (establishmentId, name, sortOrder, isActive) VALUES (210007, 'BEBIDA', 0, true);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 360
+}

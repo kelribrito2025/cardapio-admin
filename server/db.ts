@@ -647,9 +647,16 @@ export async function getEstablishmentAccountData(establishmentId: number) {
     responsiblePhone: establishments.responsiblePhone,
     twoFactorEnabled: establishments.twoFactorEnabled,
     twoFactorEmail: establishments.twoFactorEmail,
+    ownerDisplayName: establishments.ownerDisplayName,
   }).from(establishments).where(eq(establishments.id, establishmentId)).limit(1);
   
-  return result.length > 0 ? result[0] : null;
+  if (result.length === 0) return null;
+  const row = result[0];
+  // Se responsibleName estiver vazio, usar ownerDisplayName como fallback
+  return {
+    ...row,
+    responsibleName: row.responsibleName || row.ownerDisplayName || null,
+  };
 }
 
 export async function updateEstablishmentAccountData(

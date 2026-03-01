@@ -1,0 +1,22 @@
+{
+  "query": "INSERT INTO categories (establishmentId, name, sortOrder, isActive) VALUES (210007, 'MARMITEX', 1, true); SELECT id, name FROM categories WHERE establishmentId = 210007 ORDER BY sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute INSERT INTO categories (establishmentId, name, sortOrder, isActive) VALUES (210007, 'MARMITEX', 1, true); SELECT id, name FROM categories WHERE establishmentId = 210007 ORDER BY sortOrder;",
+  "rows": [
+    {
+      "id": "420022",
+      "name": "Categoria teste"
+    },
+    {
+      "id": "420023",
+      "name": "BEBIDA"
+    },
+    {
+      "id": "420024",
+      "name": "MARMITEX"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n420022\tCategoria teste\n420023\tBEBIDA\n420024\tMARMITEX\n",
+  "stderr": "",
+  "execution_time_ms": 410
+}
