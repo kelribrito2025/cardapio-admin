@@ -332,7 +332,13 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
         { base64, mimeType: file.type, folder: "products" },
         {
           onSuccess: (data) => {
-            setImages(prev => [...prev, data.url]);
+            setImages(prev => {
+              if (prev.length >= 3) {
+                toast.error("Máximo de 3 fotos por produto");
+                return prev;
+              }
+              return [...prev, data.url];
+            });
             toast.success("Imagem enviada");
           },
           onError: () => toast.error("Erro ao enviar imagem"),
@@ -347,6 +353,10 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
     reader.readAsDataURL(file);
     e.target.value = "";
   }, [uploadMutation]);
+
+  const removeImage = useCallback((index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  }, []);
 
   // Complement item image upload
   const handleItemImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -619,27 +629,28 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-5 bg-card">
-        {/* Product image */}
+        {/* Product images - up to 3 */}
         <div>
-          <Label className="text-sm font-semibold mb-2 block">Imagem do produto</Label>
-          <div className="flex items-center gap-3">
-            {images.length > 0 ? (
-              <div className="relative h-20 w-20 rounded-xl overflow-hidden border border-border/50 group">
-                <img src={images[0]} alt="Produto" className="h-full w-full object-cover" />
+          <Label className="text-sm font-semibold mb-2 block">Imagens do produto <span className="text-xs text-muted-foreground font-normal">({images.length}/3)</span></Label>
+          <div className="flex items-center gap-2">
+            {images.map((img, index) => (
+              <div key={index} className="relative h-20 w-20 rounded-xl overflow-hidden border border-border/50 group flex-shrink-0">
+                <img src={img} alt={`Produto ${index + 1}`} className="h-full w-full object-cover" />
                 <button
                   type="button"
-                  onClick={() => setImages([])}
+                  onClick={() => removeImage(index)}
                   className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <X className="h-5 w-5 text-white" />
                 </button>
               </div>
-            ) : (
+            ))}
+            {images.length < 3 && (
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="h-20 w-20 rounded-xl border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center gap-1 hover:border-primary hover:bg-primary/5 transition-all"
+                className="h-20 w-20 rounded-xl border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center gap-1 hover:border-primary hover:bg-primary/5 transition-all flex-shrink-0"
               >
                 {uploading ? (
                   <Loader2 className="h-5 w-5 text-muted-foreground animate-spin" />
@@ -658,19 +669,6 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
               onChange={handleImageUpload}
               className="hidden"
             />
-            {images.length > 0 && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                className="rounded-lg text-xs h-8"
-              >
-                {uploading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <ImagePlus className="h-3 w-3 mr-1" />}
-                Trocar
-              </Button>
-            )}
           </div>
         </div>
 

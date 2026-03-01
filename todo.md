@@ -7796,3 +7796,7 @@
 
 ## Spinner de Carregamento no Modal de Edição
 - [x] Adicionar spinner de loading enquanto os dados do produto estão sendo carregados no modal de edição
+
+## Imagens do Produto no Modal
+- [x] Permitir até 3 fotos no modal de edição/criação de produto
+- [x] Remover botão "Trocar" da seção de imagens
