@@ -29,7 +29,7 @@ const adminMenuItems = [
   { icon: CreditCard, label: "Planos", path: "/admin/planos" },
   { icon: Clock, label: "Trials", path: "/admin/trials" },
   { icon: BarChart3, label: "Relatórios", path: "/admin/relatorios" },
-  { icon: MessageSquare, label: "Feedbacks", path: "/admin/feedbacks" },
+  { icon: MessageSquare, label: "Feedbacks", path: "/admin/feedbacks", badgeKey: "feedbacks" as const },
 ];
 
 interface AdminPanelLayoutProps {
@@ -52,6 +52,15 @@ export default function AdminPanelLayout({ children }: AdminPanelLayoutProps) {
   const adminMe = trpc.admin.auth.me.useQuery(undefined, {
     retry: false,
   });
+
+  // Buscar contagem de feedbacks novos
+  const feedbackStats = trpc.feedback.stats.useQuery(undefined, {
+    enabled: !!adminMe.data,
+    refetchInterval: 60000, // Atualizar a cada 60 segundos
+    refetchOnWindowFocus: true,
+  });
+
+  const newFeedbackCount = feedbackStats.data?.new ?? 0;
 
   const logoutMutation = trpc.admin.auth.logout.useMutation({
     onSuccess: () => {
@@ -121,6 +130,7 @@ export default function AdminPanelLayout({ children }: AdminPanelLayoutProps) {
         <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
           {adminMenuItems.map((item) => {
             const active = isActive(item.path);
+            const badgeCount = item.badgeKey === "feedbacks" ? newFeedbackCount : 0;
             return (
               <Link key={item.path} href={item.path}>
                 <button
@@ -133,7 +143,12 @@ export default function AdminPanelLayout({ children }: AdminPanelLayoutProps) {
                 >
                   <item.icon className={`h-5 w-5 flex-shrink-0 ${active ? "text-red-500" : "text-muted-foreground"}`} />
                   {item.label}
-                  {active && <ChevronRight className="h-4 w-4 ml-auto text-red-400" />}
+                  {badgeCount > 0 && (
+                    <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold leading-none">
+                      {badgeCount > 99 ? "99+" : badgeCount}
+                    </span>
+                  )}
+                  {active && badgeCount === 0 && <ChevronRight className="h-4 w-4 ml-auto text-red-400" />}
                 </button>
               </Link>
             );

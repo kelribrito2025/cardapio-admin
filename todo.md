@@ -7687,3 +7687,6 @@
 - [x] Remover botões Dúvida e Outro (manter apenas Reportar Bug e Sugestão)
 - [x] Adicionar upload de até 7 fotos no feedback (com preview, remoção individual, upload via S3)
 - [x] Padronizar visual do modal com o estilo do modal de aceitar pedido (border-t-4, rounded-xl, layout header com ícone)
+## Contador de feedbacks novos no painel admin
+- [x] Criar endpoint para contar feedbacks com status "new" (reutilizado feedback.stats existente)
+- [x] Adicionar badge com contagem na sidebar do painel admin junto ao item Feedbacks (badge vermelho, auto-refresh 60s + refetch on focus)
