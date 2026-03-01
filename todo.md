@@ -7793,3 +7793,6 @@
 - [x] Alterar onEdit no Catálogo para abrir modal em vez de navegar
 - [x] Remover página /catalogo/editar/:id e rota correspondente
 - [x] Testar criação e edição de produtos via modal
+
+## Spinner de Carregamento no Modal de Edição
+- [x] Adicionar spinner de loading enquanto os dados do produto estão sendo carregados no modal de edição

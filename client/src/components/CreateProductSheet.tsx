@@ -136,16 +136,18 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
   );
 
   // Query para buscar produto existente (modo edição)
-  const { data: existingProduct } = trpc.product.get.useQuery(
+  const { data: existingProduct, isLoading: isLoadingProduct } = trpc.product.get.useQuery(
     { id: productId! },
     { enabled: open && isEditing }
   );
 
   // Query para buscar complementos do produto (modo edição)
-  const { data: existingGroups } = trpc.complement.listGroups.useQuery(
+  const { data: existingGroups, isLoading: isLoadingGroups } = trpc.complement.listGroups.useQuery(
     { productId: productId! },
     { enabled: open && isEditing }
   );
+
+  const isLoadingEditData = isEditing && (isLoadingProduct || isLoadingGroups);
 
   // Mutations
   const uploadMutation = trpc.upload.image.useMutation();
@@ -1691,9 +1693,24 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
       <SheetContent side="right" className="w-full sm:max-w-[420px] !p-0 !gap-0 !h-dvh" hideCloseButton>
         <SheetTitle className="sr-only">{isEditing ? "Editar produto" : "Criar produto"}</SheetTitle>
         <SheetDescription className="sr-only">{isEditing ? "Edite as informações do produto" : "Crie um novo produto para o cardápio"}</SheetDescription>
-        {step === 1 && renderStep1()}
-        {step === 2 && renderStep2()}
-        {step === 3 && renderStep3()}
+        {isLoadingEditData ? (
+          <div className="flex flex-col items-center justify-center h-full gap-4">
+            <div className="relative">
+              <div className="w-16 h-16 rounded-full border-4 border-gray-200" />
+              <div className="absolute inset-0 w-16 h-16 rounded-full border-4 border-t-red-500 animate-spin" />
+            </div>
+            <div className="text-center">
+              <p className="text-base font-semibold text-gray-700">Carregando produto...</p>
+              <p className="text-sm text-gray-400 mt-1">Buscando informações do produto</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            {step === 1 && renderStep1()}
+            {step === 2 && renderStep2()}
+            {step === 3 && renderStep3()}
+          </>
+        )}
       </SheetContent>
     </Sheet>
   );
