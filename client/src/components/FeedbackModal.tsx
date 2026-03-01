@@ -307,16 +307,6 @@ export function FeedbackModal({ open, onOpenChange, establishmentId, establishme
             </div>
           )}
 
-          {/* Botão Cancelar - estilo outline do modal de aceitar pedido */}
-          <Button
-            variant="outline"
-            className="w-full rounded-xl h-10 font-medium mb-2.5 border-border text-muted-foreground hover:bg-muted/50"
-            onClick={() => { if (!isSubmitting) { resetForm(); onOpenChange(false); } }}
-            disabled={isSubmitting}
-          >
-            Cancelar
-          </Button>
-
           {/* Botão de envio principal - estilo do modal de aceitar pedido */}
           <Button
             className={cn(

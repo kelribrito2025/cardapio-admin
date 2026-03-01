@@ -7800,3 +7800,6 @@
 ## Imagens do Produto no Modal
 - [x] Permitir até 3 fotos no modal de edição/criação de produto
 - [x] Remover botão "Trocar" da seção de imagens
+
+## Modal de Enviar Feedback
+- [x] Remover botão "Cancelar" do modal de Enviar Feedback
