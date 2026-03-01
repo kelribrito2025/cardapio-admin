@@ -2604,6 +2604,8 @@ async function startServer() {
         buttonOrListid: body.buttonOrListid || body.message?.buttonOrListid || body.data?.buttonOrListid,
         messageType: body.message?.type || body.type,
       }));
+      // Log COMPLETO do payload para debug de mensagens de entregador
+      console.log('[WhatsApp Webhook] PAYLOAD COMPLETO:', JSON.stringify(body).substring(0, 2000));
       
       // PROXY: Encaminhar para o n8n em background (não bloquear a resposta)
       const N8N_WEBHOOK_URL = 'https://webn8n.granaupvps.shop/webhook/mindi';
@@ -2625,7 +2627,17 @@ async function startServer() {
         return res.status(200).json({ success: true });
       }
       const messageText = message?.text || message?.body || message?.conversation;
-      const senderPhone = message?.sender || message?.from || body?.sender || body?.from;
+      // Extrair telefone de TODAS as fontes possíveis do UAZAPI
+      const senderPhone = message?.sender || message?.from || body?.sender || body?.from 
+        || message?.chatid || body?.chatid || body?.number || message?.number
+        || message?.key?.remoteJid || body?.key?.remoteJid
+        || message?.participant || body?.participant;
+      console.log('[WhatsApp Webhook] senderPhone extraído:', senderPhone, '| fontes:', JSON.stringify({
+        msgSender: message?.sender, msgFrom: message?.from, bodySender: body?.sender, bodyFrom: body?.from,
+        msgChatid: message?.chatid, bodyChatid: body?.chatid, bodyNumber: body?.number, msgNumber: message?.number,
+        remoteJid: message?.key?.remoteJid || body?.key?.remoteJid,
+        participant: message?.participant || body?.participant,
+      }));
       
       if (buttonId) {
         console.log('[WhatsApp Webhook] Botão clicado:', buttonId, 'sender:', senderPhone);
@@ -2777,12 +2789,17 @@ async function startServer() {
                   if (driverPhone) {
                     const phone = driverPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
                     console.log('[Delivery Start] Enviando confirmação ao entregador:', phone);
-                    await sendTextMessage(
+                    const sendResult = await sendTextMessage(
                       configDriver.instanceToken,
                       phone,
                       `🛵 Entrega ${orderNumber} iniciada.\n👤 Cliente informado que o pedido está a caminho.\n📦 Status atualizado para: "Em Rota".`
                     );
-                    console.log('[Delivery Start] ✅ Confirmação enviada ao entregador com sucesso');
+                    console.log('[Delivery Start] Resultado do envio ao entregador:', JSON.stringify(sendResult));
+                    if (sendResult.success) {
+                      console.log('[Delivery Start] ✅ Confirmação enviada ao entregador com sucesso');
+                    } else {
+                      console.error('[Delivery Start] ❌ Falha ao enviar confirmação ao entregador:', sendResult.message);
+                    }
                   } else {
                     console.error('[Delivery Start] ❌ Não foi possível determinar o telefone do entregador de nenhuma fonte');
                   }
@@ -2919,12 +2936,17 @@ async function startServer() {
                   if (driverPhone) {
                     const phone = driverPhone.replace('@s.whatsapp.net', '').replace('@c.us', '');
                     console.log('[Delivery Done] Enviando confirmação ao entregador:', phone);
-                    await sendTextMessage(
+                    const sendResult = await sendTextMessage(
                       configDriver.instanceToken,
                       phone,
                       `✅ Entrega ${orderNumber} concluída com sucesso!\n👤 Cliente notificado sobre a conclusão.\n📦 Pedido encerrado no sistema.`
                     );
-                    console.log('[Delivery Done] ✅ Confirmação enviada ao entregador com sucesso');
+                    console.log('[Delivery Done] Resultado do envio ao entregador:', JSON.stringify(sendResult));
+                    if (sendResult.success) {
+                      console.log('[Delivery Done] ✅ Confirmação enviada ao entregador com sucesso');
+                    } else {
+                      console.error('[Delivery Done] ❌ Falha ao enviar confirmação ao entregador:', sendResult.message);
+                    }
                   } else {
                     console.error('[Delivery Done] ❌ Não foi possível determinar o telefone do entregador de nenhuma fonte');
                   }
