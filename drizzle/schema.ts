@@ -1090,3 +1090,23 @@ export const printLogs = mysqlTable("printLogs", {
 
 export type PrintLog = typeof printLogs.$inferSelect;
 export type InsertPrintLog = typeof printLogs.$inferInsert;
+
+
+// Feedback / Sugestões dos utilizadores
+export const feedbacks = mysqlTable("feedbacks", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  establishmentId: int("establishmentId"),
+  type: mysqlEnum("type", ["bug", "suggestion", "question", "other"]).default("suggestion").notNull(),
+  subject: varchar("subject", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  screenshotUrl: text("screenshotUrl"),
+  page: varchar("page", { length: 255 }), // página de onde o feedback foi enviado
+  status: mysqlEnum("status", ["new", "read", "in_progress", "resolved", "closed"]).default("new").notNull(),
+  adminNotes: text("adminNotes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Feedback = typeof feedbacks.$inferSelect;
+export type InsertFeedback = typeof feedbacks.$inferInsert;

@@ -7676,3 +7676,10 @@
 ## Bug: Edição de complemento global cria duplicata
 - [x] Corrigir edição de item de complemento que cria novo item em vez de atualizar o existente (agora usa updateGlobal para propagar para todos os itens com mesmo nome)
 - [x] Corrigir exclusão do item original que faz o item "editado" desaparecer (resolvido pela propagação global da edição de nome)
+## Sistema de Feedback
+- [x] Criar tabela feedbacks no schema (tipo, mensagem, screenshot, status, userId, establishmentId)
+- [x] Criar endpoints tRPC para enviar feedback e listar feedbacks (admin)
+- [x] Criar componente/modal de envio de feedback acessível pelo menu do utilizador (dropdown)
+- [x] Criar painel admin para visualizar e gerenciar feedbacks recebidos (/admin/feedbacks)
+- [x] Notificar owner quando novo feedback for recebido (via notifyOwner)
+- [x] Escrever testes vitest para os endpoints de feedback (11 testes passando)

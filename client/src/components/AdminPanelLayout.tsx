@@ -19,6 +19,7 @@ import {
   Menu,
   X,
   ChevronRight,
+  MessageSquare,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -28,6 +29,7 @@ const adminMenuItems = [
   { icon: CreditCard, label: "Planos", path: "/admin/planos" },
   { icon: Clock, label: "Trials", path: "/admin/trials" },
   { icon: BarChart3, label: "Relatórios", path: "/admin/relatorios" },
+  { icon: MessageSquare, label: "Feedbacks", path: "/admin/feedbacks" },
 ];
 
 interface AdminPanelLayoutProps {

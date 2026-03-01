@@ -28,6 +28,7 @@ import {
   Megaphone,
   Monitor,
   HelpCircle,
+  MessageSquarePlus,
   Utensils,
   Clock,
   Sparkles,
@@ -66,6 +67,7 @@ import {
 } from "@/components/ui/popover";
 import { toast } from "sonner";
 import { TrialExpiredModal } from "@/components/TrialExpiredModal";
+import { FeedbackModal } from "@/components/FeedbackModal";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useSearch } from "@/contexts/SearchContext";
 
@@ -132,6 +134,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { searchQuery, setSearchQuery } = useSearch();
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   
   // Estado para submenus expandidos (Menu pai) - persistido no localStorage
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>(() => {
@@ -1134,6 +1137,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       className="rounded-lg cursor-pointer" 
+                      onSelect={() => setFeedbackOpen(true)}
+                    >
+                      <MessageSquarePlus className="h-4 w-4 mr-2.5" />
+                      Enviar Feedback
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      className="rounded-lg cursor-pointer" 
                       onSelect={() => window.location.href = '/planos'}
                     >
                       <Crown className="h-4 w-4 mr-2.5" />
@@ -1180,6 +1190,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           {children}
         </main>
       </div>
+
+      {/* Modal de Feedback */}
+      <FeedbackModal
+        open={feedbackOpen}
+        onOpenChange={setFeedbackOpen}
+        establishmentId={establishment?.id}
+      />
 
       {/* Modal obrigatório de upgrade quando trial expira */}
       {/* Não mostra na página de planos (exceção) */}

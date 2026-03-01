@@ -43,6 +43,7 @@ import AdminRestauranteDetalhe from "./pages/admin/AdminRestauranteDetalhe";
 import AdminPlanos from "./pages/admin/AdminPlanos";
 import AdminTrials from "./pages/admin/AdminTrials";
 import AdminRelatorios from "./pages/admin/AdminRelatorios";
+import AdminFeedbacks from "./pages/admin/AdminFeedbacks";
 
 // Landing Page
 import LandingPage from "./pages/LandingPage";
@@ -128,6 +129,7 @@ function Router() {
       <Route path="/admin/planos" component={AdminPlanos} />
       <Route path="/admin/trials" component={AdminTrials} />
       <Route path="/admin/relatorios" component={AdminRelatorios} />
+      <Route path="/admin/feedbacks" component={AdminFeedbacks} />
       
       {/* Restaurant admin routes - com NewOrdersProvider */}
       <Route>

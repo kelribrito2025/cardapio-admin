@@ -6216,5 +6216,71 @@ export const appRouter = router({
         return { id: result[0].insertId, apiKey, name: input.name };
       }),
   }),
+
+  // ---- Feedback ----
+  feedback: router({
+    submit: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number().optional(),
+        type: z.enum(["bug", "suggestion", "question", "other"]),
+        subject: z.string().min(1, "Assunto é obrigatório").max(255),
+        message: z.string().min(1, "Mensagem é obrigatória"),
+        screenshotUrl: z.string().nullable().optional(),
+        page: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createFeedback({
+          userId: ctx.user.id,
+          establishmentId: input.establishmentId ?? null,
+          type: input.type,
+          subject: input.subject,
+          message: input.message,
+          screenshotUrl: input.screenshotUrl ?? null,
+          page: input.page ?? null,
+          status: "new",
+        });
+        // Notificar owner
+        try {
+          const { notifyOwner } = await import("./_core/notification");
+          const typeLabels: Record<string, string> = { bug: "Bug", suggestion: "Sugestão", question: "Dúvida", other: "Outro" };
+          await notifyOwner({
+            title: `Novo Feedback: ${typeLabels[input.type] || input.type}`,
+            content: `**${input.subject}**\n\n${input.message}\n\n_Enviado por: ${ctx.user.name || ctx.user.email}_`,
+          });
+        } catch (e) {
+          console.warn("[Feedback] Falha ao notificar owner:", e);
+        }
+        return { id };
+      }),
+
+    myFeedbacks: protectedProcedure
+      .query(async ({ ctx }) => {
+        return db.getFeedbacksByUser(ctx.user.id);
+      }),
+
+    // Admin: listar todos os feedbacks
+    listAll: protectedProcedure
+      .query(async () => {
+        return db.getAllFeedbacks();
+      }),
+
+    // Admin: atualizar status
+    updateStatus: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        status: z.enum(["new", "read", "in_progress", "resolved", "closed"]),
+        adminNotes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateFeedbackStatus(input.id, input.status, input.adminNotes);
+        return { success: true };
+      }),
+
+    // Admin: estatísticas
+    stats: protectedProcedure
+      .query(async () => {
+        return db.getFeedbackStats();
+      }),
+  }),
 });
 export type AppRouter = typeof appRouter;

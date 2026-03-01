@@ -50,7 +50,8 @@ import {
   cashbackTransactions, InsertCashbackTransaction, CashbackTransaction,
   cashbackBalances, InsertCashbackBalance, CashbackBalance,
   printLogs, InsertPrintLog, PrintLog,
-  botApiKeys, InsertBotApiKey, BotApiKey
+  botApiKeys, InsertBotApiKey, BotApiKey,
+  feedbacks, InsertFeedback, Feedback
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 import crypto from 'crypto';
@@ -10824,4 +10825,67 @@ export async function clearPrintLogs(establishmentId: number, olderThanDays?: nu
   
   const result = await db.delete(printLogs).where(and(...conditions));
   return result[0].affectedRows || 0;
+}
+
+
+// ============================================================
+// FEEDBACK
+// ============================================================
+
+export async function createFeedback(data: InsertFeedback) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(feedbacks).values(data);
+  return result[0].insertId;
+}
+
+export async function getFeedbacksByEstablishment(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(feedbacks)
+    .where(eq(feedbacks.establishmentId, establishmentId))
+    .orderBy(desc(feedbacks.createdAt));
+}
+
+export async function getFeedbacksByUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(feedbacks)
+    .where(eq(feedbacks.userId, userId))
+    .orderBy(desc(feedbacks.createdAt));
+}
+
+export async function getAllFeedbacks() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select({
+    feedback: feedbacks,
+    userName: users.name,
+    userEmail: users.email,
+    establishmentName: establishments.name,
+  })
+    .from(feedbacks)
+    .leftJoin(users, eq(feedbacks.userId, users.id))
+    .leftJoin(establishments, eq(feedbacks.establishmentId, establishments.id))
+    .orderBy(desc(feedbacks.createdAt));
+}
+
+export async function updateFeedbackStatus(id: number, status: "new" | "read" | "in_progress" | "resolved" | "closed", adminNotes?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const updateData: Record<string, any> = { status };
+  if (adminNotes !== undefined) updateData.adminNotes = adminNotes;
+  await db.update(feedbacks).set(updateData).where(eq(feedbacks.id, id));
+}
+
+export async function getFeedbackStats() {
+  const db = await getDb();
+  if (!db) return { total: 0, new: 0, inProgress: 0, resolved: 0 };
+  const all = await db.select().from(feedbacks);
+  return {
+    total: all.length,
+    new: all.filter(f => f.status === "new").length,
+    inProgress: all.filter(f => f.status === "in_progress").length,
+    resolved: all.filter(f => f.status === "resolved" || f.status === "closed").length,
+  };
 }
