@@ -64,6 +64,102 @@ const DAYS_OF_WEEK = [
   { value: 6, label: "Sáb" },
 ];
 
+// ---- Group Min/Max Fields with local state (prevents mutation on every keystroke) ----
+function GroupMinMaxFields({
+  group,
+  updateGroupMutation,
+}: {
+  group: any;
+  updateGroupMutation: any;
+}) {
+  const [localMin, setLocalMin] = useState(String(group.minQuantity ?? 0));
+  const [localMax, setLocalMax] = useState(String(group.maxQuantity ?? 0));
+
+  useEffect(() => {
+    setLocalMin(String(group.minQuantity ?? 0));
+  }, [group.minQuantity]);
+
+  useEffect(() => {
+    setLocalMax(String(group.maxQuantity ?? 0));
+  }, [group.maxQuantity]);
+
+  const commitMin = () => {
+    const val = parseInt(localMin, 10);
+    const finalVal = isNaN(val) ? 0 : Math.min(val, 999);
+    setLocalMin(String(finalVal));
+    if (finalVal !== group.minQuantity) {
+      updateGroupMutation.mutate({ id: group.id, minQuantity: finalVal });
+    }
+  };
+
+  const commitMax = () => {
+    const val = parseInt(localMax, 10);
+    const finalVal = isNaN(val) ? 0 : Math.min(val, 999);
+    setLocalMax(String(finalVal));
+    if (finalVal !== group.maxQuantity) {
+      updateGroupMutation.mutate({ id: group.id, maxQuantity: finalVal });
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-3 mb-3 flex-wrap">
+      <div className="flex items-center gap-1.5">
+        <label className="text-xs text-muted-foreground font-medium">Mín:</label>
+        <Input
+          type="text"
+          inputMode="numeric"
+          value={localMin}
+          onChange={(e) => {
+            const raw = e.target.value.replace(/[^0-9]/g, '');
+            setLocalMin(raw);
+          }}
+          onBlur={commitMin}
+          onKeyDown={(e) => { if (e.key === 'Enter') commitMin(); }}
+          onFocus={(e) => { if (e.target.value === '0') setLocalMin(''); }}
+          placeholder="0"
+          className="w-16 h-7 text-sm text-center rounded-md"
+        />
+      </div>
+      <div className="flex items-center gap-1.5">
+        <label className="text-xs text-muted-foreground font-medium">Máx:</label>
+        <Input
+          type="text"
+          inputMode="numeric"
+          value={localMax}
+          onChange={(e) => {
+            const raw = e.target.value.replace(/[^0-9]/g, '');
+            setLocalMax(raw);
+          }}
+          onBlur={commitMax}
+          onKeyDown={(e) => { if (e.key === 'Enter') commitMax(); }}
+          onFocus={(e) => { if (e.target.value === '0') setLocalMax(''); }}
+          placeholder="0"
+          className="w-16 h-7 text-sm text-center rounded-md"
+        />
+      </div>
+      <div className="flex items-center gap-1.5">
+        <input
+          type="checkbox"
+          id={`required-${group.id}`}
+          checked={group.minQuantity >= 1}
+          onChange={(e) => {
+            const newRequired = e.target.checked;
+            updateGroupMutation.mutate({
+              id: group.id,
+              isRequired: newRequired,
+              minQuantity: newRequired ? Math.max(group.minQuantity || 0, 1) : 0,
+            });
+          }}
+          className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
+        />
+        <label htmlFor={`required-${group.id}`} className="text-xs font-medium cursor-pointer">
+          Obrigatório
+        </label>
+      </div>
+    </div>
+  );
+}
+
 // ---- Expanded Item Details (Badge + Availability) ----
 function ItemExpandedDetails({
   item,
@@ -1072,71 +1168,10 @@ export default function InlineComplementsDropdown({
                 </div>
 
                 {/* Group settings: Mín, Máx, Obrigatório */}
-                <div className="flex items-center gap-3 mb-3 flex-wrap">
-                  <div className="flex items-center gap-1.5">
-                    <label className="text-xs text-muted-foreground font-medium">Mín:</label>
-                    <Input
-                      type="text"
-                      inputMode="numeric"
-                      value={group.minQuantity === 0 || group.minQuantity == null ? '' : String(group.minQuantity)}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^0-9]/g, '');
-                        if (raw === '') {
-                          updateGroupMutation.mutate({ id: group.id, minQuantity: 0 });
-                          return;
-                        }
-                        const val = Math.min(parseInt(raw, 10), 999);
-                        updateGroupMutation.mutate({ id: group.id, minQuantity: val });
-                      }}
-                      onFocus={(e) => {
-                        if (e.target.value === '0') e.target.value = '';
-                      }}
-                      placeholder="0"
-                      className="w-16 h-7 text-sm text-center rounded-md"
-                    />
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <label className="text-xs text-muted-foreground font-medium">Máx:</label>
-                    <Input
-                      type="text"
-                      inputMode="numeric"
-                      value={group.maxQuantity === 0 || group.maxQuantity == null ? '' : String(group.maxQuantity)}
-                      onChange={(e) => {
-                        const raw = e.target.value.replace(/[^0-9]/g, '');
-                        if (raw === '') {
-                          updateGroupMutation.mutate({ id: group.id, maxQuantity: 0 });
-                          return;
-                        }
-                        const val = Math.min(parseInt(raw, 10), 999);
-                        updateGroupMutation.mutate({ id: group.id, maxQuantity: val });
-                      }}
-                      onFocus={(e) => {
-                        if (e.target.value === '0') e.target.value = '';
-                      }}
-                      placeholder="0"
-                      className="w-16 h-7 text-sm text-center rounded-md"
-                    />
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <input
-                      type="checkbox"
-                      id={`required-${group.id}`}
-                      checked={group.minQuantity >= 1}
-                      onChange={(e) => {
-                        const newRequired = e.target.checked;
-                        updateGroupMutation.mutate({ 
-                          id: group.id, 
-                          isRequired: newRequired,
-                          minQuantity: newRequired ? Math.max(group.minQuantity || 0, 1) : 0,
-                        });
-                      }}
-                      className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
-                    />
-                    <label htmlFor={`required-${group.id}`} className="text-xs font-medium cursor-pointer">
-                      Obrigatório
-                    </label>
-                  </div>
-                </div>
+                <GroupMinMaxFields
+                  group={group}
+                  updateGroupMutation={updateGroupMutation}
+                />
 
                 {/* Items list with DnD */}
                 <DndContext

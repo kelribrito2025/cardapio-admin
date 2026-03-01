@@ -7809,3 +7809,6 @@
 
 ## Bug Fix - Camera not defined
 - [x] Corrigir erro "Camera is not defined" na página de Pedidos (import faltando)
+
+## Bug - Lentidão nos campos Mín/Máx
+- [x] Corrigir lentidão nos campos Mínimo e Máximo dos grupos de complementos no catálogo
