@@ -68,6 +68,7 @@ import {
 import { toast } from "sonner";
 import { TrialExpiredModal } from "@/components/TrialExpiredModal";
 import { FeedbackModal } from "@/components/FeedbackModal";
+import { WhatsAppDisconnectedBanner } from "@/components/WhatsAppDisconnectedBanner";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useSearch } from "@/contexts/SearchContext";
 
@@ -1184,6 +1185,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </div>
           </div>
         </header>
+
+        {/* Banner de WhatsApp desconectado */}
+        <WhatsAppDisconnectedBanner />
 
         {/* Page content */}
         <main className="flex-1 overflow-auto p-3 lg:p-6 [&:has(>[data-settings-page])]:overflow-hidden [&:has(>[data-settings-page])]:p-0">

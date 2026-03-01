@@ -70,6 +70,7 @@ import {
   Globe,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ImageCropModal } from "@/components/ImageCropModal";
@@ -118,6 +119,30 @@ export default function Configuracoes() {
     }
     return 'estabelecimento';
   });
+
+  // Ouvir evento de abrir seção WhatsApp (vindo do banner de desconectado)
+  useEffect(() => {
+    const handleOpenWhatsApp = () => {
+      setActiveSection('whatsapp-notificacoes');
+    };
+    window.addEventListener('open-whatsapp-settings', handleOpenWhatsApp);
+    return () => window.removeEventListener('open-whatsapp-settings', handleOpenWhatsApp);
+  }, []);
+
+  // Reagir a mudanças na URL (deep linking dinâmico)
+  const [currentLocation] = useLocation();
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const section = params.get('section');
+    if (section === 'whatsapp') {
+      setActiveSection('whatsapp-notificacoes');
+    } else if (section) {
+      const validSections: SettingsSection[] = ['estabelecimento', 'atendimento', 'agendamento', 'whatsapp-notificacoes', 'whatsapp-templates', 'impressora', 'pagamento-online', 'integracoes', 'conta-seguranca'];
+      if (validSections.includes(section as SettingsSection)) {
+        setActiveSection(section as SettingsSection);
+      }
+    }
+  }, [currentLocation]);
 
   // Establishment form state
   const [name, setName] = useState("");

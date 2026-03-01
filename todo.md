@@ -7762,3 +7762,10 @@
 - [x] Configuracoes.tsx - Exclusão de Impressora
 - [x] Financas.tsx - Histórico de Alterações, Exclusão de Despesa
 - [x] Campanhas.tsx - Modelos Sugeridos
+
+## Alerta de WhatsApp Desconectado
+- [x] Criar componente WhatsAppDisconnectedBanner (banner fixo vermelho no topo)
+- [x] Usar status do getConfig (sem polling extra) para verificar conexão
+- [x] Mostrar banner ao navegar nas páginas (Pedidos, Dashboard) quando desconectado
+- [x] Mostrar banner ao receber novo pedido via SSE quando desconectado
+- [x] Botão "Reconectar agora" que leva à página de configurações do WhatsApp
