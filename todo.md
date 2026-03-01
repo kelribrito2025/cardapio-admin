@@ -7812,3 +7812,6 @@
 
 ## Bug - Lentidão nos campos Mín/Máx
 - [x] Corrigir lentidão nos campos Mínimo e Máximo dos grupos de complementos no catálogo
+
+## Validação Mín/Máx
+- [x] Adicionar validação para impedir que o mínimo seja maior que o máximo nos campos de complementos

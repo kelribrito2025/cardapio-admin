@@ -74,19 +74,37 @@ function GroupMinMaxFields({
 }) {
   const [localMin, setLocalMin] = useState(String(group.minQuantity ?? 0));
   const [localMax, setLocalMax] = useState(String(group.maxQuantity ?? 0));
+  const [minError, setMinError] = useState(false);
+  const [maxError, setMaxError] = useState(false);
 
   useEffect(() => {
     setLocalMin(String(group.minQuantity ?? 0));
+    setMinError(false);
   }, [group.minQuantity]);
 
   useEffect(() => {
     setLocalMax(String(group.maxQuantity ?? 0));
+    setMaxError(false);
   }, [group.maxQuantity]);
 
   const commitMin = () => {
     const val = parseInt(localMin, 10);
     const finalVal = isNaN(val) ? 0 : Math.min(val, 999);
+    const currentMax = parseInt(localMax, 10) || group.maxQuantity || 0;
+    
+    if (finalVal > currentMax && currentMax > 0) {
+      // Mín maior que Máx: ajusta o Máx automaticamente
+      setLocalMin(String(finalVal));
+      setLocalMax(String(finalVal));
+      setMinError(false);
+      setMaxError(false);
+      updateGroupMutation.mutate({ id: group.id, minQuantity: finalVal, maxQuantity: finalVal });
+      toast.info(`Máximo ajustado para ${finalVal} (não pode ser menor que o mínimo)`);
+      return;
+    }
+    
     setLocalMin(String(finalVal));
+    setMinError(false);
     if (finalVal !== group.minQuantity) {
       updateGroupMutation.mutate({ id: group.id, minQuantity: finalVal });
     }
@@ -95,11 +113,30 @@ function GroupMinMaxFields({
   const commitMax = () => {
     const val = parseInt(localMax, 10);
     const finalVal = isNaN(val) ? 0 : Math.min(val, 999);
+    const currentMin = parseInt(localMin, 10) || group.minQuantity || 0;
+    
+    if (finalVal < currentMin && finalVal > 0) {
+      // Máx menor que Mín: mostra erro e corrige
+      setMaxError(true);
+      const corrected = currentMin;
+      setLocalMax(String(corrected));
+      toast.error(`Máximo não pode ser menor que o mínimo (${currentMin})`);
+      updateGroupMutation.mutate({ id: group.id, maxQuantity: corrected });
+      setTimeout(() => setMaxError(false), 1500);
+      return;
+    }
+    
     setLocalMax(String(finalVal));
+    setMaxError(false);
     if (finalVal !== group.maxQuantity) {
       updateGroupMutation.mutate({ id: group.id, maxQuantity: finalVal });
     }
   };
+
+  // Verificar se os valores atuais estão inválidos (feedback visual em tempo real)
+  const minVal = parseInt(localMin, 10) || 0;
+  const maxVal = parseInt(localMax, 10) || 0;
+  const isInvalid = minVal > 0 && maxVal > 0 && minVal > maxVal;
 
   return (
     <div className="flex items-center gap-3 mb-3 flex-wrap">
@@ -112,12 +149,16 @@ function GroupMinMaxFields({
           onChange={(e) => {
             const raw = e.target.value.replace(/[^0-9]/g, '');
             setLocalMin(raw);
+            setMinError(false);
           }}
           onBlur={commitMin}
           onKeyDown={(e) => { if (e.key === 'Enter') commitMin(); }}
           onFocus={(e) => { if (e.target.value === '0') setLocalMin(''); }}
           placeholder="0"
-          className="w-16 h-7 text-sm text-center rounded-md"
+          className={cn(
+            "w-16 h-7 text-sm text-center rounded-md transition-colors",
+            (minError || isInvalid) && "border-red-500 ring-1 ring-red-500/30"
+          )}
         />
       </div>
       <div className="flex items-center gap-1.5">
@@ -129,12 +170,16 @@ function GroupMinMaxFields({
           onChange={(e) => {
             const raw = e.target.value.replace(/[^0-9]/g, '');
             setLocalMax(raw);
+            setMaxError(false);
           }}
           onBlur={commitMax}
           onKeyDown={(e) => { if (e.key === 'Enter') commitMax(); }}
           onFocus={(e) => { if (e.target.value === '0') setLocalMax(''); }}
           placeholder="0"
-          className="w-16 h-7 text-sm text-center rounded-md"
+          className={cn(
+            "w-16 h-7 text-sm text-center rounded-md transition-colors",
+            (maxError || isInvalid) && "border-red-500 ring-1 ring-red-500/30"
+          )}
         />
       </div>
       <div className="flex items-center gap-1.5">
