@@ -323,9 +323,6 @@ export default function Impressoras() {
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancelar
-              </Button>
               <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
                 {editingPrinter ? "Salvar" : "Adicionar"}
               </Button>

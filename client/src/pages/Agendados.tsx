@@ -1022,9 +1022,6 @@ export default function Agendados() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setRescheduleOrderId(null)} className="rounded-lg">
-              Cancelar
-            </Button>
             <Button
               onClick={() => {
                 if (!rescheduleDate || !rescheduleTime || !rescheduleOrderId) return;

@@ -7721,3 +7721,7 @@
 - [x] Clicar no header da categoria (nome, ícone, contagem) deve alternar expandir/minimizar
 - [x] Não deve interferir com botões (Criar Combo, editar, drag handle, dropdown, etc.)
 - [x] Remover botão Cancelar dos modais padronizados (Nova Categoria, Seleção de Entregador, Criar Mesas)
+
+## Revisão de Botões Cancelar em Modais da Plataforma
+- [x] Identificar todos os modais com botão Cancelar desnecessário
+- [x] Remover botões Cancelar desnecessários (manter apenas em confirmações destrutivas)

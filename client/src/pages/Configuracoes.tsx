@@ -2477,9 +2477,6 @@ export default function Configuracoes() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsPrinterModalOpen(false)}>
-              Cancelar
-            </Button>
             <Button
               onClick={handleSavePrinter}
               disabled={createPrinterMutation.isPending || updatePrinterMutation.isPending}

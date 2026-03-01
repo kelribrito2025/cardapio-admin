@@ -1290,13 +1290,6 @@ export default function Campanhas() {
 
             <div className="flex gap-2 justify-end">
               <Button
-                variant="outline"
-                onClick={() => setShowAgendarModal(false)}
-                disabled={isAgendando}
-              >
-                Cancelar
-              </Button>
-              <Button
                 onClick={handleAgendarCampanha}
                 disabled={isAgendando || !agendamentoData || !agendamentoHora}
                 className="bg-primary hover:bg-primary/90"
@@ -1517,18 +1510,6 @@ export default function Campanhas() {
             </div>
 
             <div className="flex gap-2 justify-end">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowRecargaModal(false);
-                  setSelectedPackage(null);
-                  setCustomAmount("");
-                  setIsCustomMode(false);
-                }}
-                disabled={checkoutMutation.isPending || customCheckoutMutation.isPending}
-              >
-                Cancelar
-              </Button>
               <Button
                 onClick={() => {
                   if (isCustomMode && isCustomValid) {

@@ -1719,9 +1719,6 @@ export default function MesasComandas() {
             <p className="text-xs text-muted-foreground">Todos os campos são opcionais.</p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowReserveDialog(false)}>
-              Cancelar
-            </Button>
             <Button
               onClick={handleConfirmReservation}
               disabled={updateStatusMutation.isPending}

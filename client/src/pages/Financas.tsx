@@ -519,13 +519,6 @@ function ExpenseModal({
           )}
         </div>
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isLoading}
-          >
-            Cancelar
-          </Button>
           <Button onClick={handleSubmit} disabled={isLoading}>
             {isLoading
               ? "Salvando..."
@@ -708,7 +701,6 @@ function RecurringEditModal({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button onClick={handleSubmit} disabled={updateMutation.isPending}>
             {updateMutation.isPending ? "Salvando..." : "Atualizar"}
           </Button>
@@ -892,9 +884,6 @@ function GoalModal({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancelar
-          </Button>
           <Button
             onClick={() => {
               if (!targetProfit) return;
@@ -1012,9 +1001,6 @@ function CustomGoalModal({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancelar
-          </Button>
           <Button
             onClick={handleSubmit}
             disabled={isLoading}
@@ -3365,12 +3351,6 @@ export default function Financas() {
                 </div>
               )}
               <DialogFooter className="gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => { setPayConfirmOpen(false); setPayConfirmItem(null); }}
-                >
-                  Cancelar
-                </Button>
                 <Button
                   className="bg-emerald-600 hover:bg-emerald-700 text-white"
                   disabled={markAsPaidMutation.isPending || !payConfirmAmount || !payConfirmDate}

@@ -1784,9 +1784,6 @@ export default function Catalogo() {
             )}
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setScheduleDialogOpen(false)} className="rounded-xl">
-              Cancelar
-            </Button>
             <Button
               onClick={handleSaveSchedule}
               disabled={scheduleCategoryMutation.isPending || (schedAvailabilityType === "scheduled" && schedSelectedDays.length === 0)}

@@ -850,9 +850,6 @@ export default function Estoque() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsNewItemDialogOpen(false)}>
-              Cancelar
-            </Button>
             <Button onClick={handleCreateItem} disabled={createItemMutation.isPending}>
               {createItemMutation.isPending ? "Salvando..." : "Adicionar"}
             </Button>
@@ -932,9 +929,6 @@ export default function Estoque() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditItemDialogOpen(false)}>
-              Cancelar
-            </Button>
             <Button onClick={handleUpdateItem} disabled={updateItemMutation.isPending}>
               {updateItemMutation.isPending ? "Salvando..." : "Salvar"}
             </Button>
@@ -975,9 +969,6 @@ export default function Estoque() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsMovementDialogOpen(false)}>
-              Cancelar
-            </Button>
             <Button
               onClick={handleAddMovement}
               disabled={addMovementMutation.isPending}
@@ -1068,9 +1059,6 @@ export default function Estoque() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsNewCategoryDialogOpen(false)}>
-              Cancelar
-            </Button>
             <Button
               onClick={() => {
                 if (!newCategoryName.trim()) {
