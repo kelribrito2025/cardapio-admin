@@ -7881,3 +7881,13 @@
 
 - [x] Restaurar setinha estilo balão (triângulo apontando para baixo) no tooltip
 - [x] Remover botão "Acompanhar" do tooltip (manter apenas texto informativo)
+
+
+## Step 2 - Onboarding no Modal de Acompanhamento
+
+- [x] Implementar state para Step 2 do onboarding (onboardingStep2SubStep)
+- [x] Tooltip 1: Informar sobre acompanhamento + WhatsApp com botão "Entendi"
+- [x] Tooltip 2: Focar no botão "Meus pedidos" após clicar em "Entendi"
+- [x] Overlay bloqueador durante Step 2 (impede cliques fora dos botões)
+- [x] Transição suave entre Tooltip 1 e Tooltip 2
+- [x] Salvar no localStorage que Step 2 foi exibido (não repetir)

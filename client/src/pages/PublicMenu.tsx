@@ -5,7 +5,7 @@ import { BlurImage } from "@/components/BlurImage";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Package, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, Rocket, CalendarClock, Wallet, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Package, MessageCircle, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, Rocket, CalendarClock, Wallet, ArrowUpRight, ArrowDownLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -171,6 +171,15 @@ export default function PublicMenu() {
   const [onlinePaymentUrl, setOnlinePaymentUrl] = useState<string | null>(null);
   const [createdOrderNumber, setCreatedOrderNumber] = useState<string | null>(null);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
+  
+  useEffect(() => {
+    if (showTrackingModal && onboardingStep === 2) {
+      const seen2 = localStorage.getItem(onboardingStep2Key);
+      if (!seen2) {
+        setOnboardingStep2SubStep(0);
+      }
+    }
+  }, [showTrackingModal, onboardingStep]);
   const [showMobileBag, setShowMobileBag] = useState(false);
   const [bagAutoOpenEnabled, setBagAutoOpenEnabled] = useState(true); // Controla se a sacola deve abrir automaticamente
   // Estados de agendamento
@@ -182,6 +191,7 @@ export default function PublicMenu() {
   const [showOrdersModal, setShowOrdersModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState<0 | 1 | 2 | 3>(0);
+  const [onboardingStep2SubStep, setOnboardingStep2SubStep] = useState<0 | 1>(0); // 0: Tooltip 1, 1: Tooltip 2
   const [showOnboardingTooltip, setShowOnboardingTooltip] = useState(false);
   const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set());
   // Track canReview status per order in history: { orderId: { checked: boolean, canReview: boolean } }
@@ -5821,7 +5831,56 @@ setOnlinePaymentUrl(null);
             </div>
 
             {/* Footer */}
-            <div className="border-t px-6 py-4 space-y-3" style={{backgroundColor: '#ffffff'}}>
+            <div className="border-t px-6 py-4 space-y-3 relative" style={{backgroundColor: '#ffffff'}}>
+              {/* Overlay bloqueador para Step 2 */}
+              {onboardingStep === 2 && onboardingStep2SubStep === 0 && (
+                <div className="fixed inset-0 z-[99] bg-black/60" onClick={(e) => e.stopPropagation()} />
+              )}
+              
+              {/* Tooltip 1: Informar sobre acompanhamento + WhatsApp */}
+              {onboardingStep === 2 && onboardingStep2SubStep === 0 && (
+                <div className="absolute -top-48 left-6 right-6 z-[101] animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="bg-red-50 rounded-xl shadow-2xl p-4 border border-red-200 relative">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 p-2 bg-red-100 rounded-lg">
+                        <MessageCircle className="h-5 w-5 text-red-500" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-gray-900">Acompanhe seu pedido!</p>
+                        <p className="text-xs text-gray-600 mt-1">Voce pode acompanhar o status aqui e tambem sera informado pelo WhatsApp.</p>
+                      </div>
+                    </div>
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-50 border-r border-b border-red-200 rotate-45" />
+                  </div>
+                  <button
+                    onClick={() => {
+                      setOnboardingStep2SubStep(1);
+                      localStorage.setItem(onboardingStep2Key, 'true');
+                    }}
+                    className="w-full mt-4 py-2.5 px-4 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg transition-colors"
+                  >
+                    Entendi
+                  </button>
+                </div>
+              )}
+              
+              {/* Tooltip 2: Focar no botao "Meus pedidos" */}
+              {onboardingStep === 2 && onboardingStep2SubStep === 1 && (
+                <div className="absolute -top-32 left-6 right-6 z-[101] animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="bg-red-50 rounded-xl shadow-2xl p-4 border border-red-200 relative">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 p-2 bg-red-100 rounded-lg">
+                        <Package className="h-5 w-5 text-red-500" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-gray-900">Veja todos os seus pedidos</p>
+                        <p className="text-xs text-gray-600 mt-1">Clique em "Meus pedidos" para acompanhar todos os seus pedidos em um unico lugar.</p>
+                      </div>
+                    </div>
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-50 border-r border-b border-red-200 rotate-45" />
+                  </div>
+                </div>
+              )}
               {/* Botão Avaliar restaurante - só aparece quando status for entregue E pode avaliar (30 dias) E verificação já terminou */}
               {orderStatus === 'delivered' && canReview && canReviewChecked && establishment?.reviewsEnabled !== false && (
                 <button
