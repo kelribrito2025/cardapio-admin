@@ -7821,3 +7821,6 @@
 
 ## Estilo Visual Card Como Funciona
 - [x] Atualizar card 'Como funciona' da página de complementos para seguir o mesmo estilo visual do banner de produtos sem foto do catálogo
+
+## Borda na Foto do Restaurante na Sidebar
+- [x] Adicionar borda/container ao redor da foto do restaurante na sidebar do menu
