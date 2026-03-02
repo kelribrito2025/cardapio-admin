@@ -171,15 +171,6 @@ export default function PublicMenu() {
   const [onlinePaymentUrl, setOnlinePaymentUrl] = useState<string | null>(null);
   const [createdOrderNumber, setCreatedOrderNumber] = useState<string | null>(null);
   const [showTrackingModal, setShowTrackingModal] = useState(false);
-  
-  useEffect(() => {
-    if (showTrackingModal && onboardingStep === 2) {
-      const seen2 = localStorage.getItem(onboardingStep2Key);
-      if (!seen2) {
-        setOnboardingStep2SubStep(0);
-      }
-    }
-  }, [showTrackingModal, onboardingStep]);
   const [showMobileBag, setShowMobileBag] = useState(false);
   const [bagAutoOpenEnabled, setBagAutoOpenEnabled] = useState(true); // Controla se a sacola deve abrir automaticamente
   // Estados de agendamento
@@ -193,6 +184,16 @@ export default function PublicMenu() {
   const [onboardingStep, setOnboardingStep] = useState<0 | 1 | 2 | 3>(0);
   const [onboardingStep2SubStep, setOnboardingStep2SubStep] = useState<0 | 1>(0); // 0: Tooltip 1, 1: Tooltip 2
   const [showOnboardingTooltip, setShowOnboardingTooltip] = useState(false);
+  
+  // Inicializar Step 2 quando o modal de tracking abre
+  useEffect(() => {
+    if (showTrackingModal && onboardingStep === 2) {
+      const seen2 = localStorage.getItem(onboardingStep2Key);
+      if (!seen2) {
+        setOnboardingStep2SubStep(0);
+      }
+    }
+  }, [showTrackingModal, onboardingStep]);
   const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set());
   // Track canReview status per order in history: { orderId: { checked: boolean, canReview: boolean } }
   const [historyCanReview, setHistoryCanReview] = useState<Record<string, { checked: boolean; canReview: boolean }>>({});
