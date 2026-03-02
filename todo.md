@@ -7840,3 +7840,9 @@
 ## Botão Finalizar para Pedidos em Entrega Atrasados
 - [x] Quando pedido em entrega há mais de 1 hora, trocar botão "Entregador" por "Finalizar"
 - [x] Permitir ao dono do restaurante finalizar o pedido diretamente após 1h em entrega
+
+## Onboarding Spotlight - Modos de Visualização de Pedidos
+- [x] Implementar overlay escuro (spotlight) na página de Pedidos para destacar botões Kanban e Lista
+- [x] Tooltip informativo explicando os dois modos de visualização
+- [x] Apenas desktop (não mostrar em mobile)
+- [x] Salvar no localStorage para não mostrar novamente após "Entendi!"

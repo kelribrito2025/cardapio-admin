@@ -74,7 +74,7 @@ import {
   AlertTriangle,
   Ban,
 } from "lucide-react";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useLocation } from "wouter";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -246,6 +246,10 @@ export default function Pedidos() {
   });
   // Estado para filtro de status na lista compacta
   const [listStatusFilter, setListStatusFilter] = useState<OrderStatus | 'all'>('all');
+  // Estado para spotlight de onboarding dos modos de visualização (desktop only)
+  const [showViewModeSpotlight, setShowViewModeSpotlight] = useState(false);
+  const viewModeToggleRef = useRef<HTMLDivElement>(null);
+
   // Estado para o modal informativo de WhatsApp
   const [whatsappInfoModalOpen, setWhatsappInfoModalOpen] = useState(false);
   const [whatsappMsgIndex, setWhatsappMsgIndex] = useState(0);
@@ -376,6 +380,18 @@ export default function Pedidos() {
     // Mostrar modal apenas para novos usuários que nunca viram
     setWhatsappInfoModalOpen(true);
   }, [isWhatsappFetched, isWhatsappLoading, whatsappStatus?.status]);
+
+  // Spotlight de onboarding: mostrar na primeira visita desktop (após fechar outros modais)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.innerWidth < 640) return; // Só desktop
+    const dismissed = localStorage.getItem('pedidos_viewMode_spotlight_dismissed');
+    if (dismissed) return;
+    // Só mostrar quando não há outros modais abertos
+    if (whatsappInfoModalOpen || qrCodeModalOpen) return;
+    const timer = setTimeout(() => setShowViewModeSpotlight(true), 600);
+    return () => clearTimeout(timer);
+  }, [whatsappInfoModalOpen, qrCodeModalOpen]);
 
   // Listener para abrir o modal de conexao do WhatsApp (disparado pelo banner)
   useEffect(() => {
@@ -1231,7 +1247,7 @@ export default function Pedidos() {
         {/* Toggle Kanban/Lista + WhatsApp Status */}
         <div className="hidden sm:flex items-center gap-3">
           {/* Toggle de visualização */}
-          <div className="flex items-center bg-muted rounded-lg p-1 gap-0.5">
+          <div ref={viewModeToggleRef} className="flex items-center bg-muted rounded-lg p-1 gap-0.5 relative z-[60]">
             <button
               onClick={() => { setViewMode('kanban'); localStorage.setItem('pedidos_viewMode', 'kanban'); }}
               className={cn(
@@ -2971,6 +2987,99 @@ export default function Pedidos() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* Spotlight Overlay - Onboarding modos de visualização (desktop only) */}
+      <AnimatePresence>
+        {showViewModeSpotlight && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 hidden sm:flex items-start justify-center"
+            onClick={() => {
+              setShowViewModeSpotlight(false);
+              localStorage.setItem('pedidos_viewMode_spotlight_dismissed', 'true');
+            }}
+          >
+            {/* Backdrop escuro */}
+            <div className="absolute inset-0 bg-black/70" />
+
+            {/* Tooltip card posicionado dinamicamente */}
+            {viewModeToggleRef.current && (() => {
+              const rect = viewModeToggleRef.current!.getBoundingClientRect();
+              return (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3, delay: 0.15 }}
+                  className="absolute z-[70]"
+                  style={{
+                    top: rect.bottom + 16,
+                    right: Math.max(16, window.innerWidth - rect.right),
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Seta apontando para cima */}
+                  <div
+                    className="absolute -top-2 w-0 h-0"
+                    style={{
+                      right: Math.max(20, (rect.right - rect.left) / 2 - 8),
+                      borderLeft: '8px solid transparent',
+                      borderRight: '8px solid transparent',
+                      borderBottom: '8px solid white',
+                    }}
+                  />
+                  <div className="bg-white rounded-2xl shadow-2xl p-5 w-[340px] border border-gray-100">
+                    <div className="flex items-center gap-2.5 mb-3">
+                      <div className="p-2 rounded-xl bg-red-50">
+                        <Eye className="h-5 w-5 text-red-500" />
+                      </div>
+                      <h3 className="text-base font-bold text-gray-900">Modos de visualização</h3>
+                    </div>
+                    <p className="text-sm text-gray-500 mb-4 leading-relaxed">
+                      Escolha como prefere acompanhar seus pedidos:
+                    </p>
+                    <div className="space-y-3 mb-5">
+                      <div className="flex items-start gap-3 bg-gray-50 rounded-xl p-3">
+                        <div className="p-1.5 rounded-lg bg-white shadow-sm">
+                          <LayoutGrid className="h-4 w-4 text-red-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-800">Kanban</p>
+                          <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                            Visualize pedidos organizados por colunas de status: Novos, Preparo, Prontos e Entrega.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 bg-gray-50 rounded-xl p-3">
+                        <div className="p-1.5 rounded-lg bg-white shadow-sm">
+                          <List className="h-4 w-4 text-red-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-800">Lista</p>
+                          <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                            Veja todos os pedidos em formato de tabela compacta com filtros rápidos por status.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setShowViewModeSpotlight(false);
+                        localStorage.setItem('pedidos_viewMode_spotlight_dismissed', 'true');
+                      }}
+                      className="w-full py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl transition-colors"
+                    >
+                      Entendi!
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })()}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </AdminLayout>
   );
 }
