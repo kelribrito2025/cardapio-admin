@@ -7891,3 +7891,7 @@
 - [x] Overlay bloqueador durante Step 2 (impede cliques fora dos botões)
 - [x] Transição suave entre Tooltip 1 e Tooltip 2
 - [x] Salvar no localStorage que Step 2 foi exibido (não repetir)
+
+- [x] Ajustar layout do botão "Entendi" para ficar na mesma posição do "Meus pedidos"
+- [x] Garantir que o botão "Entendi" tenha o mesmo tamanho e altura do "Meus pedidos"
+- [x] Posicionar o tooltip acima do botão "Entendi"

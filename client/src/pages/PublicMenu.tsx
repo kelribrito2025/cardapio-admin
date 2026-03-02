@@ -5860,7 +5860,7 @@ setOnlinePaymentUrl(null);
                       setOnboardingStep2SubStep(1);
                       localStorage.setItem(onboardingStep2Key, 'true');
                     }}
-                    className="w-full mt-4 py-2.5 px-4 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg transition-colors"
+                    className="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
                   >
                     Entendi
                   </button>
