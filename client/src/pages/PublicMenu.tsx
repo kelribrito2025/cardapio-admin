@@ -4686,15 +4686,28 @@ setOnlinePaymentUrl(null);
                     {/* Overlay bloqueador - impede cliques fora do botão */}
                     <div className="fixed inset-0 bg-black/60 z-[200]" onClick={(e) => e.stopPropagation()} />
                     <div className="absolute bottom-full left-6 right-6 mb-3 z-[201] animate-in fade-in slide-in-from-bottom-2 duration-300">
-                      <div className="bg-white rounded-xl shadow-2xl p-4 border border-red-200">
+                      <div className="bg-red-50 rounded-xl shadow-2xl p-4 border border-red-200">
                         <div className="flex items-start gap-3">
-                          <span className="text-2xl flex-shrink-0">📦</span>
-                          <div>
+                          <div className="flex-shrink-0 p-2 bg-red-100 rounded-lg">
+                            <Package className="h-5 w-5 text-red-500" />
+                          </div>
+                          <div className="flex-1">
                             <p className="text-sm font-bold text-gray-900">Seu pedido foi enviado!</p>
                             <p className="text-xs text-gray-600 mt-1">Clique aqui para acompanhar o status.</p>
                           </div>
+                          <button
+                            onClick={() => {
+                              setCheckoutStep(0);
+                              setShowTrackingModal(true);
+                              if (onboardingStep === 1) {
+                                setOnboardingStep(2);
+                              }
+                            }}
+                            className="flex-shrink-0 px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap"
+                          >
+                            Acompanhar
+                          </button>
                         </div>
-                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-r border-b border-red-200 rotate-45" />
                       </div>
                     </div>
                   </>

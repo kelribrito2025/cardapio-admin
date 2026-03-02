@@ -7875,3 +7875,6 @@
 - [x] Bloquear cliques fora do botão "Acompanhar pedido" durante Step 1
 - [x] Desabilitar toda a interface exceto o botão "Acompanhar pedido"
 - [x] Adicionar overlay com pointer-events-none no resto da tela
+
+- [x] Ajustar estilo do tooltip Step 1 para padrão do card informativo (fundo rosa, ícone, botão vermelho)
+- [x] Adicionar botão "Acompanhar" no tooltip com estilo vermelho
