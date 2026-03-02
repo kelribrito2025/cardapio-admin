@@ -43,6 +43,7 @@ import {
   Loader2,
   Package,
   AlertTriangle,
+  HelpCircle,
 } from "lucide-react";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
@@ -1603,15 +1604,28 @@ export default function Complementos() {
         )}
 
         {/* Legend */}
-        <div className="text-sm text-muted-foreground bg-muted/50 p-4 rounded-lg mt-6">
-          <p className="font-medium mb-2">Como funciona:</p>
-          <ul className="space-y-1 list-disc list-inside">
-            <li><strong>Grupos:</strong> Cada grupo aparece em todos os produtos que o utilizam</li>
-            <li><strong>Pausar grupo:</strong> Todos os complementos do grupo ficam indisponíveis em todos os produtos</li>
-            <li><strong>Reativar grupo:</strong> Complementos voltam ao status individual de cada um</li>
-            <li><strong>Mín/Máx/Obrigatório:</strong> Altera a regra em todos os produtos que usam o grupo</li>
-            <li><strong>Adicionar/Excluir complemento:</strong> Reflete em todos os produtos vinculados ao grupo</li>
-          </ul>
+        <div className="relative rounded-xl overflow-hidden mt-6 border bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/20 border-red-200/50 dark:border-red-800/30">
+          {/* Decorative background pattern */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h4v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2H0v-2h20v-2H0v-2h20v-2H0v-2h20\' fill=\'%23dc2626\' fill-opacity=\'1\' fill-rule=\'evenodd\'/%3E%3C/svg%3E")' }} />
+          
+          <div className="relative flex gap-3 px-4 py-3">
+            {/* Icon */}
+            <div className="flex-shrink-0 p-2 rounded-xl bg-red-100 dark:bg-red-900/40 h-fit">
+              <HelpCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm text-foreground leading-tight mb-2">Como funciona</p>
+              <ul className="space-y-1 text-xs text-muted-foreground">
+                <li><strong className="text-foreground">Grupos:</strong> Cada grupo aparece em todos os produtos que o utilizam</li>
+                <li><strong className="text-foreground">Pausar grupo:</strong> Todos os complementos do grupo ficam indisponíveis em todos os produtos</li>
+                <li><strong className="text-foreground">Reativar grupo:</strong> Complementos voltam ao status individual de cada um</li>
+                <li><strong className="text-foreground">Mín/Máx/Obrigatório:</strong> Altera a regra em todos os produtos que usam o grupo</li>
+                <li><strong className="text-foreground">Adicionar/Excluir complemento:</strong> Reflete em todos os produtos vinculados ao grupo</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </TooltipProvider>
     </AdminLayout>

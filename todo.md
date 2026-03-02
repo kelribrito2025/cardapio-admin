@@ -7818,3 +7818,6 @@
 
 ## Banner Informativo de Produtos Sem Foto
 - [x] Banner informativo no topo do catálogo mostrando quantidade de produtos sem foto, com botão para filtrar lista, usando identidade visual do projeto
+
+## Estilo Visual Card Como Funciona
+- [x] Atualizar card 'Como funciona' da página de complementos para seguir o mesmo estilo visual do banner de produtos sem foto do catálogo
