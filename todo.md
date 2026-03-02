@@ -7824,3 +7824,6 @@
 
 ## Borda na Foto do Restaurante na Sidebar
 - [x] Adicionar borda/container ao redor da foto do restaurante na sidebar do menu
+
+## Efeito Shimmer no Banner de Produtos Sem Foto
+- [x] Adicionar efeito shimmer/brilho sutil ao card informativo de produtos sem foto no catálogo

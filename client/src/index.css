@@ -356,6 +356,16 @@
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
+/* Banner shimmer - efeito de brilho que percorre o card */
+@keyframes banner-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 /* Pulse animation para notificações */
 @keyframes pulse-dot {
   0%, 100% {
