@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { AdminLayout } from "@/components/AdminLayout";
 import { PageHeader, StatCard, TableSkeleton } from "@/components/shared";
@@ -11,9 +11,13 @@ import {
   Clock,
   CheckCircle2,
   Bike,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation, useParams } from "wouter";
+
+const ITEMS_PER_PAGE = 20;
 
 function formatCurrency(value: number) {
   return `R$ ${value.toFixed(2).replace(".", ",")}`;
@@ -34,6 +38,7 @@ export default function EntregadorDetalhes() {
   const [, navigate] = useLocation();
   const params = useParams<{ id: string }>();
   const driverId = parseInt(params.id || "0");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { data: driver, isLoading: driverLoading } = trpc.driver.getById.useQuery(
     { id: driverId },
@@ -50,6 +55,21 @@ export default function EntregadorDetalhes() {
 
   const markPaidMutation = trpc.driver.markAsPaid.useMutation();
 
+  // Pagination logic
+  const totalItems = deliveriesList?.length ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
+  const paginatedDeliveries = useMemo(() => {
+    if (!deliveriesList) return [];
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    return deliveriesList.slice(start, end);
+  }, [deliveriesList, currentPage]);
+
+  // Reset to page 1 if current page exceeds total
+  if (currentPage > totalPages && totalPages > 0) {
+    setCurrentPage(1);
+  }
+
   const handleMarkPaid = async (deliveryId: number) => {
     try {
       await markPaidMutation.mutateAsync({ deliveryId });
@@ -58,6 +78,31 @@ export default function EntregadorDetalhes() {
     } catch (error: any) {
       toast.error("Erro ao marcar como pago", { description: error.message });
     }
+  };
+
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      // Scroll to top of deliveries section
+      document.getElementById("deliveries-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages: (number | "...")[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push("...");
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (currentPage < totalPages - 2) pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
   };
 
   if (driverLoading) {
@@ -142,11 +187,18 @@ export default function EntregadorDetalhes() {
         </div>
 
         {/* Deliveries Table */}
-        <div>
-          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-            <Bike className="h-5 w-5 text-muted-foreground" />
-            Entregas realizadas
-          </h2>
+        <div id="deliveries-section">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <Bike className="h-5 w-5 text-muted-foreground" />
+              Entregas realizadas
+            </h2>
+            {totalItems > 0 && (
+              <span className="text-sm text-muted-foreground">
+                {totalItems} {totalItems === 1 ? "entrega" : "entregas"} no total
+              </span>
+            )}
+          </div>
 
           {deliveriesLoading ? (
             <TableSkeleton rows={5} columns={7} />
@@ -173,7 +225,7 @@ export default function EntregadorDetalhes() {
                     </tr>
                   </thead>
                   <tbody>
-                    {deliveriesList.map((delivery) => {
+                    {paginatedDeliveries.map((delivery) => {
                       const order = delivery.order;
                       // Extract neighborhood from address
                       const addressParts = (order?.customerAddress || "").split(",");
@@ -223,7 +275,7 @@ export default function EntregadorDetalhes() {
 
               {/* Mobile */}
               <div className="md:hidden divide-y divide-border/30">
-                {deliveriesList.map((delivery) => {
+                {paginatedDeliveries.map((delivery) => {
                   const order = delivery.order;
                   return (
                     <div key={delivery.id} className="p-4 space-y-2">
@@ -265,6 +317,50 @@ export default function EntregadorDetalhes() {
                   );
                 })}
               </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between border-t border-border/50 px-4 py-3">
+                  <p className="text-sm text-muted-foreground">
+                    Mostrando {((currentPage - 1) * ITEMS_PER_PAGE) + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, totalItems)} de {totalItems}
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => goToPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    {getPageNumbers().map((page, idx) =>
+                      page === "..." ? (
+                        <span key={`dots-${idx}`} className="px-2 text-sm text-muted-foreground">…</span>
+                      ) : (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "ghost"}
+                          size="icon"
+                          className={`h-8 w-8 text-sm ${currentPage === page ? "bg-red-600 text-white hover:bg-red-700" : ""}`}
+                          onClick={() => goToPage(page as number)}
+                        >
+                          {page}
+                        </Button>
+                      )
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => goToPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

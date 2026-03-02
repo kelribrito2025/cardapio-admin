@@ -7840,3 +7840,6 @@
 ## Botão Finalizar para Pedidos em Entrega Atrasados
 - [x] Quando pedido em entrega há mais de 1 hora, trocar botão "Entregador" por "Finalizar"
 - [x] Permitir ao dono do restaurante finalizar o pedido diretamente após 1h em entrega
+
+## Paginação na Lista de Entregas do Entregador
+- [x] Adicionar paginação (máximo 20 itens por página) na lista de entregas ao clicar num entregador na página /entregadores
