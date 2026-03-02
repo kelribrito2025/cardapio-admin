@@ -1044,6 +1044,12 @@ export default function Pedidos() {
       case "out_for_delivery":
         // Se existem entregadores e o pedido é delivery, o entregador controla a finalização
         if (hasActiveDrivers && order?.deliveryType === 'delivery') {
+          // Se o pedido está em entrega há mais de 1 hora, permitir que o dono finalize diretamente
+          const orderAgeMs = Date.now() - new Date(order.updatedAt || order.createdAt).getTime();
+          const ONE_HOUR_MS = 60 * 60 * 1000;
+          if (status === 'out_for_delivery' && orderAgeMs > ONE_HOUR_MS) {
+            return { label: "Finalizar", newStatus: "completed" };
+          }
           return { label: "Entregador", newStatus: "completed", disabled: true, driverControlled: true };
         }
         return { label: "Finalizar", newStatus: "completed" };

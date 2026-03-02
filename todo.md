@@ -7836,3 +7836,7 @@
 - [x] Pedir permissão do usuário para notificações
 - [x] Disparar notificação push ao receber novo pedido via SSE
 - [x] Tocar som de alerta junto com a notificação
+
+## Botão Finalizar para Pedidos em Entrega Atrasados
+- [x] Quando pedido em entrega há mais de 1 hora, trocar botão "Entregador" por "Finalizar"
+- [x] Permitir ao dono do restaurante finalizar o pedido diretamente após 1h em entrega
