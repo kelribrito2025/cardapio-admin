@@ -7843,3 +7843,8 @@
 
 ## Paginação na Lista de Entregas do Entregador
 - [x] Adicionar paginação (máximo 20 itens por página) na lista de entregas ao clicar num entregador na página /entregadores
+
+## Banner Informativo na Página de Avaliações
+- [x] Adicionar banner informativo no topo da página /avaliacoes com mesmo estilo visual do banner de produtos sem foto do catálogo
+- [x] Mensagem: "Avaliações são importantes! Incentive seus clientes a avaliarem o restaurante para aumentar sua credibilidade e atrair mais pedidos."
+- [x] Ícone de estrela à esquerda, efeito pulsante, botão de fechar (dismiss)

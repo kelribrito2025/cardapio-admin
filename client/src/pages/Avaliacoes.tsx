@@ -292,6 +292,9 @@ export default function Avaliacoes() {
   const [selectedReview, setSelectedReview] = useState<any>(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [pageInput, setPageInput] = useState("");
+  const [reviewsBannerDismissed, setReviewsBannerDismissed] = useState(() => {
+    try { return localStorage.getItem('reviewsBannerDismissed') === 'true'; } catch { return false; }
+  });
   const LIMIT = 15;
 
   // Buscar estabelecimento
@@ -398,6 +401,58 @@ export default function Avaliacoes() {
         description="Gerencie e responda as avaliações dos seus clientes"
         icon={<Star className="h-6 w-6 text-amber-500" />}
       />
+
+      {/* Banner informativo de avaliações */}
+      {!reviewsBannerDismissed && (
+        <div className="relative rounded-xl overflow-hidden border bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20 border-amber-200/50 dark:border-amber-800/30">
+          {/* Decorative background pattern */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h4v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2H0v-2h20v-2H0v-2h20v-2H0v-2h20' fill='%23d97706' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")` }} />
+          
+          {/* Shimmer effect */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(105deg, transparent 0%, transparent 30%, rgba(255,255,255,0.5) 45%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.5) 55%, transparent 70%, transparent 100%)',
+                animation: 'banner-shimmer 3s ease-in-out infinite',
+                animationDelay: '1s'
+              }}
+            />
+          </div>
+          
+          <div className="relative flex items-center gap-3 px-4 py-3">
+            {/* Ícone pulsante */}
+            <div className="relative flex-shrink-0">
+              <div className="absolute inset-0 animate-ping rounded-full bg-amber-400/30 dark:bg-amber-500/20" />
+              <div className="relative p-2 rounded-full bg-amber-100 dark:bg-amber-900/40">
+                <Star className="h-5 w-5 text-amber-600 dark:text-amber-400 fill-amber-500" />
+              </div>
+            </div>
+
+            {/* Text */}
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm text-foreground leading-tight">
+                Avaliações são <span className="text-amber-600 dark:text-amber-400">importantes</span>!
+              </p>
+              <p className="text-xs text-muted-foreground leading-tight mt-0.5">
+                Incentive seus clientes a avaliarem o restaurante para aumentar sua <strong className="text-amber-600 dark:text-amber-400">credibilidade</strong> e atrair mais pedidos.
+              </p>
+            </div>
+
+            {/* Dismiss button */}
+            <button
+              onClick={() => {
+                setReviewsBannerDismissed(true);
+                try { localStorage.setItem('reviewsBannerDismissed', 'true'); } catch {}
+              }}
+              className="flex-shrink-0 p-1 rounded-full hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
+              aria-label="Fechar"
+            >
+              <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Métricas */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
