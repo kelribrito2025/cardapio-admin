@@ -7830,3 +7830,9 @@
 
 ## Efeito Pulsante no Ícone do Banner
 - [x] Adicionar efeito pulsante (animate-ping) no ícone da câmera do banner de produtos sem foto, igual ao do WhatsApp desconectado
+
+## Notificações Push no Navegador
+- [x] Implementar Notification API do navegador para alertar sobre novos pedidos com aba inativa
+- [x] Pedir permissão do usuário para notificações
+- [x] Disparar notificação push ao receber novo pedido via SSE
+- [x] Tocar som de alerta junto com a notificação

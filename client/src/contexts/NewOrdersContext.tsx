@@ -515,6 +515,24 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
   // Ref para a contagem atual (para evitar closure stale)
   const countRef = useRef(0);
 
+  // === Notificações Push do Navegador ===
+  // Pedir permissão na primeira oportunidade
+  useEffect(() => {
+    if (!user) return;
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'default') {
+      // Pedir permissão após interação do usuário (click)
+      const askPermission = () => {
+        Notification.requestPermission().then((perm) => {
+          console.log('[BrowserNotification] Permissão:', perm);
+        });
+        document.removeEventListener('click', askPermission);
+      };
+      document.addEventListener('click', askPermission, { once: true });
+      return () => document.removeEventListener('click', askPermission);
+    }
+  }, [user]);
+
   // Verificar estado do áudio periodicamente
   useEffect(() => {
     const checkAudioState = () => {
@@ -596,6 +614,50 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
       console.log(`[NewOrders] [${timestamp}] playNotificationSound chamado`);
     } else {
       console.log(`[NewOrders] [${timestamp}] Som não tocado - usuário está no menu público`);
+    }
+
+    // === Notificação Push do Navegador (quando aba inativa) ===
+    if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+      try {
+        const orderObj = order as any;
+        const orderNumber = orderObj?.orderNumber || orderObj?.id || '';
+        const customerName = orderObj?.customerName || '';
+        const total = orderObj?.total ? `R$ ${(orderObj.total / 100).toFixed(2).replace('.', ',')}` : '';
+        
+        const title = isIfoodOrder ? '🟥 Novo Pedido iFood!' : '🔔 Novo Pedido!';
+        let body = '';
+        if (orderNumber) body += `Pedido #${orderNumber}`;
+        if (customerName) body += ` - ${customerName}`;
+        if (total) body += ` - ${total}`;
+        if (!body) body = 'Você recebeu um novo pedido. Confira agora!';
+
+        // Tentar via Service Worker primeiro (funciona melhor em background)
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.ready.then((registration) => {
+            registration.showNotification(title, {
+              body,
+              icon: '/icons/icon-192x192.png',
+              badge: '/icons/icon-96x96.png',
+              tag: `new-order-${orderNumber || Date.now()}`,
+              requireInteraction: true,
+              data: { url: '/pedidos' },
+              silent: false,
+              renotify: true,
+            } as NotificationOptions);
+          });
+        } else {
+          // Fallback: Notification API direta
+          new Notification(title, {
+            body,
+            icon: '/icons/icon-192x192.png',
+            tag: `new-order-${orderNumber || Date.now()}`,
+            requireInteraction: true,
+          });
+        }
+        console.log(`[NewOrders] [${timestamp}] Notificação push do navegador enviada`);
+      } catch (e) {
+        console.error(`[NewOrders] [${timestamp}] Erro ao enviar notificação push:`, e);
+      }
     }
     
     console.log(`[NewOrders] [${timestamp}] ========== FIM PROCESSAMENTO ==========`);
