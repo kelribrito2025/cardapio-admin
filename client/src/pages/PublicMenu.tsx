@@ -4676,10 +4676,15 @@ setOnlinePaymentUrl(null);
               {/* Footer */}
               {orderSent ? (
               <div className="flex-shrink-0 border-t px-6 py-4 relative">
+                {/* Overlay bloqueador durante onboarding Step 1 - bloqueia cliques fora */}
+                {onboardingStep === 1 && (
+                  <div className="fixed inset-0 z-[199]" onClick={(e) => e.stopPropagation()} />
+                )}
                 {/* Onboarding Step 1: Overlay escuro + tooltip acima do botão */}
                 {onboardingStep === 1 && (
                   <>
-                    <div className="fixed inset-0 bg-black/60 z-[200] pointer-events-none" />
+                    {/* Overlay bloqueador - impede cliques fora do botão */}
+                    <div className="fixed inset-0 bg-black/60 z-[200]" onClick={(e) => e.stopPropagation()} />
                     <div className="absolute bottom-full left-6 right-6 mb-3 z-[201] animate-in fade-in slide-in-from-bottom-2 duration-300">
                       <div className="bg-white rounded-xl shadow-2xl p-4 border border-red-200">
                         <div className="flex items-start gap-3">
@@ -4711,7 +4716,7 @@ setOnlinePaymentUrl(null);
                       setOnboardingStep(2);
                     }
                   }}
-                  className={`w-full py-3.5 bg-primary text-white font-semibold rounded-xl transition-colors hover:bg-primary/90 flex items-center justify-center gap-2 ${onboardingStep === 1 ? 'relative z-[201] ring-4 ring-white/50 shadow-2xl' : ''}`}
+                  className={`w-full py-3.5 bg-primary text-white font-semibold rounded-xl transition-colors hover:bg-primary/90 flex items-center justify-center gap-2 pointer-events-auto ${onboardingStep === 1 ? 'relative z-[201] ring-4 ring-white/50 shadow-2xl' : ''}`}
                 >
                   <Package className="h-5 w-5" />
                   Acompanhar pedido

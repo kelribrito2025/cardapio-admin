@@ -7871,3 +7871,7 @@
 - [x] Salvar no localStorage que onboarding foi exibido (não repetir para mesmo usuário)
 - [x] Transições suaves entre etapas (fade/slide)
 - [x] Ring highlight nos elementos focados
+
+- [x] Bloquear cliques fora do botão "Acompanhar pedido" durante Step 1
+- [x] Desabilitar toda a interface exceto o botão "Acompanhar pedido"
+- [x] Adicionar overlay com pointer-events-none no resto da tela
