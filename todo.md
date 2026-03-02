@@ -7855,3 +7855,19 @@
 - [x] Mostrar apenas 1 vez por cliente (localStorage)
 - [x] Apenas após pedido concluído, não em navegação normal
 - [x] Visual sutil e elegante, sem bloquear a tela inteira
+
+## Refazer Onboarding Pós-Pedido (Novo Fluxo 3 Etapas)
+- [ ] Etapa 1: Na tela de sucesso, overlay escuro focando no botão "Acompanhar pedido" + tooltip acima
+- [ ] Etapa 2: No modal de acompanhamento, trocar botão "Fechar" por "Meus pedidos" (cor vermelha)
+- [ ] Etapa 3: Ao clicar "Meus pedidos", fechar modal, abrir sidebar com overlay focando no item "Meus Pedidos" + tooltip
+- [ ] Remover onboarding anterior (sidebar automática após pedido)
+- [ ] Manter localStorage para mostrar apenas 1 vez por cliente
+
+
+## Onboarding Pós-Pedido (Menu Público)
+- [x] Implementar Step 1: Overlay escuro + tooltip acima do botão "Acompanhar pedido" após envio
+- [x] Implementar Step 2: Modificar botão "Fechar" para "Meus pedidos" (vermelho) no modal de tracking
+- [x] Implementar Step 3: Overlay + tooltip no item "Meus pedidos" da sidebar
+- [x] Salvar no localStorage que onboarding foi exibido (não repetir para mesmo usuário)
+- [x] Transições suaves entre etapas (fade/slide)
+- [x] Ring highlight nos elementos focados
