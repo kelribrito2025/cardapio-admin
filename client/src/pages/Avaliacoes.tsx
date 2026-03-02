@@ -425,7 +425,7 @@ export default function Avaliacoes() {
             <div className="relative flex-shrink-0">
               <div className="absolute inset-0 animate-ping rounded-full bg-amber-400/30 dark:bg-amber-500/20" />
               <div className="relative p-2 rounded-full bg-amber-100 dark:bg-amber-900/40">
-                <Star className="h-5 w-5 text-amber-600 dark:text-amber-400 fill-amber-500" />
+                <Star className="h-5 w-5 text-amber-500 dark:text-amber-400" />
               </div>
             </div>
 
