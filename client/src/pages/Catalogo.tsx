@@ -45,6 +45,8 @@ import {
   Clock,
   CalendarClock,
   Camera,
+  ImageOff,
+  ArrowRight,
 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback, startTransition, type FocusEvent } from "react";
 import { useLocation } from "wouter";
@@ -755,6 +757,8 @@ export default function Catalogo() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [stockFilter, setStockFilter] = useState<string>("all");
   const [orderBy, setOrderBy] = useState<string>("sortOrder");
+  const [filterNoPhoto, setFilterNoPhoto] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   // Dialogs
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -823,7 +827,7 @@ export default function Catalogo() {
   }, []);
 
   // Check if filters are active (disable drag when filters are active)
-  const hasActiveFilters: boolean = !!(search || categoryFilter !== "all" || statusFilter !== "all" || stockFilter !== "all" || orderBy !== "sortOrder");
+  const hasActiveFilters: boolean = !!(search || categoryFilter !== "all" || statusFilter !== "all" || stockFilter !== "all" || orderBy !== "sortOrder" || filterNoPhoto);
 
   useEffect(() => {
     if (establishment) {
@@ -876,7 +880,14 @@ export default function Catalogo() {
 
   useEffect(() => {
     if (productsData?.products) {
-      const grouped = productsData.products.reduce((acc, product) => {
+      let filteredProducts = productsData.products;
+      
+      // Apply no-photo filter if active
+      if (filterNoPhoto) {
+        filteredProducts = filteredProducts.filter(p => !p.images || p.images.length === 0);
+      }
+      
+      const grouped = filteredProducts.reduce((acc, product) => {
         const categoryId = product.categoryId || 0;
         if (!acc[categoryId]) {
           acc[categoryId] = [];
@@ -892,7 +903,7 @@ export default function Catalogo() {
       
       setLocalProductsByCategory(grouped);
     }
-  }, [productsData]);
+  }, [productsData, filterNoPhoto]);
 
   // Scroll restoration: when returning from product edit, scroll to the category
   useEffect(() => {
@@ -1287,6 +1298,12 @@ export default function Catalogo() {
 
   const products = productsData?.products || [];
 
+  // Count products without photos
+  const productsWithoutPhoto = useMemo(() => {
+    return products.filter(p => !p.images || p.images.length === 0);
+  }, [products]);
+  const noPhotoCount = productsWithoutPhoto.length;
+
   return (
     <AdminLayout>
       <div className="mb-6">
@@ -1308,6 +1325,75 @@ export default function Catalogo() {
           }
         />
       </div>
+
+      {/* Banner: Produtos sem foto */}
+      {!isLoading && noPhotoCount > 0 && !bannerDismissed && (
+        <div
+          className={cn(
+            "relative rounded-xl overflow-hidden mb-4 border",
+            filterNoPhoto
+              ? "bg-primary/5 border-primary/20"
+              : "bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/20 border-red-200/50 dark:border-red-800/30"
+          )}
+        >
+          {/* Decorative background pattern */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h4v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2H0v-2h20v-2H0v-2h20v-2H0v-2h20\' fill=\'%23dc2626\' fill-opacity=\'1\' fill-rule=\'evenodd\'/%3E%3C/svg%3E")' }} />
+          
+          <div className="relative flex items-center gap-3 px-4 py-3">
+            {/* Icon */}
+            <div className="flex-shrink-0 p-2 rounded-xl bg-red-100 dark:bg-red-900/40">
+              <Camera className="h-5 w-5 text-red-600 dark:text-red-400" />
+            </div>
+
+            {/* Text */}
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm text-foreground leading-tight">
+                {filterNoPhoto ? (
+                  <>{noPhotoCount} {noPhotoCount === 1 ? 'produto sem foto' : 'produtos sem foto'}</>  
+                ) : (
+                  <>Você tem <span className="text-red-600 dark:text-red-400">{noPhotoCount}</span> {noPhotoCount === 1 ? 'produto' : 'produtos'} sem foto</>
+                )}
+              </p>
+              <p className="text-xs text-muted-foreground leading-tight mt-0.5">
+                Produtos com imagens vendem até <strong className="text-red-600 dark:text-red-400">3x mais</strong>!
+              </p>
+            </div>
+
+            {/* Action button */}
+            {filterNoPhoto ? (
+              <Button
+                onClick={() => setFilterNoPhoto(false)}
+                size="sm"
+                variant="outline"
+                className="flex-shrink-0 text-xs h-8 px-3 rounded-lg gap-1.5 font-semibold border-primary/30 text-primary hover:bg-primary/10"
+              >
+                <X className="h-3.5 w-3.5" />
+                Limpar filtro
+              </Button>
+            ) : (
+              <Button
+                onClick={() => setFilterNoPhoto(true)}
+                size="sm"
+                className="flex-shrink-0 text-xs h-8 px-3 rounded-lg gap-1.5 font-semibold bg-red-600 hover:bg-red-700 text-white shadow-sm"
+              >
+                Ver produtos
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            )}
+
+            {/* Dismiss button */}
+            {!filterNoPhoto && (
+              <button
+                onClick={() => setBannerDismissed(true)}
+                className="flex-shrink-0 p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+                aria-label="Fechar"
+              >
+                <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Mobile Search + Novo Produto - visible only on mobile */}
       <div className="mb-4 md:hidden flex items-center gap-2">

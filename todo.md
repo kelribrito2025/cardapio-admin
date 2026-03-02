@@ -7815,3 +7815,6 @@
 
 ## Validação Mín/Máx
 - [x] Adicionar validação para impedir que o mínimo seja maior que o máximo nos campos de complementos
+
+## Banner Informativo de Produtos Sem Foto
+- [x] Banner informativo no topo do catálogo mostrando quantidade de produtos sem foto, com botão para filtrar lista, usando identidade visual do projeto
