@@ -7827,3 +7827,6 @@
 
 ## Efeito Shimmer no Banner de Produtos Sem Foto
 - [x] Adicionar efeito shimmer/brilho sutil ao card informativo de produtos sem foto no catálogo
+
+## Efeito Pulsante no Ícone do Banner
+- [x] Adicionar efeito pulsante (animate-ping) no ícone da câmera do banner de produtos sem foto, igual ao do WhatsApp desconectado

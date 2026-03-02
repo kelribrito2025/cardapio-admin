@@ -1352,9 +1352,12 @@ export default function Catalogo() {
           </div>
           
           <div className="relative flex items-center gap-3 px-4 py-3">
-            {/* Icon */}
-            <div className="flex-shrink-0 p-2 rounded-xl bg-red-100 dark:bg-red-900/40">
-              <Camera className="h-5 w-5 text-red-600 dark:text-red-400" />
+            {/* Ícone pulsante */}
+            <div className="relative flex-shrink-0">
+              <div className="absolute inset-0 animate-ping rounded-full bg-red-400/30 dark:bg-red-500/20" />
+              <div className="relative p-2 rounded-full bg-red-100 dark:bg-red-900/40">
+                <Camera className="h-5 w-5 text-red-600 dark:text-red-400" />
+              </div>
             </div>
 
             {/* Text */}
