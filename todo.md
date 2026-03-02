@@ -7848,3 +7848,10 @@
 - [x] Adicionar banner informativo no topo da página /avaliacoes com mesmo estilo visual do banner de produtos sem foto do catálogo
 - [x] Mensagem: "Avaliações são importantes! Incentive seus clientes a avaliarem o restaurante para aumentar sua credibilidade e atrair mais pedidos."
 - [x] Ícone de estrela à esquerda, efeito pulsante, botão de fechar (dismiss)
+
+## Onboarding Pós-Pedido no Menu Público
+- [x] Após finalizar pedido, abrir sidebar automaticamente e destacar "Meus pedidos" com tooltip
+- [x] Tooltip com mensagem: "Você pode acompanhar o status em Meus pedidos. E até repetir o mesmo pedido que já foi entregue."
+- [x] Mostrar apenas 1 vez por cliente (localStorage)
+- [x] Apenas após pedido concluído, não em navegação normal
+- [x] Visual sutil e elegante, sem bloquear a tela inteira

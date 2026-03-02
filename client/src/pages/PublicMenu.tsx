@@ -181,6 +181,7 @@ export default function PublicMenu() {
   const [cancellationReasonDisplay, setCancellationReasonDisplay] = useState<string | null>(null);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showOnboardingTooltip, setShowOnboardingTooltip] = useState(false);
   const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set());
   // Track canReview status per order in history: { orderId: { checked: boolean, canReview: boolean } }
   const [historyCanReview, setHistoryCanReview] = useState<Record<string, { checked: boolean; canReview: boolean }>>({});
@@ -4676,6 +4677,15 @@ setOnlinePaymentUrl(null);
                     setOnlinePaymentUrl(null);
                     setCreatedOrderNumber(null);
                     setIsSendingOrder(false);
+                    // Onboarding pós-pedido: abrir sidebar com tooltip na primeira vez
+                    const onboardingKey = `onboarding_meus_pedidos_${slug}`;
+                    if (!localStorage.getItem(onboardingKey)) {
+                      setTimeout(() => {
+                        setShowMobileMenu(true);
+                        setShowOnboardingTooltip(true);
+                        localStorage.setItem(onboardingKey, 'true');
+                      }, 600);
+                    }
                   }}
                   className="w-full py-3.5 bg-primary text-white font-semibold rounded-xl transition-colors hover:bg-primary/90 flex items-center justify-center gap-2"
                 >
@@ -7247,7 +7257,7 @@ setOnlinePaymentUrl(null);
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50"
-            onClick={() => setShowMobileMenu(false)}
+            onClick={() => { setShowMobileMenu(false); setShowOnboardingTooltip(false); }}
           />
           
           {/* Drawer - desliza da direita */}
@@ -7256,7 +7266,7 @@ setOnlinePaymentUrl(null);
             <div className="bg-gradient-to-r from-red-500 to-red-600 px-5 py-4 flex items-center justify-between">
               <span className="text-white font-bold text-lg">Menu</span>
               <button 
-                onClick={() => setShowMobileMenu(false)}
+                onClick={() => { setShowMobileMenu(false); setShowOnboardingTooltip(false); }}
                 className="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
               >
                 <X className="h-5 w-5 text-white" />
@@ -7266,14 +7276,20 @@ setOnlinePaymentUrl(null);
             {/* Menu Items */}
             <div className="flex-1 overflow-y-auto py-2">
               {/* Pedidos */}
+              <div className="relative">
               <button
                 onClick={() => {
                   setShowMobileMenu(false);
+                  setShowOnboardingTooltip(false);
                   setShowOrdersModal(true);
                 }}
-                className="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors relative"
+                className={`w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors relative ${
+                  showOnboardingTooltip ? 'bg-red-50 ring-2 ring-red-300 ring-inset rounded-lg' : ''
+                }`}
               >
-                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                  showOnboardingTooltip ? 'bg-red-100 animate-pulse' : 'bg-red-50'
+                }`}>
                   <ClipboardList className="h-5 w-5 text-red-500" />
                 </div>
                 <div className="flex-1 text-left">
@@ -7287,6 +7303,31 @@ setOnlinePaymentUrl(null);
                 )}
                 <ChevronRight className="h-4 w-4 text-gray-400" />
               </button>
+              
+              {/* Tooltip de onboarding pós-pedido */}
+              {showOnboardingTooltip && (
+                <div className="mx-3 mt-1 mb-2 p-3 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl shadow-lg animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="flex items-start gap-2">
+                    <div className="flex-shrink-0 mt-0.5">
+                      <span className="text-lg">📦</span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-800">Você pode acompanhar o status em <span className="text-red-600 font-bold">Meus Pedidos</span>.</p>
+                      <p className="text-xs text-gray-500 mt-1">E até repetir o mesmo pedido que já foi entregue!</p>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowOnboardingTooltip(false);
+                      }}
+                      className="flex-shrink-0 p-0.5 hover:bg-red-100 rounded-full transition-colors"
+                    >
+                      <X className="h-3.5 w-3.5 text-gray-400" />
+                    </button>
+                  </div>
+                </div>
+              )}
+              </div>
               
               {/* Fidelidade (se habilitado) */}
               {loyaltyEnabled?.enabled && !cashbackEnabled?.enabled && (
