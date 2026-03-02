@@ -12,8 +12,8 @@ import {
 // Dias da semana (começando por Domingo como na imagem)
 const DAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
-// Horas do dia (começando às 7h e terminando às 6h)
-const HOURS = [...Array.from({ length: 17 }, (_, i) => i + 7), ...Array.from({ length: 7 }, (_, i) => i)];
+// Horas do dia (0h a 23h)
+const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
 // Escala de cores azul (do mais claro ao mais escuro)
 const COLOR_SCALE = [
