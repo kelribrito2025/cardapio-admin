@@ -103,6 +103,8 @@ const saveOrdersToStorage = (establishmentId: number, orders: UserOrder[]) => {
 
 export default function PublicMenu() {
   const { slug } = useParams<{ slug: string }>();
+  const onboardingKey = 'onboardingPedidoVisto';
+  const onboardingStep2Key = 'onboardingStep2Visto';
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
