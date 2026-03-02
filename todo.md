@@ -7878,3 +7878,6 @@
 
 - [x] Ajustar estilo do tooltip Step 1 para padrão do card informativo (fundo rosa, ícone, botão vermelho)
 - [x] Adicionar botão "Acompanhar" no tooltip com estilo vermelho
+
+- [x] Restaurar setinha estilo balão (triângulo apontando para baixo) no tooltip
+- [x] Remover botão "Acompanhar" do tooltip (manter apenas texto informativo)
