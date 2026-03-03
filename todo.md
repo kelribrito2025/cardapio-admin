@@ -8061,3 +8061,4 @@
 - [x] Botão tempo médio na top bar: alterar cor para verde (cor do sistema)
 - [x] Card Top Produtos: reestilizar com mesmo visual do card Formas de Pagamento (Finanças)
 - [x] Card Top Produtos: mostrar 7 itens visíveis + 3 via scroll interno
+- [x] Card Top Produtos: ajustar para 6 itens visíveis e eliminar espaço em branco
