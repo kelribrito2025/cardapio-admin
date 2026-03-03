@@ -321,52 +321,46 @@ export default function Dashboard() {
               {[1,2,3].map(i => (
                 <div key={i} className="flex flex-col gap-2">
                   <div className="skeleton h-4 w-20 rounded" />
-                  <div className="skeleton h-3 w-12 rounded" />
+                  <div className="skeleton h-8 w-16 rounded" />
                   <div className="skeleton h-3 w-full rounded-full" />
                 </div>
               ))}
             </div>
           ) : ordersByModality && ordersByModality.length > 0 ? (() => {
             const total = ordersByModality.reduce((sum, m) => sum + m.count, 0);
-            const barColors = ['#ef4444', '#f97316', '#f59e0b'];
+            const barColors = ['#c2410c', '#ea580c', '#f59e0b'];
             const labelMap: Record<string, string> = { 'Entrega': 'Delivery', 'Consumo no local': 'Consumo' };
             const getLabel = (label: string) => labelMap[label] || label;
             return (
-              <div className="flex flex-col gap-5 py-1">
-                <div className="grid grid-cols-3 gap-4">
+              <div className="flex flex-col gap-6 py-2">
+                {/* Labels + percentuais em grid */}
+                <div className="grid grid-cols-3 gap-3">
                   {ordersByModality.map((item, i) => {
                     const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
                     return (
-                      <div key={item.deliveryType} className="flex flex-col gap-1">
+                      <div key={item.deliveryType} className="flex flex-col gap-1" style={{ borderLeft: '2px dotted #d1d5db', paddingLeft: '10px' }}>
                         <span className="text-xs text-muted-foreground font-medium">{getLabel(item.label)}</span>
-                        <span className="text-2xl font-bold tracking-tight">{pct}%</span>
+                        <span className="text-3xl font-bold tracking-tight text-foreground">{pct}%</span>
                       </div>
                     );
                   })}
                 </div>
-                <div className="flex gap-1 w-full h-3 rounded-full overflow-hidden bg-muted">
+                {/* Barras individuais lado a lado */}
+                <div className="flex gap-1.5 w-full">
                   {ordersByModality.map((item, i) => {
                     const pct = total > 0 ? (item.count / total) * 100 : 0;
                     return (
                       <div
                         key={item.deliveryType}
-                        className="h-full rounded-full transition-all duration-500"
+                        className="h-3.5 rounded-full transition-all duration-500"
                         style={{
                           width: `${pct}%`,
                           backgroundColor: barColors[i % barColors.length],
-                          minWidth: pct > 0 ? '8px' : '0',
+                          minWidth: pct > 0 ? '12px' : '0',
                         }}
                       />
                     );
                   })}
-                </div>
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  {ordersByModality.map((item, i) => (
-                    <div key={item.deliveryType} className="flex items-center gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: barColors[i % barColors.length] }} />
-                      <span>{getLabel(item.label)}: {item.count}</span>
-                    </div>
-                  ))}
                 </div>
               </div>
             );

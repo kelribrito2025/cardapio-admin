@@ -8048,3 +8048,5 @@
 - [x] Corrigir dados mockados para aparecerem no estabelecimento 30001 (produção)
 - [x] Redesenhar card "Pedidos por Modalidade" no estilo barras horizontais com percentuais grandes (sem donut)
 - [x] Adicionar botão de tempo médio de preparo na top bar (desktop only), ícone relógio + tempo em minutos
+- [x] Redesenhar card Pedidos por Modalidade v2: barras individuais, borda pontilhada, percentuais grandes, cores degradê
+- [ ] Alterar cores do card Pedidos por Modalidade para usar as mesmas cores do card de formas de pagamento (Finanças)
