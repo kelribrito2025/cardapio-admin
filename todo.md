@@ -7924,3 +7924,10 @@
 - [x] Corrigir lógica de detecção em sendPixButton (uazapi.ts)
 - [x] Adicionar suporte para telefones com DDD (10 dígitos), com código de país (12-13 dígitos)
 - [x] Criar testes vitest (pix-key-detection.test.ts) - 15 testes passando
+
+
+## Correção do foco no botão "Meus pedidos" no Step 2 do Onboarding
+- [x] Adicionar ring highlight no botão "Meus pedidos" igual ao Step 1 (ring-4 ring-white/50 shadow-2xl)
+- [x] Garantir que o botão fique com z-index elevado acima do overlay (z-[202])
+- [x] Overlay escurece conteúdo do modal (header+body) deixando footer/botão visível
+- [x] Esconder botões de avaliar durante Step 2 para não distrair
