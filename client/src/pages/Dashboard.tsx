@@ -272,44 +272,92 @@ export default function Dashboard() {
       {/* Top Produtos + Modalidade + Tempo Médio */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Top Produtos */}
-        <SectionCard title="Top Produtos">
+        <div className="bg-card rounded-xl border border-border/50 p-5">
+          {/* Header com ícone - mesmo estilo Formas de Pagamento */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+              <Trophy className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-base font-semibold text-foreground">Top Produtos</h3>
+              <p className="text-xs text-muted-foreground">Mais vendidos no período</p>
+            </div>
+          </div>
+
           {topProductsLoading ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="skeleton h-4 w-4 rounded" />
-                  <div className="flex-1 skeleton h-3 rounded" />
-                  <div className="skeleton h-3 w-8 rounded" />
+                <div key={i}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="skeleton h-4 w-32 rounded" />
+                    <div className="skeleton h-4 w-16 rounded" />
+                  </div>
+                  <div className="skeleton h-3 w-full rounded-full" />
                 </div>
               ))}
             </div>
           ) : topProducts && topProducts.length > 0 ? (
-            <div className="space-y-3">
-              {topProducts.slice(0, 10).map((product, index) => {
+            <div className="space-y-4">
+              {(() => {
                 const maxQty = topProducts[0]?.totalQuantity || 1;
-                const pct = (product.totalQuantity / maxQty) * 100;
-                return (
-                  <div key={product.productName} className="flex items-center gap-3">
-                    <span className={`text-xs font-bold w-5 text-center ${
-                      index === 0 ? 'text-yellow-500' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-amber-600' : 'text-muted-foreground'
-                    }`}>
-                      {index + 1}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium truncate mr-2">{product.productName}</span>
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">{product.totalQuantity}x</span>
+                const totalRevenue = topProducts.reduce((sum, p) => sum + p.totalRevenue, 0);
+                const barColors = [
+                  'bg-amber-500',
+                  'bg-orange-500',
+                  'bg-red-400',
+                  'bg-rose-400',
+                  'bg-pink-400',
+                  'bg-fuchsia-400',
+                  'bg-purple-400',
+                  'bg-violet-400',
+                  'bg-indigo-400',
+                  'bg-blue-400',
+                ];
+                return topProducts.slice(0, 10).map((product, index) => {
+                  const pct = (product.totalQuantity / maxQty) * 100;
+                  const revPct = totalRevenue > 0 ? Math.round((product.totalRevenue / totalRevenue) * 100) : 0;
+                  const barColor = barColors[index] || 'bg-gray-400';
+                  return (
+                    <div key={product.productName} className="group relative">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-foreground">{product.productName}</span>
+                          <span className="text-xs text-muted-foreground">({product.totalQuantity}x)</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-foreground">{formatCurrency(product.totalRevenue)}</span>
+                          <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">{revPct}%</span>
+                        </div>
                       </div>
-                      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div className="h-3 bg-muted rounded-full overflow-hidden cursor-pointer">
                         <div
-                          className="h-full bg-primary/70 rounded-full transition-all duration-500"
-                          style={{ width: `${pct}%` }}
+                          className={`h-full rounded-full transition-all duration-500 ${barColor}`}
+                          style={{ width: `${Math.max(3, pct)}%` }}
                         />
                       </div>
+                      {/* Tooltip on hover */}
+                      <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none">
+                        <div className="bg-foreground text-background rounded-lg px-3 py-2 shadow-lg text-xs whitespace-nowrap">
+                          <div className="font-semibold mb-1">{product.productName}</div>
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span>Receita:</span>
+                            <span className="font-semibold">{formatCurrency(product.totalRevenue)}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span>Quantidade:</span>
+                            <span className="font-semibold">{product.totalQuantity}x</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span>Percentual:</span>
+                            <span className="font-semibold">{revPct}%</span>
+                          </div>
+                          <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-foreground" />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                });
+              })()}
             </div>
           ) : (
             <EmptyState
@@ -318,7 +366,7 @@ export default function Dashboard() {
               description="Nenhum produto vendido no período"
             />
           )}
-        </SectionCard>
+        </div>
 
         {/* Coluna do meio: Pedidos por Modalidade + Clientes */}
         <div className="flex flex-col gap-6">
