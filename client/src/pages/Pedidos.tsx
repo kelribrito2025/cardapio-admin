@@ -77,6 +77,7 @@ import {
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "wouter";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
+import { normalizeSSEOrder, insertOrderIntoList } from "@/lib/normalizeSSEOrder";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
 import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -402,12 +403,32 @@ export default function Pedidos() {
     }
   );
 
-  // Handlers para eventos SSE
-  const handleNewOrder = useCallback(() => {
+  // Handlers para eventos SSE — Optimistic Update Híbrido
+  // 1. Insere o pedido imediatamente no cache (zero delay visual)
+  // 2. Invalida em background para substituir pelos dados completos do DB
+  const handleNewOrder = useCallback((order: unknown) => {
+    if (order && typeof order === 'object' && 'id' in order) {
+      try {
+        const normalized = normalizeSSEOrder(order as any);
+        // Optimistic: inserir no cache imediatamente
+        utils.orders.list.setData(
+          { establishmentId: establishmentId ?? 0 },
+          (old) => {
+            if (!old) return old;
+            const updatedOrders = insertOrderIntoList(old.orders as any[], normalized);
+            return { ...old, orders: updatedOrders };
+          }
+        );
+        console.log("[Pedidos] Optimistic update: pedido", normalized.orderNumber, "inserido no cache");
+      } catch (e) {
+        console.error("[Pedidos] Erro no optimistic update:", e);
+      }
+    }
+    // Background: refetch para substituir pelos dados completos do DB (sem flicker)
     refetchAll();
     // Toast agora é disparado globalmente pelo AdminLayout via evento 'new-order-notification'
     // Não duplicar aqui
-  }, [refetchAll]);
+  }, [refetchAll, utils, establishmentId]);
 
   const handleOrderUpdate = useCallback(() => {
     refetchAll();

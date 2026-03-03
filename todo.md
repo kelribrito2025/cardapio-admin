@@ -8029,3 +8029,12 @@
 - [x] Verificar lógica do botão Adicionar na busca das mesas (usa mesmo grid, corrigido)
 - [x] Corrigir: itens com complementos devem abrir modal de detalhes em vez de adicionar direto
 - [x] Testes unitários (17 testes passando)
+
+## Optimistic update híbrido para pedidos via SSE
+- [x] Criar função normalizeSSEOrder para preencher campos faltantes do SSE com defaults
+- [x] Alterar handleNewOrder no Pedidos.tsx para inserir pedido no cache imediatamente via setData
+- [x] Invalidar orders.list em background após inserção (sem flicker)
+- [x] Garantir deduplicação (verificar por id antes de inserir)
+- [x] Manter ordenação por createdAt desc
+- [x] Aplicar mesma lógica no NewOrdersContext para consistência global
+- [x] Testes unitários para normalizeSSEOrder e lógica de deduplicação (15 testes passando)

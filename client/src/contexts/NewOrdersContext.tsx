@@ -3,6 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
+import { normalizeSSEOrder, insertOrderIntoList } from "@/lib/normalizeSSEOrder";
 
 // Singleton para gerenciar o áudio de notificação
 // Otimizado para funcionar em dispositivos móveis (iOS/Android)
@@ -547,6 +548,9 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, [isAudioUnlocked]);
 
+  // Utils para optimistic update
+  const utils = trpc.useUtils();
+
   // Query para buscar o estabelecimento do usuário
   const { data: establishment } = trpc.establishment.get.useQuery(
     undefined,
@@ -660,8 +664,31 @@ export function NewOrdersProvider({ children }: { children: ReactNode }) {
       }
     }
     
+    // Optimistic update: inserir pedido no cache imediatamente
+    if (order && typeof order === 'object' && 'id' in order) {
+      try {
+        const normalized = normalizeSSEOrder(order as any);
+        const estId = establishment?.id ?? 0;
+        if (estId > 0) {
+          utils.orders.list.setData(
+            { establishmentId: estId },
+            (old) => {
+              if (!old) return old;
+              const updatedOrders = insertOrderIntoList(old.orders as any[], normalized);
+              return { ...old, orders: updatedOrders };
+            }
+          );
+          // Invalidar em background para dados completos do DB (sem flicker)
+          utils.orders.list.invalidate({ establishmentId: estId });
+          console.log(`[NewOrders] [${timestamp}] Optimistic update: pedido inserido no cache`);
+        }
+      } catch (e) {
+        console.error(`[NewOrders] [${timestamp}] Erro no optimistic update:`, e);
+      }
+    }
+
     console.log(`[NewOrders] [${timestamp}] ========== FIM PROCESSAMENTO ==========`);
-  }, []);
+  }, [establishment?.id, utils]);
 
   // Callback para update de pedido
   const handleOrderUpdate = useCallback(() => {
