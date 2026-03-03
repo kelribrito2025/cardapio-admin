@@ -8052,3 +8052,4 @@
 - [x] Alterar cores do card Pedidos por Modalidade para usar as mesmas cores do card de formas de pagamento (Finanças)
 - [x] Card Pedidos por Modalidade: linhas pontilhadas alinhadas com final da barra colorida (proporcional ao %)
 - [x] Card Pedidos por Modalidade: header com ícone + título + descrição (igual ao Acumulado da semana)
+- [x] Card Pedidos por Modalidade: labels com cor correspondente à barra (Delivery=violet, Retirada=blue, Consumo=emerald)

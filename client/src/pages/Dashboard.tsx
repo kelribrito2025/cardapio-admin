@@ -343,7 +343,7 @@ export default function Dashboard() {
             const labelMap: Record<string, string> = { 'Entrega': 'Delivery', 'Consumo no local': 'Consumo' };
             const getLabel = (label: string) => labelMap[label] || label;
             return (
-              <div className="flex flex-col justify-between flex-1">
+              <div className="flex flex-col">
                 {/* Labels + percentuais em grid - linhas pontilhadas alinhadas com barras */}
                 <div className="flex w-full gap-1.5 mt-2">
                   {ordersByModality.map((item, i) => {
