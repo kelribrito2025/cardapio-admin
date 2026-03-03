@@ -132,9 +132,18 @@ function AvgPrepTimeButton({ establishmentId }: { establishmentId?: number }) {
   );
   const avgMin = data?.avgMinutes ?? null;
   if (avgMin === null) return null;
+  // Mesma lógica de cor do card Tempo Médio no Dashboard
+  const color = avgMin > 0 ? (avgMin <= 30 ? '#22c55e' : avgMin <= 60 ? '#f59e0b' : '#ef4444') : undefined;
   return (
-    <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-muted/60 rounded-lg text-xs font-medium text-muted-foreground" style={{ borderRadius: '10px' }}>
-      <Clock className="h-3.5 w-3.5" />
+    <div
+      className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold"
+      style={{
+        borderRadius: '10px',
+        backgroundColor: color ? `${color}15` : undefined,
+        color: color || undefined,
+      }}
+    >
+      <Clock className="h-3.5 w-3.5" style={{ color: color || undefined }} />
       <span>{avgMin}min</span>
     </div>
   );

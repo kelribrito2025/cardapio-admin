@@ -8058,3 +8058,4 @@
 - [x] Card Clientes Recorrentes vs Novos: posicionar abaixo do Pedidos por Modalidade dividindo espaço vertical
 - [x] Card Clientes Recorrentes vs Novos: header com ícone + título + descrição (mesmo estilo)
 - [x] Card Clientes Recorrentes vs Novos: responsividade (desktop horizontal, mobile empilhado)
+- [x] Botão tempo médio na top bar: alterar cor para verde (cor do sistema)
