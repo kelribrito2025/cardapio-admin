@@ -8064,3 +8064,4 @@
 - [x] Card Top Produtos: ajustar para 6 itens visíveis e eliminar espaço em branco
 - [x] Card Top Produtos: forçar max-height fixo reduzido 40% para scroll interno real
 - [x] Card Top Produtos: voltar para 10 itens com scroll interno sem aumentar altura do card
+- [x] Card Top Produtos: altura fixa do card com max-height na lista para scroll interno (10 itens, ~7 visíveis)
