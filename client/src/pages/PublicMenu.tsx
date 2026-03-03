@@ -103,7 +103,6 @@ const saveOrdersToStorage = (establishmentId: number, orders: UserOrder[]) => {
 
 export default function PublicMenu() {
   const { slug } = useParams<{ slug: string }>();
-  // Chave de onboarding usa slug para ser específica por estabelecimento: `onboarding_meus_pedidos_${slug}`
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -182,32 +181,7 @@ export default function PublicMenu() {
   const [cancellationReasonDisplay, setCancellationReasonDisplay] = useState<string | null>(null);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [onboardingStep, setOnboardingStep] = useState<0 | 1 | 2 | 3>(0);
-  const [onboardingStep2SubStep, setOnboardingStep2SubStep] = useState<0 | 1>(0); // 0: Tooltip 1, 1: Tooltip 2
-  const [showOnboardingTooltip, setShowOnboardingTooltip] = useState(false);
-  
-  // Ativar onboarding Step 1 quando orderSent muda para true (usa useEffect para evitar problemas de closure/timeout no mobile)
-  useEffect(() => {
-    if (orderSent && onboardingStep === 0) {
-      const onboardingKey = `onboarding_meus_pedidos_${slug}`;
-      console.log('[ONBOARDING] useEffect: orderSent=true, verificando localStorage key:', onboardingKey, 'valor:', localStorage.getItem(onboardingKey));
-      if (!localStorage.getItem(onboardingKey)) {
-        console.log('[ONBOARDING] useEffect: Agendando setOnboardingStep(1) em 800ms');
-        const timer = setTimeout(() => {
-          console.log('[ONBOARDING] useEffect: setTimeout disparado! Setando onboardingStep para 1');
-          setOnboardingStep(1);
-        }, 800);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [orderSent, onboardingStep, slug]);
 
-  // Inicializar Step 2 quando o modal de tracking abre
-  useEffect(() => {
-    if (showTrackingModal && onboardingStep === 2) {
-      // Step 2 agora vai direto para o tooltip do "Meus pedidos"
-    }
-  }, [showTrackingModal, onboardingStep]);
   const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set());
   // Track canReview status per order in history: { orderId: { checked: boolean, canReview: boolean } }
   const [historyCanReview, setHistoryCanReview] = useState<Record<string, { checked: boolean; canReview: boolean }>>({});
@@ -388,8 +362,6 @@ export default function PublicMenu() {
             setOrderSent(true);
             setOrderStatus('sent');
             setCreatedOrderNumber(result.orderNumber);
-            // Onboarding step 1 agora é ativado via useEffect quando orderSent muda para true
-            
             // Salvar orderId e orderNumber no userOrders e iniciar SSE tracking
             const onlineOrderId = result.orderId;
             if (onlineOrderId) {
@@ -648,8 +620,6 @@ export default function PublicMenu() {
       setCurrentOrderNumber(result.orderId.toString());
       // Salvar o número visual do pedido para exibição na tela de sucesso
       setCreatedOrderNumber(result.orderNumber);
-            // Onboarding step 1 agora é ativado via useEffect quando orderSent muda para true
-      
       // Iniciar tracking SSE usando orderId (único, sem colisão com reset diário)
       const trackingId = result.orderId.toString();
       orderSSE.trackOrder(trackingId, (update) => {
@@ -3427,7 +3397,7 @@ export default function PublicMenu() {
         <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
           {/* Backdrop */}
           <div 
-            className={onboardingStep === 2 ? "absolute inset-0 bg-black/60" : "absolute inset-0 bg-black/50"}
+            className="absolute inset-0 bg-black/50"
           />
           
           {/* Modal de Checkout Unificado - Bottom Sheet no mobile */}
@@ -4690,38 +4660,9 @@ setOnlinePaymentUrl(null);
                 )}
               </div>
 
-              {/* Onboarding Step 1: Tooltip acima do footer - renderizado dentro do body para não ser cortado pelo overflow */}
-              {orderSent && onboardingStep === 1 && (
-                <div className="flex-shrink-0 px-6 pb-2 pt-0 relative z-[201]">
-                  <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <div className="bg-red-50 rounded-xl shadow-2xl p-4 border border-red-200 relative">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 p-2 bg-red-100 rounded-lg">
-                          <Package className="h-5 w-5 text-red-500" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-bold text-gray-900">Seu pedido foi enviado!</p>
-                          <p className="text-xs text-gray-600 mt-1">Clique aqui para acompanhar o status.</p>
-                        </div>
-                      </div>
-                      {/* Setinha estilo balão apontando para baixo */}
-                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-50 border-r border-b border-red-200 rotate-45" />
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Footer */}
               {orderSent ? (
               <div className="flex-shrink-0 border-t px-6 py-4 relative">
-                {/* Overlay bloqueador durante onboarding Step 1 - bloqueia cliques fora */}
-                {onboardingStep === 1 && (
-                  <div className="fixed inset-0 z-[199]" onClick={(e) => e.stopPropagation()} />
-                )}
-                {/* Onboarding Step 1: Overlay escuro */}
-                {onboardingStep === 1 && (
-                  <div className="fixed inset-0 bg-black/60 z-[200]" onClick={(e) => e.stopPropagation()} />
-                )}
                 <button
                   onClick={() => {
                     setCheckoutStep(0);
@@ -4734,12 +4675,8 @@ setOnlinePaymentUrl(null);
                     setOnlinePaymentUrl(null);
                     setCreatedOrderNumber(null);
                     setIsSendingOrder(false);
-                    // Avançar para step 2 se estiver no step 1
-                    if (onboardingStep === 1) {
-                      setOnboardingStep(2);
-                    }
                   }}
-                  className={`w-full py-3.5 bg-primary text-white font-semibold rounded-xl transition-colors hover:bg-primary/90 flex items-center justify-center gap-2 pointer-events-auto ${onboardingStep === 1 ? 'relative z-[201] ring-4 ring-white/50 shadow-2xl' : ''}`}
+                  className="w-full py-3.5 bg-primary text-white font-semibold rounded-xl transition-colors hover:bg-primary/90 flex items-center justify-center gap-2"
                 >
                   <Package className="h-5 w-5" />
                   Acompanhar pedido
@@ -5682,7 +5619,7 @@ setOnlinePaymentUrl(null);
         <div className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center">
           {/* Backdrop */}
           <div 
-            className={onboardingStep === 2 ? "absolute inset-0 bg-black/60" : "absolute inset-0 bg-black/50"}
+            className="absolute inset-0 bg-black/50"
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
@@ -5841,39 +5778,10 @@ setOnlinePaymentUrl(null);
               )}
             </div>
 
-            {/* Onboarding Step 2: Tooltip acima do footer - renderizado dentro do body para não ser cortado pelo overflow */}
-            {onboardingStep === 2 && (
-              <div className="px-6 pb-2 pt-0 relative z-[201]">
-                <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                  <div className="bg-red-50 rounded-xl shadow-2xl p-4 border border-red-200 relative">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 p-2 bg-red-100 rounded-lg">
-                        <Package className="h-5 w-5 text-red-500" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-bold text-gray-900">Veja todos os seus pedidos</p>
-                        <p className="text-xs text-gray-600 mt-1">Clique em "Meus pedidos" para acompanhar todos os seus pedidos em um unico lugar.</p>
-                      </div>
-                    </div>
-                    {/* Setinha estilo balão apontando para baixo */}
-                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-50 border-r border-b border-red-200 rotate-45" />
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Footer */}
             <div className="border-t px-6 py-4 space-y-3 relative" style={{backgroundColor: '#ffffff'}}>
-              {/* Overlay bloqueador durante onboarding Step 2 - bloqueia cliques fora */}
-              {onboardingStep === 2 && (
-                <div className="fixed inset-0 z-[199]" onClick={(e) => e.stopPropagation()} />
-              )}
-              {/* Onboarding Step 2: Overlay escuro */}
-              {onboardingStep === 2 && (
-                <div className="fixed inset-0 bg-black/60 z-[200]" onClick={(e) => e.stopPropagation()} />
-              )}
               {/* Botão Avaliar restaurante - só aparece quando status for entregue E pode avaliar (30 dias) E verificação já terminou */}
-              {orderStatus === 'delivered' && canReview && canReviewChecked && establishment?.reviewsEnabled !== false && onboardingStep !== 2 && (
+              {orderStatus === 'delivered' && canReview && canReviewChecked && establishment?.reviewsEnabled !== false && (
                 <button
                   onClick={() => {
                     setShowRatingModal(true);
@@ -5885,13 +5793,13 @@ setOnlinePaymentUrl(null);
                 </button>
               )}
               {/* Loading enquanto verifica se pode avaliar */}
-              {orderStatus === 'delivered' && !canReviewChecked && onboardingStep !== 2 && (
+              {orderStatus === 'delivered' && !canReviewChecked && (
                 <div className="text-center py-2 px-4 bg-gray-100 rounded-xl">
                   <p className="text-sm text-gray-500">Verificando...</p>
                 </div>
               )}
               {/* Mensagem quando já avaliou nos últimos 30 dias */}
-              {orderStatus === 'delivered' && !canReview && canReviewChecked && onboardingStep !== 2 && (
+              {orderStatus === 'delivered' && !canReview && canReviewChecked && (
                 <div className="text-center py-2 px-4 bg-gray-100 rounded-xl">
                   <p className="text-sm text-gray-600">
                     Você já avaliou este restaurante nos últimos 30 dias.
@@ -5900,30 +5808,21 @@ setOnlinePaymentUrl(null);
               )}
               <button
                 onClick={() => {
-                  // Se estiver no step 2, avançar para step 3
-                  if (onboardingStep === 2) {
-                    setShowTrackingModal(false);
-                    setOnboardingStep(3);
-                    setTimeout(() => {
-                      setShowMobileMenu(true);
-                    }, 300);
-                  } else {
-                    setShowTrackingModal(false);
-                    setOrderSent(false);
-                    setCart([]);
-                    // Limpar também o localStorage
-                    if (slug) {
-                      clearCartFromStorage(slug);
-                    }
-                    setOrderObservation("");
-                    setDeliveryType("pickup");
-                    setPaymentMethod("pix");
-                    setChangeAmount("");
+                  setShowTrackingModal(false);
+                  setOrderSent(false);
+                  setCart([]);
+                  // Limpar também o localStorage
+                  if (slug) {
+                    clearCartFromStorage(slug);
                   }
+                  setOrderObservation("");
+                  setDeliveryType("pickup");
+                  setPaymentMethod("pix");
+                  setChangeAmount("");
                 }}
-                className={`w-full py-3.5 font-semibold rounded-xl transition-colors pointer-events-auto ${onboardingStep === 2 ? 'relative z-[201] bg-primary text-white hover:bg-primary/90 ring-4 ring-white/50 shadow-2xl' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+                className="w-full py-3.5 font-semibold rounded-xl transition-colors bg-gray-100 hover:bg-gray-200 text-gray-700"
               >
-                {onboardingStep === 2 ? 'Meus pedidos' : 'Fechar'}
+                Fechar
               </button>
             </div>
           </div>
@@ -7347,8 +7246,8 @@ setOnlinePaymentUrl(null);
         <div className="md:hidden fixed inset-0 z-[100]">
           {/* Backdrop */}
           <div 
-            className={onboardingStep === 3 ? "absolute inset-0 bg-black/60" : "absolute inset-0 bg-black/50"}
-            onClick={() => { setShowMobileMenu(false); setShowOnboardingTooltip(false); }}
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setShowMobileMenu(false)}
           />
           
           {/* Drawer - desliza da direita */}
@@ -7357,7 +7256,7 @@ setOnlinePaymentUrl(null);
             <div className="bg-gradient-to-r from-red-500 to-red-600 px-5 py-4 flex items-center justify-between">
               <span className="text-white font-bold text-lg">Menu</span>
               <button 
-                onClick={() => { setShowMobileMenu(false); setShowOnboardingTooltip(false); }}
+                onClick={() => setShowMobileMenu(false)}
                 className="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
               >
                 <X className="h-5 w-5 text-white" />
@@ -7371,21 +7270,11 @@ setOnlinePaymentUrl(null);
               <button
                 onClick={() => {
                   setShowMobileMenu(false);
-                  setShowOnboardingTooltip(false);
                   setShowOrdersModal(true);
-                  // Finalizar onboarding quando clicar em Meus Pedidos
-                  if (onboardingStep === 3) {
-                    setOnboardingStep(0);
-                    localStorage.setItem(`onboarding_meus_pedidos_${slug}`, 'true');
-                  }
                 }}
-                className={`w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors relative ${
-                  showOnboardingTooltip || onboardingStep === 3 ? 'bg-red-50 ring-2 ring-red-300 ring-inset rounded-lg' : ''
-                } ${onboardingStep === 3 ? 'ring-4 ring-red-400 shadow-lg' : ''}`}
+                className="w-full flex items-center gap-4 px-5 py-4 hover:bg-gray-50 active:bg-gray-100 transition-colors relative"
               >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                  showOnboardingTooltip ? 'bg-red-100 animate-pulse' : 'bg-red-50'
-                }`}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-red-50">
                   <ClipboardList className="h-5 w-5 text-red-500" />
                 </div>
                 <div className="flex-1 text-left">
@@ -7400,29 +7289,7 @@ setOnlinePaymentUrl(null);
                 <ChevronRight className="h-4 w-4 text-gray-400" />
               </button>
               
-              {/* Tooltip de onboarding pós-pedido */}
-              {(showOnboardingTooltip || onboardingStep === 3) && (
-                <div className="mx-3 mt-1 mb-2 p-3 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl shadow-lg animate-in fade-in slide-in-from-top-2 duration-300">
-                  <div className="flex items-start gap-2">
-                    <div className="flex-shrink-0 mt-0.5">
-                      <span className="text-lg">📦</span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-800">{onboardingStep === 3 ? 'Aqui você pode acompanhar todos os seus pedidos em andamento.' : 'Você pode acompanhar o status em Meus Pedidos.'}</p>
-                      {onboardingStep !== 3 && <p className="text-xs text-gray-500 mt-1">E até repetir o mesmo pedido que já foi entregue!</p>}
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowOnboardingTooltip(false);
-                      }}
-                      className="flex-shrink-0 p-0.5 hover:bg-red-100 rounded-full transition-colors"
-                    >
-                      <X className="h-3.5 w-3.5 text-gray-400" />
-                    </button>
-                  </div>
-                </div>
-              )}
+
               </div>
               
               {/* Fidelidade (se habilitado) */}

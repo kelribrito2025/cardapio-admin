@@ -7952,3 +7952,10 @@
 - [x] Correção: Substituir setTimeout por useEffect que reage a orderSent=true
 - [x] Remover setTimeout de ambos os fluxos (normal e pagamento online)
 - [x] Remover debug visual temporário
+
+## Remover onboarding do menu público
+- [x] Remover estados onboardingStep, onboardingStep2SubStep, showOnboardingTooltip
+- [x] Remover useEffect do onboarding
+- [x] Remover tooltips e overlays dos Steps 1, 2 e 3
+- [x] Remover condições de onboarding nos botões e modais
+- [x] Remover referências a localStorage onboarding_meus_pedidos
