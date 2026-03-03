@@ -7973,3 +7973,6 @@
 - [x] Adicionar animação shimmer (banner-shimmer) no badge de cashback dos itens
 ## Cor do blur do plano Pro na página de Planos
 - [x] Alterar cor do blur do plano Pro de azul para vermelho (cor do sistema)
+## Bug: Notificações não chegam ao admin após otimização fire-and-forget
+- [ ] Investigar por que notificações, som e SSE não funcionam após pedido pelo menu público
+- [ ] Corrigir processamento em background para garantir que notificações cheguem ao admin
