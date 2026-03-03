@@ -84,7 +84,7 @@ export function WeeklyRevenueCard({
 
   if (loading) {
     return (
-      <div className="bg-card rounded-xl border border-border/50 p-5">
+      <div className="glass-card rounded-xl border border-border/30 p-5">
         <div className="flex items-center justify-between mb-3">
           <div className="skeleton h-4 w-32 rounded-md" />
           <div className="skeleton h-6 w-28 rounded-md" />
@@ -106,7 +106,7 @@ export function WeeklyRevenueCard({
   }
 
   return (
-    <div className="bg-card rounded-xl border border-border/50 p-5 h-full flex flex-col">
+    <div className="glass-card rounded-xl border border-border/30 p-5 h-full flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">

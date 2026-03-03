@@ -139,7 +139,7 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
 
   if (isLoading) {
     return (
-      <div className="bg-card rounded-xl border border-border/50 p-4 h-full">
+      <div className="glass-card rounded-xl border border-border/30 p-4 h-full">
         <div className="flex items-center gap-3 mb-3">
           <div className="skeleton h-10 w-10 rounded-xl" />
           <div>
@@ -154,7 +154,7 @@ export function HeatmapCard({ period = 'today' }: HeatmapCardProps) {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div ref={containerRef} className="bg-card rounded-xl border border-border/50 p-4 h-full flex flex-col">
+      <div ref={containerRef} className="glass-card rounded-xl border border-border/30 p-4 h-full flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">

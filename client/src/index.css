@@ -245,6 +245,157 @@
     @apply bg-card/80 backdrop-blur-sm;
   }
 
+  /* ===== AMBIENT GLASS BACKGROUND ===== */
+  /* Camada 1: Background gradiente radial difuso */
+  .ambient-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(255, 180, 130, 0.25) 0%, transparent 60%),
+      radial-gradient(ellipse 70% 50% at 80% 20%, rgba(255, 160, 170, 0.2) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 50% at 50% 80%, rgba(245, 215, 190, 0.18) 0%, transparent 50%),
+      radial-gradient(ellipse 90% 70% at 60% 40%, rgba(255, 235, 220, 0.15) 0%, transparent 60%),
+      linear-gradient(135deg, #fef7f0 0%, #fdf2ec 30%, #faf0ed 60%, #f8ede8 100%);
+    will-change: transform;
+    transform: translateZ(0);
+  }
+  .dark .ambient-bg {
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(180, 80, 40, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 70% 50% at 80% 20%, rgba(160, 60, 80, 0.06) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 50% at 50% 80%, rgba(140, 100, 70, 0.05) 0%, transparent 50%),
+      linear-gradient(135deg, oklch(0.14 0.005 250) 0%, oklch(0.15 0.008 30) 50%, oklch(0.14 0.005 250) 100%);
+  }
+
+  /* Camada 2: Manchas de cor com blur estático */
+  .ambient-blobs {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .ambient-blobs::before,
+  .ambient-blobs::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    will-change: transform;
+    transform: translateZ(0);
+  }
+  .ambient-blobs::before {
+    width: 500px;
+    height: 500px;
+    top: -10%;
+    left: -5%;
+    background: radial-gradient(circle, rgba(255, 165, 120, 0.35) 0%, transparent 70%);
+  }
+  .ambient-blobs::after {
+    width: 400px;
+    height: 400px;
+    bottom: -5%;
+    right: -5%;
+    background: radial-gradient(circle, rgba(255, 190, 180, 0.25) 0%, transparent 70%);
+  }
+  .dark .ambient-blobs::before {
+    opacity: 0.12;
+    background: radial-gradient(circle, rgba(200, 100, 60, 0.3) 0%, transparent 70%);
+  }
+  .dark .ambient-blobs::after {
+    opacity: 0.08;
+    background: radial-gradient(circle, rgba(180, 80, 100, 0.25) 0%, transparent 70%);
+  }
+
+  /* Camada 3: Container glass translucido */
+  .glass-container {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .dark .glass-container {
+    background: rgba(25, 25, 30, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* Sidebar glass */
+  .glass-sidebar {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  }
+  .dark .glass-sidebar {
+    background: rgba(18, 18, 22, 0.82);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  }
+
+  /* Topbar glass */
+  .glass-topbar {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px) saturate(1.1);
+    -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  }
+  .dark .glass-topbar {
+    background: rgba(25, 25, 30, 0.75);
+    backdrop-filter: blur(16px) saturate(1.1);
+    -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  }
+
+  /* Cards glass */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .dark .glass-card {
+    background: rgba(30, 30, 36, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Fallback para navegadores sem backdrop-filter */
+  @supports not (backdrop-filter: blur(1px)) {
+    .glass-container {
+      background: rgba(255, 255, 255, 0.95);
+    }
+    .glass-sidebar {
+      background: rgba(255, 255, 255, 0.95);
+    }
+    .glass-topbar {
+      background: rgba(255, 255, 255, 0.95);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+    }
+    .dark .glass-container,
+    .dark .glass-sidebar,
+    .dark .glass-topbar,
+    .dark .glass-card {
+      background: rgba(25, 25, 30, 0.97);
+    }
+  }
+
+  /* Mobile: simplificar para performance */
+  @media (max-width: 768px) {
+    .ambient-blobs::before,
+    .ambient-blobs::after {
+      filter: blur(60px);
+      opacity: 0.25;
+    }
+    .glass-container {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .dark .glass-container {
+      background: rgba(25, 25, 30, 0.92);
+    }
+  }
+
   /* Hide scrollbar */
   .scrollbar-hide {
     -ms-overflow-style: none;

@@ -457,7 +457,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const mainPadding = sidebarCollapsed ? "lg:pl-[63px]" : "lg:pl-[263px]";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
+      {/* Ambient glass background layers */}
+      <div className="ambient-bg" />
+      <div className="ambient-blobs" />
+
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
@@ -469,14 +473,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col",
+          "fixed top-0 left-0 z-50 h-full border-r border-sidebar-border/40 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] lg:translate-x-0 flex flex-col glass-sidebar",
           sidebarWidth,
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           "lg:translate-x-0"
         )}
-        style={{
-          background: 'var(--card)'
-        }}
       >
         {/* Logo + Toggle button na mesma linha */}
         <div className={cn(
@@ -917,10 +918,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Main content */}
       <div 
-        className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] h-screen overflow-hidden flex flex-col bg-background", mainPadding)}
+        className={cn("transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] h-screen overflow-hidden flex flex-col", mainPadding)}
       >
         {/* Topbar */}
-        <header className="sticky top-0 z-30 h-[58px] bg-card/80 backdrop-blur-md border-b border-border/50">
+        <header className="sticky top-0 z-30 h-[58px] glass-topbar border-b border-border/30">
           <div className="flex items-center justify-between h-full px-3 lg:px-6">
             {/* Left side */}
             <div className="flex items-center gap-4">

@@ -172,7 +172,7 @@ export default function Dashboard() {
               onClick={() => setPeriod(opt.value)}
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                 period === opt.value
-                  ? 'bg-card text-foreground shadow-sm'
+                  ? 'glass-card text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
@@ -323,7 +323,7 @@ export default function Dashboard() {
         {/* Coluna do meio: Pedidos por Modalidade + Clientes */}
         <div className="flex flex-col gap-6">
           {/* Pedidos por Modalidade */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col">
+          <div className="glass-card rounded-xl border border-border/30 p-5 flex flex-col">
             {/* Header igual ao WeeklyRevenueCard */}
             <div className="flex items-center gap-3 mb-5">
               <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -398,7 +398,7 @@ export default function Dashboard() {
           </div>
 
           {/* Clientes Recorrentes vs Novos */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col flex-1">
+          <div className="glass-card rounded-xl border border-border/30 p-5 flex flex-col flex-1">
             {/* Header */}
             <div className="flex items-center gap-3 mb-5">
               <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
