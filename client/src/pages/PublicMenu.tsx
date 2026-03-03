@@ -7412,8 +7412,9 @@ function ProductCard({
               <span className={`font-semibold text-sm ${isUnavailable ? 'text-gray-400' : 'text-red-500'}`}>{formatPrice(product.price)}</span>
             )}
             {cashbackPercent && cashbackPercent > 0 && Number(product.price) > 0 && !isUnavailable && (
-              <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">
-                +{formatPrice((Number(product.price) * cashbackPercent / 100).toFixed(2))} cashback
+              <span className="relative text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full overflow-hidden inline-flex items-center">
+                <span className="relative z-10">+{formatPrice((Number(product.price) * cashbackPercent / 100).toFixed(2))} cashback</span>
+                <span className="absolute inset-0 animate-[banner-shimmer_3s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-emerald-200/50 to-transparent" />
               </span>
             )}
             {isUnavailable && (

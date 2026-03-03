@@ -7968,3 +7968,6 @@
 - [x] Encontrar onde o cashback é exibido nos itens do menu público (ProductCard)
 - [x] Calcular o valor em R$ com base no preço do item e na porcentagem de cashback
 - [x] Exibir ex: "+R$ 2,00 cashback" em vez de "+2% cashback"
+
+## Efeito shimmer no badge de cashback do menu público
+- [x] Adicionar animação shimmer (banner-shimmer) no badge de cashback dos itens
