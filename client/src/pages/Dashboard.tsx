@@ -315,9 +315,20 @@ export default function Dashboard() {
         </SectionCard>
 
         {/* Pedidos por Modalidade */}
-        <SectionCard title="Pedidos por Modalidade">
+        <div className="bg-card rounded-xl border border-border/50 p-5 h-full flex flex-col">
+          {/* Header igual ao WeeklyRevenueCard */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+              <Truck className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-base font-semibold text-foreground">Pedidos por Modalidade</h3>
+              <p className="text-xs text-muted-foreground">Distribuição por tipo de entrega</p>
+            </div>
+          </div>
+
           {modalityLoading ? (
-            <div className="flex flex-col gap-6 py-2">
+            <div className="flex flex-col gap-6 py-2 flex-1">
               {[1,2,3].map(i => (
                 <div key={i} className="flex flex-col gap-2">
                   <div className="skeleton h-4 w-20 rounded" />
@@ -332,21 +343,26 @@ export default function Dashboard() {
             const labelMap: Record<string, string> = { 'Entrega': 'Delivery', 'Consumo no local': 'Consumo' };
             const getLabel = (label: string) => labelMap[label] || label;
             return (
-              <div className="flex flex-col gap-6 py-2">
-                {/* Labels + percentuais em grid */}
-                <div className="grid grid-cols-3 gap-3">
+              <div className="flex flex-col justify-between flex-1">
+                {/* Labels + percentuais em grid - linhas pontilhadas alinhadas com barras */}
+                <div className="flex w-full gap-1.5 mt-2">
                   {ordersByModality.map((item, i) => {
-                    const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
+                    const pct = total > 0 ? (item.count / total) * 100 : 0;
+                    const roundedPct = Math.round(pct);
                     return (
-                      <div key={item.deliveryType} className="flex flex-col gap-1" style={{ borderLeft: '2px dotted #d1d5db', paddingLeft: '10px' }}>
+                      <div
+                        key={item.deliveryType}
+                        className="flex flex-col gap-1"
+                        style={{ width: `${pct}%`, minWidth: pct > 0 ? '60px' : '0', borderLeft: '2px dotted #d1d5db', paddingLeft: '10px' }}
+                      >
                         <span className="text-xs text-muted-foreground font-medium">{getLabel(item.label)}</span>
-                        <span className="text-3xl font-bold tracking-tight text-foreground">{pct}%</span>
+                        <span className="text-3xl font-bold tracking-tight text-foreground">{roundedPct}%</span>
                       </div>
                     );
                   })}
                 </div>
                 {/* Barras individuais lado a lado */}
-                <div className="flex gap-1.5 w-full">
+                <div className="flex gap-1.5 w-full mt-4">
                   {ordersByModality.map((item, i) => {
                     const pct = total > 0 ? (item.count / total) * 100 : 0;
                     return (
@@ -371,7 +387,7 @@ export default function Dashboard() {
               description="Nenhum pedido no período"
             />
           )}
-        </SectionCard>
+        </div>
 
         {/* Tempo Médio */}
         <SectionCard title="Tempo Médio">
