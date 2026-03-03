@@ -8013,3 +8013,6 @@
 - [x] Mostrar alerta visual listando os complementos cujo preço mudou (ficou grátis ou deixou de ser grátis)
 - [x] Recalcular o total do carrinho automaticamente
 - [x] Testes unitários (36 testes passando)
+
+## Bug: Modal Meus Pedidos muito alto no mobile
+- [x] Limitar altura máxima do modal Meus Pedidos para 80vh no mobile
