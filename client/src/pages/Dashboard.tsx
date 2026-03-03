@@ -328,7 +328,7 @@ export default function Dashboard() {
             </div>
           ) : ordersByModality && ordersByModality.length > 0 ? (() => {
             const total = ordersByModality.reduce((sum, m) => sum + m.count, 0);
-            const barColors = ['#c2410c', '#ea580c', '#f59e0b'];
+            const barColors = ['#8b5cf6', '#3b82f6', '#10b981'];
             const labelMap: Record<string, string> = { 'Entrega': 'Delivery', 'Consumo no local': 'Consumo' };
             const getLabel = (label: string) => labelMap[label] || label;
             return (
