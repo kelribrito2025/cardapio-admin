@@ -11020,6 +11020,27 @@ export async function processOrderNotificationInBackground(
         
         if (sendResult.success) {
           console.log('[BG:Notification] ✅ Notificação WhatsApp enviada com sucesso:', orderNumber);
+          
+          // Enviar botão PIX nativo se pagamento for PIX e chave estiver cadastrada
+          if (data.paymentMethod === 'pix' && establishment?.pixKey) {
+            try {
+              const { sendPixButton } = await import('./_core/uazapi');
+              const pixResult = await sendPixButton(
+                whatsappConfig.instanceToken,
+                data.customerPhone,
+                establishment.pixKey,
+                undefined, // auto-detect key type
+                establishment.name || undefined // merchantName
+              );
+              if (pixResult.success) {
+                console.log('[BG:Notification] ✅ Botão PIX nativo enviado com sucesso:', orderNumber);
+              } else {
+                console.error('[BG:Notification] ❌ FALHA ao enviar botão PIX:', pixResult.message);
+              }
+            } catch (pixError) {
+              console.error('[BG:Notification] Erro ao enviar botão PIX:', pixError);
+            }
+          }
         } else {
           console.error('[BG:Notification] ❌ Erro ao enviar notificação WhatsApp:', sendResult.error);
         }

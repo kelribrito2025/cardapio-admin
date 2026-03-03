@@ -7959,3 +7959,7 @@
 - [x] Remover tooltips e overlays dos Steps 1, 2 e 3
 - [x] Remover condições de onboarding nos botões e modais
 - [x] Remover referências a localStorage onboarding_meus_pedidos
+
+## Bug: Botão PIX nativo do WhatsApp não está sendo enviado
+- [x] Causa: sendPixButton estava no bloco if(false) desabilitado, não na função de background ativa
+- [x] Correção: Adicionado sendPixButton na função processOrderNotificationInBackground
