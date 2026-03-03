@@ -7971,3 +7971,5 @@
 
 ## Efeito shimmer no badge de cashback do menu público
 - [x] Adicionar animação shimmer (banner-shimmer) no badge de cashback dos itens
+## Cor do blur do plano Pro na página de Planos
+- [x] Alterar cor do blur do plano Pro de azul para vermelho (cor do sistema)

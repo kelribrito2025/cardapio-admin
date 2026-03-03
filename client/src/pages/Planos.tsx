@@ -261,7 +261,7 @@ export default function Planos() {
         <PageHeader 
           title="Planos e Assinatura" 
           description="Gerencie seu plano e histórico de pagamentos"
-          icon={<Crown className="h-6 w-6 text-blue-600" />}
+          icon={<Crown className="h-6 w-6 text-red-600" />}
         />
       </div>
 
@@ -308,14 +308,14 @@ export default function Planos() {
                 className={cn(
                   "relative bg-card rounded-xl border p-6 transition-all duration-300 overflow-hidden",
                   plan.highlighted
-                    ? "border-blue-500 border-2"
+                    ? "border-red-500 border-2"
                     : "border-border/50 hover:border-border"
                 )}
               >
                 {/* Blur effect for Pro card */}
                 {plan.highlighted && (
                   <div 
-                    className="absolute -top-20 -right-20 w-64 h-64 bg-blue-400/30 rounded-full blur-3xl pointer-events-none"
+                    className="absolute -top-20 -right-20 w-64 h-64 bg-red-400/30 rounded-full blur-3xl pointer-events-none"
                     aria-hidden="true"
                   />
                 )}
@@ -323,7 +323,7 @@ export default function Planos() {
                 {/* Most Popular Badge */}
                 {plan.highlighted && (
                   <div className="absolute top-4 right-4 z-10">
-                    <Badge className="bg-blue-100 text-blue-700 text-xs font-medium px-3 py-1 rounded-full">
+                    <Badge className="bg-red-100 text-red-700 text-xs font-medium px-3 py-1 rounded-full">
                       Mais Popular
                     </Badge>
                   </div>
@@ -378,7 +378,7 @@ export default function Planos() {
                     (plan.id === userPlanType || (plan.id === "free" && (userPlanType === "free" || userPlanType === "trial")))
                       ? "bg-muted hover:bg-muted text-muted-foreground cursor-default"
                       : plan.highlighted
-                      ? "bg-blue-600 hover:bg-blue-700 text-white"
+                      ? "bg-red-600 hover:bg-red-700 text-white"
                       : plan.id === "free"
                       ? "bg-muted hover:bg-muted text-muted-foreground cursor-default"
                       : "bg-card hover:bg-muted/50 text-foreground border border-border"
@@ -438,7 +438,7 @@ export default function Planos() {
         <div className="flex flex-col md:flex-row">
           {/* Left column - Plan info */}
           <div className="flex-1 px-6 py-5 md:border-r border-border/50">
-            <h3 className="text-sm font-medium text-blue-600 mb-3">
+            <h3 className="text-sm font-medium text-red-600 mb-3">
               {currentPlan.name}
             </h3>
             
@@ -472,7 +472,7 @@ export default function Planos() {
           <div className="flex-1 px-6 py-5 border-t md:border-t-0 border-border/50">
             {currentPlan.isActive ? (
               <>
-                <h4 className="text-sm font-medium text-blue-600 mb-3">
+                <h4 className="text-sm font-medium text-red-600 mb-3">
                   Próximo Pagamento
                 </h4>
                 {currentPlan.renewalDate ? (
@@ -497,7 +497,7 @@ export default function Planos() {
               </>
             ) : (
               <>
-                <h4 className="text-sm font-medium text-blue-600 mb-3">
+                <h4 className="text-sm font-medium text-red-600 mb-3">
                   Status
                 </h4>
                 <p className="text-2xl font-bold text-foreground mb-1">
@@ -514,11 +514,11 @@ export default function Planos() {
         {/* Footer */}
         <div className="px-6 py-4 border-t border-border/50">
           {currentPlan.isActive ? (
-            <button className="text-blue-600 text-sm font-medium hover:underline">
+            <button className="text-red-600 text-sm font-medium hover:underline">
               Fazer Upgrade
             </button>
           ) : (
-            <button className="text-blue-600 text-sm font-medium hover:underline">
+            <button className="text-red-600 text-sm font-medium hover:underline">
               Escolher um plano
             </button>
           )}

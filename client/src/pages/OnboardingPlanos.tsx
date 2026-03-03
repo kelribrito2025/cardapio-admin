@@ -139,14 +139,14 @@ export default function OnboardingPlanos() {
               className={cn(
                 "relative bg-card rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1",
                 plan.highlighted
-                  ? "ring-2 ring-blue-500"
+                  ? "ring-2 ring-red-500"
                   : "border border-border"
               )}
             >
               {/* Badge */}
               {plan.badge && (
                 <div className="absolute top-0 right-0">
-                  <div className="bg-blue-600 text-white text-xs font-semibold px-4 py-1.5 rounded-bl-xl">
+                  <div className="bg-red-600 text-white text-xs font-semibold px-4 py-1.5 rounded-bl-xl">
                     {plan.badge}
                   </div>
                 </div>
@@ -155,12 +155,12 @@ export default function OnboardingPlanos() {
               {/* Header */}
               <div className={cn(
                 "p-6 pb-4",
-                plan.highlighted && "bg-blue-50"
+                plan.highlighted && "bg-red-50"
               )}>
                 <div className={cn(
                   "w-14 h-14 rounded-xl flex items-center justify-center mb-4",
                   plan.highlighted
-                    ? "bg-blue-600 text-white"
+                    ? "bg-red-600 text-white"
                     : "bg-muted text-muted-foreground"
                 )}>
                   {plan.icon}
@@ -200,7 +200,7 @@ export default function OnboardingPlanos() {
                         "w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
                         feature.included
                           ? plan.highlighted
-                            ? "bg-blue-100 text-blue-600"
+                            ? "bg-red-100 text-red-600"
                             : "bg-green-100 text-green-600"
                           : "bg-muted text-muted-foreground"
                       )}>
@@ -221,7 +221,7 @@ export default function OnboardingPlanos() {
                   className={cn(
                     "w-full h-12 text-base font-semibold rounded-xl transition-all duration-200",
                     plan.highlighted
-                      ? "bg-blue-600 hover:bg-blue-700 text-white"
+                      ? "bg-red-600 hover:bg-red-700 text-white"
                       : plan.id === "free"
                       ? "bg-muted-foreground/90 hover:bg-foreground text-white"
                       : "bg-muted-foreground/90 hover:bg-foreground text-white"
