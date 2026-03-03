@@ -804,6 +804,27 @@ export default function PDV() {
     setShowPaymentSidebar(false);
   };
 
+  // Adicionar item rapidamente (botão +): se não tem complementos, adiciona direto
+  const trpcUtils = trpc.useUtils();
+  const handleQuickAdd = async (product: Product, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (product.hasStock && (product.stockQuantity === null || product.stockQuantity === undefined || product.stockQuantity <= 0)) return;
+    
+    try {
+      const complements = await trpcUtils.publicMenu.getProductComplements.fetch({ productId: product.id });
+      const hasComps = complements && complements.length > 0;
+      
+      if (hasComps) {
+        handleProductClick(product);
+      } else {
+        addToCart(product, 1, '', []);
+        toast.success(`${product.name} adicionado!`);
+      }
+    } catch {
+      handleProductClick(product);
+    }
+  };
+
   // Handler para abrir modal de produto
   const handleProductClick = (product: Product) => {
     // Produto indisponível apenas quando tem controle de estoque ativo E quantidade = 0
@@ -1068,11 +1089,7 @@ export default function PDV() {
                             size="sm"
                             variant="outline"
                             className="h-8 px-2 xl:px-3 text-xs border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 shrink-0"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // Adicionar diretamente ao carrinho sem abrir modal
-                              addToCart(product, 1, '', []);
-                            }}
+                            onClick={(e) => handleQuickAdd(product, e)}
                             disabled={product.hasStock && (product.stockQuantity === null || product.stockQuantity === undefined || product.stockQuantity <= 0)}
                           >
                             <Plus className="h-4 w-4" />

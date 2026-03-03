@@ -761,6 +761,29 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   };
 
   // Handlers
+  // Adicionar item rapidamente (botão +): se não tem complementos, adiciona direto
+  const handleQuickAdd = async (product: Product, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (product.hasStock && (product.stockQuantity === null || product.stockQuantity === undefined || product.stockQuantity <= 0)) {
+      toast.error("Produto indisponível");
+      return;
+    }
+    
+    try {
+      const complements = await utils.publicMenu.getProductComplements.fetch({ productId: product.id });
+      const hasComps = complements && complements.length > 0;
+      
+      if (hasComps) {
+        handleProductClick(product);
+      } else {
+        addToCart(product, 1, '', []);
+        toast.success(`${product.name} adicionado!`);
+      }
+    } catch {
+      handleProductClick(product);
+    }
+  };
+
   const handleProductClick = (product: Product) => {
     // Produto indisponível apenas quando tem controle de estoque ativo E quantidade = 0
     if (product.hasStock && (product.stockQuantity === null || product.stockQuantity === undefined || product.stockQuantity <= 0)) {
@@ -1584,11 +1607,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                             size="sm"
                             variant="outline"
                             className="h-7 px-2 text-[11px] border-red-200 text-red-600 hover:bg-red-50 shrink-0"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              addToCart(product, 1, '', []);
-                              toast.success("Item adicionado!");
-                            }}
+                            onClick={(e) => handleQuickAdd(product, e)}
                             disabled={product.hasStock && product.stockQuantity != null && product.stockQuantity <= 0}
                           >
                             <Plus className="h-3.5 w-3.5 mr-1" />

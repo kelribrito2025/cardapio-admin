@@ -8020,3 +8020,12 @@
 ## Revisão de altura dos modais no mobile (menu público)
 - [x] Identificar todos os modais com max-h superior a 80vh (12 modais encontrados)
 - [x] Ajustar modais do fluxo de pedidos para max-h-[80vh] no mobile (todos os 12 ajustados)
+
+## Bug: Botão Adicionar bypassa complementos no PDV/Mesas
+- [x] Verificar lógica do botão Adicionar na página /pdv (corrigido com handleQuickAdd)
+- [x] Verificar lógica do botão Adicionar na página /mesas (PDVSlidebar corrigido com handleQuickAdd)
+- [x] Verificar lógica do botão Adicionar na versão mobile de /mesas (MobilePDVModal já estava correto)
+- [x] Verificar lógica do botão Adicionar na busca do PDV (usa mesmo grid, corrigido)
+- [x] Verificar lógica do botão Adicionar na busca das mesas (usa mesmo grid, corrigido)
+- [x] Corrigir: itens com complementos devem abrir modal de detalhes em vez de adicionar direto
+- [x] Testes unitários (17 testes passando)
