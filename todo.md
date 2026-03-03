@@ -7895,3 +7895,12 @@
 - [x] Ajustar layout do botão "Entendi" para ficar na mesma posição do "Meus pedidos"
 - [x] Garantir que o botão "Entendi" tenha o mesmo tamanho e altura do "Meus pedidos"
 - [x] Posicionar o tooltip acima do botão "Entendi"
+
+
+## Otimizacao de Performance - Envio de Pedidos
+
+- [x] Mover impressao para fire-and-forget (nao bloquear resposta)
+- [x] Mover notificacao WhatsApp para fire-and-forget
+- [x] Criar funcoes de processamento em background (processOrderPrintingInBackground, processOrderNotificationInBackground)
+- [x] Desabilitar blocos de impressao e WhatsApp originais (usar if(false))
+- [x] Testar tempo de resposta apos otimizacoes

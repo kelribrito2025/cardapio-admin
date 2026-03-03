@@ -3358,6 +3358,8 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     }
     
     // Verificar se impressão está configurada e enviar evento de impressão via SSE
+    // MOVIDO PARA BACKGROUND: processOrderPrintingInBackground()
+    if (false) { // Desabilitado - agora feito em background
     try {
       const printerSettingsResult = await getPrinterSettings(data.establishmentId);
       if (printerSettingsResult?.printOnNewOrder) {
@@ -3598,23 +3600,16 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
         }
       }
       
-      } // fim do if (!printOnNewOrder) - bloco de métodos legados
+      } // fim do if (!printOnNewOrder) - bloco de metodos legados
     } catch (printError) {
-      console.error('[DB:createPublicOrder] Erro ao verificar configurações de impressão:', printError);
-      // Registrar falha no log (protegido - nunca falha)
-      createPrintLog({
-        establishmentId: data.establishmentId,
-        orderId,
-        orderNumber,
-        trigger: 'new_order',
-        method: 'sse',
-        status: 'failed',
-        errorMessage: printError instanceof Error ? printError.message : String(printError),
-      }).catch(() => {}); // fire-and-forget no catch block
-      // Não falhar o pedido por causa de erro de impressão
+      // Erro de impressao agora tratado em background
+      console.log('[DB:createPublicOrder] Erro de impressao sera tratado em background');
     }
+    } // fim do if(false) - bloco de impressao desabilitado
     
-    // Enviar notificação WhatsApp para o cliente sobre novo pedido
+    // Enviar notificacao WhatsApp para o cliente sobre novo pedido
+    // MOVIDO PARA BACKGROUND: processOrderNotificationInBackground()
+    if (false) { // Desabilitado - agora feito em background
     try {
       const whatsappConfig = await getWhatsappConfig(data.establishmentId);
       if (whatsappConfig && whatsappConfig.status === 'connected' && whatsappConfig.instanceToken && data.customerPhone) {
@@ -3717,9 +3712,10 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
         }
       }
     } catch (whatsappError) {
-      console.error('[DB:createPublicOrder] Erro ao enviar notificação WhatsApp:', whatsappError);
-      // Não falhar o pedido por causa de erro no WhatsApp
+      // Erro de WhatsApp agora tratado em background
+      console.log('[DB:createPublicOrder] Erro de WhatsApp sera tratado em background');
     }
+    } // fim do if(false) - bloco de WhatsApp desabilitado
     
     // Enviar push notification para dispositivos inscritos
     try {
@@ -3772,6 +3768,17 @@ export async function createPublicOrder(data: InsertOrder, items: InsertOrderIte
     }
     
     console.log('[DB:createPublicOrder] Pedido criado com sucesso:', { orderId, orderNumber });
+    
+    // Iniciar processamento de impressão e notificação em background (não bloqueia resposta)
+    // Fire-and-forget: o cliente recebe a resposta imediatamente
+    processOrderPrintingInBackground(data.establishmentId, orderId, orderNumber, data, items).catch(err => {
+      console.error('[CreateOrder] Erro ao processar impressão em background:', err);
+    });
+    
+    processOrderNotificationInBackground(data.establishmentId, orderId, orderNumber, data, items).catch(err => {
+      console.error('[CreateOrder] Erro ao processar notificação em background:', err);
+    });
+    
     return { orderId, orderNumber };
   } catch (error) {
     console.error('[DB:createPublicOrder] Erro ao criar pedido:', error);
@@ -10888,4 +10895,141 @@ export async function getFeedbackStats() {
     inProgress: all.filter(f => f.status === "in_progress").length,
     resolved: all.filter(f => f.status === "resolved" || f.status === "closed").length,
   };
+}
+
+
+// ===== FUNÇÕES DE PROCESSAMENTO EM BACKGROUND (Fire-and-Forget) =====
+// Estas funções são executadas em background sem bloquear a resposta ao cliente
+
+/**
+ * Processa impressão de pedido em background
+ * Não bloqueia a resposta ao cliente
+ */
+export async function processOrderPrintingInBackground(
+  establishmentId: number,
+  orderId: number,
+  orderNumber: string,
+  data: InsertOrder,
+  items: InsertOrderItem[]
+) {
+  try {
+    console.log('[BG:Printing] Iniciando processamento de impressão para pedido:', orderNumber);
+    
+    const printerSettingsResult = await getPrinterSettings(establishmentId);
+    if (!printerSettingsResult) {
+      console.log('[BG:Printing] Nenhuma configuração de impressora encontrada');
+      return;
+    }
+    
+    // SSE (Mindi Printer app)
+    if (printerSettingsResult?.printOnNewOrder) {
+      notifyPrintOrder(establishmentId, {
+        orderId,
+        orderNumber,
+        customerName: data.customerName || null,
+        customerPhone: data.customerPhone || null,
+        customerAddress: data.customerAddress || null,
+        deliveryType: data.deliveryType || "delivery",
+        paymentMethod: data.paymentMethod || "cash",
+        subtotal: data.subtotal || "0",
+        deliveryFee: data.deliveryFee || "0",
+        discount: data.discount || "0",
+        total: data.total,
+        notes: data.notes || null,
+        changeAmount: data.changeAmount || null,
+        items: items.map(item => ({
+          productName: item.productName,
+          quantity: item.quantity ?? 1,
+          unitPrice: item.unitPrice,
+          totalPrice: item.totalPrice,
+          complements: item.complements || null,
+          notes: item.notes || null,
+        })),
+        createdAt: new Date(),
+        beepOnPrint: (printerSettingsResult as any)?.mindiBeepOnPrint ?? printerSettingsResult?.beepOnPrint ?? false,
+        htmlPrintEnabled: (printerSettingsResult as any)?.mindiHtmlPrintEnabled ?? printerSettingsResult?.htmlPrintEnabled ?? true,
+      });
+      console.log('[BG:Printing] ✅ Evento de impressão SSE enviado para pedido:', orderNumber);
+    }
+    
+    console.log('[BG:Printing] ✅ Processamento de impressão concluído para pedido:', orderNumber);
+  } catch (error) {
+    console.error('[BG:Printing] ❌ Erro ao processar impressão em background:', error);
+  }
+}
+
+/**
+ * Processa notificação de pedido em background
+ * Não bloqueia a resposta ao cliente
+ */
+export async function processOrderNotificationInBackground(
+  establishmentId: number,
+  orderId: number,
+  orderNumber: string,
+  data: InsertOrder,
+  items: InsertOrderItem[]
+) {
+  try {
+    console.log('[BG:Notification] Iniciando processamento de notificação para pedido:', orderNumber);
+    
+    const whatsappConfig = await getWhatsappConfig(establishmentId);
+    if (!whatsappConfig || whatsappConfig.status !== 'connected' || !whatsappConfig.instanceToken || !data.customerPhone) {
+      console.log('[BG:Notification] WhatsApp não configurado ou desconectado');
+      return;
+    }
+    
+    const establishment = await getEstablishmentById(establishmentId);
+    
+    // Preparar info de agendamento
+    const schedulingInfo = data.isScheduled && data.scheduledAt ? {
+      isScheduled: true,
+      scheduledDate: new Date(data.scheduledAt).toLocaleDateString('pt-BR'),
+      scheduledTime: new Date(data.scheduledAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    } : undefined;
+    
+    // Enviar notificação WhatsApp
+    if (whatsappConfig.notifyOnNewOrder) {
+      try {
+        const { sendOrderStatusNotification } = await import('./_core/uazapi');
+        
+        console.log('[BG:Notification] Enviando notificação WhatsApp para:', data.customerPhone);
+        
+        const sendResult = await sendOrderStatusNotification(
+          whatsappConfig.instanceToken,
+          data.customerPhone,
+          'new',
+          {
+            customerName: data.customerName || 'Cliente',
+            orderNumber,
+            establishmentName: establishment?.name || 'Restaurante',
+            template: whatsappConfig.templateNewOrder,
+            orderItems: items.map(item => ({
+              productName: item.productName,
+              quantity: item.quantity ?? 1,
+              unitPrice: item.unitPrice,
+              totalPrice: item.totalPrice,
+              complements: item.complements,
+              notes: item.notes,
+            })),
+            orderTotal: data.total,
+            paymentMethod: data.paymentMethod,
+            schedulingInfo,
+            customerAddress: data.customerAddress,
+          }
+        );
+        
+        if (sendResult.success) {
+          console.log('[BG:Notification] ✅ Notificação WhatsApp enviada com sucesso:', orderNumber);
+        } else {
+          console.error('[BG:Notification] ❌ Erro ao enviar notificação WhatsApp:', sendResult.error);
+        }
+      } catch (err) {
+        console.error('[BG:Notification] Erro ao processar notificação WhatsApp:', err);
+      }
+    }
+    
+    console.log('[BG:Notification] ✅ Processamento de notificação concluído para pedido:', orderNumber);
+  } catch (error) {
+    console.error('[BG:Notification] ❌ Erro ao processar notificação em background:', error);
+  }
 }
