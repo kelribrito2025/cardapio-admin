@@ -7989,3 +7989,10 @@
 - [x] PDV Mobile: Aplicar gratuidade conforme tipo de pedido
 - [x] Backend: Validação de preço na criação de pedidos considerando contexto
 - [x] Impressão: Mostrar GRÁTIS no cupom para complementos gratuitos por contexto
+
+## Forçar escolha do tipo de entrega antes de adicionar itens ao carrinho
+- [ ] Analisar fluxo atual do deliveryType no menu público
+- [ ] Implementar modal/tela obrigatória de seleção do tipo de entrega ao abrir o menu
+- [ ] Bloquear adição de itens ao carrinho até tipo de entrega ser selecionado
+- [ ] Recalcular preços dos complementos quando tipo de entrega mudar
+- [ ] Escrever testes unitários
