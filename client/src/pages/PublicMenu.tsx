@@ -638,8 +638,15 @@ export default function PublicMenu() {
       setCreatedOrderNumber(result.orderNumber);
             // Ativar onboarding step 1 na primeira vez
             const onboardingKey = `onboarding_meus_pedidos_${slug}`;
+            console.log('[ONBOARDING DEBUG] orderSent será true, checkoutStep:', checkoutStep, 'onboardingKey:', onboardingKey, 'localStorage:', localStorage.getItem(onboardingKey));
             if (!localStorage.getItem(onboardingKey)) {
-              setTimeout(() => setOnboardingStep(1), 800);
+              console.log('[ONBOARDING DEBUG] Agendando setOnboardingStep(1) em 800ms');
+              setTimeout(() => {
+                console.log('[ONBOARDING DEBUG] setTimeout disparado! Setando onboardingStep para 1');
+                setOnboardingStep(1);
+              }, 800);
+            } else {
+              console.log('[ONBOARDING DEBUG] Onboarding já visto, não ativando');
             }
       
       // Iniciar tracking SSE usando orderId (único, sem colisão com reset diário)
@@ -4682,6 +4689,12 @@ setOnlinePaymentUrl(null);
                 )}
               </div>
 
+              {/* DEBUG: Mostrar estado do onboarding */}
+              {orderSent && (
+                <div className="flex-shrink-0 px-6 py-1 text-xs bg-yellow-100 text-yellow-800 font-mono">
+                  DEBUG: orderSent={String(orderSent)} onboardingStep={onboardingStep} checkoutStep={checkoutStep}
+                </div>
+              )}
               {/* Onboarding Step 1: Tooltip acima do footer - renderizado dentro do body para não ser cortado pelo overflow */}
               {orderSent && onboardingStep === 1 && (
                 <div className="flex-shrink-0 px-6 pb-2 pt-0 relative z-[201]">

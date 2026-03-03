@@ -7945,3 +7945,9 @@
 - [x] Corrigir Step 1: tooltip movido para dentro do fluxo normal (entre body e footer)
 - [x] Corrigir Step 2: tooltip movido para dentro do fluxo normal (antes do footer do tracking)
 - [x] Remover constantes não utilizadas (onboardingPedidoVisto, onboardingStep2Visto)
+
+## Onboarding mobile - investigação profunda (não funciona no mobile)
+- [ ] Investigar se o onboarding é ativado (setOnboardingStep(1)) no mobile
+- [ ] Verificar se há diferença no fluxo de envio de pedido entre mobile e desktop
+- [ ] Verificar se o modal de checkout é renderizado de forma diferente no mobile
+- [ ] Corrigir definitivamente para funcionar no mobile
