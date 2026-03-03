@@ -8060,3 +8060,4 @@
 - [x] Card Clientes Recorrentes vs Novos: responsividade (desktop horizontal, mobile empilhado)
 - [x] Botão tempo médio na top bar: alterar cor para verde (cor do sistema)
 - [x] Card Top Produtos: reestilizar com mesmo visual do card Formas de Pagamento (Finanças)
+- [x] Card Top Produtos: mostrar 7 itens visíveis + 3 via scroll interno

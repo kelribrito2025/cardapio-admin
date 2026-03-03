@@ -297,7 +297,7 @@ export default function Dashboard() {
               ))}
             </div>
           ) : topProducts && topProducts.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-4 overflow-y-auto pr-1" style={{ maxHeight: 'calc(7 * 40px)' }}>
               {(() => {
                 const maxQty = topProducts[0]?.totalQuantity || 1;
                 const totalRevenue = topProducts.reduce((sum, p) => sum + p.totalRevenue, 0);
