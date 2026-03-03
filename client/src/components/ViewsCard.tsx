@@ -153,7 +153,7 @@ export function ViewsCard() {
 
   if (isLoading) {
     return (
-      <div className="glass-card rounded-xl border border-border/30 p-5 shadow-sm">
+      <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <div className="skeleton h-4 w-24 rounded-md" />
           <div className="skeleton h-5 w-5 rounded" />
@@ -166,7 +166,7 @@ export function ViewsCard() {
   }
 
   return (
-    <div className="glass-card rounded-xl border border-border/30 p-5 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
+    <div className="bg-card rounded-xl border border-border/50 p-5 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-foreground">Visualizações</h3>

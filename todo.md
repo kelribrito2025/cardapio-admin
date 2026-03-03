@@ -8059,9 +8059,3 @@
 - [x] Card Clientes Recorrentes vs Novos: header com ícone + título + descrição (mesmo estilo)
 - [x] Card Clientes Recorrentes vs Novos: responsividade (desktop horizontal, mobile empilhado)
 - [x] Botão tempo médio na top bar: alterar cor para verde (cor do sistema)
-- [x] Efeito Glass/Blur: Camada 1 - Background gradiente radial difuso (laranja/rosa/bege)
-- [x] Efeito Glass/Blur: Camada 2 - Manchas de cor com blur estático no wrapper fixo
-- [x] Efeito Glass/Blur: Camada 3 - Container dashboard translúcido com backdrop-blur leve
-- [x] Efeito Glass/Blur: Sidebar e top bar com visual glass consistente
-- [x] Efeito Glass/Blur: Responsividade mobile (fallback sólido) e fallback navegadores antigos
-- [x] Efeito Glass/Blur: Reduzir intensidade do gradiente para ficar mais sutil

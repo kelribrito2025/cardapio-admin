@@ -137,7 +137,7 @@ export function StatCard({ title, value, tooltip, icon: Icon, trend, trendPositi
   if (loading) {
     return (
       <div className={cn(
-        "glass-card rounded-xl overflow-hidden border border-border/30 border-t-4",
+        "bg-card rounded-xl overflow-hidden border border-border/50 border-t-4",
         colors.borderColor,
         className
       )}>
@@ -155,7 +155,7 @@ export function StatCard({ title, value, tooltip, icon: Icon, trend, trendPositi
   return (
     <div
       className={cn(
-        "glass-card rounded-xl border border-border/30 border-t-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
+        "bg-card rounded-xl border border-border/50 border-t-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
         colors.borderColor,
         className
       )}
@@ -349,7 +349,7 @@ interface SectionCardProps {
 
 export function SectionCard({ title, description, children, actions, className, noPadding }: SectionCardProps) {
   return (
-    <div className={cn("glass-card rounded-xl border border-border/30", className)}>
+    <div className={cn("bg-card rounded-xl border border-border/50", className)}>
       {(title || actions) && (
         <div className="flex items-center justify-between px-6 py-3 border-b border-border/50" style={{height: '46px'}}>
           <div>
