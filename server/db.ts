@@ -1030,6 +1030,22 @@ export async function getComplementItemById(id: number) {
   return item || null;
 }
 
+export async function getComplementItemsByIds(ids: number[]) {
+  const db = await getDb();
+  if (!db || ids.length === 0) return [];
+  
+  return db.select({
+    id: complementItems.id,
+    name: complementItems.name,
+    price: complementItems.price,
+    priceMode: complementItems.priceMode,
+    freeOnDelivery: complementItems.freeOnDelivery,
+    freeOnPickup: complementItems.freeOnPickup,
+    freeOnDineIn: complementItems.freeOnDineIn,
+  }).from(complementItems)
+    .where(inArray(complementItems.id, ids));
+}
+
 export async function getComplementGroupById(id: number) {
   const db = await getDb();
   if (!db) return null;

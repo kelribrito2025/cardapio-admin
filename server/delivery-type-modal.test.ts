@@ -180,3 +180,262 @@ describe("getAutoSelectedDeliveryType", () => {
     expect(result.autoChosen).toBe(true);
   });
 });
+
+// ============================================================
+// Testes para a lógica de detecção de mudança de preço ao trocar tipo de entrega
+// ============================================================
+
+type CartItem = {
+  productId: number;
+  name: string;
+  price: string;
+  quantity: number;
+  observation: string;
+  image: string | null;
+  complements: Array<{ id: number; name: string; price: string; quantity: number }>;
+};
+
+type ComplementInfo = {
+  id: number;
+  name: string;
+  price: string;
+  priceMode: string;
+  freeOnDelivery: boolean;
+  freeOnPickup: boolean;
+  freeOnDineIn: boolean;
+};
+
+// Reproduzir a lógica de detectPriceChanges do handleDeliveryTypeChange
+function detectPriceChanges(
+  cart: CartItem[],
+  complementsInfo: ComplementInfo[],
+  oldType: 'delivery' | 'pickup' | 'dine_in',
+  newType: 'delivery' | 'pickup' | 'dine_in'
+): Array<{ name: string; oldPrice: number; newPrice: number }> {
+  const changes: Array<{ name: string; oldPrice: number; newPrice: number }> = [];
+  
+  cart.forEach(item => {
+    item.complements.forEach(cartComplement => {
+      const fullInfo = complementsInfo.find(ci => ci.id === cartComplement.id);
+      if (fullInfo) {
+        const oldPrice = getComplementPrice(fullInfo, oldType);
+        const newPrice = getComplementPrice(fullInfo, newType);
+        if (oldPrice !== newPrice) {
+          if (!changes.find(c => c.name === fullInfo.name && c.oldPrice === oldPrice && c.newPrice === newPrice)) {
+            changes.push({ name: fullInfo.name, oldPrice, newPrice });
+          }
+        }
+      }
+    });
+  });
+  
+  return changes;
+}
+
+// Reproduzir a lógica de atualização de preços no carrinho
+function updateCartPrices(
+  cart: CartItem[],
+  complementsInfo: ComplementInfo[],
+  newType: 'delivery' | 'pickup' | 'dine_in'
+): CartItem[] {
+  return cart.map(item => ({
+    ...item,
+    complements: item.complements.map(c => {
+      const fullInfo = complementsInfo.find(ci => ci.id === c.id);
+      if (fullInfo) {
+        const newPrice = getComplementPrice(fullInfo, newType);
+        return { ...c, price: String(newPrice) };
+      }
+      return c;
+    }),
+  }));
+}
+
+describe("detectPriceChanges - Detecção de mudança de preço ao trocar tipo de entrega", () => {
+  const complementsInfo: ComplementInfo[] = [
+    { id: 1, name: "Queijo extra", price: "3.00", priceMode: "free", freeOnDelivery: true, freeOnPickup: false, freeOnDineIn: false },
+    { id: 2, name: "Bacon", price: "5.00", priceMode: "normal", freeOnDelivery: false, freeOnPickup: false, freeOnDineIn: false },
+    { id: 3, name: "Molho especial", price: "2.50", priceMode: "free", freeOnDelivery: true, freeOnPickup: true, freeOnDineIn: false },
+    { id: 4, name: "Refrigerante", price: "6.00", priceMode: "free", freeOnDelivery: false, freeOnPickup: false, freeOnDineIn: false },
+  ];
+
+  const baseCart: CartItem[] = [
+    {
+      productId: 100,
+      name: "Hamburguer",
+      price: "25.00",
+      quantity: 1,
+      observation: "",
+      image: null,
+      complements: [
+        { id: 1, name: "Queijo extra", price: "0", quantity: 1 },
+        { id: 2, name: "Bacon", price: "5.00", quantity: 1 },
+      ],
+    },
+  ];
+
+  it("detecta mudança quando complemento grátis no delivery passa a cobrar na retirada", () => {
+    const changes = detectPriceChanges(baseCart, complementsInfo, 'delivery', 'pickup');
+    expect(changes).toHaveLength(1);
+    expect(changes[0]).toEqual({ name: "Queijo extra", oldPrice: 0, newPrice: 3 });
+  });
+
+  it("detecta mudança quando complemento cobrado na retirada fica grátis no delivery", () => {
+    const pickupCart: CartItem[] = [{
+      ...baseCart[0],
+      complements: [
+        { id: 1, name: "Queijo extra", price: "3.00", quantity: 1 },
+      ],
+    }];
+    const changes = detectPriceChanges(pickupCart, complementsInfo, 'pickup', 'delivery');
+    expect(changes).toHaveLength(1);
+    expect(changes[0]).toEqual({ name: "Queijo extra", oldPrice: 3, newPrice: 0 });
+  });
+
+  it("não detecta mudança para complementos com priceMode normal", () => {
+    const cartWithNormal: CartItem[] = [{
+      ...baseCart[0],
+      complements: [
+        { id: 2, name: "Bacon", price: "5.00", quantity: 1 },
+      ],
+    }];
+    const changes = detectPriceChanges(cartWithNormal, complementsInfo, 'delivery', 'pickup');
+    expect(changes).toHaveLength(0);
+  });
+
+  it("não detecta mudança para complementos grátis em todos os contextos", () => {
+    const cartWithGlobal: CartItem[] = [{
+      ...baseCart[0],
+      complements: [
+        { id: 4, name: "Refrigerante", price: "0", quantity: 1 },
+      ],
+    }];
+    const changes = detectPriceChanges(cartWithGlobal, complementsInfo, 'delivery', 'pickup');
+    expect(changes).toHaveLength(0);
+  });
+
+  it("não detecta mudança quando tipo de entrega é o mesmo", () => {
+    const changes = detectPriceChanges(baseCart, complementsInfo, 'delivery', 'delivery');
+    expect(changes).toHaveLength(0);
+  });
+
+  it("detecta múltiplas mudanças de preço", () => {
+    const cartMultiple: CartItem[] = [{
+      ...baseCart[0],
+      complements: [
+        { id: 1, name: "Queijo extra", price: "0", quantity: 1 },
+        { id: 3, name: "Molho especial", price: "0", quantity: 1 },
+      ],
+    }];
+    const changes = detectPriceChanges(cartMultiple, complementsInfo, 'delivery', 'dine_in');
+    // Queijo extra: delivery=0, dine_in=3 (muda)
+    // Molho especial: delivery=0, dine_in=2.5 (muda)
+    expect(changes).toHaveLength(2);
+    expect(changes[0]).toEqual({ name: "Queijo extra", oldPrice: 0, newPrice: 3 });
+    expect(changes[1]).toEqual({ name: "Molho especial", oldPrice: 0, newPrice: 2.5 });
+  });
+
+  it("não duplica mudanças quando o mesmo complemento está em múltiplos itens do carrinho", () => {
+    const cartDuplicate: CartItem[] = [
+      {
+        productId: 100, name: "Hamburguer", price: "25.00", quantity: 1, observation: "", image: null,
+        complements: [{ id: 1, name: "Queijo extra", price: "0", quantity: 1 }],
+      },
+      {
+        productId: 101, name: "Hot Dog", price: "15.00", quantity: 1, observation: "", image: null,
+        complements: [{ id: 1, name: "Queijo extra", price: "0", quantity: 1 }],
+      },
+    ];
+    const changes = detectPriceChanges(cartDuplicate, complementsInfo, 'delivery', 'pickup');
+    expect(changes).toHaveLength(1); // Apenas 1 entrada, não duplicada
+  });
+
+  it("retorna array vazio quando carrinho está vazio", () => {
+    const changes = detectPriceChanges([], complementsInfo, 'delivery', 'pickup');
+    expect(changes).toHaveLength(0);
+  });
+
+  it("retorna array vazio quando não há info de complementos", () => {
+    const changes = detectPriceChanges(baseCart, [], 'delivery', 'pickup');
+    expect(changes).toHaveLength(0);
+  });
+
+  it("retorna array vazio quando carrinho não tem complementos", () => {
+    const cartNoComplements: CartItem[] = [{
+      productId: 100, name: "Hamburguer", price: "25.00", quantity: 1, observation: "", image: null,
+      complements: [],
+    }];
+    const changes = detectPriceChanges(cartNoComplements, complementsInfo, 'delivery', 'pickup');
+    expect(changes).toHaveLength(0);
+  });
+});
+
+describe("updateCartPrices - Atualização de preços no carrinho", () => {
+  const complementsInfo: ComplementInfo[] = [
+    { id: 1, name: "Queijo extra", price: "3.00", priceMode: "free", freeOnDelivery: true, freeOnPickup: false, freeOnDineIn: false },
+    { id: 2, name: "Bacon", price: "5.00", priceMode: "normal", freeOnDelivery: false, freeOnPickup: false, freeOnDineIn: false },
+  ];
+
+  it("atualiza preço do complemento grátis no delivery para cobrado na retirada", () => {
+    const cart: CartItem[] = [{
+      productId: 100, name: "Hamburguer", price: "25.00", quantity: 1, observation: "", image: null,
+      complements: [
+        { id: 1, name: "Queijo extra", price: "0", quantity: 1 },
+        { id: 2, name: "Bacon", price: "5.00", quantity: 1 },
+      ],
+    }];
+    const updated = updateCartPrices(cart, complementsInfo, 'pickup');
+    expect(updated[0].complements[0].price).toBe("3"); // Queijo extra agora cobra
+    expect(updated[0].complements[1].price).toBe("5"); // Bacon não muda
+  });
+
+  it("atualiza preço do complemento cobrado na retirada para grátis no delivery", () => {
+    const cart: CartItem[] = [{
+      productId: 100, name: "Hamburguer", price: "25.00", quantity: 1, observation: "", image: null,
+      complements: [
+        { id: 1, name: "Queijo extra", price: "3.00", quantity: 1 },
+      ],
+    }];
+    const updated = updateCartPrices(cart, complementsInfo, 'delivery');
+    expect(updated[0].complements[0].price).toBe("0"); // Queijo extra agora grátis
+  });
+
+  it("não modifica carrinho original (imutabilidade)", () => {
+    const cart: CartItem[] = [{
+      productId: 100, name: "Hamburguer", price: "25.00", quantity: 1, observation: "", image: null,
+      complements: [
+        { id: 1, name: "Queijo extra", price: "0", quantity: 1 },
+      ],
+    }];
+    const updated = updateCartPrices(cart, complementsInfo, 'pickup');
+    expect(cart[0].complements[0].price).toBe("0"); // Original não mudou
+    expect(updated[0].complements[0].price).toBe("3"); // Novo está atualizado
+  });
+
+  it("mantém complementos sem info na lista inalterados", () => {
+    const cart: CartItem[] = [{
+      productId: 100, name: "Hamburguer", price: "25.00", quantity: 1, observation: "", image: null,
+      complements: [
+        { id: 999, name: "Desconhecido", price: "10.00", quantity: 1 },
+      ],
+    }];
+    const updated = updateCartPrices(cart, complementsInfo, 'pickup');
+    expect(updated[0].complements[0].price).toBe("10.00"); // Não mudou
+  });
+
+  it("atualiza múltiplos itens do carrinho corretamente", () => {
+    const cart: CartItem[] = [
+      {
+        productId: 100, name: "Hamburguer", price: "25.00", quantity: 1, observation: "", image: null,
+        complements: [{ id: 1, name: "Queijo extra", price: "0", quantity: 1 }],
+      },
+      {
+        productId: 101, name: "Hot Dog", price: "15.00", quantity: 2, observation: "", image: null,
+        complements: [{ id: 1, name: "Queijo extra", price: "0", quantity: 2 }],
+      },
+    ];
+    const updated = updateCartPrices(cart, complementsInfo, 'pickup');
+    expect(updated[0].complements[0].price).toBe("3");
+    expect(updated[1].complements[0].price).toBe("3");
+  });
+});

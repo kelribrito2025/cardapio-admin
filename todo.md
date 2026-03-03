@@ -8006,3 +8006,10 @@
 - [x] Pré-selecionar forma de entrega no checkout step 1 com a escolha feita
 - [x] Auto-selecionar quando só há 1 opção de entrega (sem modal)
 - [x] Testes unitários (21 testes passando)
+
+## Alerta ao mudar forma de entrega no checkout com complementos afetados
+- [x] Detectar quando o tipo de entrega muda no checkout step 1
+- [x] Comparar preços dos complementos no carrinho entre o tipo antigo e o novo
+- [x] Mostrar alerta visual listando os complementos cujo preço mudou (ficou grátis ou deixou de ser grátis)
+- [x] Recalcular o total do carrinho automaticamente
+- [x] Testes unitários (36 testes passando)

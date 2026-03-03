@@ -3,9 +3,9 @@ import { trpc } from "@/lib/trpc";
 import { getThumbUrl } from "../../../shared/imageUtils";
 import { BlurImage } from "@/components/BlurImage";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { orderSSE, statusMap } from "@/lib/orderSSE";
-import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Package, MessageCircle, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, Rocket, CalendarClock, Wallet, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Package, MessageCircle, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, Rocket, CalendarClock, Wallet, ArrowUpRight, ArrowDownLeft, AlertTriangle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -173,6 +173,7 @@ export default function PublicMenu() {
     id: number; name: string; description: string | null; price: string;
     images: string | null; hasStock: boolean; availableStock: number | null; outOfStock: boolean;
   } | null>(null);
+  const [priceChangeAlert, setPriceChangeAlert] = useState<Array<{ name: string; oldPrice: number; newPrice: number }> | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix" | "card_online">("pix");
   const [showCardOptions, setShowCardOptions] = useState(false);
   const [changeAmount, setChangeAmount] = useState("");
@@ -300,6 +301,69 @@ export default function PublicMenu() {
     { productId: selectedProduct?.id || 0 },
     { enabled: !!selectedProduct?.id }
   );
+
+  // IDs únicos de complementos no carrinho (estável com useMemo)
+  const cartComplementIds = useMemo(() => {
+    const ids = new Set<number>();
+    cart.forEach(item => item.complements.forEach(c => ids.add(c.id)));
+    return Array.from(ids).sort();
+  }, [cart]);
+
+  // Query para buscar info completa dos complementos no carrinho (priceMode, freeOn*)
+  const { data: cartComplementsInfo } = trpc.publicMenu.getComplementItemsInfo.useQuery(
+    { ids: cartComplementIds },
+    { enabled: cartComplementIds.length > 0 }
+  );
+
+  // Função para mudar tipo de entrega no checkout com verificação de preço
+  const handleDeliveryTypeChange = useCallback((newType: 'delivery' | 'pickup' | 'dine_in') => {
+    if (newType === deliveryType) return;
+    
+    // Verificar se algum complemento no carrinho tem preço diferente no novo contexto
+    if (cartComplementsInfo && cartComplementsInfo.length > 0) {
+      const changes: Array<{ name: string; oldPrice: number; newPrice: number }> = [];
+      
+      cart.forEach(item => {
+        item.complements.forEach(cartComplement => {
+          const fullInfo = cartComplementsInfo.find(ci => ci.id === cartComplement.id);
+          if (fullInfo) {
+            const oldPrice = getComplementPrice(fullInfo, deliveryType);
+            const newPrice = getComplementPrice(fullInfo, newType);
+            if (oldPrice !== newPrice) {
+              // Verificar se já não foi adicionado (mesmo complemento em itens diferentes)
+              if (!changes.find(c => c.name === fullInfo.name && c.oldPrice === oldPrice && c.newPrice === newPrice)) {
+                changes.push({ name: fullInfo.name, oldPrice, newPrice });
+              }
+            }
+          }
+        });
+      });
+      
+      if (changes.length > 0) {
+        // Atualizar os preços dos complementos no carrinho
+        setCart(prev => prev.map(item => ({
+          ...item,
+          complements: item.complements.map(c => {
+            const fullInfo = cartComplementsInfo.find(ci => ci.id === c.id);
+            if (fullInfo) {
+              const newPrice = getComplementPrice(fullInfo, newType);
+              return { ...c, price: String(newPrice) };
+            }
+            return c;
+          }),
+        })));
+        
+        setPriceChangeAlert(changes);
+        // Auto-dismiss após 8 segundos
+        setTimeout(() => setPriceChangeAlert(null), 8000);
+      }
+    }
+    
+    setDeliveryType(newType);
+    if (newType !== 'delivery') {
+      setSelectedNeighborhood(null);
+    }
+  }, [deliveryType, cart, cartComplementsInfo]);
 
   // Mutation para criar avaliação
   const createReviewMutation = trpc.publicMenu.createReview.useMutation({
@@ -3570,7 +3634,7 @@ export default function PublicMenu() {
                     {establishment.allowsDelivery && (
                       <button
                         type="button"
-                        onClick={() => setDeliveryType('delivery')}
+                        onClick={() => handleDeliveryTypeChange('delivery')}
                         className={`w-full flex items-center justify-between p-4 border rounded-xl transition-colors ${
                           deliveryType === 'delivery' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
                         }`}
@@ -3611,10 +3675,7 @@ export default function PublicMenu() {
                     {establishment.allowsPickup && (
                       <button
                         type="button"
-                        onClick={() => {
-                          setDeliveryType('pickup');
-                          setSelectedNeighborhood(null);
-                        }}
+                        onClick={() => handleDeliveryTypeChange('pickup')}
                         className={`w-full flex items-center justify-between p-4 border rounded-xl transition-colors ${
                           deliveryType === 'pickup' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
                         }`}
@@ -3643,10 +3704,7 @@ export default function PublicMenu() {
                     {establishment.allowsDineIn && (
                       <button
                         type="button"
-                        onClick={() => {
-                          setDeliveryType('dine_in');
-                          setSelectedNeighborhood(null);
-                        }}
+                        onClick={() => handleDeliveryTypeChange('dine_in')}
                         className={`w-full flex items-center justify-between p-4 border rounded-xl transition-colors ${
                           deliveryType === 'dine_in' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
                         }`}
@@ -3699,6 +3757,39 @@ export default function PublicMenu() {
                             )}.
                           </p>
                         </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Alerta de mudança de preço de complementos */}
+                  {priceChangeAlert && priceChangeAlert.length > 0 && (
+                    <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <p className="text-sm text-amber-800 font-medium">Preços atualizados na sacola</p>
+                          <p className="text-xs text-amber-700 mt-1">Ao mudar a forma de entrega, alguns complementos tiveram o preço ajustado:</p>
+                          <ul className="mt-1.5 space-y-1">
+                            {priceChangeAlert.map((change, i) => (
+                              <li key={i} className="text-xs text-amber-700 flex items-center gap-1">
+                                <span className="font-medium">{change.name}:</span>
+                                {change.oldPrice === 0 ? (
+                                  <><span className="line-through text-green-600">Grátis</span> <span className="text-red-600">→ R$ {change.newPrice.toFixed(2).replace('.', ',')}</span></>
+                                ) : change.newPrice === 0 ? (
+                                  <><span className="line-through">R$ {change.oldPrice.toFixed(2).replace('.', ',')}</span> <span className="text-green-600 font-semibold">→ Grátis!</span></>
+                                ) : (
+                                  <><span className="line-through">R$ {change.oldPrice.toFixed(2).replace('.', ',')}</span> <span>→ R$ {change.newPrice.toFixed(2).replace('.', ',')}</span></>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <button
+                          onClick={() => setPriceChangeAlert(null)}
+                          className="p-0.5 text-amber-400 hover:text-amber-600 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   )}

@@ -1464,6 +1464,13 @@ export const appRouter = router({
         return db.getBusinessHoursForPublicMenu(input.establishmentId);
       }),
     
+    // Buscar info de complementos por IDs (para verificar mudança de preço ao trocar tipo de entrega)
+    getComplementItemsInfo: publicProcedure
+      .input(z.object({ ids: z.array(z.number()) }))
+      .query(async ({ input }) => {
+        return db.getComplementItemsByIds(input.ids);
+      }),
+
     getProductComplements: publicProcedure
       .input(z.object({ productId: z.number() }))
       .query(async ({ input }) => {
