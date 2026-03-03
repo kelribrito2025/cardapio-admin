@@ -7910,3 +7910,9 @@
 - [x] Corrigir valor exibido por item na impressão HTML para incluir preço dos complementos (preço base + complementos)
 - [x] Corrigir valor exibido por item no ESC/POS para incluir preço dos complementos
 - [x] Corrigir valor exibido por item no PrintTestTab (preview) para incluir preço dos complementos
+
+
+## Simplificação do Step 2 do Onboarding
+- [x] Remover tooltip "Acompanhe seu pedido!" e botão "Entendi" do Step 2
+- [x] Manter apenas tooltip "Veja todos os seus pedidos" com foco no botão "Meus pedidos"
+- [x] Setinha estilo balão já presente no tooltip do Step 2 (mesmo estilo do Step 1)

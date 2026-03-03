@@ -190,10 +190,7 @@ export default function PublicMenu() {
   // Inicializar Step 2 quando o modal de tracking abre
   useEffect(() => {
     if (showTrackingModal && onboardingStep === 2) {
-      const seen2 = localStorage.getItem(onboardingStep2Key);
-      if (!seen2) {
-        setOnboardingStep2SubStep(0);
-      }
+      // Step 2 agora vai direto para o tooltip do "Meus pedidos"
     }
   }, [showTrackingModal, onboardingStep]);
   const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set());
@@ -5836,39 +5833,12 @@ setOnlinePaymentUrl(null);
             {/* Footer */}
             <div className="border-t px-6 py-4 space-y-3 relative" style={{backgroundColor: '#ffffff'}}>
               {/* Overlay bloqueador para Step 2 */}
-              {onboardingStep === 2 && onboardingStep2SubStep === 0 && (
+              {onboardingStep === 2 && (
                 <div className="fixed inset-0 z-[99] bg-black/60" onClick={(e) => e.stopPropagation()} />
               )}
               
-              {/* Tooltip 1: Informar sobre acompanhamento + WhatsApp */}
-              {onboardingStep === 2 && onboardingStep2SubStep === 0 && (
-                <div className="absolute -top-48 left-6 right-6 z-[101] animate-in fade-in slide-in-from-bottom-2 duration-300">
-                  <div className="bg-red-50 rounded-xl shadow-2xl p-4 border border-red-200 relative">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 p-2 bg-red-100 rounded-lg">
-                        <MessageCircle className="h-5 w-5 text-red-500" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-bold text-gray-900">Acompanhe seu pedido!</p>
-                        <p className="text-xs text-gray-600 mt-1">Voce pode acompanhar o status aqui e tambem sera informado pelo WhatsApp.</p>
-                      </div>
-                    </div>
-                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-50 border-r border-b border-red-200 rotate-45" />
-                  </div>
-                  <button
-                    onClick={() => {
-                      setOnboardingStep2SubStep(1);
-                      localStorage.setItem(onboardingStep2Key, 'true');
-                    }}
-                    className="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-colors"
-                  >
-                    Entendi
-                  </button>
-                </div>
-              )}
-              
-              {/* Tooltip 2: Focar no botao "Meus pedidos" */}
-              {onboardingStep === 2 && onboardingStep2SubStep === 1 && (
+              {/* Tooltip: Focar no botao "Meus pedidos" */}
+              {onboardingStep === 2 && (
                 <div className="absolute -top-32 left-6 right-6 z-[101] animate-in fade-in slide-in-from-bottom-2 duration-300">
                   <div className="bg-red-50 rounded-xl shadow-2xl p-4 border border-red-200 relative">
                     <div className="flex items-start gap-3">
