@@ -317,51 +317,52 @@ export default function Dashboard() {
         {/* Pedidos por Modalidade */}
         <SectionCard title="Pedidos por Modalidade">
           {modalityLoading ? (
-            <div className="flex items-center justify-center h-48">
-              <div className="skeleton h-32 w-32 rounded-full" />
+            <div className="flex flex-col gap-6 py-2">
+              {[1,2,3].map(i => (
+                <div key={i} className="flex flex-col gap-2">
+                  <div className="skeleton h-4 w-20 rounded" />
+                  <div className="skeleton h-3 w-12 rounded" />
+                  <div className="skeleton h-3 w-full rounded-full" />
+                </div>
+              ))}
             </div>
           ) : ordersByModality && ordersByModality.length > 0 ? (() => {
             const total = ordersByModality.reduce((sum, m) => sum + m.count, 0);
-            const colors = ['#ef4444', '#3b82f6', '#22c55e', '#f59e0b'];
+            const barColors = ['#ef4444', '#f97316', '#f59e0b'];
             return (
-              <div className="flex flex-col items-center gap-4">
-                {/* Donut simples com CSS */}
-                <div className="relative w-36 h-36">
-                  <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                    {(() => {
-                      let offset = 0;
-                      return ordersByModality.map((item, i) => {
-                        const pct = (item.count / total) * 100;
-                        const dashArray = `${pct} ${100 - pct}`;
-                        const el = (
-                          <circle
-                            key={item.deliveryType}
-                            cx="18" cy="18" r="15.9155"
-                            fill="none"
-                            stroke={colors[i % colors.length]}
-                            strokeWidth="3"
-                            strokeDasharray={dashArray}
-                            strokeDashoffset={`${-offset}`}
-                            className="transition-all duration-500"
-                          />
-                        );
-                        offset += pct;
-                        return el;
-                      });
-                    })()}
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-2xl font-bold">{total}</span>
-                    <span className="text-xs text-muted-foreground">pedidos</span>
-                  </div>
+              <div className="flex flex-col gap-5 py-1">
+                <div className="grid grid-cols-3 gap-4">
+                  {ordersByModality.map((item, i) => {
+                    const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
+                    return (
+                      <div key={item.deliveryType} className="flex flex-col gap-1">
+                        <span className="text-xs text-muted-foreground font-medium">{item.label}</span>
+                        <span className="text-2xl font-bold tracking-tight">{pct}%</span>
+                      </div>
+                    );
+                  })}
                 </div>
-                {/* Legenda */}
-                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+                <div className="flex gap-1 w-full h-3 rounded-full overflow-hidden bg-muted">
+                  {ordersByModality.map((item, i) => {
+                    const pct = total > 0 ? (item.count / total) * 100 : 0;
+                    return (
+                      <div
+                        key={item.deliveryType}
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${pct}%`,
+                          backgroundColor: barColors[i % barColors.length],
+                          minWidth: pct > 0 ? '8px' : '0',
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   {ordersByModality.map((item, i) => (
-                    <div key={item.deliveryType} className="flex items-center gap-1.5 text-xs">
-                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: colors[i % colors.length] }} />
-                      <span className="text-muted-foreground">{item.label}</span>
-                      <span className="font-medium">{item.count}</span>
+                    <div key={item.deliveryType} className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: barColors[i % barColors.length] }} />
+                      <span>{item.label}: {item.count}</span>
                     </div>
                   ))}
                 </div>
