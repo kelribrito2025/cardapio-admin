@@ -124,6 +124,22 @@ const menuSections = [
 // Lista plana para compatibilidade
 const navItems = menuSections.flatMap(section => section.items);
 
+// Componente de Tempo Médio de Preparo para a top bar
+function AvgPrepTimeButton({ establishmentId }: { establishmentId?: number }) {
+  const { data } = trpc.dashboard.avgPrepTime.useQuery(
+    { establishmentId: establishmentId || 0, period: 'today' },
+    { enabled: !!establishmentId, refetchInterval: 300000, staleTime: 120000 }
+  );
+  const avgMin = data?.avgMinutes ?? null;
+  if (avgMin === null) return null;
+  return (
+    <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-muted/60 rounded-lg text-xs font-medium text-muted-foreground" style={{ borderRadius: '10px' }}>
+      <Clock className="h-3.5 w-3.5" />
+      <span>{avgMin}min</span>
+    </div>
+  );
+}
+
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
@@ -921,6 +937,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
             {/* Right side */}
             <div className="flex items-center gap-3">
+              {/* Tempo Médio de Preparo - Desktop only */}
+              <AvgPrepTimeButton establishmentId={establishment?.id} />
+
               {/* Ver Menu Button */}
               {establishment?.menuSlug && (
                 <a
