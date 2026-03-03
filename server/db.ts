@@ -1214,6 +1214,9 @@ export async function updateComplementItemsByName(
     availableDays?: number[] | null;
     availableHours?: { day: number; startTime: string; endTime: string }[] | null;
     badgeText?: string | null;
+    freeOnDelivery?: boolean;
+    freeOnPickup?: boolean;
+    freeOnDineIn?: boolean;
   },
   scopeGroupIds?: number[]
 ) {

@@ -28,6 +28,18 @@ import { toast } from "sonner";
 // Constante para persistência dos carrinhos
 const CARTS_PER_TABLE_KEY = 'pdv-carts-per-table';
 
+// Função helper para calcular preço do complemento no contexto de mesa (dine_in)
+function getComplementPriceDineIn(
+  item: { price: string | number; priceMode?: string; freeOnDelivery?: boolean; freeOnPickup?: boolean; freeOnDineIn?: boolean }
+): number {
+  if (item.priceMode === 'free') {
+    if (item.freeOnDineIn) return 0;
+    if (!item.freeOnDelivery && !item.freeOnPickup && !item.freeOnDineIn) return 0;
+    return Number(item.price);
+  }
+  return Number(item.price);
+}
+
 // Tipos
 type CartItem = {
   productId: number;
@@ -459,7 +471,7 @@ export function MobilePDVModal({
         const group = productComplements?.find(g => g.id === groupId);
         const item = group?.items.find(i => i.id === itemId);
         if (item && qty > 0) {
-          complements.push({ id: item.id, name: item.name, price: item.price, quantity: qty });
+          complements.push({ id: item.id, name: item.name, price: String(getComplementPriceDineIn(item)), quantity: qty });
         }
       });
     });
@@ -1030,7 +1042,7 @@ export function MobilePDVModal({
                           {group.items.map((item) => {
                             const itemQuantity = selectedInGroup.get(item.id) || 0;
                             const isSelected = itemQuantity > 0;
-                            const displayPrice = Number(item.price);
+                            const displayPrice = getComplementPriceDineIn(item);
                             
                             const handleIncrement = (e: React.MouseEvent) => {
                               e.preventDefault();
@@ -1206,7 +1218,7 @@ export function MobilePDVModal({
                       group.items.forEach((item) => {
                         const qty = selectedInGroup.get(item.id);
                         if (qty && qty > 0) {
-                          complementsTotal += Number(item.price) * qty;
+                          complementsTotal += getComplementPriceDineIn(item) * qty;
                         }
                       });
                     }

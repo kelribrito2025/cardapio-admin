@@ -978,6 +978,9 @@ export const appRouter = router({
           startTime: z.string(),
           endTime: z.string(),
         })).nullable().optional(),
+        freeOnDelivery: z.boolean().optional(),
+        freeOnPickup: z.boolean().optional(),
+        freeOnDineIn: z.boolean().optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
@@ -1009,9 +1012,13 @@ export const appRouter = router({
       .input(z.object({
         id: z.number(),
         priceMode: z.enum(["normal", "free"]),
+        freeOnDelivery: z.boolean().optional(),
+        freeOnPickup: z.boolean().optional(),
+        freeOnDineIn: z.boolean().optional(),
       }))
       .mutation(async ({ input }) => {
-        await db.updateComplementItem(input.id, { priceMode: input.priceMode });
+        const { id, ...data } = input;
+        await db.updateComplementItem(id, data);
         return { success: true };
       }),
     
@@ -1033,6 +1040,9 @@ export const appRouter = router({
           endTime: z.string(),
         })).nullable().optional(),
         badgeText: z.string().nullable().optional(),
+        freeOnDelivery: z.boolean().optional(),
+        freeOnPickup: z.boolean().optional(),
+        freeOnDineIn: z.boolean().optional(),
       }))
       .mutation(async ({ input }) => {
         const { establishmentId, complementName, groupIds, newName, ...data } = input;

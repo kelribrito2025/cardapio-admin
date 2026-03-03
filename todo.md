@@ -7978,3 +7978,14 @@
 - [ ] Corrigir processamento em background para garantir que notificações cheguem ao admin
 - [x] Corrigir sistema líder/seguidor SSE - detectar líder morto e assumir liderança automaticamente
 - [x] Remover sistema líder/seguidor SSE e usar conexão independente por aba
+- [x] Diagnosticar fluxo SSE → handler → estado → UI para notificações de novos pedidos
+- [x] Schema: Adicionar campos freeOnDelivery, freeOnPickup, freeOnDineIn na tabela complementItems
+- [x] Backend: Atualizar db.ts para retornar e salvar os novos campos de gratuidade
+- [x] Backend: Atualizar routers.ts para expor os novos campos nas queries de complementos
+- [x] UI Admin: Toggle Grátis com checkboxes expandíveis no InlineComplementsDropdown
+- [x] UI Admin: Sincronizar com página /complementos (gestão global)
+- [x] Menu Público: Lógica de preço condicional por deliveryType (badge GRÁTIS)
+- [x] PDV Mesas: Aplicar gratuidade para dine_in
+- [x] PDV Mobile: Aplicar gratuidade conforme tipo de pedido
+- [x] Backend: Validação de preço na criação de pedidos considerando contexto
+- [x] Impressão: Mostrar GRÁTIS no cupom para complementos gratuitos por contexto

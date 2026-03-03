@@ -46,6 +46,25 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 type OrderType = "mesa" | "retirada" | "entrega";
 type PaymentMethodType = "cash" | "card" | "pix" | null;
 
+// Função helper para calcular preço do complemento baseado no contexto (PDV)
+function getComplementPricePDV(
+  item: { price: string | number; priceMode?: string; freeOnDelivery?: boolean; freeOnPickup?: boolean; freeOnDineIn?: boolean },
+  orderType: OrderType
+): number {
+  const deliveryTypeMap: Record<OrderType, 'delivery' | 'pickup' | 'dine_in'> = {
+    mesa: 'dine_in', retirada: 'pickup', entrega: 'delivery'
+  };
+  const ctx = deliveryTypeMap[orderType];
+  if (item.priceMode === 'free') {
+    if (ctx === 'delivery' && item.freeOnDelivery) return 0;
+    if (ctx === 'pickup' && item.freeOnPickup) return 0;
+    if (ctx === 'dine_in' && item.freeOnDineIn) return 0;
+    if (!item.freeOnDelivery && !item.freeOnPickup && !item.freeOnDineIn) return 0;
+    return Number(item.price);
+  }
+  return Number(item.price);
+}
+
 type CartItem = {
   productId: number;
   name: string;
@@ -1537,7 +1556,7 @@ export default function PDV() {
                               const itemQuantity = selectedInGroup.get(item.id) || 0;
                               const isSelected = itemQuantity > 0;
                               const itemImageUrl = item.imageUrl;
-                              const displayPrice = Number(item.price);
+                              const displayPrice = getComplementPricePDV(item, orderType);
                               
                               // Função para adicionar/incrementar complemento
                               const handleIncrement = (e: React.MouseEvent) => {
@@ -1724,7 +1743,7 @@ export default function PDV() {
                     productComplements?.forEach(group => {
                       const item = group.items.find(i => i.id === itemId);
                       if (item) {
-                        complementsTotal += parseFloat(item.price) * qty;
+                        complementsTotal += getComplementPricePDV(item, orderType) * qty;
                       }
                     });
                   });
@@ -1754,7 +1773,7 @@ export default function PDV() {
                                 complements.push({
                                   id: item.id,
                                   name: item.name,
-                                  price: item.price,
+                                  price: String(getComplementPricePDV(item, orderType)),
                                   quantity: qty
                                 });
                               }

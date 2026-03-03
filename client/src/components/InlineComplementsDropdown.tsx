@@ -473,6 +473,22 @@ function SortableInlineItem({
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(item.name);
   const isFree = item.priceMode === "free";
+  const hasFreeContexts = item.freeOnDelivery || item.freeOnPickup || item.freeOnDineIn;
+  const freeContextCount = [item.freeOnDelivery, item.freeOnPickup, item.freeOnDineIn].filter(Boolean).length;
+
+  function handleToggleFreeContext(field: 'freeOnDelivery' | 'freeOnPickup' | 'freeOnDineIn', currentValue: boolean) {
+    // Se está desmarcando, sempre permite
+    if (currentValue) {
+      onUpdateItem(item.id, { [field]: false });
+      return;
+    }
+    // Se está marcando, verificar limite de 2
+    if (freeContextCount >= 2) {
+      toast.error("Máximo de 2 contextos de gratuidade");
+      return;
+    }
+    onUpdateItem(item.id, { [field]: true });
+  }
 
   // Check if this item's price differs from the global template price
   const isCustomized = (() => {
@@ -508,8 +524,14 @@ function SortableInlineItem({
 
   function handleToggleFree() {
     const newMode = isFree ? "normal" : "free";
-    onUpdateItem(item.id, { priceMode: newMode });
-    toast.success(newMode === "free" ? "Marcado como GRÁTIS" : "Preço normal restaurado");
+    if (newMode === "normal") {
+      // Ao desmarcar grátis, resetar todos os contextos
+      onUpdateItem(item.id, { priceMode: newMode, freeOnDelivery: false, freeOnPickup: false, freeOnDineIn: false });
+      toast.success("Preço normal restaurado");
+    } else {
+      onUpdateItem(item.id, { priceMode: newMode });
+      toast.success("Marcado como GRÁTIS — selecione os contextos abaixo");
+    }
   }
 
   return (
@@ -865,6 +887,53 @@ function SortableInlineItem({
           </DropdownMenu>
         </div>
       </div>
+
+      {/* Checkboxes de gratuidade por contexto */}
+      {isFree && (
+        <div className="px-3 pb-2 animate-in slide-in-from-top-1 duration-150">
+          <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-2.5 space-y-2">
+            <div className="flex items-center gap-1.5">
+              <Gift className="h-3.5 w-3.5 text-green-600" />
+              <span className="text-xs font-medium text-green-700 dark:text-green-400">Aplicar gratuidade para:</span>
+              {freeContextCount > 0 && (
+                <span className="text-[10px] text-green-600 dark:text-green-500 ml-auto">{freeContextCount}/2</span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <label className="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={!!item.freeOnDelivery}
+                  onChange={() => handleToggleFreeContext('freeOnDelivery', !!item.freeOnDelivery)}
+                  className="h-3.5 w-3.5 rounded border-green-300 accent-green-600 cursor-pointer"
+                />
+                <span className="text-xs text-green-700 dark:text-green-400">Delivery</span>
+              </label>
+              <label className="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={!!item.freeOnPickup}
+                  onChange={() => handleToggleFreeContext('freeOnPickup', !!item.freeOnPickup)}
+                  className="h-3.5 w-3.5 rounded border-green-300 accent-green-600 cursor-pointer"
+                />
+                <span className="text-xs text-green-700 dark:text-green-400">Retirada</span>
+              </label>
+              <label className="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={!!item.freeOnDineIn}
+                  onChange={() => handleToggleFreeContext('freeOnDineIn', !!item.freeOnDineIn)}
+                  className="h-3.5 w-3.5 rounded border-green-300 accent-green-600 cursor-pointer"
+                />
+                <span className="text-xs text-green-700 dark:text-green-400">Consumo no local</span>
+              </label>
+            </div>
+            {freeContextCount === 0 && (
+              <p className="text-[10px] text-green-600/70 dark:text-green-500/70">Nenhum contexto selecionado — o complemento será cobrado normalmente em todos os contextos.</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Expanded details */}
       {isExpanded && (

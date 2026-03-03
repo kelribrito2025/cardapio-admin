@@ -81,6 +81,18 @@ export function isGlobalHandleEnabled(): boolean {
   return getGlobalHandleConfig().showGlobally;
 }
 
+// Função helper para calcular preço do complemento no contexto de mesa (dine_in)
+function getComplementPriceDineIn(
+  item: { price: string | number; priceMode?: string; freeOnDelivery?: boolean; freeOnPickup?: boolean; freeOnDineIn?: boolean }
+): number {
+  if (item.priceMode === 'free') {
+    if (item.freeOnDineIn) return 0;
+    if (!item.freeOnDelivery && !item.freeOnPickup && !item.freeOnDineIn) return 0;
+    return Number(item.price);
+  }
+  return Number(item.price);
+}
+
 // Tipos
 type CartItem = {
   productId: number;
@@ -792,7 +804,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           complements.push({
             id: item.id,
             name: item.name,
-            price: item.price,
+            price: String(getComplementPriceDineIn(item)),
             quantity: qty
           });
         }
@@ -2253,7 +2265,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                               const itemQuantity = selectedInGroup.get(item.id) || 0;
                               const isSelected = itemQuantity > 0;
                               const itemImageUrl = item.imageUrl;
-                              const displayPrice = Number(item.price);
+                              const displayPrice = getComplementPriceDineIn(item);
                               
                               // Função para toggle (checkbox/radio)
                               const handleToggle = () => {
@@ -2373,7 +2385,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       return total + Array.from(groupMap.entries()).reduce((sum, [itemId, qty]) => {
                         const group = productComplements?.find(g => g.items.some(i => i.id === itemId));
                         const item = group?.items.find(i => i.id === itemId);
-                        return sum + (item ? parseFloat(item.price) * qty : 0);
+                        return sum + (item ? getComplementPriceDineIn(item) * qty : 0);
                       }, 0);
                     }, 0)
                   ) * productQuantity

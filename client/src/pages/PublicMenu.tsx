@@ -20,6 +20,25 @@ type CartItem = {
   complements: Array<{ id: number; name: string; price: string; quantity: number }>;
 };
 
+// Função helper para calcular preço do complemento baseado no contexto
+function getComplementPrice(
+  item: { price: string | number; priceMode?: string; freeOnDelivery?: boolean; freeOnPickup?: boolean; freeOnDineIn?: boolean },
+  deliveryType: 'delivery' | 'pickup' | 'dine_in'
+): number {
+  // Se priceMode é 'free' global, sempre grátis
+  if (item.priceMode === 'free') {
+    // Verificar gratuidade por contexto
+    if (deliveryType === 'delivery' && item.freeOnDelivery) return 0;
+    if (deliveryType === 'pickup' && item.freeOnPickup) return 0;
+    if (deliveryType === 'dine_in' && item.freeOnDineIn) return 0;
+    // Se nenhum contexto marcado, é grátis em todos (comportamento original)
+    if (!item.freeOnDelivery && !item.freeOnPickup && !item.freeOnDineIn) return 0;
+    // Se tem contextos marcados mas o atual não é um deles, cobra normal
+    return Number(item.price);
+  }
+  return Number(item.price);
+}
+
 // Função para obter a chave do localStorage baseada no slug
 const getCartStorageKey = (slug: string) => `cart_${slug}`;
 
@@ -2950,7 +2969,7 @@ export default function PublicMenu() {
                             const itemQuantity = selectedInGroup.get(item.id) || 0;
                             const isSelected = itemQuantity > 0;
                             const itemImageUrl = (item as any).imageUrl;
-                            const displayPrice = item.priceMode === 'free' ? 0 : Number(item.price);
+                            const displayPrice = getComplementPrice(item, deliveryType);
                             
                             // Função para adicionar/incrementar complemento
                             const handleIncrement = (e: React.MouseEvent) => {
@@ -3141,7 +3160,7 @@ export default function PublicMenu() {
                                           }
                                         </span>
                                       );
-                                    } else if (item.priceMode === 'free') {
+                                    } else if (displayPrice === 0) {
                                       return (
                                         <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full border border-green-200">
                                           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -3241,8 +3260,8 @@ export default function PublicMenu() {
                       group.items.forEach((item) => {
                         const qty = selectedInGroup.get(item.id);
                         if (qty && qty > 0) {
-                          // Considerar priceMode: se for 'free', o preço é 0
-                          const itemPrice = item.priceMode === 'free' ? 0 : Number(item.price);
+                          // Considerar priceMode e contexto de gratuidade
+                          const itemPrice = getComplementPrice(item, deliveryType);
                           complementsTotal += itemPrice * qty;
                           selectedComplementsList.push({
                             id: item.id,
