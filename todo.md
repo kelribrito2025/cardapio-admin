@@ -8045,3 +8045,4 @@
 - [x] Dashboard: Card "Pedidos por Modalidade" - gráfico donut (Entrega vs Retirada vs Consumo no local)
 - [x] Dashboard: Card "Tempo Médio de Preparo" - tempo médio do pedido até finalizado
 - [x] Inserir dados mockados para popular os 3 novos cards da dashboard (Top Produtos, Modalidade, Tempo Médio)
+- [x] Corrigir dados mockados para aparecerem no estabelecimento 30001 (produção)

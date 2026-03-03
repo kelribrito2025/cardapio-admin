@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO orderItems (orderId, productId, productName, quantity, unitPrice, totalPrice, notes, complements)\nSELECT new_orders.id, oi.productId, oi.productName, oi.quantity, oi.unitPrice, oi.totalPrice, oi.notes, oi.complements\nFROM orderItems oi\nINNER JOIN orders old_orders ON oi.orderId = old_orders.id\nINNER JOIN orders new_orders ON CONCAT('3', SUBSTRING(old_orders.orderNumber, 2)) = new_orders.orderNumber AND new_orders.establishmentId = 30001\nWHERE old_orders.orderNumber LIKE '9901%' AND old_orders.establishmentId = 1",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute INSERT INTO orderItems (orderId, productId, productName, quantity, unitPrice, totalPrice, notes, complements)\nSELECT new_orders.id, oi.productId, oi.productName, oi.quantity, oi.unitPrice, oi.totalPrice, oi.notes, oi.complements\nFROM orderItems oi\nINNER JOIN orders old_orders ON oi.orderId = old_orders.id\nINNER JOIN orders new_orders ON CONCAT('3', SUBSTRING(old_orders.orderNumber, 2)) = new_orders.orderNumber AND new_orders.establishmentId = 30001\nWHERE old_orders.orderNumber LIKE '9901%' AND old_orders.establishmentId = 1",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 72
+}
