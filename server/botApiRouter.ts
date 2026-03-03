@@ -892,6 +892,23 @@ export function createBotApiRouter(): Router {
         .orderBy(desc(orders.createdAt))
         .limit(10);
 
+      const deliveryTypeLabels: Record<string, string> = {
+        delivery: "Entrega",
+        pickup: "Retirada",
+        dine_in: "Consumo no local",
+      };
+
+      const statusLabels: Record<string, string> = {
+        pending_confirmation: "Aguardando confirmação",
+        new: "Novo",
+        preparing: "Em preparo",
+        ready: "Pronto",
+        out_for_delivery: "Saiu para entrega",
+        completed: "Concluído",
+        cancelled: "Cancelado",
+        scheduled: "Agendado",
+      };
+
       const ordersWithItems = await Promise.all(
         customerOrders.map(async (order) => {
           const items = await db.getOrderItems(order.id);
@@ -899,7 +916,9 @@ export function createBotApiRouter(): Router {
             id: order.id,
             orderNumber: order.orderNumber,
             status: order.status,
+            statusLabel: statusLabels[order.status] || order.status,
             deliveryType: order.deliveryType,
+            deliveryTypeLabel: deliveryTypeLabels[order.deliveryType] || order.deliveryType,
             paymentMethod: order.paymentMethod,
             subtotal: order.subtotal,
             deliveryFee: order.deliveryFee,
@@ -953,6 +972,12 @@ export function createBotApiRouter(): Router {
         scheduled: "Agendado",
       };
 
+      const deliveryTypeLabels: Record<string, string> = {
+        delivery: "Entrega",
+        pickup: "Retirada",
+        dine_in: "Consumo no local",
+      };
+
       return res.json({
         id: order.id,
         orderNumber: order.orderNumber,
@@ -962,6 +987,7 @@ export function createBotApiRouter(): Router {
         customerPhone: order.customerPhone,
         customerAddress: order.customerAddress,
         deliveryType: order.deliveryType,
+        deliveryTypeLabel: deliveryTypeLabels[order.deliveryType] || order.deliveryType,
         paymentMethod: order.paymentMethod,
         subtotal: order.subtotal,
         deliveryFee: order.deliveryFee,

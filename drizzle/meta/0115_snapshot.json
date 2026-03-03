@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "12ee656b-85b2-4c7a-a6ff-510b838ad8f0",
+  "id": "f5c60bde-0af8-413f-b1e8-3cc8fedfed0f",
   "prevId": "6f469191-9855-47c6-bb95-5e6c756a0ca9",
   "tables": {
     "botApiKeys": {

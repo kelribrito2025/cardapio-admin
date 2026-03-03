@@ -8038,3 +8038,4 @@
 - [x] Manter ordenação por createdAt desc
 - [x] Aplicar mesma lógica no NewOrdersContext para consistência global
 - [x] Testes unitários para normalizeSSEOrder e lógica de deduplicação (15 testes passando)
+- [x] Traduzir deliveryType no endpoint GET /api/bot/orders/:id (deliveryTypeLabel)
