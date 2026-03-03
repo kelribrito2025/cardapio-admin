@@ -8016,3 +8016,7 @@
 
 ## Bug: Modal Meus Pedidos muito alto no mobile
 - [x] Limitar altura máxima do modal Meus Pedidos para 80vh no mobile
+
+## Revisão de altura dos modais no mobile (menu público)
+- [x] Identificar todos os modais com max-h superior a 80vh (12 modais encontrados)
+- [x] Ajustar modais do fluxo de pedidos para max-h-[80vh] no mobile (todos os 12 ajustados)

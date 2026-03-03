@@ -2785,7 +2785,7 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[80vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header - estilo vermelho */}
             <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
               <div className="flex items-center justify-between">
@@ -2893,7 +2893,7 @@ export default function PublicMenu() {
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{ touchAction: 'pan-y' }}>
+          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[80vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{ touchAction: 'pan-y' }}>
             {/* Imagem do Produto ou Complemento Selecionado */}
             {(() => {
               // Determinar qual imagem exibir: complemento selecionado ou produto
@@ -3521,7 +3521,7 @@ export default function PublicMenu() {
           />
           
           {/* Modal de Checkout Unificado - Bottom Sheet no mobile */}
-          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[90vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[80vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header com Título - estilo vermelho */}
             <div className="flex-shrink-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl">
               {/* Título e Botão Fechar */}
@@ -4996,7 +4996,7 @@ setOnlinePaymentUrl(null);
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[80vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header - estilo vermelho */}
             <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
               <div className="flex items-center justify-between">
@@ -5116,7 +5116,7 @@ setOnlinePaymentUrl(null);
           />
           
           {/* Modal */}
-          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 overflow-hidden">
+          <div className="relative w-full md:w-[480px] md:max-w-lg bg-white rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[80vh] flex flex-col animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 overflow-hidden">
             {/* Header - estilo vermelho */}
             <div className="flex-shrink-0 bg-gradient-to-r from-red-500 to-red-600 px-6 h-[68px] flex items-center justify-between rounded-t-2xl md:rounded-t-2xl" style={{paddingTop: '16px', paddingBottom: '16px', height: '79px'}}>
               <div className="flex items-center gap-3">
@@ -5770,7 +5770,7 @@ setOnlinePaymentUrl(null);
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className={`relative w-full md:w-[480px] md:max-w-md bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300`}>
+          <div className={`relative w-full md:w-[480px] md:max-w-md bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[80vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300`}>
 
             {/* Header - estilo vermelho */}
             <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
@@ -6293,7 +6293,7 @@ setOnlinePaymentUrl(null);
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-lg md:mx-4 max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-lg md:mx-4 max-h-[80vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header - estilo vermelho */}
             <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
               <div className="flex items-center justify-between">
@@ -6428,7 +6428,7 @@ setOnlinePaymentUrl(null);
           />
           
           {/* Modal Content - Bottom Sheet Style */}
-          <div className="relative bg-gray-200 w-full md:max-w-md md:mx-4 md:rounded-2xl rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+          <div className="relative bg-gray-200 w-full md:max-w-md md:mx-4 md:rounded-2xl rounded-t-2xl shadow-2xl max-h-[80vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             {/* Header - estilo vermelho */}
             <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
               <div className="flex items-center justify-between">
@@ -6572,7 +6572,7 @@ setOnlinePaymentUrl(null);
           />
           
           {/* Modal Content - Bottom Sheet no mobile */}
-          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[75vh] md:max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{ touchAction: 'pan-y' }}>
+          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 max-h-[75vh] md:max-h-[80vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300" style={{ touchAction: 'pan-y' }}>
             {/* Header */}
             <div className="sticky top-0 z-[50] bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl shadow-sm" style={{height: '68px'}}>
               <div className="flex items-center gap-3">
@@ -6836,7 +6836,7 @@ setOnlinePaymentUrl(null);
           />
           
           {/* Modal Content */}
-          <div className="relative w-full md:w-[420px] md:max-h-[85vh] bg-white md:rounded-2xl rounded-t-2xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col">
+          <div className="relative w-full md:w-[420px] md:max-h-[80vh] bg-white md:rounded-2xl rounded-t-2xl overflow-hidden shadow-2xl max-h-[80vh] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-100" style={{backgroundColor: '#ffffff'}}>
               <div className="flex items-center gap-3">
@@ -7155,7 +7155,7 @@ setOnlinePaymentUrl(null);
           />
           
           {/* Modal - Bottom Sheet no mobile, aumentado 20% no desktop */}
-          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-[520px] md:mx-4 max-h-[85vh] overflow-hidden overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 flex flex-col" style={{ touchAction: 'pan-y' }}>
+          <div className="relative bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-[520px] md:mx-4 max-h-[80vh] overflow-hidden overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300 flex flex-col" style={{ touchAction: 'pan-y' }}>
             {/* Header - estilo vermelho */}
             <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
               <div className="flex items-center justify-between">
@@ -8666,7 +8666,7 @@ function LoyaltyCardView({ establishmentName, cardData, stampsRequired, isLoadin
           
           {/* Bottom Sheet */}
           <div 
-            className="relative w-full max-w-lg bg-white rounded-t-3xl shadow-2xl animate-in slide-in-from-bottom duration-400 ease-out max-h-[85vh] overflow-hidden flex flex-col"
+            className="relative w-full max-w-lg bg-white rounded-t-3xl shadow-2xl animate-in slide-in-from-bottom duration-400 ease-out max-h-[80vh] overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Handle bar */}
