@@ -167,6 +167,12 @@ export default function PublicMenu() {
   const [checkoutStep, setCheckoutStep] = useState(0); // 0 = fechado, 1-4 = modais
   const [orderObservation, setOrderObservation] = useState("");
   const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery" | "dine_in">("pickup");
+  const [deliveryTypeChosen, setDeliveryTypeChosen] = useState(false); // Se o usuário já escolheu o tipo de entrega
+  const [showDeliveryTypeModal, setShowDeliveryTypeModal] = useState(false);
+  const [pendingProduct, setPendingProduct] = useState<{
+    id: number; name: string; description: string | null; price: string;
+    images: string | null; hasStock: boolean; availableStock: number | null; outOfStock: boolean;
+  } | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix" | "card_online">("pix");
   const [showCardOptions, setShowCardOptions] = useState(false);
   const [changeAmount, setChangeAmount] = useState("");
@@ -581,13 +587,24 @@ export default function PublicMenu() {
   // Definir deliveryType inicial baseado nas opções disponíveis
   useEffect(() => {
     if (data?.establishment) {
-      // Selecionar a primeira opção disponível - priorizar delivery para mostrar taxa corretamente
+      const options = [
+        data.establishment.allowsDelivery,
+        data.establishment.allowsPickup,
+        data.establishment.allowsDineIn,
+      ].filter(Boolean).length;
+
+      // Selecionar a primeira opção disponível - priorizar delivery
       if (data.establishment.allowsDelivery) {
         setDeliveryType("delivery");
       } else if (data.establishment.allowsPickup) {
         setDeliveryType("pickup");
       } else if (data.establishment.allowsDineIn) {
         setDeliveryType("dine_in");
+      }
+
+      // Se só tem 1 opção, marcar como já escolhido automaticamente
+      if (options <= 1) {
+        setDeliveryTypeChosen(true);
       }
     }
   }, [data?.establishment?.id]);
@@ -1351,7 +1368,7 @@ export default function PublicMenu() {
 
   // Bloquear scroll do body quando modais estão abertos
   useEffect(() => {
-    const isAnyModalOpen = showOrdersModal || showTrackingModal || showMobileBag || checkoutStep > 0 || showInfoModal || showCouponModal || showReviewsModal || showRatingModal || selectedProduct !== null || showFullscreenImage || showNavigationModal || showLoyaltyModal || showNeighborhoodModal || showMobileMenu;
+    const isAnyModalOpen = showOrdersModal || showTrackingModal || showMobileBag || checkoutStep > 0 || showInfoModal || showCouponModal || showReviewsModal || showRatingModal || selectedProduct !== null || showFullscreenImage || showNavigationModal || showLoyaltyModal || showNeighborhoodModal || showMobileMenu || showDeliveryTypeModal;
     
     if (isAnyModalOpen) {
       document.body.style.overflow = 'hidden';
@@ -1362,7 +1379,7 @@ export default function PublicMenu() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [showOrdersModal, showTrackingModal, showMobileBag, checkoutStep, showInfoModal, showCouponModal, showReviewsModal, showRatingModal, selectedProduct, showFullscreenImage, showNavigationModal, showLoyaltyModal, showNeighborhoodModal, showMobileMenu]);
+  }, [showOrdersModal, showTrackingModal, showMobileBag, checkoutStep, showInfoModal, showCouponModal, showReviewsModal, showRatingModal, selectedProduct, showFullscreenImage, showNavigationModal, showLoyaltyModal, showNeighborhoodModal, showMobileMenu, showDeliveryTypeModal]);
 
   // Scroll the category nav to show the active category button
   const scrollCategoryNavToActive = useCallback((categoryId: number) => {
@@ -1659,17 +1676,24 @@ export default function PublicMenu() {
                       key={product.id}
                       onClick={() => {
                         if ((product as any).outOfStock) return;
+                        const productData = {
+                          id: product.id, name: product.name, description: product.description,
+                          price: product.price, images: product.images, hasStock: product.hasStock,
+                          availableStock: (product as any).availableStock ?? null, outOfStock: (product as any).outOfStock ?? false,
+                        };
+                        // Se há múltiplas opções de entrega e ainda não escolheu, abrir modal primeiro
+                        if (!deliveryTypeChosen && data?.establishment) {
+                          const options = [data.establishment.allowsDelivery, data.establishment.allowsPickup, data.establishment.allowsDineIn].filter(Boolean).length;
+                          if (options > 1) {
+                            setPendingProduct(productData);
+                            setShowDeliveryTypeModal(true);
+                            setSearchQuery("");
+                            setIsSearchFocused(false);
+                            return;
+                          }
+                        }
                         setModalImageIndex(0);
-                        setSelectedProduct({
-                          id: product.id,
-                          name: product.name,
-                          description: product.description,
-                          price: product.price,
-                          images: product.images,
-                          hasStock: product.hasStock,
-                          availableStock: (product as any).availableStock ?? null,
-                          outOfStock: (product as any).outOfStock ?? false,
-                        });
+                        setSelectedProduct(productData);
                         setSearchQuery("");
                         setIsSearchFocused(false);
                       }}
@@ -2171,6 +2195,19 @@ export default function PublicMenu() {
                           onClick={() => {
                             if (product.outOfStock) {
                               return; // Produto sem estoque - bloqueado
+                            }
+                            // Se há múltiplas opções de entrega e ainda não escolheu, abrir modal primeiro
+                            if (!deliveryTypeChosen && data?.establishment) {
+                              const options = [data.establishment.allowsDelivery, data.establishment.allowsPickup, data.establishment.allowsDineIn].filter(Boolean).length;
+                              if (options > 1) {
+                                setPendingProduct({
+                                  id: product.id, name: product.name, description: product.description,
+                                  price: product.price, images: product.images, hasStock: product.hasStock,
+                                  availableStock: (product as any).availableStock ?? null, outOfStock: product.outOfStock ?? false,
+                                });
+                                setShowDeliveryTypeModal(true);
+                                return;
+                              }
                             }
                             setModalImageIndex(0);
                             setSelectedProduct(product);
@@ -6862,6 +6899,146 @@ setOnlinePaymentUrl(null);
                 <ShoppingBag className="h-5 w-5" />
                 Continuar comprando
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Seleção do Tipo de Entrega (aparece ao clicar num produto pela primeira vez) */}
+      {showDeliveryTypeModal && data?.establishment && (
+        <div className="fixed inset-0 z-[110] flex items-end md:items-center md:justify-center">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full md:max-w-md md:mx-4 overflow-hidden animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-5 rounded-t-2xl">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-white/20 rounded-xl">
+                  <ShoppingBag className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white">Como deseja receber?</h2>
+                  <p className="text-sm text-white/80">Escolha antes de montar seu pedido</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Opções */}
+            <div className="p-5 space-y-3">
+              {data.establishment.allowsDelivery && (
+                <button
+                  onClick={() => {
+                    setDeliveryType('delivery');
+                    setDeliveryTypeChosen(true);
+                    setShowDeliveryTypeModal(false);
+                    // Abrir o produto pendente
+                    if (pendingProduct) {
+                      setModalImageIndex(0);
+                      setSelectedProduct(pendingProduct);
+                      setProductQuantity(1);
+                      setProductObservation("");
+                      setPendingProduct(null);
+                    }
+                  }}
+                  className={`w-full flex items-center gap-4 p-4 border-2 rounded-xl transition-all ${
+                    deliveryType === 'delivery' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-red-300 hover:bg-red-50/50'
+                  }`}
+                >
+                  <div className={`p-3 rounded-xl ${
+                    deliveryType === 'delivery' ? 'bg-red-100' : 'bg-gray-100'
+                  }`}>
+                    <Bike className={`h-6 w-6 ${
+                      deliveryType === 'delivery' ? 'text-red-500' : 'text-gray-500'
+                    }`} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <span className="font-semibold text-gray-900">Delivery</span>
+                    <p className="text-sm text-gray-500">Receba no seu endereço</p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-gray-400" />
+                </button>
+              )}
+
+              {data.establishment.allowsPickup && (
+                <button
+                  onClick={() => {
+                    setDeliveryType('pickup');
+                    setDeliveryTypeChosen(true);
+                    setShowDeliveryTypeModal(false);
+                    if (pendingProduct) {
+                      setModalImageIndex(0);
+                      setSelectedProduct(pendingProduct);
+                      setProductQuantity(1);
+                      setProductObservation("");
+                      setPendingProduct(null);
+                    }
+                  }}
+                  className={`w-full flex items-center gap-4 p-4 border-2 rounded-xl transition-all ${
+                    deliveryType === 'pickup' ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-green-300 hover:bg-green-50/50'
+                  }`}
+                >
+                  <div className={`p-3 rounded-xl ${
+                    deliveryType === 'pickup' ? 'bg-green-100' : 'bg-gray-100'
+                  }`}>
+                    <Package className={`h-6 w-6 ${
+                      deliveryType === 'pickup' ? 'text-green-500' : 'text-gray-500'
+                    }`} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <span className="font-semibold text-gray-900">Retirar no local</span>
+                    <p className="text-sm text-gray-500">Retire no estabelecimento</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 font-bold rounded-full text-xs">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                    Grátis!
+                  </span>
+                </button>
+              )}
+
+              {data.establishment.allowsDineIn && (
+                <button
+                  onClick={() => {
+                    setDeliveryType('dine_in');
+                    setDeliveryTypeChosen(true);
+                    setShowDeliveryTypeModal(false);
+                    if (pendingProduct) {
+                      setModalImageIndex(0);
+                      setSelectedProduct(pendingProduct);
+                      setProductQuantity(1);
+                      setProductObservation("");
+                      setPendingProduct(null);
+                    }
+                  }}
+                  className={`w-full flex items-center gap-4 p-4 border-2 rounded-xl transition-all ${
+                    deliveryType === 'dine_in' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
+                  }`}
+                >
+                  <div className={`p-3 rounded-xl ${
+                    deliveryType === 'dine_in' ? 'bg-blue-100' : 'bg-gray-100'
+                  }`}>
+                    <UtensilsCrossed className={`h-6 w-6 ${
+                      deliveryType === 'dine_in' ? 'text-blue-500' : 'text-gray-500'
+                    }`} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <span className="font-semibold text-gray-900">Consumir no local</span>
+                    <p className="text-sm text-gray-500">Coma no estabelecimento</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 font-bold rounded-full text-xs">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                    Grátis!
+                  </span>
+                </button>
+              )}
+            </div>
+
+            {/* Footer informativo */}
+            <div className="px-6 pb-5">
+              <p className="text-xs text-gray-400 text-center">
+                Você poderá alterar depois no checkout
+              </p>
             </div>
           </div>
         </div>

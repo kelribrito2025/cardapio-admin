@@ -7996,3 +7996,13 @@
 - [ ] Bloquear adição de itens ao carrinho até tipo de entrega ser selecionado
 - [ ] Recalcular preços dos complementos quando tipo de entrega mudar
 - [ ] Escrever testes unitários
+
+## Modal obrigatório de tipo de entrega ao clicar em produto (v2)
+- [x] Adicionar estado deliveryTypeChosen para controlar se tipo de entrega já foi escolhido
+- [x] Guardar produto pendente (pendingProduct) para abrir após seleção
+- [x] Interceptar clique em produto: se não escolheu tipo de entrega e há múltiplas opções, abrir modal primeiro
+- [x] Criar modal bonito "Como deseja receber?" com opções Delivery/Retirada/Consumo no local
+- [x] Após selecionar tipo de entrega, abrir automaticamente o modal do produto pendente
+- [x] Pré-selecionar forma de entrega no checkout step 1 com a escolha feita
+- [x] Auto-selecionar quando só há 1 opção de entrega (sem modal)
+- [x] Testes unitários (21 testes passando)
