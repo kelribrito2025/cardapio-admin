@@ -7931,3 +7931,10 @@
 - [x] Garantir que o botão fique com z-index elevado acima do overlay (z-[202])
 - [x] Overlay escurece conteúdo do modal (header+body) deixando footer/botão visível
 - [x] Esconder botões de avaliar durante Step 2 para não distrair
+
+## Ajuste posição e estilo do tooltip/foco no Step 2 (idêntico ao Step 1)
+- [x] Tooltip posicionado com bottom-full + mb-3 (idêntico ao Step 1)
+- [x] Botão com ring-4 ring-white/50 shadow-2xl z-[201] (idêntico ao Step 1)
+- [x] Setinha do tooltip apontando para o botão
+- [x] Overlay bloqueador fixo z-[199] + overlay escuro z-[200] (idêntico ao Step 1)
+- [x] Removido overlay interno do modal que não era necessário

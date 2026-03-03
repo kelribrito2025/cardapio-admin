@@ -5677,10 +5677,7 @@ setOnlinePaymentUrl(null);
           
           {/* Modal Content - Bottom Sheet no mobile */}
           <div className={`relative w-full md:w-[480px] md:max-w-md bg-gray-200 rounded-t-2xl md:rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto overscroll-contain animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in-95 duration-300`}>
-            {/* Overlay escurecedor dentro do modal para Step 2 - cobre header e body, deixa footer visível */}
-            {onboardingStep === 2 && (
-              <div className="absolute inset-0 bg-black/50 z-[200] rounded-t-2xl md:rounded-2xl pointer-events-none" style={{ bottom: '76px' }} />
-            )}
+
             {/* Header - estilo vermelho */}
             <div className="sticky top-0 bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-2xl z-10">
               <div className="flex items-center justify-between">
@@ -5835,23 +5832,32 @@ setOnlinePaymentUrl(null);
             </div>
 
             {/* Footer */}
-            <div className={`border-t px-6 py-4 space-y-3 relative ${onboardingStep === 2 ? 'z-[201]' : ''}`} style={{backgroundColor: '#ffffff'}}>
-              {/* Tooltip: Focar no botao "Meus pedidos" */}
+            <div className="border-t px-6 py-4 space-y-3 relative" style={{backgroundColor: '#ffffff'}}>
+              {/* Overlay bloqueador durante onboarding Step 2 - bloqueia cliques fora */}
               {onboardingStep === 2 && (
-                <div className="absolute -top-32 left-6 right-6 z-[202] animate-in fade-in slide-in-from-bottom-2 duration-300">
-                  <div className="bg-red-50 rounded-xl shadow-2xl p-4 border border-red-200 relative">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 p-2 bg-red-100 rounded-lg">
-                        <Package className="h-5 w-5 text-red-500" />
+                <div className="fixed inset-0 z-[199]" onClick={(e) => e.stopPropagation()} />
+              )}
+              {/* Onboarding Step 2: Overlay escuro + tooltip acima do botão (MESMO PADRÃO DO STEP 1) */}
+              {onboardingStep === 2 && (
+                <>
+                  {/* Overlay bloqueador escuro - impede cliques fora do botão */}
+                  <div className="fixed inset-0 bg-black/60 z-[200]" onClick={(e) => e.stopPropagation()} />
+                  <div className="absolute bottom-full left-6 right-6 mb-3 z-[201] animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="bg-red-50 rounded-xl shadow-2xl p-4 border border-red-200 relative">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 p-2 bg-red-100 rounded-lg">
+                          <Package className="h-5 w-5 text-red-500" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-bold text-gray-900">Veja todos os seus pedidos</p>
+                          <p className="text-xs text-gray-600 mt-1">Clique em "Meus pedidos" para acompanhar todos os seus pedidos em um unico lugar.</p>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-bold text-gray-900">Veja todos os seus pedidos</p>
-                        <p className="text-xs text-gray-600 mt-1">Clique em "Meus pedidos" para acompanhar todos os seus pedidos em um unico lugar.</p>
-                      </div>
+                      {/* Setinha estilo balão apontando para baixo */}
+                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-50 border-r border-b border-red-200 rotate-45" />
                     </div>
-                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-50 border-r border-b border-red-200 rotate-45" />
                   </div>
-                </div>
+                </>
               )}
               {/* Botão Avaliar restaurante - só aparece quando status for entregue E pode avaliar (30 dias) E verificação já terminou */}
               {orderStatus === 'delivered' && canReview && canReviewChecked && establishment?.reviewsEnabled !== false && onboardingStep !== 2 && (
@@ -5902,7 +5908,7 @@ setOnlinePaymentUrl(null);
                     setChangeAmount("");
                   }
                 }}
-                className={`w-full py-3 font-semibold rounded-xl transition-colors pointer-events-auto ${onboardingStep === 2 ? 'relative z-[202] bg-red-500 hover:bg-red-600 text-white ring-4 ring-white/50 shadow-2xl' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+                className={`w-full py-3.5 font-semibold rounded-xl transition-colors pointer-events-auto ${onboardingStep === 2 ? 'relative z-[201] bg-primary text-white hover:bg-primary/90 ring-4 ring-white/50 shadow-2xl' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
               >
                 {onboardingStep === 2 ? 'Meus pedidos' : 'Fechar'}
               </button>
