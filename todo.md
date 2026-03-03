@@ -7976,3 +7976,5 @@
 ## Bug: Notificações não chegam ao admin após otimização fire-and-forget
 - [ ] Investigar por que notificações, som e SSE não funcionam após pedido pelo menu público
 - [ ] Corrigir processamento em background para garantir que notificações cheguem ao admin
+- [x] Corrigir sistema líder/seguidor SSE - detectar líder morto e assumir liderança automaticamente
+- [x] Remover sistema líder/seguidor SSE e usar conexão independente por aba
