@@ -8062,3 +8062,4 @@
 - [x] Card Top Produtos: reestilizar com mesmo visual do card Formas de Pagamento (Finanças)
 - [x] Card Top Produtos: mostrar 7 itens visíveis + 3 via scroll interno
 - [x] Card Top Produtos: ajustar para 6 itens visíveis e eliminar espaço em branco
+- [x] Card Top Produtos: forçar max-height fixo reduzido 40% para scroll interno real
