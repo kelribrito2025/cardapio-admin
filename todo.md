@@ -8041,3 +8041,6 @@
 - [x] Traduzir deliveryType no endpoint GET /api/bot/orders/:id (deliveryTypeLabel)
 - [x] Criar endpoint GET /api/bot/location que retorna localização do restaurante com link Google Maps
 - [x] Adicionar documentação do endpoint GET /api/bot/location na página do Bot WhatsApp
+- [x] Dashboard: Card "Top Produtos" - ranking dos 10 mais vendidos com barra visual
+- [x] Dashboard: Card "Pedidos por Modalidade" - gráfico donut (Entrega vs Retirada vs Consumo no local)
+- [x] Dashboard: Card "Tempo Médio de Preparo" - tempo médio do pedido até finalizado

@@ -10,7 +10,10 @@ import {
   Users,
   Clock,
   Package,
-  Target
+  Target,
+  Trophy,
+  Truck,
+  Timer
 } from "lucide-react";
 import { 
   AreaChart, 
@@ -74,6 +77,22 @@ export default function Dashboard() {
 
   const { data: conversionRate, isLoading: conversionLoading } = trpc.dashboard.conversionRate.useQuery(
     conversionInput,
+    { enabled: !!establishmentId }
+  );
+
+  // Novas queries: Top Produtos, Modalidade, Tempo Médio
+  const { data: topProducts, isLoading: topProductsLoading } = trpc.dashboard.topProducts.useQuery(
+    { establishmentId: establishmentId!, period },
+    { enabled: !!establishmentId }
+  );
+
+  const { data: ordersByModality, isLoading: modalityLoading } = trpc.dashboard.ordersByDeliveryType.useQuery(
+    { establishmentId: establishmentId!, period },
+    { enabled: !!establishmentId }
+  );
+
+  const { data: avgPrepTime, isLoading: prepTimeLoading } = trpc.dashboard.avgPrepTime.useQuery(
+    { establishmentId: establishmentId!, period },
     { enabled: !!establishmentId }
   );
 
@@ -242,6 +261,153 @@ export default function Dashboard() {
         <div className="lg:col-span-2">
           <HeatmapCard period={period} />
         </div>
+      </div>
+
+      {/* Top Produtos + Modalidade + Tempo Médio */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        {/* Top Produtos */}
+        <SectionCard title="Top Produtos">
+          {topProductsLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="skeleton h-4 w-4 rounded" />
+                  <div className="flex-1 skeleton h-3 rounded" />
+                  <div className="skeleton h-3 w-8 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : topProducts && topProducts.length > 0 ? (
+            <div className="space-y-3">
+              {topProducts.slice(0, 10).map((product, index) => {
+                const maxQty = topProducts[0]?.totalQuantity || 1;
+                const pct = (product.totalQuantity / maxQty) * 100;
+                return (
+                  <div key={product.productName} className="flex items-center gap-3">
+                    <span className={`text-xs font-bold w-5 text-center ${
+                      index === 0 ? 'text-yellow-500' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-amber-600' : 'text-muted-foreground'
+                    }`}>
+                      {index + 1}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium truncate mr-2">{product.productName}</span>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">{product.totalQuantity}x</span>
+                      </div>
+                      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-primary/70 rounded-full transition-all duration-500"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <EmptyState
+              icon={Trophy}
+              title="Sem dados"
+              description="Nenhum produto vendido no período"
+            />
+          )}
+        </SectionCard>
+
+        {/* Pedidos por Modalidade */}
+        <SectionCard title="Pedidos por Modalidade">
+          {modalityLoading ? (
+            <div className="flex items-center justify-center h-48">
+              <div className="skeleton h-32 w-32 rounded-full" />
+            </div>
+          ) : ordersByModality && ordersByModality.length > 0 ? (() => {
+            const total = ordersByModality.reduce((sum, m) => sum + m.count, 0);
+            const colors = ['#ef4444', '#3b82f6', '#22c55e', '#f59e0b'];
+            return (
+              <div className="flex flex-col items-center gap-4">
+                {/* Donut simples com CSS */}
+                <div className="relative w-36 h-36">
+                  <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                    {(() => {
+                      let offset = 0;
+                      return ordersByModality.map((item, i) => {
+                        const pct = (item.count / total) * 100;
+                        const dashArray = `${pct} ${100 - pct}`;
+                        const el = (
+                          <circle
+                            key={item.deliveryType}
+                            cx="18" cy="18" r="15.9155"
+                            fill="none"
+                            stroke={colors[i % colors.length]}
+                            strokeWidth="3"
+                            strokeDasharray={dashArray}
+                            strokeDashoffset={`${-offset}`}
+                            className="transition-all duration-500"
+                          />
+                        );
+                        offset += pct;
+                        return el;
+                      });
+                    })()}
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-2xl font-bold">{total}</span>
+                    <span className="text-xs text-muted-foreground">pedidos</span>
+                  </div>
+                </div>
+                {/* Legenda */}
+                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+                  {ordersByModality.map((item, i) => (
+                    <div key={item.deliveryType} className="flex items-center gap-1.5 text-xs">
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: colors[i % colors.length] }} />
+                      <span className="text-muted-foreground">{item.label}</span>
+                      <span className="font-medium">{item.count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })() : (
+            <EmptyState
+              icon={Truck}
+              title="Sem dados"
+              description="Nenhum pedido no período"
+            />
+          )}
+        </SectionCard>
+
+        {/* Tempo Médio */}
+        <SectionCard title="Tempo Médio">
+          {prepTimeLoading ? (
+            <div className="flex items-center justify-center h-48">
+              <div className="skeleton h-32 w-32 rounded-full" />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-2 py-4">
+              <div className="relative w-32 h-32">
+                <svg viewBox="0 0 36 36" className="w-full h-full">
+                  <circle cx="18" cy="18" r="15.9155" fill="none" stroke="var(--muted)" strokeWidth="2" />
+                  <circle
+                    cx="18" cy="18" r="15.9155"
+                    fill="none"
+                    stroke={avgPrepTime && avgPrepTime.avgMinutes > 0 ? (avgPrepTime.avgMinutes <= 30 ? '#22c55e' : avgPrepTime.avgMinutes <= 60 ? '#f59e0b' : '#ef4444') : 'var(--muted)'}
+                    strokeWidth="2.5"
+                    strokeDasharray={`${Math.min((avgPrepTime?.avgMinutes ?? 0) / 90 * 100, 100)} ${100 - Math.min((avgPrepTime?.avgMinutes ?? 0) / 90 * 100, 100)}`}
+                    strokeLinecap="round"
+                    className="-rotate-90 origin-center transition-all duration-700"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <Timer className="h-4 w-4 text-muted-foreground mb-1" />
+                  <span className="text-3xl font-bold">{avgPrepTime?.avgMinutes ?? 0}</span>
+                  <span className="text-xs text-muted-foreground">min</span>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">Do pedido até finalizado</p>
+              <p className="text-xs text-muted-foreground">{avgPrepTime?.totalOrders ?? 0} pedidos no período</p>
+            </div>
+          )}
+        </SectionCard>
       </div>
 
       {/* Charts and Recent Orders */}

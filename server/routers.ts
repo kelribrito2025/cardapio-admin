@@ -1293,6 +1293,24 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.getConversionRate(input.establishmentId, input.period ?? 'today');
       }),
+
+    topProducts: protectedProcedure
+      .input(z.object({ establishmentId: z.number(), period: z.enum(['today', 'week', 'month']).optional(), limit: z.number().optional() }))
+      .query(async ({ input }) => {
+        return db.getTopProducts(input.establishmentId, input.period ?? 'today', input.limit ?? 10);
+      }),
+
+    ordersByDeliveryType: protectedProcedure
+      .input(z.object({ establishmentId: z.number(), period: z.enum(['today', 'week', 'month']).optional() }))
+      .query(async ({ input }) => {
+        return db.getOrdersByDeliveryType(input.establishmentId, input.period ?? 'today');
+      }),
+
+    avgPrepTime: protectedProcedure
+      .input(z.object({ establishmentId: z.number(), period: z.enum(['today', 'week', 'month']).optional() }))
+      .query(async ({ input }) => {
+        return db.getAvgPrepTime(input.establishmentId, input.period ?? 'today');
+      }),
   }),
 
   // ============ STOCK ============

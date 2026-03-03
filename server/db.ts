@@ -2565,6 +2565,138 @@ export async function getConversionRate(establishmentId: number, period: 'today'
   };
 }
 
+// ============ DASHBOARD: TOP PRODUTOS ============
+export async function getTopProducts(establishmentId: number, period: 'today' | 'week' | 'month' = 'today', limit: number = 10) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+
+  let periodStart: Date;
+  if (period === 'today') {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+  } else if (period === 'week') {
+    const currentDay = localNow.getDay();
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysFromMonday);
+  } else {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+  }
+
+  const periodStartStr = fmtLocalDateTime(periodStart);
+
+  const result = await db.select({
+    productName: orderItems.productName,
+    totalQuantity: sql<number>`SUM(${orderItems.quantity})`,
+    totalRevenue: sql<number>`SUM(${orderItems.totalPrice})`,
+  })
+    .from(orderItems)
+    .innerJoin(orders, eq(orderItems.orderId, orders.id))
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      eq(orders.status, 'completed'),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${periodStartStr}`
+    ))
+    .groupBy(orderItems.productName)
+    .orderBy(sql`SUM(${orderItems.quantity}) DESC`)
+    .limit(limit);
+
+  return result.map((r) => ({
+    productName: r.productName,
+    totalQuantity: Number(r.totalQuantity),
+    totalRevenue: Number(r.totalRevenue),
+  }));
+}
+
+// ============ DASHBOARD: PEDIDOS POR MODALIDADE ============
+export async function getOrdersByDeliveryType(establishmentId: number, period: 'today' | 'week' | 'month' = 'today') {
+  const db = await getDb();
+  if (!db) return [];
+
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+
+  let periodStart: Date;
+  if (period === 'today') {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+  } else if (period === 'week') {
+    const currentDay = localNow.getDay();
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysFromMonday);
+  } else {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+  }
+
+  const periodStartStr = fmtLocalDateTime(periodStart);
+
+  const result = await db.select({
+    deliveryType: orders.deliveryType,
+    count: sql<number>`COUNT(*)`,
+  })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      eq(orders.status, 'completed'),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${periodStartStr}`
+    ))
+    .groupBy(orders.deliveryType);
+
+  const labels: Record<string, string> = {
+    delivery: 'Entrega',
+    pickup: 'Retirada',
+    dine_in: 'Consumo no local',
+  };
+
+  return result.map((r) => ({
+    deliveryType: r.deliveryType,
+    label: labels[r.deliveryType] || r.deliveryType,
+    count: Number(r.count),
+  }));
+}
+
+// ============ DASHBOARD: TEMPO MÉDIO DE PREPARO ============
+export async function getAvgPrepTime(establishmentId: number, period: 'today' | 'week' | 'month' = 'today') {
+  const db = await getDb();
+  if (!db) return { avgMinutes: 0, totalOrders: 0 };
+
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+
+  let periodStart: Date;
+  if (period === 'today') {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+  } else if (period === 'week') {
+    const currentDay = localNow.getDay();
+    const daysFromMonday = currentDay === 0 ? 6 : currentDay - 1;
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysFromMonday);
+  } else {
+    periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+  }
+
+  const periodStartStr = fmtLocalDateTime(periodStart);
+
+  const result = await db.select({
+    avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt}))`,
+    totalOrders: sql<number>`COUNT(*)`,
+  })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      eq(orders.status, 'completed'),
+      sql`${orders.completedAt} IS NOT NULL`,
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${periodStartStr}`
+    ));
+
+  const avgSeconds = Number(result[0]?.avgSeconds ?? 0);
+  const totalOrders = Number(result[0]?.totalOrders ?? 0);
+
+  return {
+    avgMinutes: totalOrders > 0 ? Math.round(avgSeconds / 60) : 0,
+    totalOrders,
+  };
+}
+
 export async function getWeeklyStats(establishmentId: number) {
   const db = await getDb();
   if (!db) return [];
