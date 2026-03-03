@@ -1185,5 +1185,62 @@ export function createBotApiRouter(): Router {
     }
   });
 
+  // ──────────────────────────────────────────────
+  // GET /api/bot/location — Localização do restaurante com link Google Maps
+  // ──────────────────────────────────────────────
+  router.get("/location", async (req: BotApiRequest, res: Response) => {
+    try {
+      const estId = req.botEstablishmentId!;
+      const establishment = await db.getEstablishmentById(estId);
+      if (!establishment) {
+        return sendError(res, 404, "Estabelecimento não encontrado.");
+      }
+
+      const { street, number, complement, neighborhood, city, state, zipCode, latitude, longitude, name } = establishment;
+
+      // Montar endereço formatado
+      const addressParts: string[] = [];
+      if (street) addressParts.push(number ? `${street}, ${number}` : street);
+      if (complement) addressParts.push(complement);
+      if (neighborhood) addressParts.push(neighborhood);
+      if (city && state) {
+        addressParts.push(`${city} - ${state}`);
+      } else if (city) {
+        addressParts.push(city);
+      }
+      if (zipCode) addressParts.push(`CEP: ${zipCode}`);
+
+      const formattedAddress = addressParts.join(", ");
+
+      // Gerar link do Google Maps
+      let googleMapsUrl: string | null = null;
+      if (latitude && longitude) {
+        // Se tem coordenadas, usar link direto com pin
+        googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+      } else if (formattedAddress) {
+        // Se não tem coordenadas, usar busca por endereço
+        googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formattedAddress)}`;
+      }
+
+      return res.json({
+        name: name || null,
+        address: formattedAddress || null,
+        street: street || null,
+        number: number || null,
+        complement: complement || null,
+        neighborhood: neighborhood || null,
+        city: city || null,
+        state: state || null,
+        zipCode: zipCode || null,
+        latitude: latitude || null,
+        longitude: longitude || null,
+        googleMapsUrl,
+      });
+    } catch (error) {
+      console.error("[BotAPI] Erro em GET /location:", error);
+      return sendError(res, 500, "Erro interno.");
+    }
+  });
+
   return router;
 }
