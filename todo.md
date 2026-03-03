@@ -8064,3 +8064,4 @@
 - [x] Efeito Glass/Blur: Camada 3 - Container dashboard translúcido com backdrop-blur leve
 - [x] Efeito Glass/Blur: Sidebar e top bar com visual glass consistente
 - [x] Efeito Glass/Blur: Responsividade mobile (fallback sólido) e fallback navegadores antigos
+- [x] Efeito Glass/Blur: Reduzir intensidade do gradiente para ficar mais sutil
