@@ -329,6 +329,8 @@ export default function Dashboard() {
           ) : ordersByModality && ordersByModality.length > 0 ? (() => {
             const total = ordersByModality.reduce((sum, m) => sum + m.count, 0);
             const barColors = ['#ef4444', '#f97316', '#f59e0b'];
+            const labelMap: Record<string, string> = { 'Entrega': 'Delivery', 'Consumo no local': 'Consumo' };
+            const getLabel = (label: string) => labelMap[label] || label;
             return (
               <div className="flex flex-col gap-5 py-1">
                 <div className="grid grid-cols-3 gap-4">
@@ -336,7 +338,7 @@ export default function Dashboard() {
                     const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
                     return (
                       <div key={item.deliveryType} className="flex flex-col gap-1">
-                        <span className="text-xs text-muted-foreground font-medium">{item.label}</span>
+                        <span className="text-xs text-muted-foreground font-medium">{getLabel(item.label)}</span>
                         <span className="text-2xl font-bold tracking-tight">{pct}%</span>
                       </div>
                     );
@@ -362,7 +364,7 @@ export default function Dashboard() {
                   {ordersByModality.map((item, i) => (
                     <div key={item.deliveryType} className="flex items-center gap-1.5">
                       <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: barColors[i % barColors.length] }} />
-                      <span>{item.label}: {item.count}</span>
+                      <span>{getLabel(item.label)}: {item.count}</span>
                     </div>
                   ))}
                 </div>
