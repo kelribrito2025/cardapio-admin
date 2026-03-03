@@ -1,0 +1,40 @@
+{
+  "query": "SELECT CONCAT(establishmentId, ':', COUNT(*)) as info FROM orders WHERE orderNumber LIKE '9901%' GROUP BY establishmentId UNION SELECT CONCAT(id, ':est') FROM establishments ORDER BY 1 LIMIT 10",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT CONCAT(establishmentId, ':', COUNT(*)) as info FROM orders WHERE orderNumber LIKE '9901%' GROUP BY establishmentId UNION SELECT CONCAT(id, ':est') FROM establishments ORDER BY 1 LIMIT 10",
+  "rows": [
+    {
+      "info": "1:est"
+    },
+    {
+      "info": "150004:est"
+    },
+    {
+      "info": "210001:est"
+    },
+    {
+      "info": "210002:20"
+    },
+    {
+      "info": "210002:est"
+    },
+    {
+      "info": "210003:est"
+    },
+    {
+      "info": "210004:est"
+    },
+    {
+      "info": "210005:est"
+    },
+    {
+      "info": "210006:est"
+    },
+    {
+      "info": "210007:est"
+    }
+  ],
+  "messages": [],
+  "stdout": "info\n1:est\n150004:est\n210001:est\n210002:20\n210002:est\n210003:est\n210004:est\n210005:est\n210006:est\n210007:est\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

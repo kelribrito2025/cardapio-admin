@@ -1,0 +1,46 @@
+{
+  "query": "SELECT DISTINCT establishmentId, COUNT(*) as cnt FROM orders WHERE status = 'completed' GROUP BY establishmentId",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT DISTINCT establishmentId, COUNT(*) as cnt FROM orders WHERE status = 'completed' GROUP BY establishmentId",
+  "rows": [
+    {
+      "establishmentId": "150004",
+      "cnt": "70"
+    },
+    {
+      "establishmentId": "90001",
+      "cnt": "281"
+    },
+    {
+      "establishmentId": "210002",
+      "cnt": "20"
+    },
+    {
+      "establishmentId": "1",
+      "cnt": "200"
+    },
+    {
+      "establishmentId": "30001",
+      "cnt": "278"
+    },
+    {
+      "establishmentId": "60018",
+      "cnt": "335"
+    },
+    {
+      "establishmentId": "210005",
+      "cnt": "1"
+    },
+    {
+      "establishmentId": "180001",
+      "cnt": "2"
+    },
+    {
+      "establishmentId": "210006",
+      "cnt": "22"
+    }
+  ],
+  "messages": [],
+  "stdout": "establishmentId\tcnt\n150004\t70\n90001\t281\n210002\t20\n1\t200\n30001\t278\n60018\t335\n210005\t1\n180001\t2\n210006\t22\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

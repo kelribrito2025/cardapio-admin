@@ -1,0 +1,55 @@
+{
+  "query": "SELECT id, orderNumber, status, establishmentId, createdAt, completedAt, deliveryType FROM orders WHERE orderNumber LIKE '9901%' LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, orderNumber, status, establishmentId, createdAt, completedAt, deliveryType FROM orders WHERE orderNumber LIKE '9901%' LIMIT 5",
+  "rows": [
+    {
+      "id": "990014",
+      "orderNumber": "990100",
+      "status": "completed",
+      "establishmentId": "30001",
+      "createdAt": "2026-03-03 14:58:38",
+      "completedAt": "2026-03-03 15:25:38",
+      "deliveryType": "delivery"
+    },
+    {
+      "id": "990015",
+      "orderNumber": "990101",
+      "status": "completed",
+      "establishmentId": "30001",
+      "createdAt": "2026-03-03 13:58:38",
+      "completedAt": "2026-03-03 14:26:38",
+      "deliveryType": "delivery"
+    },
+    {
+      "id": "990016",
+      "orderNumber": "990102",
+      "status": "completed",
+      "establishmentId": "30001",
+      "createdAt": "2026-03-03 12:58:38",
+      "completedAt": "2026-03-03 13:19:38",
+      "deliveryType": "delivery"
+    },
+    {
+      "id": "990017",
+      "orderNumber": "990103",
+      "status": "completed",
+      "establishmentId": "30001",
+      "createdAt": "2026-03-03 11:58:38",
+      "completedAt": "2026-03-03 12:16:38",
+      "deliveryType": "delivery"
+    },
+    {
+      "id": "990018",
+      "orderNumber": "990104",
+      "status": "completed",
+      "establishmentId": "30001",
+      "createdAt": "2026-03-03 10:58:38",
+      "completedAt": "2026-03-03 11:27:38",
+      "deliveryType": "delivery"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\torderNumber\tstatus\testablishmentId\tcreatedAt\tcompletedAt\tdeliveryType\n990014\t990100\tcompleted\t30001\t2026-03-03 14:58:38\t2026-03-03 15:25:38\tdelivery\n990015\t990101\tcompleted\t30001\t2026-03-03 13:58:38\t2026-03-03 14:26:38\tdelivery\n990016\t990102\tcompleted\t30001\t2026-03-03 12:58:38\t2026-03-03 13:19:38\tdelivery\n990017\t990103\tcompleted\t30001\t2026-03-03 11:58:38\t2026-03-03 12:16:38\tdelivery\n990018\t990104\tcompleted\t30001\t2026-03-03 10:58:38\t2026-03-03 11:27:38\tdelivery\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

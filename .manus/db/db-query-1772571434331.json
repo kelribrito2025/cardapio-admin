@@ -1,0 +1,19 @@
+{
+  "query": "SELECT id FROM establishments LIMIT 1; SELECT MAX(id) as maxId, MAX(CAST(orderNumber AS UNSIGNED)) as maxOrderNum FROM orders;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id FROM establishments LIMIT 1; SELECT MAX(id) as maxId, MAX(CAST(orderNumber AS UNSIGNED)) as maxOrderNum FROM orders;",
+  "rows": [
+    {
+      "id": "210002"
+    },
+    {
+      "id": "maxId\tmaxOrderNum"
+    },
+    {
+      "id": "990004\t450"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\n210002\nmaxId\tmaxOrderNum\n990004\t450\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

@@ -1,0 +1,13 @@
+{
+  "query": "SELECT CONCAT('EST_ID=', id) as info FROM establishments LIMIT 1",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT CONCAT('EST_ID=', id) as info FROM establishments LIMIT 1",
+  "rows": [
+    {
+      "info": "EST_ID=210002"
+    }
+  ],
+  "messages": [],
+  "stdout": "info\nEST_ID=210002\n",
+  "stderr": "",
+  "execution_time_ms": 64
+}

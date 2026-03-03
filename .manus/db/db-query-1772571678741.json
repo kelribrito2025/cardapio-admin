@@ -1,0 +1,40 @@
+{
+  "query": "SELECT CONCAT(orderNumber, '|', status, '|', establishmentId, '|', DATE(createdAt), '|', IFNULL(DATE(completedAt),'NULL'), '|', deliveryType) as info FROM orders WHERE orderNumber LIKE '9901%' LIMIT 10",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT CONCAT(orderNumber, '|', status, '|', establishmentId, '|', DATE(createdAt), '|', IFNULL(DATE(completedAt),'NULL'), '|', deliveryType) as info FROM orders WHERE orderNumber LIKE '9901%' LIMIT 10",
+  "rows": [
+    {
+      "info": "990100|completed|30001|2026-03-03|2026-03-03|delivery"
+    },
+    {
+      "info": "990101|completed|30001|2026-03-03|2026-03-03|delivery"
+    },
+    {
+      "info": "990102|completed|30001|2026-03-03|2026-03-03|delivery"
+    },
+    {
+      "info": "990103|completed|30001|2026-03-03|2026-03-03|delivery"
+    },
+    {
+      "info": "990104|completed|30001|2026-03-03|2026-03-03|delivery"
+    },
+    {
+      "info": "990105|completed|30001|2026-03-03|2026-03-03|delivery"
+    },
+    {
+      "info": "990106|completed|30001|2026-03-03|2026-03-03|delivery"
+    },
+    {
+      "info": "990107|completed|30001|2026-03-03|2026-03-03|delivery"
+    },
+    {
+      "info": "990108|completed|30001|2026-03-03|2026-03-03|pickup"
+    },
+    {
+      "info": "990109|completed|30001|2026-03-03|2026-03-03|pickup"
+    }
+  ],
+  "messages": [],
+  "stdout": "info\n990100|completed|30001|2026-03-03|2026-03-03|delivery\n990101|completed|30001|2026-03-03|2026-03-03|delivery\n990102|completed|30001|2026-03-03|2026-03-03|delivery\n990103|completed|30001|2026-03-03|2026-03-03|delivery\n990104|completed|30001|2026-03-03|2026-03-03|delivery\n990105|completed|30001|2026-03-03|2026-03-03|delivery\n990106|completed|30001|2026-03-03|2026-03-03|delivery\n990107|completed|30001|2026-03-03|2026-03-03|delivery\n990108|completed|30001|2026-03-03|2026-03-03|pickup\n990109|completed|30001|2026-03-03|2026-03-03|pickup\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}
