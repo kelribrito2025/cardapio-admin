@@ -270,9 +270,9 @@ export default function Dashboard() {
       </div>
 
       {/* Top Produtos + Modalidade + Tempo Médio */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6" style={{ gridAutoRows: '1fr' }}>
         {/* Top Produtos */}
-        <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col">
+        <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col min-h-0 overflow-hidden">
           {/* Header com ícone - mesmo estilo Formas de Pagamento */}
           <div className="flex items-center gap-3 mb-4">
             <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -297,7 +297,7 @@ export default function Dashboard() {
               ))}
             </div>
           ) : topProducts && topProducts.length > 0 ? (
-            <div className="space-y-4 overflow-y-auto pr-1 flex-1 min-h-0">
+            <div className="space-y-4 overflow-y-auto pr-1 flex-1 min-h-0" style={{ scrollbarGutter: 'stable' }}>
               {(() => {
                 const maxQty = topProducts[0]?.totalQuantity || 1;
                 const totalRevenue = topProducts.reduce((sum, p) => sum + p.totalRevenue, 0);
