@@ -860,6 +860,39 @@ export async function sendOrderConfirmationRequest(
 }
 
 /**
+ * Validate a CPF number using the official check digit algorithm.
+ * Returns true only if the 11-digit string passes both check digit validations.
+ * This is used to distinguish CPF keys from phone numbers (both have 11 digits).
+ */
+function isValidCPF(cpf: string): boolean {
+  // Must be exactly 11 digits
+  if (cpf.length !== 11) return false;
+  
+  // Reject known invalid patterns (all same digits)
+  if (/^(\d)\1{10}$/.test(cpf)) return false;
+  
+  // Validate first check digit
+  let sum = 0;
+  for (let i = 0; i < 9; i++) {
+    sum += parseInt(cpf.charAt(i)) * (10 - i);
+  }
+  let remainder = (sum * 10) % 11;
+  if (remainder === 10) remainder = 0;
+  if (remainder !== parseInt(cpf.charAt(9))) return false;
+  
+  // Validate second check digit
+  sum = 0;
+  for (let i = 0; i < 10; i++) {
+    sum += parseInt(cpf.charAt(i)) * (11 - i);
+  }
+  remainder = (sum * 10) % 11;
+  if (remainder === 10) remainder = 0;
+  if (remainder !== parseInt(cpf.charAt(10))) return false;
+  
+  return true;
+}
+
+/**
  * Send a PIX copy button via WhatsApp
  * Uses UAZAPI native /send/pix-button endpoint that creates a WhatsApp native PIX button
  * When the client taps the button, the PIX key is copied to clipboard
@@ -887,11 +920,20 @@ export async function sendPixButton(
       if (pixKey.includes('@')) {
         pixType = 'EMAIL';
       } else if (cleanKey.length === 11 && !pixKey.includes('+')) {
-        // Could be CPF or phone - check if starts with valid phone prefix
-        pixType = 'CPF';
+        // Both CPF and phone have 11 digits - use CPF validation to distinguish
+        pixType = isValidCPF(cleanKey) ? 'CPF' : 'PHONE';
       } else if (cleanKey.length === 14) {
         pixType = 'CNPJ';
-      } else if (pixKey.startsWith('+') || (cleanKey.length >= 10 && cleanKey.length <= 13)) {
+      } else if (cleanKey.length === 10 && !pixKey.includes('+')) {
+        // 10 digits = landline phone (DDD + 8 digits)
+        pixType = 'PHONE';
+      } else if (cleanKey.length === 13 && cleanKey.startsWith('55')) {
+        // 13 digits starting with 55 = phone with country code (55 + DDD + 9xxxx-xxxx)
+        pixType = 'PHONE';
+      } else if (cleanKey.length === 12 && cleanKey.startsWith('55')) {
+        // 12 digits starting with 55 = landline with country code (55 + DDD + xxxx-xxxx)
+        pixType = 'PHONE';
+      } else if (pixKey.startsWith('+')) {
         pixType = 'PHONE';
       } else {
         pixType = 'EVP'; // Random key (UUID format)

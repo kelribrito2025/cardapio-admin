@@ -7916,3 +7916,11 @@
 - [x] Remover tooltip "Acompanhe seu pedido!" e botão "Entendi" do Step 2
 - [x] Manter apenas tooltip "Veja todos os seus pedidos" com foco no botão "Meus pedidos"
 - [x] Setinha estilo balão já presente no tooltip do Step 2 (mesmo estilo do Step 1)
+
+
+## Correção do tipo de chave PIX no botão WhatsApp
+- [x] Investigar bug: chave telefone sendo identificada como CPF no botão PIX nativo
+- [x] Implementar validação de CPF (algoritmo de dígitos verificadores) para distinguir CPF de telefone
+- [x] Corrigir lógica de detecção em sendPixButton (uazapi.ts)
+- [x] Adicionar suporte para telefones com DDD (10 dígitos), com código de país (12-13 dígitos)
+- [x] Criar testes vitest (pix-key-detection.test.ts) - 15 testes passando
