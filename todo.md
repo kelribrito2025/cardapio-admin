@@ -7938,3 +7938,10 @@
 - [x] Setinha do tooltip apontando para o botão
 - [x] Overlay bloqueador fixo z-[199] + overlay escuro z-[200] (idêntico ao Step 1)
 - [x] Removido overlay interno do modal que não era necessário
+
+
+## Onboarding do menu público não aparece no mobile
+- [x] Investigar: tooltips usavam `absolute bottom-full` cortado pelo `overflow-hidden` do container
+- [x] Corrigir Step 1: tooltip movido para dentro do fluxo normal (entre body e footer)
+- [x] Corrigir Step 2: tooltip movido para dentro do fluxo normal (antes do footer do tracking)
+- [x] Remover constantes não utilizadas (onboardingPedidoVisto, onboardingStep2Visto)

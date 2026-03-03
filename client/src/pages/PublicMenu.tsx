@@ -103,8 +103,7 @@ const saveOrdersToStorage = (establishmentId: number, orders: UserOrder[]) => {
 
 export default function PublicMenu() {
   const { slug } = useParams<{ slug: string }>();
-  const onboardingKey = 'onboardingPedidoVisto';
-  const onboardingStep2Key = 'onboardingStep2Visto';
+  // Chave de onboarding usa slug para ser específica por estabelecimento: `onboarding_meus_pedidos_${slug}`
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -4683,6 +4682,27 @@ setOnlinePaymentUrl(null);
                 )}
               </div>
 
+              {/* Onboarding Step 1: Tooltip acima do footer - renderizado dentro do body para não ser cortado pelo overflow */}
+              {orderSent && onboardingStep === 1 && (
+                <div className="flex-shrink-0 px-6 pb-2 pt-0 relative z-[201]">
+                  <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="bg-red-50 rounded-xl shadow-2xl p-4 border border-red-200 relative">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 p-2 bg-red-100 rounded-lg">
+                          <Package className="h-5 w-5 text-red-500" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-bold text-gray-900">Seu pedido foi enviado!</p>
+                          <p className="text-xs text-gray-600 mt-1">Clique aqui para acompanhar o status.</p>
+                        </div>
+                      </div>
+                      {/* Setinha estilo balão apontando para baixo */}
+                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-50 border-r border-b border-red-200 rotate-45" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Footer */}
               {orderSent ? (
               <div className="flex-shrink-0 border-t px-6 py-4 relative">
@@ -4690,27 +4710,9 @@ setOnlinePaymentUrl(null);
                 {onboardingStep === 1 && (
                   <div className="fixed inset-0 z-[199]" onClick={(e) => e.stopPropagation()} />
                 )}
-                {/* Onboarding Step 1: Overlay escuro + tooltip acima do botão */}
+                {/* Onboarding Step 1: Overlay escuro */}
                 {onboardingStep === 1 && (
-                  <>
-                    {/* Overlay bloqueador - impede cliques fora do botão */}
-                    <div className="fixed inset-0 bg-black/60 z-[200]" onClick={(e) => e.stopPropagation()} />
-                    <div className="absolute bottom-full left-6 right-6 mb-3 z-[201] animate-in fade-in slide-in-from-bottom-2 duration-300">
-                      <div className="bg-red-50 rounded-xl shadow-2xl p-4 border border-red-200 relative">
-                        <div className="flex items-start gap-3">
-                          <div className="flex-shrink-0 p-2 bg-red-100 rounded-lg">
-                            <Package className="h-5 w-5 text-red-500" />
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-sm font-bold text-gray-900">Seu pedido foi enviado!</p>
-                            <p className="text-xs text-gray-600 mt-1">Clique aqui para acompanhar o status.</p>
-                          </div>
-                        </div>
-                        {/* Setinha estilo balão apontando para baixo */}
-                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-50 border-r border-b border-red-200 rotate-45" />
-                      </div>
-                    </div>
-                  </>
+                  <div className="fixed inset-0 bg-black/60 z-[200]" onClick={(e) => e.stopPropagation()} />
                 )}
                 <button
                   onClick={() => {
@@ -5831,33 +5833,36 @@ setOnlinePaymentUrl(null);
               )}
             </div>
 
+            {/* Onboarding Step 2: Tooltip acima do footer - renderizado dentro do body para não ser cortado pelo overflow */}
+            {onboardingStep === 2 && (
+              <div className="px-6 pb-2 pt-0 relative z-[201]">
+                <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="bg-red-50 rounded-xl shadow-2xl p-4 border border-red-200 relative">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 p-2 bg-red-100 rounded-lg">
+                        <Package className="h-5 w-5 text-red-500" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-gray-900">Veja todos os seus pedidos</p>
+                        <p className="text-xs text-gray-600 mt-1">Clique em "Meus pedidos" para acompanhar todos os seus pedidos em um unico lugar.</p>
+                      </div>
+                    </div>
+                    {/* Setinha estilo balão apontando para baixo */}
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-50 border-r border-b border-red-200 rotate-45" />
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Footer */}
             <div className="border-t px-6 py-4 space-y-3 relative" style={{backgroundColor: '#ffffff'}}>
               {/* Overlay bloqueador durante onboarding Step 2 - bloqueia cliques fora */}
               {onboardingStep === 2 && (
                 <div className="fixed inset-0 z-[199]" onClick={(e) => e.stopPropagation()} />
               )}
-              {/* Onboarding Step 2: Overlay escuro + tooltip acima do botão (MESMO PADRÃO DO STEP 1) */}
+              {/* Onboarding Step 2: Overlay escuro */}
               {onboardingStep === 2 && (
-                <>
-                  {/* Overlay bloqueador escuro - impede cliques fora do botão */}
-                  <div className="fixed inset-0 bg-black/60 z-[200]" onClick={(e) => e.stopPropagation()} />
-                  <div className="absolute bottom-full left-6 right-6 mb-3 z-[201] animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <div className="bg-red-50 rounded-xl shadow-2xl p-4 border border-red-200 relative">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 p-2 bg-red-100 rounded-lg">
-                          <Package className="h-5 w-5 text-red-500" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-bold text-gray-900">Veja todos os seus pedidos</p>
-                          <p className="text-xs text-gray-600 mt-1">Clique em "Meus pedidos" para acompanhar todos os seus pedidos em um unico lugar.</p>
-                        </div>
-                      </div>
-                      {/* Setinha estilo balão apontando para baixo */}
-                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-50 border-r border-b border-red-200 rotate-45" />
-                    </div>
-                  </div>
-                </>
+                <div className="fixed inset-0 bg-black/60 z-[200]" onClick={(e) => e.stopPropagation()} />
               )}
               {/* Botão Avaliar restaurante - só aparece quando status for entregue E pode avaliar (30 dias) E verificação já terminou */}
               {orderStatus === 'delivered' && canReview && canReviewChecked && establishment?.reviewsEnabled !== false && onboardingStep !== 2 && (
