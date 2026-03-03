@@ -7963,3 +7963,8 @@
 ## Bug: Botão PIX nativo do WhatsApp não está sendo enviado
 - [x] Causa: sendPixButton estava no bloco if(false) desabilitado, não na função de background ativa
 - [x] Correção: Adicionado sendPixButton na função processOrderNotificationInBackground
+
+## Cashback: exibir valor em R$ em vez de porcentagem no menu público
+- [x] Encontrar onde o cashback é exibido nos itens do menu público (ProductCard)
+- [x] Calcular o valor em R$ com base no preço do item e na porcentagem de cashback
+- [x] Exibir ex: "+R$ 2,00 cashback" em vez de "+2% cashback"

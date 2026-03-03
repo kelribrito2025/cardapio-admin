@@ -7413,7 +7413,7 @@ function ProductCard({
             )}
             {cashbackPercent && cashbackPercent > 0 && Number(product.price) > 0 && !isUnavailable && (
               <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">
-                +{cashbackPercent}% cashback
+                +{formatPrice((Number(product.price) * cashbackPercent / 100).toFixed(2))} cashback
               </span>
             )}
             {isUnavailable && (
