@@ -1297,7 +1297,7 @@ export const appRouter = router({
     topProducts: protectedProcedure
       .input(z.object({ establishmentId: z.number(), period: z.enum(['today', 'week', 'month']).optional(), limit: z.number().optional() }))
       .query(async ({ input }) => {
-        return db.getTopProducts(input.establishmentId, input.period ?? 'today', input.limit ?? 10);
+        return db.getTopProducts(input.establishmentId, input.period ?? 'today', input.limit ?? 7);
       }),
 
     ordersByDeliveryType: protectedProcedure
