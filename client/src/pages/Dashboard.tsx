@@ -13,7 +13,8 @@ import {
   Target,
   Trophy,
   Truck,
-  Timer
+  Timer,
+  UsersRound
 } from "lucide-react";
 import { 
   AreaChart, 
@@ -93,6 +94,11 @@ export default function Dashboard() {
 
   const { data: avgPrepTime, isLoading: prepTimeLoading } = trpc.dashboard.avgPrepTime.useQuery(
     { establishmentId: establishmentId!, period },
+    { enabled: !!establishmentId }
+  );
+
+  const { data: customerInsights, isLoading: customerInsightsLoading } = trpc.dashboard.customerInsights.useQuery(
+    { establishmentId: establishmentId! },
     { enabled: !!establishmentId }
   );
 
@@ -314,79 +320,155 @@ export default function Dashboard() {
           )}
         </SectionCard>
 
-        {/* Pedidos por Modalidade */}
-        <div className="bg-card rounded-xl border border-border/50 p-5 h-full flex flex-col">
-          {/* Header igual ao WeeklyRevenueCard */}
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
-              <Truck className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+        {/* Coluna do meio: Pedidos por Modalidade + Clientes */}
+        <div className="flex flex-col gap-6">
+          {/* Pedidos por Modalidade */}
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col">
+            {/* Header igual ao WeeklyRevenueCard */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                <Truck className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-base font-semibold text-foreground">Pedidos por Modalidade</h3>
+                <p className="text-xs text-muted-foreground">Distribuição por tipo de entrega</p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <h3 className="text-base font-semibold text-foreground">Pedidos por Modalidade</h3>
-              <p className="text-xs text-muted-foreground">Distribuição por tipo de entrega</p>
-            </div>
+
+            {modalityLoading ? (
+              <div className="flex flex-col gap-6 py-2 flex-1">
+                {[1,2,3].map(i => (
+                  <div key={i} className="flex flex-col gap-2">
+                    <div className="skeleton h-4 w-20 rounded" />
+                    <div className="skeleton h-8 w-16 rounded" />
+                    <div className="skeleton h-3 w-full rounded-full" />
+                  </div>
+                ))}
+              </div>
+            ) : ordersByModality && ordersByModality.length > 0 ? (() => {
+              const total = ordersByModality.reduce((sum, m) => sum + m.count, 0);
+              const barColors = ['#8b5cf6', '#3b82f6', '#10b981'];
+              const labelMap: Record<string, string> = { 'Entrega': 'Delivery', 'Consumo no local': 'Consumo' };
+              const getLabel = (label: string) => labelMap[label] || label;
+              return (
+                <div className="flex flex-col">
+                  {/* Labels + percentuais em grid - linhas pontilhadas alinhadas com barras */}
+                  <div className="flex w-full gap-1.5 mt-2">
+                    {ordersByModality.map((item, i) => {
+                      const pct = total > 0 ? (item.count / total) * 100 : 0;
+                      const roundedPct = Math.round(pct);
+                      return (
+                        <div
+                          key={item.deliveryType}
+                          className="flex flex-col gap-1"
+                          style={{ width: `${pct}%`, minWidth: pct > 0 ? '60px' : '0', borderLeft: '2px dotted #d1d5db', paddingLeft: '10px' }}
+                        >
+                          <span className="text-xs text-muted-foreground font-medium">{getLabel(item.label)}</span>
+                          <span className="text-3xl font-bold tracking-tight text-foreground">{roundedPct}%</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {/* Barras individuais lado a lado */}
+                  <div className="flex gap-1.5 w-full mt-4">
+                    {ordersByModality.map((item, i) => {
+                      const pct = total > 0 ? (item.count / total) * 100 : 0;
+                      return (
+                        <div
+                          key={item.deliveryType}
+                          className="h-3.5 rounded-full transition-all duration-500"
+                          style={{
+                            width: `${pct}%`,
+                            backgroundColor: barColors[i % barColors.length],
+                            minWidth: pct > 0 ? '12px' : '0',
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })() : (
+              <EmptyState
+                icon={Truck}
+                title="Sem dados"
+                description="Nenhum pedido no período"
+              />
+            )}
           </div>
 
-          {modalityLoading ? (
-            <div className="flex flex-col gap-6 py-2 flex-1">
-              {[1,2,3].map(i => (
-                <div key={i} className="flex flex-col gap-2">
-                  <div className="skeleton h-4 w-20 rounded" />
-                  <div className="skeleton h-8 w-16 rounded" />
-                  <div className="skeleton h-3 w-full rounded-full" />
-                </div>
-              ))}
+          {/* Clientes Recorrentes vs Novos */}
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col flex-1">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                <UsersRound className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-base font-semibold text-foreground">Perfil de Clientes</h3>
+                <p className="text-xs text-muted-foreground">Últimos 30 dias</p>
+              </div>
             </div>
-          ) : ordersByModality && ordersByModality.length > 0 ? (() => {
-            const total = ordersByModality.reduce((sum, m) => sum + m.count, 0);
-            const barColors = ['#8b5cf6', '#3b82f6', '#10b981'];
-            const labelMap: Record<string, string> = { 'Entrega': 'Delivery', 'Consumo no local': 'Consumo' };
-            const getLabel = (label: string) => labelMap[label] || label;
-            return (
-              <div className="flex flex-col">
-                {/* Labels + percentuais em grid - linhas pontilhadas alinhadas com barras */}
-                <div className="flex w-full gap-1.5 mt-2">
-                  {ordersByModality.map((item, i) => {
-                    const pct = total > 0 ? (item.count / total) * 100 : 0;
-                    const roundedPct = Math.round(pct);
-                    return (
-                      <div
-                        key={item.deliveryType}
-                        className="flex flex-col gap-1"
-                        style={{ width: `${pct}%`, minWidth: pct > 0 ? '60px' : '0', borderLeft: '2px dotted #d1d5db', paddingLeft: '10px' }}
-                      >
-                        <span className="text-xs text-muted-foreground font-medium">{getLabel(item.label)}</span>
-                        <span className="text-3xl font-bold tracking-tight text-foreground">{roundedPct}%</span>
-                      </div>
-                    );
-                  })}
+
+            {customerInsightsLoading ? (
+              <div className="flex gap-8 py-2">
+                <div className="flex flex-col gap-2 flex-1">
+                  <div className="skeleton h-10 w-20 rounded" />
+                  <div className="skeleton h-4 w-28 rounded" />
                 </div>
-                {/* Barras individuais lado a lado */}
-                <div className="flex gap-1.5 w-full mt-4">
-                  {ordersByModality.map((item, i) => {
-                    const pct = total > 0 ? (item.count / total) * 100 : 0;
-                    return (
-                      <div
-                        key={item.deliveryType}
-                        className="h-3.5 rounded-full transition-all duration-500"
-                        style={{
-                          width: `${pct}%`,
-                          backgroundColor: barColors[i % barColors.length],
-                          minWidth: pct > 0 ? '12px' : '0',
-                        }}
-                      />
-                    );
-                  })}
+                <div className="flex flex-col gap-2 flex-1">
+                  <div className="skeleton h-10 w-20 rounded" />
+                  <div className="skeleton h-4 w-28 rounded" />
                 </div>
               </div>
-            );
-          })() : (
-            <EmptyState
-              icon={Truck}
-              title="Sem dados"
-              description="Nenhum pedido no período"
-            />
-          )}
+            ) : (() => {
+              const recurringPct = customerInsights?.recurringPct ?? 0;
+              const newPct = customerInsights?.newPct ?? 0;
+              const totalBars = 40;
+              const recurringBars = Math.round((recurringPct / 100) * totalBars);
+              const newBars = totalBars - recurringBars;
+              return (
+                <div className="flex flex-col flex-1">
+                  {/* Percentuais lado a lado */}
+                  <div className="flex items-start gap-6 mt-1">
+                    <div className="flex-1">
+                      <span className="text-3xl font-bold tracking-tight text-foreground">{recurringPct}%</span>
+                      <p className="text-sm font-medium text-muted-foreground mt-1">Clientes Recorrentes</p>
+                      <p className="text-[11px] text-muted-foreground/70 mt-0.5">2+ pedidos nos últimos 30 dias</p>
+                    </div>
+                    <div className="flex-1 text-right">
+                      <span className="text-3xl font-bold tracking-tight text-foreground">{newPct}%</span>
+                      <p className="text-sm font-medium text-muted-foreground mt-1">Clientes Novos</p>
+                      <p className="text-[11px] text-muted-foreground/70 mt-0.5">Primeiro pedido no período</p>
+                    </div>
+                  </div>
+                  {/* Gráfico de barras verticais finas */}
+                  <div className="flex items-end gap-[2px] mt-4 h-10">
+                    {Array.from({ length: recurringBars }).map((_, i) => (
+                      <div
+                        key={`r-${i}`}
+                        className="flex-1 rounded-sm transition-all duration-500"
+                        style={{ backgroundColor: '#22c55e', height: '100%' }}
+                      />
+                    ))}
+                    {/* Linha separadora laranja */}
+                    {recurringBars > 0 && newBars > 0 && (
+                      <div className="w-[3px] flex-shrink-0 rounded-full" style={{ backgroundColor: '#f97316', height: '110%' }} />
+                    )}
+                    {Array.from({ length: newBars }).map((_, i) => (
+                      <div
+                        key={`n-${i}`}
+                        className="flex-1 rounded-sm transition-all duration-500"
+                        style={{ backgroundColor: '#e5e7eb', height: '100%' }}
+                      />
+                    ))}
+                  </div>
+                  {/* Total de clientes */}
+                  <p className="text-[11px] text-muted-foreground/70 mt-2">{customerInsights?.totalCustomers ?? 0} clientes únicos no período</p>
+                </div>
+              );
+            })()}
+          </div>
         </div>
 
         {/* Tempo Médio */}

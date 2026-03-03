@@ -2697,6 +2697,51 @@ export async function getAvgPrepTime(establishmentId: number, period: 'today' | 
   };
 }
 
+// ============ DASHBOARD: CLIENTES RECORRENTES vs NOVOS ============
+export async function getCustomerInsights(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return { recurringPct: 0, newPct: 0, totalCustomers: 0, recurringCount: 0, newCount: 0 };
+
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+  // Últimos 30 dias
+  const thirtyDaysAgo = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - 30);
+  const thirtyDaysAgoStr = fmtLocalDateTime(thirtyDaysAgo);
+
+  // Buscar todos os clientes únicos (por telefone) que fizeram pedidos nos últimos 30 dias
+  // e contar quantos pedidos cada um fez
+  const result = await db.select({
+    customerPhone: orders.customerPhone,
+    orderCount: sql<number>`COUNT(*)`,
+  })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      eq(orders.status, 'completed'),
+      sql`${orders.customerPhone} IS NOT NULL`,
+      sql`${orders.customerPhone} != ''`,
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${thirtyDaysAgoStr}`
+    ))
+    .groupBy(orders.customerPhone);
+
+  const totalCustomers = result.length;
+  if (totalCustomers === 0) {
+    return { recurringPct: 0, newPct: 0, totalCustomers: 0, recurringCount: 0, newCount: 0 };
+  }
+
+  // Recorrente = 2+ pedidos nos últimos 30 dias
+  const recurringCount = result.filter(r => Number(r.orderCount) >= 2).length;
+  const newCount = totalCustomers - recurringCount;
+
+  return {
+    recurringPct: Math.round((recurringCount / totalCustomers) * 100),
+    newPct: Math.round((newCount / totalCustomers) * 100),
+    totalCustomers,
+    recurringCount,
+    newCount,
+  };
+}
+
 export async function getWeeklyStats(establishmentId: number) {
   const db = await getDb();
   if (!db) return [];

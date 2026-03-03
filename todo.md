@@ -8053,3 +8053,8 @@
 - [x] Card Pedidos por Modalidade: linhas pontilhadas alinhadas com final da barra colorida (proporcional ao %)
 - [x] Card Pedidos por Modalidade: header com ícone + título + descrição (igual ao Acumulado da semana)
 - [x] Card Pedidos por Modalidade: labels com cor correspondente à barra (Delivery=violet, Retirada=blue, Consumo=emerald)
+- [x] Card Clientes Recorrentes vs Novos: criar query backend para calcular % recorrentes e novos (últimos 30 dias)
+- [x] Card Clientes Recorrentes vs Novos: implementar layout visual estilo Customer Insights com barras verticais finas
+- [x] Card Clientes Recorrentes vs Novos: posicionar abaixo do Pedidos por Modalidade dividindo espaço vertical
+- [x] Card Clientes Recorrentes vs Novos: header com ícone + título + descrição (mesmo estilo)
+- [x] Card Clientes Recorrentes vs Novos: responsividade (desktop horizontal, mobile empilhado)
