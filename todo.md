@@ -8040,3 +8040,4 @@
 - [x] Testes unitários para normalizeSSEOrder e lógica de deduplicação (15 testes passando)
 - [x] Traduzir deliveryType no endpoint GET /api/bot/orders/:id (deliveryTypeLabel)
 - [x] Criar endpoint GET /api/bot/location que retorna localização do restaurante com link Google Maps
+- [x] Adicionar documentação do endpoint GET /api/bot/location na página do Bot WhatsApp
