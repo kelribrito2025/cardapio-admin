@@ -186,6 +186,22 @@ export default function PublicMenu() {
   const [onboardingStep2SubStep, setOnboardingStep2SubStep] = useState<0 | 1>(0); // 0: Tooltip 1, 1: Tooltip 2
   const [showOnboardingTooltip, setShowOnboardingTooltip] = useState(false);
   
+  // Ativar onboarding Step 1 quando orderSent muda para true (usa useEffect para evitar problemas de closure/timeout no mobile)
+  useEffect(() => {
+    if (orderSent && onboardingStep === 0) {
+      const onboardingKey = `onboarding_meus_pedidos_${slug}`;
+      console.log('[ONBOARDING] useEffect: orderSent=true, verificando localStorage key:', onboardingKey, 'valor:', localStorage.getItem(onboardingKey));
+      if (!localStorage.getItem(onboardingKey)) {
+        console.log('[ONBOARDING] useEffect: Agendando setOnboardingStep(1) em 800ms');
+        const timer = setTimeout(() => {
+          console.log('[ONBOARDING] useEffect: setTimeout disparado! Setando onboardingStep para 1');
+          setOnboardingStep(1);
+        }, 800);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [orderSent, onboardingStep, slug]);
+
   // Inicializar Step 2 quando o modal de tracking abre
   useEffect(() => {
     if (showTrackingModal && onboardingStep === 2) {
@@ -372,11 +388,7 @@ export default function PublicMenu() {
             setOrderSent(true);
             setOrderStatus('sent');
             setCreatedOrderNumber(result.orderNumber);
-            // Ativar onboarding step 1 na primeira vez
-            const onboardingKey = `onboarding_meus_pedidos_${slug}`;
-            if (!localStorage.getItem(onboardingKey)) {
-              setTimeout(() => setOnboardingStep(1), 800);
-            }
+            // Onboarding step 1 agora é ativado via useEffect quando orderSent muda para true
             
             // Salvar orderId e orderNumber no userOrders e iniciar SSE tracking
             const onlineOrderId = result.orderId;
@@ -636,18 +648,7 @@ export default function PublicMenu() {
       setCurrentOrderNumber(result.orderId.toString());
       // Salvar o número visual do pedido para exibição na tela de sucesso
       setCreatedOrderNumber(result.orderNumber);
-            // Ativar onboarding step 1 na primeira vez
-            const onboardingKey = `onboarding_meus_pedidos_${slug}`;
-            console.log('[ONBOARDING DEBUG] orderSent será true, checkoutStep:', checkoutStep, 'onboardingKey:', onboardingKey, 'localStorage:', localStorage.getItem(onboardingKey));
-            if (!localStorage.getItem(onboardingKey)) {
-              console.log('[ONBOARDING DEBUG] Agendando setOnboardingStep(1) em 800ms');
-              setTimeout(() => {
-                console.log('[ONBOARDING DEBUG] setTimeout disparado! Setando onboardingStep para 1');
-                setOnboardingStep(1);
-              }, 800);
-            } else {
-              console.log('[ONBOARDING DEBUG] Onboarding já visto, não ativando');
-            }
+            // Onboarding step 1 agora é ativado via useEffect quando orderSent muda para true
       
       // Iniciar tracking SSE usando orderId (único, sem colisão com reset diário)
       const trackingId = result.orderId.toString();
@@ -4689,12 +4690,6 @@ setOnlinePaymentUrl(null);
                 )}
               </div>
 
-              {/* DEBUG: Mostrar estado do onboarding */}
-              {orderSent && (
-                <div className="flex-shrink-0 px-6 py-1 text-xs bg-yellow-100 text-yellow-800 font-mono">
-                  DEBUG: orderSent={String(orderSent)} onboardingStep={onboardingStep} checkoutStep={checkoutStep}
-                </div>
-              )}
               {/* Onboarding Step 1: Tooltip acima do footer - renderizado dentro do body para não ser cortado pelo overflow */}
               {orderSent && onboardingStep === 1 && (
                 <div className="flex-shrink-0 px-6 pb-2 pt-0 relative z-[201]">

@@ -7947,7 +7947,8 @@
 - [x] Remover constantes não utilizadas (onboardingPedidoVisto, onboardingStep2Visto)
 
 ## Onboarding mobile - investigação profunda (não funciona no mobile)
-- [ ] Investigar se o onboarding é ativado (setOnboardingStep(1)) no mobile
-- [ ] Verificar se há diferença no fluxo de envio de pedido entre mobile e desktop
-- [ ] Verificar se o modal de checkout é renderizado de forma diferente no mobile
-- [ ] Corrigir definitivamente para funcionar no mobile
+- [x] Debug visual confirmou: orderSent=true mas onboardingStep=0 no mobile (setTimeout não dispara)
+- [x] Causa: setTimeout dentro do onSuccess da mutation é cancelado por re-renders no mobile (setCart([]) causa re-render massivo)
+- [x] Correção: Substituir setTimeout por useEffect que reage a orderSent=true
+- [x] Remover setTimeout de ambos os fluxos (normal e pagamento online)
+- [x] Remover debug visual temporário
