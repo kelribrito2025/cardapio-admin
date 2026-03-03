@@ -7904,3 +7904,9 @@
 - [x] Criar funcoes de processamento em background (processOrderPrintingInBackground, processOrderNotificationInBackground)
 - [x] Desabilitar blocos de impressao e WhatsApp originais (usar if(false))
 - [x] Testar tempo de resposta apos otimizacoes
+
+
+## Correção do Preço na Impressão HTML
+- [x] Corrigir valor exibido por item na impressão HTML para incluir preço dos complementos (preço base + complementos)
+- [x] Corrigir valor exibido por item no ESC/POS para incluir preço dos complementos
+- [x] Corrigir valor exibido por item no PrintTestTab (preview) para incluir preço dos complementos

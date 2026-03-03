@@ -127,17 +127,14 @@ function generateReceiptHTML(
       }
     }
     
-    // Preço base = totalPrice - (complementsTotal * quantity)
+    // Preço total do item (base + complementos)
     const totalPrice = typeof item.totalPrice === 'string' ? parseFloat(item.totalPrice) : (item.totalPrice || 0);
-    const hasComplements = parsedComplements.length > 0 && complementsTotal > 0;
-    const basePrice = hasComplements ? totalPrice - (complementsTotal * item.quantity) : totalPrice;
-    const displayPrice = basePrice > 0 ? basePrice : totalPrice;
     
     let itemHTML = `
       <div class="item">
         <div class="item-header">
           <span>${item.quantity}x ${item.productName}</span>
-          <span>${formatCurrency(displayPrice)}</span>
+          <span>${formatCurrency(totalPrice)}</span>
         </div>
     `;
     if (item.notes) {

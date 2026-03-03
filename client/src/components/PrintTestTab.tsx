@@ -459,16 +459,14 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
     // Gerar HTML dos itens EXATAMENTE como o servidor faz
     let itemsHTML = '';
     for (const item of sampleOrder.items) {
-      // Calcular preço base do item (sem complementos)
+      // Preço total do item (base + complementos)
       const complementsTotal = item.complements.reduce((sum, c) => sum + (c.price || 0), 0);
-      const hasComplements = item.complements.length > 0 && complementsTotal > 0;
-      const basePrice = hasComplements ? (item.quantity * item.price) : (item.quantity * item.price + complementsTotal);
-      const displayPrice = basePrice > 0 ? basePrice : (item.quantity * item.price + complementsTotal);
+      const totalItemPrice = (item.quantity * item.price) + (complementsTotal * item.quantity);
       let itemHTML = `
       <div class="item">
         <div class="item-header">
           <span>${item.quantity}x ${item.name}</span>
-          <span>${formatCurrency(displayPrice)}</span>
+          <span>${formatCurrency(totalItemPrice)}</span>
         </div>
     `;
       if (item.observation) {

@@ -869,12 +869,11 @@ export function generatePlainTextReceipt(
           complementsTotal += comp.price * qty;
         }
       }
-      const basePrice = item.totalPrice - (complementsTotal * item.quantity);
-      // Se basePrice faz sentido, usa; senão usa totalPrice
-      const itemBasePrice = basePrice > 0 ? formatCurrency(basePrice) : formatCurrency(item.totalPrice);
+      // Preço total do item (base + complementos)
+      const itemTotalPrice = formatCurrency(item.totalPrice);
 
-      // Nome do item + preço base na mesma linha
-      receipt += leftRight(itemName, itemBasePrice) + '\n';
+      // Nome do item + preço total na mesma linha
+      receipt += leftRight(itemName, itemTotalPrice) + '\n';
 
       // Complementos com pontos
       for (const comp of parsedComplements) {
