@@ -308,7 +308,7 @@ export default function Dashboard() {
             </div>
           ) : topProducts && topProducts.products && topProducts.products.length > 0 ? (
             <>
-            <div className="space-y-2 overflow-y-auto pr-1" style={{ maxHeight: '365px', scrollbarGutter: 'stable', paddingBottom: '4px' }}>
+            <div className="space-y-4 overflow-y-auto pr-1" style={{ maxHeight: '365px', scrollbarGutter: 'stable', paddingBottom: '4px' }}>
               {(() => {
                 const products = topProducts.products;
                 const maxQty = products[0]?.totalQuantity || 1;
@@ -339,9 +339,9 @@ export default function Dashboard() {
                   const barColorStyle = getRankColor(index, Math.min(products.length, 10));
                   return (
                     <div key={product.productName} className="group relative">
-                      <div className="flex items-center justify-between mb-0.5">
+                      <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-medium text-foreground">{product.productName}</span>
+                          <span className="text-sm font-medium text-foreground">{product.productName}</span>
                           <span className="text-xs text-muted-foreground">({product.totalQuantity}x)</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -349,7 +349,7 @@ export default function Dashboard() {
                           <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">{revPct}%</span>
                         </div>
                       </div>
-                      <div className="h-2 bg-muted rounded-full overflow-hidden cursor-pointer">
+                      <div className="h-3 bg-muted rounded-full overflow-hidden cursor-pointer">
                         <div
                           className="h-full rounded-full transition-all duration-500"
                           style={{ width: `${Math.max(3, pct)}%`, backgroundColor: barColorStyle }}
@@ -379,14 +379,14 @@ export default function Dashboard() {
                 });
               })()}
             </div>
-            {/* Insight: % do faturamento dos top 10 (oculto temporariamente) */}
-            {/* <div className="mt-auto">
+            {/* Insight: % do faturamento dos top 10 */}
+            <div className="mt-auto">
             {topProducts.totalPeriodRevenue > 0 ? (
               <p className="text-[11px] px-0 py-3 flex items-center gap-1"><Info className="h-3 w-3 text-muted-foreground/50 flex-shrink-0" /><span className="text-shimmer">Seus {topProducts.products.length} produtos líderes representam {topProducts.topProductsPct}% do faturamento do período</span></p>
             ) : (
               <p className="text-[11px] text-muted-foreground/70 px-0 py-3">Não há métricas suficientes para o cálculo</p>
             )}
-            </div> */}
+            </div>
             </>
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center gap-1 text-center">
@@ -400,7 +400,7 @@ export default function Dashboard() {
         {/* Coluna do meio: Pedidos por Modalidade + Clientes */}
         <div className="flex flex-col gap-6">
           {/* Pedidos por Modalidade */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[260px] overflow-hidden">
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[196px] overflow-hidden">
             {/* Header igual ao WeeklyRevenueCard */}
             <div className="flex items-center gap-3 mb-5">
               <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -475,7 +475,7 @@ export default function Dashboard() {
           </div>
 
           {/* Clientes Recorrentes vs Novos */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[260px] overflow-hidden">
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[306px] overflow-hidden">
             {/* Header */}
             <div className="flex items-center gap-3 mb-5">
               <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -540,8 +540,8 @@ export default function Dashboard() {
                       />
                     ))}
                   </div>
-                  {/* Total de clientes (oculto temporariamente) */}
-                  {/* <p className="text-[11px] text-muted-foreground/70 mt-auto pt-2">{customerInsights?.totalCustomers ?? 0} clientes únicos no período</p> */}
+                  {/* Total de clientes */}
+                  <p className="text-[11px] text-muted-foreground/70 mt-auto pt-2">{customerInsights?.totalCustomers ?? 0} clientes únicos no período</p>
                 </div>
               );
             })()}
@@ -551,7 +551,7 @@ export default function Dashboard() {
         {/* Coluna direita: Tempo Médio + Faturamento por Hora */}
         <div className="flex flex-col gap-6">
           {/* Card 1: Tempo Médio */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 pb-6 flex flex-col h-[260px] overflow-hidden">
+          <div className="bg-card rounded-xl border border-border/50 p-5 pb-6 flex flex-col h-[196px] overflow-hidden">
             {/* Header padronizado */}
             <div className="flex items-center gap-3 mb-3">
               <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -597,7 +597,7 @@ export default function Dashboard() {
           </div>
 
           {/* Card 2: Faturamento por Hora */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[260px] overflow-hidden">
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[306px] overflow-hidden">
             {/* Header padronizado */}
             <div className="flex items-center gap-3 mb-4">
               <div className="h-10 w-10 rounded-xl bg-rose-100 dark:bg-rose-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
