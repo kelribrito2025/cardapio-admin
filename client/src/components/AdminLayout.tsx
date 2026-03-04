@@ -238,19 +238,26 @@ function AvgPrepTimeButton({ establishmentId }: { establishmentId?: number }) {
 
   return (
     <>
-      <button
-        onClick={() => setPrepSidebarOpen(true)}
-        className={`hidden md:flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-all hover:scale-105 ${isPulsing ? 'animate-pulse' : ''}`}
-        style={{
-          borderRadius: '10px',
-          backgroundColor: color ? `${color}15` : undefined,
-          color: color || undefined,
-          border: `1px solid ${color}30`,
-        }}
-      >
-        <Clock className="h-3.5 w-3.5" style={{ color: color || undefined }} />
-        <span>{avgMin}min</span>
-      </button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={() => setPrepSidebarOpen(true)}
+            className={`hidden md:flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-all hover:scale-105 ${isPulsing ? 'animate-pulse' : ''}`}
+            style={{
+              borderRadius: '10px',
+              backgroundColor: color ? `${color}15` : undefined,
+              color: color || undefined,
+              border: `1px solid ${color}30`,
+            }}
+          >
+            <Clock className="h-3.5 w-3.5" style={{ color: color || undefined }} />
+            <span>{avgMin}min</span>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          Tempo médio de preparo - clique para ver análise detalhada
+        </TooltipContent>
+      </Tooltip>
 
       <Sheet open={prepSidebarOpen} onOpenChange={setPrepSidebarOpen}>
         <SheetContent side="right" className="w-full sm:max-w-[460px] p-0 overflow-hidden flex flex-col bg-white dark:bg-background" hideCloseButton>
@@ -1257,35 +1264,49 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
               {/* Ver Menu Button */}
               {establishment?.menuSlug && (
-                <a
-                  href={`/menu/${establishment.menuSlug}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-xs font-medium transition-colors" style={{borderRadius: '10px'}}
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  <span>Ver menu</span>
-                </a>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <a
+                      href={`/menu/${establishment.menuSlug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-xs font-medium transition-colors" style={{borderRadius: '10px'}}
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      <span>Ver menu</span>
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    Abrir cardápio público em nova aba
+                  </TooltipContent>
+                </Tooltip>
               )}
 
               {/* Badge Trial */}
               {trialInfo?.isTrial && (
                 <Popover>
-                  <PopoverTrigger asChild>
-                    <button
-                      className={cn(
-                        "flex items-center gap-2 px-2 py-1.5 md:px-3 md:py-2 rounded-lg text-xs font-medium transition-colors border",
-                        trialInfo.daysRemaining <= 3
-                          ? "bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 border-red-300 dark:border-red-800/50 animate-pulse"
-                          : "bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/50"
-                      )}
-                      style={{ borderRadius: '10px' }}
-                    >
-                      <Clock className={cn("h-3.5 w-3.5 shrink-0", trialInfo.daysRemaining <= 3 && "text-red-600 dark:text-red-400 animate-pulse")} />
-                      {/* Mobile: apenas ícone | Desktop: texto completo */}
-                      <span className="hidden md:inline">Avaliação gratuita: {trialInfo.daysRemaining} {trialInfo.daysRemaining === 1 ? 'dia' : 'dias'}</span>
-                    </button>
-                  </PopoverTrigger>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <PopoverTrigger asChild>
+                        <button
+                          className={cn(
+                            "flex items-center gap-2 px-2 py-1.5 md:px-3 md:py-2 rounded-lg text-xs font-medium transition-colors border",
+                            trialInfo.daysRemaining <= 3
+                              ? "bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 border-red-300 dark:border-red-800/50 animate-pulse"
+                              : "bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/50"
+                          )}
+                          style={{ borderRadius: '10px' }}
+                        >
+                          <Clock className={cn("h-3.5 w-3.5 shrink-0", trialInfo.daysRemaining <= 3 && "text-red-600 dark:text-red-400 animate-pulse")} />
+                          {/* Mobile: apenas ícone | Desktop: texto completo */}
+                          <span className="hidden md:inline">Avaliação gratuita: {trialInfo.daysRemaining} {trialInfo.daysRemaining === 1 ? 'dia' : 'dias'}</span>
+                        </button>
+                      </PopoverTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      Clique para ver detalhes do seu período de avaliação
+                    </TooltipContent>
+                  </Tooltip>
                   <PopoverContent className="w-72 p-4" align="end">
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">

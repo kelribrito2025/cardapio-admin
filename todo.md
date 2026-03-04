@@ -8119,3 +8119,6 @@
 - [x] Schema: Adicionar campos acceptedAt e readyAt na tabela orders
 - [x] Backend: Atualizar fluxo de mudança de status para registrar acceptedAt e readyAt automaticamente
 - [x] Bug: Corrigir duplo ## no número do pedido em "Pior tempo da semana" na sidebar Tempo de Preparo
+- [x] Top bar: Adicionar tooltip no botão "Avaliação gratuita: X dias"
+- [x] Top bar: Adicionar tooltip no botão "Ver menu"
+- [x] Top bar: Adicionar tooltip no botão de tempo de preparo dos pedidos (3min)
