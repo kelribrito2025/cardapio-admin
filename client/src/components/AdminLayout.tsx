@@ -586,9 +586,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       // Renderizar como item regular (sem submenu)
                       const isActive = location === item.href || (item.href !== '/' && location.startsWith(item.href));
                       const showOrderBadge = item.href === '/pedidos' && newOrdersCount > 0;
-                      return (
+
+                      const linkContent = (
                         <Link
-                          key={item.href}
                           href={item.href}
                           onClick={() => handleNavClick(item.href)}
                           className={cn(
@@ -620,6 +620,21 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           )}
                         </Link>
                       );
+
+                      if (sidebarCollapsed) {
+                        return (
+                          <Tooltip key={item.href} delayDuration={0}>
+                            <TooltipTrigger asChild>
+                              {linkContent}
+                            </TooltipTrigger>
+                            <TooltipContent side="right" className="font-medium">
+                              {item.label}
+                            </TooltipContent>
+                          </Tooltip>
+                        );
+                      }
+
+                      return <div key={item.href}>{linkContent}</div>;
                     }
 
                     const isExpanded = expandedMenus[item.href] || false;

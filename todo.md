@@ -8077,3 +8077,4 @@
 - [x] PDV: Alterar seleção de modalidade de 3 cards separados para um único componente pill/tab sem ícones
 - [x] PDV: Adicionar animação de transição suave (sliding pill) ao seletor de modalidade
 - [x] PDV: Mover seleção de forma de pagamento para botão com ícone ao lado direito do botão Cupom, mesmo estilo outline com ícone vermelho
+- [x] Bug: Tooltip do item 'Pedidos' não aparece no menu lateral minimizado (hover)
