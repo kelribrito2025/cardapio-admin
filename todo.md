@@ -8089,3 +8089,4 @@
 - [x] Dashboard: Pedidos Recentes - itens resumidos (primeiro item + "+X itens")
 - [x] Dashboard: Pedidos Recentes - tempo desde chegada com cor automática (verde/amarelo/vermelho)
 - [x] Dashboard: Pedidos Recentes - pedidos novos sempre no topo da lista
+- [x] Bug: Card Pedidos Recentes mostra ID interno (#990088) em vez do número do pedido formatado (#P23)

@@ -853,7 +853,7 @@ export default function Dashboard() {
                         {/* Linha 1: #Pedido + Status + Valor */}
                         <div className="flex items-center justify-between mb-1.5">
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-sm text-foreground">#{order.id}</span>
+                            <span className="font-semibold text-sm text-foreground">{(order as any).orderNumber?.startsWith('#') ? (order as any).orderNumber : `#${(order as any).orderNumber || order.id}`}</span>
                             <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${sc.bg} ${sc.text}`}>
                               {statusMap[order.status]?.label || order.status}
                             </span>
