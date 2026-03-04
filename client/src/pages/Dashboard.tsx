@@ -17,7 +17,8 @@ import {
   Timer,
   UsersRound,
   Info,
-  BarChart3
+  BarChart3,
+  ArrowRight
 } from "lucide-react";
 import { 
   AreaChart, 
@@ -49,6 +50,13 @@ export default function Dashboard() {
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
   const [period, setPeriod] = useState<'today' | 'week' | 'month'>('today');
+  const [, setTick] = useState(0);
+
+  // Contador em tempo real - atualiza a cada 60s para refresh do tempo de espera
+  useEffect(() => {
+    const interval = setInterval(() => setTick(t => t + 1), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (establishment) {
@@ -775,8 +783,8 @@ export default function Dashboard() {
 
         {/* Recent Orders */}
         <div className="bg-card rounded-xl border border-border/50 flex flex-col">
-          {/* Header padronizado com ícone */}
-          <div className="px-5 pt-5 pb-3">
+          {/* Header padronizado com ícone + botão Ver todos */}
+          <div className="px-5 pt-5 pb-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-orange-100 dark:bg-orange-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
                 <Package className="h-5 w-5 text-orange-600 dark:text-orange-400" />
@@ -786,99 +794,105 @@ export default function Dashboard() {
                 <p className="text-xs text-muted-foreground">Últimos pedidos do estabelecimento</p>
               </div>
             </div>
+            <button
+              onClick={() => navigate('/pedidos')}
+              className="inline-flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
+            >
+              Ver todos
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
           </div>
 
           <div className="px-5 pb-5">
             {ordersLoading ? (
-              <div className="space-y-3">
+              <div className="space-y-0">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="rounded-lg bg-muted/40 p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="skeleton h-4 w-14 rounded" />
-                        <div className="skeleton h-5 w-16 rounded-full" />
-                      </div>
-                      <div className="skeleton h-4 w-16 rounded" />
-                    </div>
-                    <div className="skeleton h-3 w-32 rounded mb-1.5" />
-                    <div className="skeleton h-3 w-12 rounded" />
+                  <div key={i} className="flex items-center gap-3 py-3 border-b border-border/30 last:border-0">
+                    <div className="skeleton h-4 w-10 rounded" />
+                    <div className="skeleton h-5 w-16 rounded-full" />
+                    <div className="skeleton h-4 w-32 rounded flex-1" />
+                    <div className="skeleton h-4 w-14 rounded" />
+                    <div className="skeleton h-4 w-16 rounded" />
                   </div>
                 ))}
               </div>
             ) : recentOrders && recentOrders.length > 0 ? (
-              <div className="space-y-2">
-                {[...recentOrders]
-                  .sort((a, b) => {
-                    // Pedidos novos sempre no topo
+              <div>
+                {/* Cabeçalho da tabela */}
+                <div className="grid grid-cols-[20px_70px_80px_1fr_80px_80px] gap-2 px-2 pb-2 border-b border-border/50">
+                  <span></span>
+                  <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Pedido</span>
+                  <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Status</span>
+                  <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Item</span>
+                  <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Tempo</span>
+                  <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Valor</span>
+                </div>
+
+                {/* Linhas da tabela */}
+                {(() => {
+                  const sortedOrders = [...recentOrders].sort((a, b) => {
                     const statusOrder: Record<string, number> = { new: 0, preparing: 1, ready: 2, out_for_delivery: 3, completed: 4, cancelled: 5 };
                     const aOrder = statusOrder[a.status] ?? 99;
                     const bOrder = statusOrder[b.status] ?? 99;
                     if (aOrder !== bOrder) return aOrder - bOrder;
                     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-                  })
-                  .map((order) => {
-                    // Extrair itens resumidos
+                  });
+                  return sortedOrders.map((order, idx) => {
                     const items = order.items || [];
                     const firstName = (items[0] as any)?.name || (items[0] as any)?.productName || 'Item';
                     const extraCount = items.length - 1;
-                    const itemSummary = extraCount > 0 ? `${firstName} +${extraCount} ${extraCount === 1 ? 'item' : 'itens'}` : firstName;
+                    const itemSummary = extraCount > 0 ? `${firstName} +${extraCount}` : firstName;
 
-                    // Tempo desde a chegada com cor automática
                     const minutesAgo = Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60000);
-                    const timeColor = order.status === 'completed' || order.status === 'cancelled'
+                    const isInactive = order.status === 'completed' || order.status === 'cancelled';
+                    const timeColor = isInactive
                       ? 'text-muted-foreground'
                       : minutesAgo <= 10 ? 'text-emerald-600 dark:text-emerald-400'
                       : minutesAgo <= 25 ? 'text-amber-600 dark:text-amber-400'
                       : 'text-red-600 dark:text-red-400';
-                    const timeBg = order.status === 'completed' || order.status === 'cancelled'
-                      ? ''
-                      : minutesAgo <= 10 ? 'bg-emerald-50 dark:bg-emerald-500/10'
-                      : minutesAgo <= 25 ? 'bg-amber-50 dark:bg-amber-500/10'
-                      : 'bg-red-50 dark:bg-red-500/10';
 
-                    // Cores do badge de status
-                    const statusColors: Record<string, { bg: string; text: string }> = {
-                      new: { bg: 'bg-blue-100 dark:bg-blue-500/20', text: 'text-blue-700 dark:text-blue-300' },
-                      preparing: { bg: 'bg-amber-100 dark:bg-amber-500/20', text: 'text-amber-700 dark:text-amber-300' },
-                      ready: { bg: 'bg-emerald-100 dark:bg-emerald-500/20', text: 'text-emerald-700 dark:text-emerald-300' },
-                      out_for_delivery: { bg: 'bg-purple-100 dark:bg-purple-500/20', text: 'text-purple-700 dark:text-purple-300' },
-                      completed: { bg: 'bg-gray-100 dark:bg-gray-500/20', text: 'text-gray-600 dark:text-gray-400' },
-                      cancelled: { bg: 'bg-red-100 dark:bg-red-500/20', text: 'text-red-700 dark:text-red-300' },
+                    const statusColors: Record<string, { bg: string; text: string; dot: string }> = {
+                      new: { bg: 'bg-blue-100 dark:bg-blue-500/20', text: 'text-blue-700 dark:text-blue-300', dot: 'bg-blue-500' },
+                      preparing: { bg: 'bg-amber-100 dark:bg-amber-500/20', text: 'text-amber-700 dark:text-amber-300', dot: 'bg-amber-500' },
+                      ready: { bg: 'bg-emerald-100 dark:bg-emerald-500/20', text: 'text-emerald-700 dark:text-emerald-300', dot: 'bg-emerald-500' },
+                      out_for_delivery: { bg: 'bg-purple-100 dark:bg-purple-500/20', text: 'text-purple-700 dark:text-purple-300', dot: 'bg-purple-500' },
+                      completed: { bg: 'bg-gray-100 dark:bg-gray-500/20', text: 'text-gray-500 dark:text-gray-400', dot: 'bg-gray-400' },
+                      cancelled: { bg: 'bg-red-100 dark:bg-red-500/20', text: 'text-red-700 dark:text-red-300', dot: 'bg-red-500' },
                     };
+                    const isLast = idx === sortedOrders.length - 1;
                     const sc = statusColors[order.status] || statusColors.completed;
+                    const timeText = minutesAgo < 1 ? 'agora' : minutesAgo < 60 ? `${minutesAgo} min` : `${Math.floor(minutesAgo / 60)}h ${minutesAgo % 60}min`;
 
                     return (
                       <div
                         key={order.id}
-                        className="rounded-lg border border-border/40 p-3 hover:bg-muted/30 transition-colors cursor-pointer"
+                        className="grid grid-cols-[20px_70px_80px_1fr_80px_80px] gap-2 items-center px-2 py-3 border-b border-border/30 last:border-0 hover:bg-muted/30 transition-colors cursor-pointer"
                         onClick={() => navigate(`/pedidos?order=${order.id}`)}
                       >
-                        {/* Linha 1: #Pedido + Status + Valor */}
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-sm text-foreground">{(order as any).orderNumber?.startsWith('#') ? (order as any).orderNumber : `#${(order as any).orderNumber || order.id}`}</span>
-                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${sc.bg} ${sc.text}`}>
-                              {statusMap[order.status]?.label || order.status}
-                            </span>
-                          </div>
-                          <span className="text-sm font-bold text-foreground">
-                            {formatCurrency(Number(order.total))}
-                          </span>
+                        {/* Timeline dot + line */}
+                        <div className="flex flex-col items-center self-stretch py-1">
+                          <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${sc.dot} ring-2 ring-background`} />
+                          {!isLast && <div className="w-0.5 flex-1 bg-border/60 mt-1" />}
                         </div>
-
-                        {/* Linha 2: Itens resumidos + Tempo com cor automática */}
-                        <div className="flex items-center justify-between">
-                          <p className="text-xs text-muted-foreground truncate flex-1 mr-2">
-                            {itemSummary}
-                          </p>
-                          <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-1.5 py-0.5 rounded shrink-0 ${timeBg} ${timeColor}`}>
-                            <Clock className="h-3 w-3" />
-                            {minutesAgo < 1 ? 'agora' : minutesAgo < 60 ? `${minutesAgo} min` : `${Math.floor(minutesAgo / 60)}h ${minutesAgo % 60}min`}
-                          </span>
-                        </div>
+                        <span className="text-sm font-semibold text-foreground">
+                          {(order as any).orderNumber?.startsWith('#') ? (order as any).orderNumber : `#${(order as any).orderNumber || order.id}`}
+                        </span>
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full text-center w-fit ${sc.bg} ${sc.text}`}>
+                          {statusMap[order.status]?.label || order.status}
+                        </span>
+                        <span className="text-xs text-muted-foreground truncate">
+                          {itemSummary}
+                        </span>
+                        <span className={`text-xs font-medium text-right ${timeColor}`}>
+                          {timeText}
+                        </span>
+                        <span className="text-sm font-bold text-foreground text-right">
+                          {formatCurrency(Number(order.total))}
+                        </span>
                       </div>
                     );
-                  })}
+                  });
+                })()}
               </div>
             ) : (
               <EmptyState

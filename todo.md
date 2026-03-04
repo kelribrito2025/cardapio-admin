@@ -8091,4 +8091,10 @@
 - [x] Dashboard: Pedidos Recentes - pedidos novos sempre no topo da lista
 - [x] Bug: Card Pedidos Recentes mostra ID interno (#990088) em vez do número do pedido formatado (#P23)
 - [x] Dashboard: Tornar pedidos clicáveis no card Pedidos Recentes para abrir sidebar de Detalhes do Pedido
-- [x] Dashboard: Pedidos Recentes - mover tempo para mesma linha dos itens (à direita), abaixo do valor
+-- [x] Card Pedidos Recentes: tempo movido para mesma linha dos itens (à direita), abaixo do valor do pedido
+- [x] Adicionar timeline com dots coloridos na lateral esquerda das linhas da tabela do card Pedidos Recentes] Dashboard: Adicionar estilo de timeline vertical ao card Pedidos Recentes com ponto colorido por status e linha conectora
+- [x] Dashboard: Redesenhar card Pedidos Recentes com layout de tabela (Pedido, Status, Item, Tempo, Valor)
+- [x] Dashboard: Adicionar botão "Ver todos" no header do card Pedidos Recentes
+- [x] Dashboard: Implementar contador em tempo real no tempo de espera (atualiza a cada minuto)
+- [ ] Dashboard: Limitar card Pedidos Recentes a no máximo 10 pedidos
+- [ ] Dashboard: Remover coluna Status do card Pedidos Recentes (dot colorido da timeline já indica o status)
