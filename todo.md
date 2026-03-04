@@ -8100,3 +8100,4 @@
 - [x] Dashboard: Remover coluna Status do card Pedidos Recentes (dot colorido da timeline já indica o status)
 - [x] Dashboard: Alterar limite de pedidos recentes de 5 para 10 (backend + frontend)
 - [x] Dashboard: Alterar limite de pedidos recentes de 10 para 7
+- [x] Dashboard: Corrigir timeline do card Pedidos Recentes - adicionar linha vertical contínua conectando os dots

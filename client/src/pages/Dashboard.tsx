@@ -827,7 +827,7 @@ export default function Dashboard() {
                   <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Valor</span>
                 </div>
 
-                {/* Linhas da tabela */}
+                {/* Linhas da tabela com timeline */}
                 {(() => {
                   const sortedOrders = [...recentOrders].sort((a, b) => {
                     const statusOrder: Record<string, number> = { new: 0, preparing: 1, ready: 2, out_for_delivery: 3, completed: 4, cancelled: 5 };
@@ -836,58 +836,68 @@ export default function Dashboard() {
                     if (aOrder !== bOrder) return aOrder - bOrder;
                     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
                   });
-                  return sortedOrders.slice(0, 7).map((order, idx) => {
-                    const items = order.items || [];
-                    const firstName = (items[0] as any)?.name || (items[0] as any)?.productName || 'Item';
-                    const extraCount = items.length - 1;
-                    const itemSummary = extraCount > 0 ? `${firstName} +${extraCount}` : firstName;
+                  const displayOrders = sortedOrders.slice(0, 7);
+                  return (
+                    <div className="relative">
+                      {/* Linha vertical contínua da timeline - do primeiro ao último dot */}
+                      {displayOrders.length > 1 && (
+                        <div 
+                          className="absolute left-[17px] top-[20px] bottom-[20px] w-[2px] bg-border"
+                          style={{ zIndex: 0 }}
+                        />
+                      )}
+                      {displayOrders.map((order, idx) => {
+                        const items = order.items || [];
+                        const firstName = (items[0] as any)?.name || (items[0] as any)?.productName || 'Item';
+                        const extraCount = items.length - 1;
+                        const itemSummary = extraCount > 0 ? `${firstName} +${extraCount}` : firstName;
 
-                    const minutesAgo = Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60000);
-                    const isInactive = order.status === 'completed' || order.status === 'cancelled';
-                    const timeColor = isInactive
-                      ? 'text-muted-foreground'
-                      : minutesAgo <= 10 ? 'text-emerald-600 dark:text-emerald-400'
-                      : minutesAgo <= 25 ? 'text-amber-600 dark:text-amber-400'
-                      : 'text-red-600 dark:text-red-400';
+                        const minutesAgo = Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60000);
+                        const isInactive = order.status === 'completed' || order.status === 'cancelled';
+                        const timeColor = isInactive
+                          ? 'text-muted-foreground'
+                          : minutesAgo <= 10 ? 'text-emerald-600 dark:text-emerald-400'
+                          : minutesAgo <= 25 ? 'text-amber-600 dark:text-amber-400'
+                          : 'text-red-600 dark:text-red-400';
 
-                    const statusColors: Record<string, { bg: string; text: string; dot: string }> = {
-                      new: { bg: 'bg-blue-100 dark:bg-blue-500/20', text: 'text-blue-700 dark:text-blue-300', dot: 'bg-blue-500' },
-                      preparing: { bg: 'bg-amber-100 dark:bg-amber-500/20', text: 'text-amber-700 dark:text-amber-300', dot: 'bg-amber-500' },
-                      ready: { bg: 'bg-emerald-100 dark:bg-emerald-500/20', text: 'text-emerald-700 dark:text-emerald-300', dot: 'bg-emerald-500' },
-                      out_for_delivery: { bg: 'bg-purple-100 dark:bg-purple-500/20', text: 'text-purple-700 dark:text-purple-300', dot: 'bg-purple-500' },
-                      completed: { bg: 'bg-gray-100 dark:bg-gray-500/20', text: 'text-gray-500 dark:text-gray-400', dot: 'bg-gray-400' },
-                      cancelled: { bg: 'bg-red-100 dark:bg-red-500/20', text: 'text-red-700 dark:text-red-300', dot: 'bg-red-500' },
-                    };
-                    const isLast = idx === Math.min(sortedOrders.length, 7) - 1;
-                    const sc = statusColors[order.status] || statusColors.completed;
-                    const timeText = minutesAgo < 1 ? 'agora' : minutesAgo < 60 ? `${minutesAgo} min` : `${Math.floor(minutesAgo / 60)}h ${minutesAgo % 60}min`;
+                        const statusColors: Record<string, { bg: string; text: string; dot: string }> = {
+                          new: { bg: 'bg-blue-100 dark:bg-blue-500/20', text: 'text-blue-700 dark:text-blue-300', dot: 'bg-blue-500' },
+                          preparing: { bg: 'bg-amber-100 dark:bg-amber-500/20', text: 'text-amber-700 dark:text-amber-300', dot: 'bg-amber-500' },
+                          ready: { bg: 'bg-emerald-100 dark:bg-emerald-500/20', text: 'text-emerald-700 dark:text-emerald-300', dot: 'bg-emerald-500' },
+                          out_for_delivery: { bg: 'bg-purple-100 dark:bg-purple-500/20', text: 'text-purple-700 dark:text-purple-300', dot: 'bg-purple-500' },
+                          completed: { bg: 'bg-gray-100 dark:bg-gray-500/20', text: 'text-gray-500 dark:text-gray-400', dot: 'bg-gray-400' },
+                          cancelled: { bg: 'bg-red-100 dark:bg-red-500/20', text: 'text-red-700 dark:text-red-300', dot: 'bg-red-500' },
+                        };
+                        const sc = statusColors[order.status] || statusColors.completed;
+                        const timeText = minutesAgo < 1 ? 'agora' : minutesAgo < 60 ? `${minutesAgo} min` : `${Math.floor(minutesAgo / 60)}h ${minutesAgo % 60}min`;
 
-                    return (
-                      <div
-                        key={order.id}
-                        className="grid grid-cols-[20px_70px_1fr_80px_80px] gap-2 items-center px-2 py-3 border-b border-border/30 last:border-0 hover:bg-muted/30 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/pedidos?order=${order.id}`)}
-                      >
-                        {/* Timeline dot + line */}
-                        <div className="flex flex-col items-center self-stretch py-1">
-                          <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${sc.dot} ring-2 ring-background`} />
-                          {!isLast && <div className="w-0.5 flex-1 bg-border/60 mt-1" />}
-                        </div>
-                        <span className="text-sm font-semibold text-foreground">
-                          {(order as any).orderNumber?.startsWith('#') ? (order as any).orderNumber : `#${(order as any).orderNumber || order.id}`}
-                        </span>
-                        <span className="text-xs text-muted-foreground truncate">
-                          {itemSummary}
-                        </span>
-                        <span className={`text-xs font-medium text-right ${timeColor}`}>
-                          {timeText}
-                        </span>
-                        <span className="text-sm font-bold text-foreground text-right">
-                          {formatCurrency(Number(order.total))}
-                        </span>
-                      </div>
-                    );
-                  });
+                        return (
+                          <div
+                            key={order.id}
+                            className="grid grid-cols-[20px_70px_1fr_80px_80px] gap-2 items-center px-2 py-3 border-b border-border/30 last:border-0 hover:bg-muted/30 transition-colors cursor-pointer relative"
+                            onClick={() => navigate(`/pedidos?order=${order.id}`)}
+                          >
+                            {/* Timeline dot */}
+                            <div className="flex items-center justify-center" style={{ zIndex: 1 }}>
+                              <div className={`w-3 h-3 rounded-full shrink-0 ${sc.dot} ring-[3px] ring-card`} />
+                            </div>
+                            <span className="text-sm font-semibold text-foreground">
+                              {(order as any).orderNumber?.startsWith('#') ? (order as any).orderNumber : `#${(order as any).orderNumber || order.id}`}
+                            </span>
+                            <span className="text-xs text-muted-foreground truncate">
+                              {itemSummary}
+                            </span>
+                            <span className={`text-xs font-medium text-right ${timeColor}`}>
+                              {timeText}
+                            </span>
+                            <span className="text-sm font-bold text-foreground text-right">
+                              {formatCurrency(Number(order.total))}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
                 })()}
               </div>
             ) : (
