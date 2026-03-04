@@ -389,11 +389,11 @@ export default function Dashboard() {
             </div>
             </>
           ) : (
-            <EmptyState
-              icon={Trophy}
-              title="Sem dados"
-              description="Nenhum produto vendido no período"
-            />
+            <div className="flex-1 flex flex-col items-center justify-center gap-1 text-center">
+              <Trophy className="h-8 w-8 text-muted-foreground/30" />
+              <p className="text-sm font-medium text-muted-foreground">Sem dados</p>
+              <p className="text-xs text-muted-foreground/70">Nenhum produto vendido no período</p>
+            </div>
           )}
         </div>
 
@@ -466,11 +466,11 @@ export default function Dashboard() {
                 </div>
               );
             })() : (
-              <EmptyState
-                icon={Truck}
-                title="Sem dados"
-                description="Nenhum pedido no período"
-              />
+              <div className="flex-1 flex flex-col items-center justify-center gap-1 text-center">
+                <Truck className="h-8 w-8 text-muted-foreground/30" />
+                <p className="text-sm font-medium text-muted-foreground">Sem dados</p>
+                <p className="text-xs text-muted-foreground/70">Nenhum pedido no período</p>
+              </div>
             )}
           </div>
 

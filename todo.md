@@ -8072,3 +8072,4 @@
 - [x] Card Faturamento por Hora: criar novo card com gráfico de linha suave (line chart) abaixo do Tempo Médio
 - [x] Backend: criar endpoint para faturamento por hora do dia
 - [x] Cards Dashboard: definir alturas fixas para consistência independente do período selecionado (Modalidade=Tempo Médio=196px, Clientes=Faturamento=306px)
+- [x] Card Pedidos por Modalidade: corrigir empty state para caber na altura fixa de 196px
