@@ -1108,17 +1108,29 @@ export default function PDV() {
           <div className="w-96 border-l border-border/50 bg-muted/30 flex flex-col">
             {/* Header do Carrinho */}
             <div className="p-4 border-b border-border/50 bg-card">
-              {/* Tipo de Pedido - Pill selector (mesmo estilo do seletor de período da Dashboard) */}
-              <div className="flex items-center gap-1 bg-muted rounded-xl p-1">
+              {/* Tipo de Pedido - Pill selector com sliding animation */}
+              <div className="relative flex items-center bg-muted rounded-xl p-1">
+                {/* Sliding pill indicator */}
+                <div
+                  className="absolute top-1 bottom-1 rounded-lg bg-red-500 shadow-sm transition-all duration-300 ease-in-out"
+                  style={{
+                    width: 'calc((100% - 8px) / 3)',
+                    left: orderType === "mesa"
+                      ? '4px'
+                      : orderType === "retirada"
+                        ? 'calc((100% - 8px) / 3 + 4px)'
+                        : 'calc(2 * (100% - 8px) / 3 + 4px)',
+                  }}
+                />
                 <button
                   onClick={() => {
                     setOrderType("mesa");
                     setPaymentMethod(null);
                   }}
                   className={cn(
-                    "flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+                    "relative z-10 flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-300",
                     orderType === "mesa"
-                      ? "bg-card text-foreground shadow-sm"
+                      ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -1130,9 +1142,9 @@ export default function PDV() {
                     setPaymentMethod(null);
                   }}
                   className={cn(
-                    "flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+                    "relative z-10 flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-300",
                     orderType === "retirada"
-                      ? "bg-card text-foreground shadow-sm"
+                      ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -1146,9 +1158,9 @@ export default function PDV() {
                     setShowDeliverySidebar(true);
                   }}
                   className={cn(
-                    "flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+                    "relative z-10 flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-300",
                     orderType === "entrega"
-                      ? "bg-card text-foreground shadow-sm"
+                      ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
