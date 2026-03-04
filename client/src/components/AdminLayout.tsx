@@ -37,6 +37,7 @@ import {
   Star,
   BookOpen,
   Bike,
+  Calendar,
   CalendarClock,
   BadgeDollarSign,
   Bot,
@@ -156,18 +157,41 @@ const dayNameMap: Record<string, string> = {
   'Thursday': 'Qui', 'Friday': 'Sex', 'Saturday': 'Sáb', 'Sunday': 'Dom',
 };
 
+const prepPeriodOptions = [
+  { value: 'today' as const, label: 'Hoje' },
+  { value: 'week' as const, label: 'Esta semana' },
+  { value: 'month' as const, label: 'Este mês' },
+];
+
 function AvgPrepTimeButton({ establishmentId }: { establishmentId?: number }) {
   const [prepSidebarOpen, setPrepSidebarOpen] = useState(false);
   const [goalValue, setGoalValue] = useState<number>(30);
   const [goalChanged, setGoalChanged] = useState(false);
+  const [prepPeriod, setPrepPeriod] = useState<'today' | 'week' | 'month'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('dashboardPeriod');
+      if (saved === 'today' || saved === 'week' || saved === 'month') return saved;
+    }
+    return 'week';
+  });
+
+  // Sincronizar com localStorage quando a sidebar abre
+  useEffect(() => {
+    if (prepSidebarOpen) {
+      const saved = localStorage.getItem('dashboardPeriod');
+      if (saved === 'today' || saved === 'week' || saved === 'month') {
+        setPrepPeriod(saved);
+      }
+    }
+  }, [prepSidebarOpen]);
 
   const { data } = trpc.dashboard.avgPrepTime.useQuery(
-    { establishmentId: establishmentId || 0, period: 'today' },
+    { establishmentId: establishmentId || 0, period: prepPeriod },
     { enabled: !!establishmentId, refetchInterval: 300000, staleTime: 120000 }
   );
 
   const { data: analysis, refetch: refetchAnalysis } = trpc.dashboard.prepTimeAnalysis.useQuery(
-    { establishmentId: establishmentId || 0 },
+    { establishmentId: establishmentId || 0, period: prepPeriod },
     { enabled: !!establishmentId && prepSidebarOpen, staleTime: 60000 }
   );
 
@@ -234,11 +258,30 @@ function AvgPrepTimeButton({ establishmentId }: { establishmentId?: number }) {
           <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
             <div>
               <SheetTitle className="text-lg font-bold">Tempo de preparo dos pedidos</SheetTitle>
-              <SheetDescription className="text-sm text-muted-foreground">Análise dos últimos 7 dias</SheetDescription>
+              <SheetDescription className="text-sm text-muted-foreground">
+                {prepPeriod === 'today' ? 'Análise de hoje' : prepPeriod === 'week' ? 'Análise desta semana' : 'Análise deste mês'}
+              </SheetDescription>
             </div>
-            <button onClick={() => setPrepSidebarOpen(false)} className="rounded-lg p-2 hover:bg-muted transition-colors">
-              <X className="h-4 w-4" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-muted hover:bg-muted/80 transition-colors">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {prepPeriodOptions.find(o => o.value === prepPeriod)?.label}
+                  <ChevronDown className="h-3 w-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40 rounded-xl shadow-elevated border-border/50">
+                {prepPeriodOptions.map(opt => (
+                  <DropdownMenuItem
+                    key={opt.value}
+                    onClick={() => setPrepPeriod(opt.value)}
+                    className={`text-sm cursor-pointer ${prepPeriod === opt.value ? 'font-bold text-primary' : ''}`}
+                  >
+                    {opt.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Scrollable content */}

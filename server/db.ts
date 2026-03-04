@@ -11421,15 +11421,20 @@ export async function processOrderNotificationInBackground(
 
 // ============ PREP TIME ANALYSIS (MODAL) ============
 
-export async function getPrepTimeAnalysis(establishmentId: number) {
+export async function getPrepTimeAnalysis(establishmentId: number, period: 'today' | 'week' | 'month' = 'week') {
   const db = await getDb();
   if (!db) return null;
 
   const tz = await getEstablishmentTimezone(establishmentId);
   const localNow = getLocalDate(tz);
   
-  const sevenDaysAgo = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - 7);
-  const sevenDaysAgoStr = fmtLocalDateTime(sevenDaysAgo);
+  // Calcular período baseado no filtro
+  let daysBack = 7;
+  if (period === 'today') daysBack = 1;
+  else if (period === 'month') daysBack = 30;
+  
+  const periodStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysBack);
+  const sevenDaysAgoStr = fmtLocalDateTime(periodStart);
   const yesterday = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - 1);
   const yesterdayStr = fmtLocalDateTime(yesterday);
   const todayStr = fmtLocalDateTime(new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate()));

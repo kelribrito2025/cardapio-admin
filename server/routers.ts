@@ -1319,9 +1319,9 @@ export const appRouter = router({
       }),
 
     prepTimeAnalysis: protectedProcedure
-      .input(z.object({ establishmentId: z.number() }))
+      .input(z.object({ establishmentId: z.number(), period: z.enum(['today', 'week', 'month']).optional() }))
       .query(async ({ input }) => {
-        return db.getPrepTimeAnalysis(input.establishmentId);
+        return db.getPrepTimeAnalysis(input.establishmentId, input.period ?? 'week');
       }),
 
     updatePrepGoal: protectedProcedure

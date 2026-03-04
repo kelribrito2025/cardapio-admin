@@ -50,7 +50,17 @@ export default function Dashboard() {
   const [, navigate] = useLocation();
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
-  const [period, setPeriod] = useState<'today' | 'week' | 'month'>('today');
+  const [period, setPeriodState] = useState<'today' | 'week' | 'month'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('dashboardPeriod');
+      if (saved === 'today' || saved === 'week' || saved === 'month') return saved;
+    }
+    return 'today';
+  });
+  const setPeriod = (p: 'today' | 'week' | 'month') => {
+    setPeriodState(p);
+    localStorage.setItem('dashboardPeriod', p);
+  };
   const [weeklyPeriod, setWeeklyPeriod] = useState<7 | 14 | 30>(7);
   const [, setTick] = useState(0);
 

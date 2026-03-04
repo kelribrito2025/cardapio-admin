@@ -8111,3 +8111,6 @@
 - [x] Card Pedidos: Adicionar filtro de período (7 dias, 14 dias, 30 dias) para análise flexível
 - [x] Card Pedidos: Incluir comparação visual lado a lado com período anterior no gráfico
 - [x] Backend: Endpoint flexível com parâmetro de período e dados do período anterior para comparação
+- [x] Sidebar Tempo de Preparo: Remover botão de fechar (X) e substituir por dropdown de filtro
+- [x] Sidebar Tempo de Preparo: Dropdown com mesmos filtros da Dashboard (Hoje, Esta semana, Este mês)
+- [x] Sidebar Tempo de Preparo: Sincronizar filtro com o filtro selecionado na Dashboard
