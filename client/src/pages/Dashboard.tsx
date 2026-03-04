@@ -400,7 +400,7 @@ export default function Dashboard() {
         {/* Coluna do meio: Pedidos por Modalidade + Clientes */}
         <div className="flex flex-col gap-6">
           {/* Pedidos por Modalidade */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[196px] overflow-hidden">
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[260px] overflow-hidden">
             {/* Header igual ao WeeklyRevenueCard */}
             <div className="flex items-center gap-3 mb-5">
               <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -475,7 +475,7 @@ export default function Dashboard() {
           </div>
 
           {/* Clientes Recorrentes vs Novos */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[306px] overflow-hidden">
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[260px] overflow-hidden">
             {/* Header */}
             <div className="flex items-center gap-3 mb-5">
               <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -551,7 +551,7 @@ export default function Dashboard() {
         {/* Coluna direita: Tempo Médio + Faturamento por Hora */}
         <div className="flex flex-col gap-6">
           {/* Card 1: Tempo Médio */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 pb-6 flex flex-col h-[196px] overflow-hidden">
+          <div className="bg-card rounded-xl border border-border/50 p-5 pb-6 flex flex-col h-[260px] overflow-hidden">
             {/* Header padronizado */}
             <div className="flex items-center gap-3 mb-3">
               <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -597,7 +597,7 @@ export default function Dashboard() {
           </div>
 
           {/* Card 2: Faturamento por Hora */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[306px] overflow-hidden">
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[260px] overflow-hidden">
             {/* Header padronizado */}
             <div className="flex items-center gap-3 mb-4">
               <div className="h-10 w-10 rounded-xl bg-rose-100 dark:bg-rose-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
