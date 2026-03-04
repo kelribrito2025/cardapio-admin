@@ -8083,3 +8083,9 @@
 - [x] Dashboard: Centralizar verticalmente o sparkline do card Tempo Médio no lado direito
 - [x] Dashboard: Redesenhar card Tempo Médio com KPI numérico moderno (sem ring gauge), número grande + contexto + sparkline à direita
 - [x] Pedidos: Adicionar botão 'Finalizar' ao modal de Entregador responsável para permitir que o atendente finalize o pedido
+- [x] Dashboard: Redesenhar card Pedidos Recentes - header padronizado com ícone, badges coloridos, itens resumidos, valor em destaque, tempo com cor automática
+- [x] Dashboard: Pedidos Recentes - badges de status com cores mais claras e destaque visual
+- [x] Dashboard: Pedidos Recentes - valor do pedido com fonte mais forte
+- [x] Dashboard: Pedidos Recentes - itens resumidos (primeiro item + "+X itens")
+- [x] Dashboard: Pedidos Recentes - tempo desde chegada com cor automática (verde/amarelo/vermelho)
+- [x] Dashboard: Pedidos Recentes - pedidos novos sempre no topo da lista
