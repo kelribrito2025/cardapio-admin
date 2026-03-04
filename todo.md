@@ -8068,3 +8068,7 @@
 - [x] Card Top Produtos: insight de % do faturamento dos top 10 produtos sobre o faturamento total do período
 - [x] Card Top Produtos: alinhar texto de insight horizontalmente com o texto do card Perfil de Clientes
 - [x] Top 10: sistema de cores em degradê baseado no ranking (verde→amarelo→laranja→vermelho)
+- [x] Card Tempo Médio: redesenhar com header padronizado (ícone + título + subtítulo) igual aos outros cards
+- [x] Card Faturamento por Hora: criar novo card com gráfico de linha suave (line chart) abaixo do Tempo Médio
+- [x] Backend: criar endpoint para faturamento por hora do dia
+- [x] Cards Dashboard: definir alturas fixas para consistência independente do período selecionado (Modalidade=Tempo Médio=196px, Clientes=Faturamento=306px)

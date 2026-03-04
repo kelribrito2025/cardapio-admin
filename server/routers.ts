@@ -1317,6 +1317,11 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.getCustomerInsights(input.establishmentId);
       }),
+    revenueByHour: protectedProcedure
+      .input(z.object({ establishmentId: z.number(), period: z.enum(['today', 'week', 'month']).default('today') }))
+      .query(async ({ input }) => {
+        return db.getRevenueByHour(input.establishmentId, input.period);
+      }),
   }),
 
   // ============ STOCK ============

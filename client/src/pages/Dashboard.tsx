@@ -15,7 +15,8 @@ import {
   Truck,
   Timer,
   UsersRound,
-  Info
+  Info,
+  BarChart3
 } from "lucide-react";
 import { 
   AreaChart, 
@@ -23,8 +24,11 @@ import {
   XAxis, 
   YAxis, 
   CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
+  Tooltip as RechartsTooltip, 
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  ReferenceLine
 } from "recharts";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -100,6 +104,11 @@ export default function Dashboard() {
 
   const { data: customerInsights, isLoading: customerInsightsLoading } = trpc.dashboard.customerInsights.useQuery(
     { establishmentId: establishmentId! },
+    { enabled: !!establishmentId }
+  );
+
+  const { data: revenueByHour, isLoading: revenueByHourLoading } = trpc.dashboard.revenueByHour.useQuery(
+    { establishmentId: establishmentId!, period },
     { enabled: !!establishmentId }
   );
 
@@ -391,7 +400,7 @@ export default function Dashboard() {
         {/* Coluna do meio: Pedidos por Modalidade + Clientes */}
         <div className="flex flex-col gap-6">
           {/* Pedidos por Modalidade */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col">
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[196px] overflow-hidden">
             {/* Header igual ao WeeklyRevenueCard */}
             <div className="flex items-center gap-3 mb-5">
               <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -466,7 +475,7 @@ export default function Dashboard() {
           </div>
 
           {/* Clientes Recorrentes vs Novos */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col">
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[306px] overflow-hidden">
             {/* Header */}
             <div className="flex items-center gap-3 mb-5">
               <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -539,38 +548,127 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Tempo Médio */}
-        <SectionCard title="Tempo Médio">
-          {prepTimeLoading ? (
-            <div className="flex items-center justify-center h-48">
-              <div className="skeleton h-32 w-32 rounded-full" />
+        {/* Coluna direita: Tempo Médio + Faturamento por Hora */}
+        <div className="flex flex-col gap-6">
+          {/* Card 1: Tempo Médio */}
+          <div className="bg-card rounded-xl border border-border/50 p-5 pb-6 flex flex-col h-[196px] overflow-hidden">
+            {/* Header padronizado */}
+            <div className="flex items-center gap-3 mb-3">
+              <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                <Timer className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-base font-semibold text-foreground">Tempo Médio</h3>
+                <p className="text-xs text-muted-foreground">Tempo médio do pedido até finalização</p>
+              </div>
             </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-2 py-4">
-              <div className="relative w-32 h-32">
-                <svg viewBox="0 0 36 36" className="w-full h-full">
-                  <circle cx="18" cy="18" r="15.9155" fill="none" stroke="var(--muted)" strokeWidth="2" />
-                  <circle
-                    cx="18" cy="18" r="15.9155"
-                    fill="none"
-                    stroke={avgPrepTime && avgPrepTime.avgMinutes > 0 ? (avgPrepTime.avgMinutes <= 30 ? '#22c55e' : avgPrepTime.avgMinutes <= 60 ? '#f59e0b' : '#ef4444') : 'var(--muted)'}
-                    strokeWidth="2.5"
-                    strokeDasharray={`${Math.min((avgPrepTime?.avgMinutes ?? 0) / 90 * 100, 100)} ${100 - Math.min((avgPrepTime?.avgMinutes ?? 0) / 90 * 100, 100)}`}
-                    strokeLinecap="round"
-                    className="-rotate-90 origin-center transition-all duration-700"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <Timer className="h-4 w-4 text-muted-foreground mb-1" />
-                  <span className="text-3xl font-bold">{avgPrepTime?.avgMinutes ?? 0}</span>
-                  <span className="text-xs text-muted-foreground">min</span>
+
+            {prepTimeLoading ? (
+              <div className="flex items-center justify-center h-24">
+                <div className="skeleton h-20 w-20 rounded-full" />
+              </div>
+            ) : (
+              <div className="flex items-center gap-4">
+                <div className="relative w-20 h-20 flex-shrink-0">
+                  <svg viewBox="0 0 36 36" className="w-full h-full">
+                    <circle cx="18" cy="18" r="15.9155" fill="none" stroke="var(--muted)" strokeWidth="2" />
+                    <circle
+                      cx="18" cy="18" r="15.9155"
+                      fill="none"
+                      stroke={avgPrepTime && avgPrepTime.avgMinutes > 0 ? (avgPrepTime.avgMinutes <= 30 ? '#22c55e' : avgPrepTime.avgMinutes <= 60 ? '#f59e0b' : '#ef4444') : 'var(--muted)'}
+                      strokeWidth="2.5"
+                      strokeDasharray={`${Math.min((avgPrepTime?.avgMinutes ?? 0) / 90 * 100, 100)} ${100 - Math.min((avgPrepTime?.avgMinutes ?? 0) / 90 * 100, 100)}`}
+                      strokeLinecap="round"
+                      className="-rotate-90 origin-center transition-all duration-700"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <Timer className="h-3 w-3 text-muted-foreground mb-0.5" />
+                    <span className="text-xl font-bold">{avgPrepTime?.avgMinutes ?? 0}</span>
+                    <span className="text-[10px] text-muted-foreground">min</span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <p className="text-xs text-muted-foreground">Do pedido até finalizado</p>
+                  <p className="text-[11px] text-muted-foreground/70">{avgPrepTime?.totalOrders ?? 0} pedidos no período</p>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground text-center">Do pedido até finalizado</p>
-              <p className="text-xs text-muted-foreground">{avgPrepTime?.totalOrders ?? 0} pedidos no período</p>
+            )}
+          </div>
+
+          {/* Card 2: Faturamento por Hora */}
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[306px] overflow-hidden">
+            {/* Header padronizado */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-10 w-10 rounded-xl bg-rose-100 dark:bg-rose-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                <BarChart3 className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-base font-semibold text-foreground">Faturamento por Hora</h3>
+                <p className="text-xs text-muted-foreground">Distribuição de vendas ao longo do dia</p>
+              </div>
             </div>
-          )}
-        </SectionCard>
+
+            {revenueByHourLoading ? (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="skeleton h-full w-full rounded-lg" />
+              </div>
+            ) : revenueByHour && revenueByHour.length > 0 ? (
+              <div className="flex-1 min-h-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={revenueByHour.map(d => ({ ...d, label: `${String(d.hour).padStart(2, '0')}:00` }))}>
+                    <defs>
+                      <linearGradient id="revenueLineGrad" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#ef4444" />
+                        <stop offset="100%" stopColor="#f97316" />
+                      </linearGradient>
+                    </defs>
+                    <XAxis 
+                      dataKey="label" 
+                      tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }} 
+                      axisLine={false} 
+                      tickLine={false}
+                    />
+                    <YAxis 
+                      tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }} 
+                      axisLine={false} 
+                      tickLine={false}
+                      tickFormatter={(v: number) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : String(v)}
+                      width={40}
+                    />
+                    {(() => {
+                      const peakHour = revenueByHour.reduce((max, d) => d.revenue > max.revenue ? d : max, revenueByHour[0]);
+                      const peakLabel = `${String(peakHour.hour).padStart(2, '0')}:00`;
+                      return <ReferenceLine x={peakLabel} stroke="rgba(239,68,68,0.15)" strokeWidth={40} />;
+                    })()}
+                    <RechartsTooltip
+                      contentStyle={{
+                        backgroundColor: 'var(--card)',
+                        border: '1px solid var(--border)',
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                        fontSize: '12px'
+                      }}
+                      formatter={(value: number) => [`R$ ${value.toFixed(2)}`, 'Faturamento']}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="revenue" 
+                      stroke="url(#revenueLineGrad)" 
+                      strokeWidth={2.5} 
+                      dot={false}
+                      activeDot={{ r: 4, fill: '#ef4444' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="flex-1 flex items-center justify-center">
+                <p className="text-sm text-muted-foreground">Sem dados de faturamento</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Charts and Recent Orders */}
@@ -604,7 +702,7 @@ export default function Dashboard() {
                     className="text-xs text-muted-foreground"
                     tick={{ fill: 'currentColor' }}
                   />
-                  <Tooltip 
+                  <RechartsTooltip 
                     contentStyle={{ 
                       backgroundColor: 'var(--card)',
                       border: '1px solid var(--border)',

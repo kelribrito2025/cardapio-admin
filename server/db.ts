@@ -2763,6 +2763,52 @@ export async function getCustomerInsights(establishmentId: number) {
   };
 }
 
+export async function getRevenueByHour(establishmentId: number, period: 'today' | 'week' | 'month' = 'today') {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+  const todayLocal = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
+  
+  let startStr: string;
+  if (period === 'today') {
+    startStr = fmtLocalDateTime(todayLocal);
+  } else if (period === 'week') {
+    const weekStart = new Date(todayLocal);
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    startStr = fmtLocalDateTime(weekStart);
+  } else {
+    const monthStart = new Date(todayLocal.getFullYear(), todayLocal.getMonth(), 1);
+    startStr = fmtLocalDateTime(monthStart);
+  }
+  
+  try {
+    const result = await db.select({
+      hour: sql<number>`HOUR(CONVERT_TZ(createdAt, '+00:00', ${tz}))`,
+      revenue: sql<number>`COALESCE(SUM(total), 0)`,
+      orderCount: sql<number>`COUNT(*)`
+    })
+      .from(orders)
+      .where(and(
+        eq(orders.establishmentId, establishmentId),
+        sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${startStr}`,
+        eq(orders.status, 'completed')
+      ))
+      .groupBy(sql`HOUR(CONVERT_TZ(createdAt, '+00:00', ${tz}))`)
+      .orderBy(sql`HOUR(CONVERT_TZ(createdAt, '+00:00', ${tz}))`);
+    
+    return result.map(r => ({
+      hour: Number(r.hour),
+      revenue: Number(r.revenue),
+      orderCount: Number(r.orderCount),
+    }));
+  } catch (e) {
+    console.error('[getRevenueByHour] Failed query:', e);
+    return [];
+  }
+}
+
 export async function getWeeklyStats(establishmentId: number) {
   const db = await getDb();
   if (!db) return [];
