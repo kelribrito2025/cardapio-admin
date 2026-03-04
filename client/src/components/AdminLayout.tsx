@@ -167,6 +167,9 @@ function AvgPrepTimeButton({ establishmentId }: { establishmentId?: number }) {
   const [prepSidebarOpen, setPrepSidebarOpen] = useState(false);
   const [goalValue, setGoalValue] = useState<number>(30);
   const [goalChanged, setGoalChanged] = useState(false);
+  const [prepTooltipDismissed, setPrepTooltipDismissed] = useState(() => 
+    typeof window !== 'undefined' && localStorage.getItem('tooltip_prepTime_clicked') === 'true'
+  );
   const [prepPeriod, setPrepPeriod] = useState<'today' | 'week' | 'month'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('dashboardPeriod');
@@ -238,10 +241,16 @@ function AvgPrepTimeButton({ establishmentId }: { establishmentId?: number }) {
 
   return (
     <>
-      <Tooltip>
+      <Tooltip open={prepTooltipDismissed ? false : undefined}>
         <TooltipTrigger asChild>
           <button
-            onClick={() => setPrepSidebarOpen(true)}
+            onClick={() => {
+              setPrepSidebarOpen(true);
+              if (!prepTooltipDismissed) {
+                setPrepTooltipDismissed(true);
+                localStorage.setItem('tooltip_prepTime_clicked', 'true');
+              }
+            }}
             className={`hidden md:flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-all hover:scale-105 ${isPulsing ? 'animate-pulse' : ''}`}
             style={{
               borderRadius: '10px',
@@ -495,6 +504,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   // Estratégia: usamos uma flag em memória (window.__soundMounted) para distinguir:
   //   - Reload real (F5/refresh): window.__soundMounted não existe → forçar desativado
   //   - Navegação SPA (troca de rota): window.__soundMounted existe → preservar estado
+  // Estados para tooltips que desaparecem após primeiro clique
+  const [menuTooltipDismissed, setMenuTooltipDismissed] = useState(() =>
+    typeof window !== 'undefined' && localStorage.getItem('tooltip_viewMenu_clicked') === 'true'
+  );
+  const [trialTooltipDismissed, setTrialTooltipDismissed] = useState(() =>
+    typeof window !== 'undefined' && localStorage.getItem('tooltip_trial_clicked') === 'true'
+  );
+
   const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
     // Se o componente já foi montado nesta "vida" da página (navegação SPA),
     // preservar o estado atual do localStorage
@@ -1264,12 +1281,18 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
               {/* Ver Menu Button */}
               {establishment?.menuSlug && (
-                <Tooltip>
+                <Tooltip open={menuTooltipDismissed ? false : undefined}>
                   <TooltipTrigger asChild>
                     <a
                       href={`/menu/${establishment.menuSlug}`}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() => {
+                        if (!menuTooltipDismissed) {
+                          setMenuTooltipDismissed(true);
+                          localStorage.setItem('tooltip_viewMenu_clicked', 'true');
+                        }
+                      }}
                       className="flex items-center gap-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-xs font-medium transition-colors" style={{borderRadius: '10px'}}
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
@@ -1285,10 +1308,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               {/* Badge Trial */}
               {trialInfo?.isTrial && (
                 <Popover>
-                  <Tooltip>
+                  <Tooltip open={trialTooltipDismissed ? false : undefined}>
                     <TooltipTrigger asChild>
                       <PopoverTrigger asChild>
                         <button
+                          onClick={() => {
+                            if (!trialTooltipDismissed) {
+                              setTrialTooltipDismissed(true);
+                              localStorage.setItem('tooltip_trial_clicked', 'true');
+                            }
+                          }}
                           className={cn(
                             "flex items-center gap-2 px-2 py-1.5 md:px-3 md:py-2 rounded-lg text-xs font-medium transition-colors border",
                             trialInfo.daysRemaining <= 3

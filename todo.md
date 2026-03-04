@@ -8122,3 +8122,4 @@
 - [x] Top bar: Adicionar tooltip no botão "Avaliação gratuita: X dias"
 - [x] Top bar: Adicionar tooltip no botão "Ver menu"
 - [x] Top bar: Adicionar tooltip no botão de tempo de preparo dos pedidos (3min)
+- [x] Top bar: Tooltips desaparecem após primeiro clique (persistir via localStorage)
