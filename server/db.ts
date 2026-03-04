@@ -2718,6 +2718,84 @@ export async function getAvgPrepTime(establishmentId: number, period: 'today' | 
   };
 }
 
+// ============ DASHBOARD: TEMPO MÉDIO DE PREPARO - TENDÊNCIA ============
+export async function getAvgPrepTimeTrend(establishmentId: number, period: 'today' | 'week' | 'month' = 'today') {
+  const db = await getDb();
+  if (!db) return { trend: [], previousAvg: 0 };
+
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+
+  // Para sparkline: buscar dados dos últimos 7 dias sempre
+  const daysBack = 7;
+  const trendStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysBack);
+  const trendStartStr = fmtLocalDateTime(trendStart);
+
+  // Buscar média por dia nos últimos 7 dias
+  const trendResult: any[] = await db.execute(
+    sql`SELECT 
+      DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz})) as day,
+      AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt})) as avgSeconds,
+      COUNT(*) as totalOrders
+    FROM ${orders}
+    WHERE ${orders.establishmentId} = ${establishmentId}
+      AND ${orders.status} = 'completed'
+      AND ${orders.completedAt} IS NOT NULL
+      AND CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${trendStartStr}
+    GROUP BY DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}))
+    ORDER BY day ASC`
+  );
+
+  const rows = Array.isArray(trendResult) ? (Array.isArray(trendResult[0]) ? trendResult[0] : trendResult) : [];
+  const trend = rows.map((r: any) => ({
+    day: String(r.day),
+    avgMinutes: r.totalOrders > 0 ? Math.round(Number(r.avgSeconds) / 60) : 0,
+    totalOrders: Number(r.totalOrders),
+  }));
+
+  // Calcular média do período anterior para insight de comparação
+  let previousAvg = 0;
+  if (period === 'today' && trend.length >= 2) {
+    // Comparar com ontem
+    const yesterday = trend[trend.length - 2];
+    previousAvg = yesterday?.avgMinutes ?? 0;
+  } else if (period === 'week') {
+    // Comparar com semana anterior (média dos 7 dias antes)
+    const prevWeekStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - 14);
+    const prevWeekEnd = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - 7);
+    const prevStartStr = fmtLocalDateTime(prevWeekStart);
+    const prevEndStr = fmtLocalDateTime(prevWeekEnd);
+    const prevResult = await db.select({
+      avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt}))`,
+    }).from(orders).where(and(
+      eq(orders.establishmentId, establishmentId),
+      eq(orders.status, 'completed'),
+      sql`${orders.completedAt} IS NOT NULL`,
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${prevStartStr}`,
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) < ${prevEndStr}`
+    ));
+    previousAvg = Math.round(Number(prevResult[0]?.avgSeconds ?? 0) / 60);
+  } else if (period === 'month') {
+    // Comparar com mês anterior
+    const prevMonthStart = new Date(localNow.getFullYear(), localNow.getMonth() - 1, 1);
+    const prevMonthEnd = new Date(localNow.getFullYear(), localNow.getMonth(), 1);
+    const prevStartStr = fmtLocalDateTime(prevMonthStart);
+    const prevEndStr = fmtLocalDateTime(prevMonthEnd);
+    const prevResult = await db.select({
+      avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt}))`,
+    }).from(orders).where(and(
+      eq(orders.establishmentId, establishmentId),
+      eq(orders.status, 'completed'),
+      sql`${orders.completedAt} IS NOT NULL`,
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${prevStartStr}`,
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) < ${prevEndStr}`
+    ));
+    previousAvg = Math.round(Number(prevResult[0]?.avgSeconds ?? 0) / 60);
+  }
+
+  return { trend, previousAvg };
+}
+
 // ============ DASHBOARD: CLIENTES RECORRENTES vs NOVOS ============
 export async function getCustomerInsights(establishmentId: number) {
   const db = await getDb();

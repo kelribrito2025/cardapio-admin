@@ -8078,3 +8078,7 @@
 - [x] PDV: Adicionar animação de transição suave (sliding pill) ao seletor de modalidade
 - [x] PDV: Mover seleção de forma de pagamento para botão com ícone ao lado direito do botão Cupom, mesmo estilo outline com ícone vermelho
 - [x] Bug: Tooltip do item 'Pedidos' não aparece no menu lateral minimizado (hover)
+- [x] Dashboard: Adicionar mini gráfico sparkline de tendência ao card Tempo Médio
+- [x] Dashboard: Adicionar texto de insight no card Tempo Médio (ex: "3 min mais rápido que ontem")
+- [x] Dashboard: Centralizar verticalmente o sparkline do card Tempo Médio no lado direito
+- [x] Dashboard: Redesenhar card Tempo Médio com KPI numérico moderno (sem ring gauge), número grande + contexto + sparkline à direita

@@ -1312,6 +1312,12 @@ export const appRouter = router({
         return db.getAvgPrepTime(input.establishmentId, input.period ?? 'today');
       }),
 
+    avgPrepTimeTrend: protectedProcedure
+      .input(z.object({ establishmentId: z.number(), period: z.enum(['today', 'week', 'month']).optional() }))
+      .query(async ({ input }) => {
+        return db.getAvgPrepTimeTrend(input.establishmentId, input.period ?? 'today');
+      }),
+
     customerInsights: protectedProcedure
       .input(z.object({ establishmentId: z.number() }))
       .query(async ({ input }) => {

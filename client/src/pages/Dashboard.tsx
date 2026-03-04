@@ -6,7 +6,8 @@ import { trpc } from "@/lib/trpc";
 import { 
   ShoppingBag, 
   DollarSign, 
-  TrendingUp, 
+  TrendingUp,
+  TrendingDown, 
   Users,
   Clock,
   Package,
@@ -98,6 +99,11 @@ export default function Dashboard() {
   );
 
   const { data: avgPrepTime, isLoading: prepTimeLoading } = trpc.dashboard.avgPrepTime.useQuery(
+    { establishmentId: establishmentId!, period },
+    { enabled: !!establishmentId }
+  );
+
+  const { data: prepTimeTrend } = trpc.dashboard.avgPrepTimeTrend.useQuery(
     { establishmentId: establishmentId!, period },
     { enabled: !!establishmentId }
   );
@@ -551,9 +557,9 @@ export default function Dashboard() {
         {/* Coluna direita: Tempo Médio + Faturamento por Hora */}
         <div className="flex flex-col gap-6">
           {/* Card 1: Tempo Médio */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 pb-6 flex flex-col h-[196px] overflow-hidden">
-            {/* Header padronizado */}
-            <div className="flex items-center gap-3 mb-3">
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[196px] overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-auto">
               <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
                 <Timer className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
@@ -564,34 +570,68 @@ export default function Dashboard() {
             </div>
 
             {prepTimeLoading ? (
-              <div className="flex items-center justify-center h-24">
-                <div className="skeleton h-20 w-20 rounded-full" />
+              <div className="flex items-center justify-center flex-1">
+                <div className="skeleton h-8 w-24 rounded-lg" />
               </div>
             ) : (
-              <div className="flex items-center gap-4">
-                <div className="relative w-20 h-20 flex-shrink-0">
-                  <svg viewBox="0 0 36 36" className="w-full h-full">
-                    <circle cx="18" cy="18" r="15.9155" fill="none" stroke="var(--muted)" strokeWidth="2" />
-                    <circle
-                      cx="18" cy="18" r="15.9155"
-                      fill="none"
-                      stroke={avgPrepTime && avgPrepTime.avgMinutes > 0 ? (avgPrepTime.avgMinutes <= 30 ? '#22c55e' : avgPrepTime.avgMinutes <= 60 ? '#f59e0b' : '#ef4444') : 'var(--muted)'}
-                      strokeWidth="2.5"
-                      strokeDasharray={`${Math.min((avgPrepTime?.avgMinutes ?? 0) / 90 * 100, 100)} ${100 - Math.min((avgPrepTime?.avgMinutes ?? 0) / 90 * 100, 100)}`}
-                      strokeLinecap="round"
-                      className="-rotate-90 origin-center transition-all duration-700"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <Timer className="h-3 w-3 text-muted-foreground mb-0.5" />
-                    <span className="text-xl font-bold">{avgPrepTime?.avgMinutes ?? 0}</span>
-                    <span className="text-[10px] text-muted-foreground">min</span>
+              <div className="flex items-end gap-4 flex-1 min-h-0">
+                {/* Lado esquerdo: KPI numérico + contexto */}
+                <div className="flex flex-col justify-end flex-shrink-0">
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-3xl font-bold tracking-tight text-foreground">{avgPrepTime?.avgMinutes ?? 0}</span>
+                    <span className="text-sm font-medium text-muted-foreground">min</span>
                   </div>
+                  <p className="text-[11px] text-muted-foreground mt-1">{avgPrepTime?.totalOrders ?? 0} pedidos no período</p>
+                  {/* Insight de comparação */}
+                  {(() => {
+                    const current = avgPrepTime?.avgMinutes ?? 0;
+                    const previous = prepTimeTrend?.previousAvg ?? 0;
+                    if (current === 0 || previous === 0) return null;
+                    const diff = previous - current;
+                    const isFaster = diff > 0;
+                    const periodLabel = period === 'today' ? 'que ontem' : period === 'week' ? 'que sem. passada' : 'que mês passado';
+                    return (
+                      <div className={`flex items-center gap-1 mt-1.5 text-[11px] font-medium ${
+                        isFaster 
+                          ? 'text-green-600 dark:text-green-400' 
+                          : 'text-red-600 dark:text-red-400'
+                      }`}>
+                        {isFaster ? (
+                          <TrendingDown className="h-3.5 w-3.5 flex-shrink-0" />
+                        ) : (
+                          <TrendingUp className="h-3.5 w-3.5 flex-shrink-0" />
+                        )}
+                        <span>{Math.abs(diff)} min {isFaster ? 'mais rápido' : 'mais lento'} {periodLabel}</span>
+                      </div>
+                    );
+                  })()}
                 </div>
-                <div className="flex flex-col gap-0.5">
-                  <p className="text-xs text-muted-foreground">Do pedido até finalizado</p>
-                  <p className="text-[11px] text-muted-foreground/70">{avgPrepTime?.totalOrders ?? 0} pedidos no período</p>
-                </div>
+
+                {/* Lado direito: Sparkline de tendência */}
+                {prepTimeTrend?.trend && prepTimeTrend.trend.length >= 2 && (
+                  <div className="flex-1 min-w-0 flex flex-col justify-end pb-1">
+                    <ResponsiveContainer width="100%" height={64}>
+                      <AreaChart data={prepTimeTrend.trend} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
+                        <defs>
+                          <linearGradient id="prepTimeGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.2} />
+                            <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.02} />
+                          </linearGradient>
+                        </defs>
+                        <Area
+                          type="monotone"
+                          dataKey="avgMinutes"
+                          stroke="#3b82f6"
+                          strokeWidth={2}
+                          fill="url(#prepTimeGrad)"
+                          dot={false}
+                          isAnimationActive={true}
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                    <p className="text-[9px] text-muted-foreground/50 text-right mt-0.5">últimos 7 dias</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
