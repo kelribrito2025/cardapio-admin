@@ -170,7 +170,7 @@ export default function Dashboard() {
 
   // Format chart data
   const chartData = weeklyStats?.map((item) => ({
-    date: new Date(item.date).toLocaleDateString("pt-BR", { weekday: "short" }),
+    date: new Date(item.date).toLocaleDateString("pt-BR", { weekday: "long" }),
     pedidos: Number(item.orders),
     faturamento: Number(item.revenue),
   })) || [];
