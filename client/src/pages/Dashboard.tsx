@@ -663,8 +663,10 @@ export default function Dashboard() {
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <p className="text-sm text-muted-foreground">Sem dados de faturamento</p>
+              <div className="flex-1 flex flex-col items-center justify-center gap-1 text-center">
+                <BarChart3 className="h-8 w-8 text-muted-foreground/30" />
+                <p className="text-sm font-medium text-muted-foreground">Sem dados</p>
+                <p className="text-xs text-muted-foreground/70">Nenhum faturamento no período</p>
               </div>
             )}
           </div>
