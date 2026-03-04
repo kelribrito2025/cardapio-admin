@@ -2887,18 +2887,25 @@ export async function getRevenueByHour(establishmentId: number, period: 'today' 
   }
 }
 
-export async function getWeeklyStats(establishmentId: number) {
+export async function getWeeklyStats(establishmentId: number, days: number = 7) {
   const db = await getDb();
-  if (!db) return [];
+  if (!db) return { current: [], previous: [] };
   
   const tz = await getEstablishmentTimezone(establishmentId);
   const localNow = getLocalDate(tz);
   const todayLocal = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate());
-  const sevenDaysAgoLocal = new Date(todayLocal);
-  sevenDaysAgoLocal.setDate(sevenDaysAgoLocal.getDate() - 7);
-  const sevenDaysAgoStr = fmtLocalDateTime(sevenDaysAgoLocal);
   
-  const result = await db.select({
+  // Período atual
+  const periodStartLocal = new Date(todayLocal);
+  periodStartLocal.setDate(periodStartLocal.getDate() - days);
+  const periodStartStr = fmtLocalDateTime(periodStartLocal);
+  
+  // Período anterior (para comparação)
+  const prevPeriodStartLocal = new Date(periodStartLocal);
+  prevPeriodStartLocal.setDate(prevPeriodStartLocal.getDate() - days);
+  const prevPeriodStartStr = fmtLocalDateTime(prevPeriodStartLocal);
+  
+  const current = await db.select({
     date: sql<string>`DATE(CONVERT_TZ(createdAt, '+00:00', ${tz}))`,
     orders: sql<number>`count(*)`,
     revenue: sql<number>`COALESCE(SUM(total), 0)`
@@ -2906,13 +2913,28 @@ export async function getWeeklyStats(establishmentId: number) {
     .from(orders)
     .where(and(
       eq(orders.establishmentId, establishmentId),
-      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${sevenDaysAgoStr}`,
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${periodStartStr}`,
       eq(orders.status, "completed")
     ))
     .groupBy(sql`DATE(CONVERT_TZ(createdAt, '+00:00', ${tz}))`)
     .orderBy(sql`DATE(CONVERT_TZ(createdAt, '+00:00', ${tz}))`);
   
-  return result;
+  const previous = await db.select({
+    date: sql<string>`DATE(CONVERT_TZ(createdAt, '+00:00', ${tz}))`,
+    orders: sql<number>`count(*)`,
+    revenue: sql<number>`COALESCE(SUM(total), 0)`
+  })
+    .from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${prevPeriodStartStr}`,
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) < ${periodStartStr}`,
+      eq(orders.status, "completed")
+    ))
+    .groupBy(sql`DATE(CONVERT_TZ(createdAt, '+00:00', ${tz}))`)
+    .orderBy(sql`DATE(CONVERT_TZ(createdAt, '+00:00', ${tz}))`);
+  
+  return { current, previous };
 }
 
 export async function getRecentOrders(establishmentId: number, limit: number = 7) {

@@ -1262,9 +1262,9 @@ export const appRouter = router({
       }),
     
     weeklyStats: protectedProcedure
-      .input(z.object({ establishmentId: z.number() }))
+      .input(z.object({ establishmentId: z.number(), days: z.number().min(1).max(90).optional() }))
       .query(async ({ input }) => {
-        return db.getWeeklyStats(input.establishmentId);
+        return db.getWeeklyStats(input.establishmentId, input.days ?? 7);
       }),
     
     recentOrders: protectedProcedure

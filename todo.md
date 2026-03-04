@@ -8108,3 +8108,6 @@
 - [x] Card Últimos 7 dias: Adicionar linha horizontal de média semanal no gráfico
 - [x] Card Últimos 7 dias: Padronizar header no mesmo estilo do card Pedidos Recentes (ícone + título + subtítulo)
 - [x] Tempo de Preparo: Converter modal para sidebar deslizante pela direita (estilo detalhes do pedido, 15% mais larga, bg branco)
+- [x] Card Pedidos: Adicionar filtro de período (7 dias, 14 dias, 30 dias) para análise flexível
+- [x] Card Pedidos: Incluir comparação visual lado a lado com período anterior no gráfico
+- [x] Backend: Endpoint flexível com parâmetro de período e dados do período anterior para comparação

@@ -51,6 +51,7 @@ export default function Dashboard() {
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
   const [period, setPeriod] = useState<'today' | 'week' | 'month'>('today');
+  const [weeklyPeriod, setWeeklyPeriod] = useState<7 | 14 | 30>(7);
   const [, setTick] = useState(0);
 
   // Contador em tempo real - atualiza a cada 60s para refresh do tempo de espera
@@ -77,8 +78,13 @@ export default function Dashboard() {
     { enabled: !!establishmentId }
   );
 
+  const weeklyInput = useMemo(() => ({
+    establishmentId: establishmentId!,
+    days: weeklyPeriod,
+  }), [establishmentId, weeklyPeriod]);
+
   const { data: weeklyStats, isLoading: weeklyLoading } = trpc.dashboard.weeklyStats.useQuery(
-    { establishmentId: establishmentId! },
+    weeklyInput,
     { enabled: !!establishmentId }
   );
 
@@ -168,12 +174,18 @@ export default function Dashboard() {
     }).format(value);
   };
 
-  // Format chart data
-  const chartData = weeklyStats?.map((item) => ({
-    date: new Date(item.date).toLocaleDateString("pt-BR", { weekday: "long" }),
+  // Format chart data - período atual com dados do período anterior alinhados por índice
+  const currentData = weeklyStats?.current ?? [];
+  const previousData = weeklyStats?.previous ?? [];
+  const chartData = currentData.map((item, idx) => ({
+    date: new Date(item.date).toLocaleDateString("pt-BR", { weekday: weeklyPeriod <= 7 ? "long" : "short", day: weeklyPeriod > 7 ? "numeric" : undefined, month: weeklyPeriod > 7 ? "short" : undefined }),
     pedidos: Number(item.orders),
     faturamento: Number(item.revenue),
-  })) || [];
+    prevPedidos: idx < previousData.length ? Number(previousData[idx].orders) : undefined,
+  }));
+
+  // Dados do período anterior para comparação de KPIs
+  const prevTotalPedidos = previousData.reduce((sum, d) => sum + Number(d.orders), 0);
 
   // Order status mapping
   const statusMap: Record<string, { label: string; variant: "success" | "warning" | "error" | "info" | "default" }> = {
@@ -726,7 +738,7 @@ export default function Dashboard() {
 
       {/* Charts and Recent Orders */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Chart - Pedidos Últimos 7 dias (analítico) */}
+        {/* Chart - Pedidos por período (analítico) */}
         <div className="bg-card rounded-xl border border-border/50 flex flex-col lg:col-span-2">
           {/* Header padronizado */}
           <div className="px-5 pt-5 pb-3 flex items-center justify-between">
@@ -735,9 +747,25 @@ export default function Dashboard() {
                 <CalendarDays className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-foreground">Pedidos | Últimos 7 dias</h3>
-                <p className="text-xs text-muted-foreground">Análise semanal de pedidos finalizados</p>
+                <h3 className="text-base font-semibold text-foreground">Pedidos | Últimos {weeklyPeriod} dias</h3>
+                <p className="text-xs text-muted-foreground">Análise de pedidos finalizados</p>
               </div>
+            </div>
+            {/* Filtro de período */}
+            <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
+              {([7, 14, 30] as const).map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setWeeklyPeriod(d)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ${
+                    weeklyPeriod === d
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {d}d
+                </button>
+              ))}
             </div>
           </div>
 
@@ -750,13 +778,8 @@ export default function Dashboard() {
               const totalPedidos = chartData.reduce((sum, d) => sum + d.pedidos, 0);
               const mediaDiaria = chartData.length > 0 ? Math.round(totalPedidos / chartData.length) : 0;
               const melhorDia = chartData.length > 0 ? chartData.reduce((best, d) => d.pedidos > best.pedidos ? d : best, chartData[0]) : null;
-              // Variação vs semana anterior (placeholder - seria ideal ter dados da semana anterior)
-              // Por agora calculamos baseado na média
-              const primeiraMet = chartData.slice(0, Math.ceil(chartData.length / 2));
-              const segundaMet = chartData.slice(Math.ceil(chartData.length / 2));
-              const mediaPrimeira = primeiraMet.length > 0 ? primeiraMet.reduce((s, d) => s + d.pedidos, 0) / primeiraMet.length : 0;
-              const mediaSegunda = segundaMet.length > 0 ? segundaMet.reduce((s, d) => s + d.pedidos, 0) / segundaMet.length : 0;
-              const tendencia = mediaPrimeira > 0 ? Math.round(((mediaSegunda - mediaPrimeira) / mediaPrimeira) * 100) : 0;
+              // Variação real vs período anterior
+              const tendencia = prevTotalPedidos > 0 ? Math.round(((totalPedidos - prevTotalPedidos) / prevTotalPedidos) * 100) : (totalPedidos > 0 ? 100 : 0);
 
               return (
                 <>
@@ -764,7 +787,7 @@ export default function Dashboard() {
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     {/* Total de Pedidos */}
                     <div className="bg-muted/30 rounded-xl p-3">
-                      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Total da Semana</p>
+                      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Total do Período</p>
                       <div className="flex items-baseline gap-2">
                         <span className="text-2xl font-bold text-foreground">{totalPedidos}</span>
                         {tendencia !== 0 && (
@@ -775,6 +798,9 @@ export default function Dashboard() {
                         )}
                       </div>
                       <p className="text-[10px] text-muted-foreground mt-0.5">pedidos finalizados</p>
+                      {prevTotalPedidos > 0 && (
+                        <p className="text-[10px] text-muted-foreground/60 mt-0.5">anterior: {prevTotalPedidos}</p>
+                      )}
                     </div>
 
                     {/* Média Diária */}
@@ -844,10 +870,11 @@ export default function Dashboard() {
                               boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                               padding: '10px 14px'
                             }}
-                            formatter={(value: number) => {
+                            formatter={(value: number, name: string) => {
+                              if (name === 'Período anterior') return [`${value} pedidos`, 'Período anterior'];
                               const diff = value - mediaDiaria;
                               const diffText = diff > 0 ? `+${diff} acima da média` : diff < 0 ? `${diff} abaixo da média` : 'na média';
-                              return [`${value} pedidos (${diffText})`, 'Pedidos'];
+                              return [`${value} pedidos (${diffText})`, 'Período atual'];
                             }}
                             labelFormatter={(label: string) => `${label}`}
                           />
@@ -858,10 +885,24 @@ export default function Dashboard() {
                             strokeWidth={2.5}
                             fillOpacity={1}
                             fill="url(#colorPedidos)"
-                            name="Pedidos"
+                            name="Período atual"
                             dot={{ r: 4, fill: 'var(--primary)', strokeWidth: 2, stroke: 'var(--card)' }}
                             activeDot={{ r: 6, fill: 'var(--primary)', strokeWidth: 2, stroke: 'var(--card)' }}
                           />
+                          {chartData.some(d => (d as any).prevPedidos !== undefined) && (
+                            <Area
+                              type="monotone"
+                              dataKey="prevPedidos"
+                              stroke="rgba(156,163,175,0.6)"
+                              strokeWidth={1.5}
+                              strokeDasharray="5 3"
+                              fillOpacity={0}
+                              fill="none"
+                              name="Período anterior"
+                              dot={false}
+                              activeDot={{ r: 4, fill: 'rgba(156,163,175,0.6)', strokeWidth: 1, stroke: 'var(--card)' }}
+                            />
+                          )}
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
