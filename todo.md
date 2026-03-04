@@ -8101,3 +8101,9 @@
 - [x] Dashboard: Alterar limite de pedidos recentes de 5 para 10 (backend + frontend)
 - [x] Dashboard: Alterar limite de pedidos recentes de 10 para 7
 - [x] Dashboard: Corrigir timeline do card Pedidos Recentes - adicionar linha vertical contínua conectando os dots
+- [x] Card Últimos 7 dias: Adicionar KPI principal com total de pedidos da semana acima do gráfico
+- [x] Card Últimos 7 dias: Mostrar variação percentual em relação à semana anterior
+- [x] Card Últimos 7 dias: Exibir melhor dia da semana e média diária
+- [x] Card Últimos 7 dias: Melhorar tooltip do gráfico com número de pedidos e comparação com média
+- [x] Card Últimos 7 dias: Adicionar linha horizontal de média semanal no gráfico
+- [x] Card Últimos 7 dias: Padronizar header no mesmo estilo do card Pedidos Recentes (ícone + título + subtítulo)

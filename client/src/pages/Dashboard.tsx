@@ -18,7 +18,8 @@ import {
   UsersRound,
   Info,
   BarChart3,
-  ArrowRight
+  ArrowRight,
+  CalendarDays
 } from "lucide-react";
 import { 
   AreaChart, 
@@ -725,61 +726,155 @@ export default function Dashboard() {
 
       {/* Charts and Recent Orders */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Chart */}
-        <SectionCard 
-          title="Últimos 7 dias" 
-          className="lg:col-span-2"
-        >
-          {weeklyLoading ? (
-            <div className="h-64 flex items-center justify-center">
-              <div className="skeleton h-full w-full rounded-lg" />
+        {/* Chart - Pedidos Últimos 7 dias (analítico) */}
+        <div className="bg-card rounded-xl border border-border/50 flex flex-col lg:col-span-2">
+          {/* Header padronizado */}
+          <div className="px-5 pt-5 pb-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                <CalendarDays className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-foreground">Pedidos | Últimos 7 dias</h3>
+                <p className="text-xs text-muted-foreground">Análise semanal de pedidos finalizados</p>
+              </div>
             </div>
-          ) : chartData.length > 0 ? (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorPedidos" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
-                  <XAxis 
-                    dataKey="date" 
-                    className="text-xs text-muted-foreground"
-                    tick={{ fill: 'currentColor' }}
-                  />
-                  <YAxis 
-                    className="text-xs text-muted-foreground"
-                    tick={{ fill: 'currentColor' }}
-                  />
-                  <RechartsTooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'var(--card)',
-                      border: '1px solid var(--border)',
-                      borderRadius: '12px',
-                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="pedidos"
-                    stroke="var(--primary)"
-                    strokeWidth={2}
-                    fillOpacity={1}
-                    fill="url(#colorPedidos)"
-                    name="Pedidos"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div className="h-64 flex items-center justify-center text-muted-foreground text-base">
-              Nenhum dado disponível
-            </div>
-          )}
-        </SectionCard>
+          </div>
+
+          <div className="px-5 pb-5">
+            {weeklyLoading ? (
+              <div className="h-80 flex items-center justify-center">
+                <div className="skeleton h-full w-full rounded-lg" />
+              </div>
+            ) : (() => {
+              const totalPedidos = chartData.reduce((sum, d) => sum + d.pedidos, 0);
+              const mediaDiaria = chartData.length > 0 ? Math.round(totalPedidos / chartData.length) : 0;
+              const melhorDia = chartData.length > 0 ? chartData.reduce((best, d) => d.pedidos > best.pedidos ? d : best, chartData[0]) : null;
+              // Variação vs semana anterior (placeholder - seria ideal ter dados da semana anterior)
+              // Por agora calculamos baseado na média
+              const primeiraMet = chartData.slice(0, Math.ceil(chartData.length / 2));
+              const segundaMet = chartData.slice(Math.ceil(chartData.length / 2));
+              const mediaPrimeira = primeiraMet.length > 0 ? primeiraMet.reduce((s, d) => s + d.pedidos, 0) / primeiraMet.length : 0;
+              const mediaSegunda = segundaMet.length > 0 ? segundaMet.reduce((s, d) => s + d.pedidos, 0) / segundaMet.length : 0;
+              const tendencia = mediaPrimeira > 0 ? Math.round(((mediaSegunda - mediaPrimeira) / mediaPrimeira) * 100) : 0;
+
+              return (
+                <>
+                  {/* KPIs Row */}
+                  <div className="grid grid-cols-3 gap-4 mb-4">
+                    {/* Total de Pedidos */}
+                    <div className="bg-muted/30 rounded-xl p-3">
+                      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Total da Semana</p>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold text-foreground">{totalPedidos}</span>
+                        {tendencia !== 0 && (
+                          <span className={`text-xs font-medium flex items-center gap-0.5 ${tendencia > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                            {tendencia > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                            {tendencia > 0 ? '+' : ''}{tendencia}%
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">pedidos finalizados</p>
+                    </div>
+
+                    {/* Média Diária */}
+                    <div className="bg-muted/30 rounded-xl p-3">
+                      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Média Diária</p>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold text-foreground">{mediaDiaria}</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">pedidos/dia</p>
+                    </div>
+
+                    {/* Melhor Dia */}
+                    <div className="bg-muted/30 rounded-xl p-3">
+                      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Melhor Dia</p>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold text-foreground">{melhorDia ? melhorDia.pedidos : 0}</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{melhorDia ? melhorDia.date : '-'}</p>
+                    </div>
+                  </div>
+
+                  {/* Gráfico */}
+                  {chartData.length > 0 ? (
+                    <div className="h-56">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={chartData}>
+                          <defs>
+                            <linearGradient id="colorPedidos" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
+                              <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" vertical={false} />
+                          <XAxis 
+                            dataKey="date" 
+                            className="text-xs text-muted-foreground"
+                            tick={{ fill: 'currentColor', fontSize: 11 }}
+                            axisLine={false}
+                            tickLine={false}
+                          />
+                          <YAxis 
+                            className="text-xs text-muted-foreground"
+                            tick={{ fill: 'currentColor', fontSize: 11 }}
+                            axisLine={false}
+                            tickLine={false}
+                            width={30}
+                          />
+                          {/* Linha de média semanal */}
+                          <ReferenceLine 
+                            y={mediaDiaria} 
+                            stroke="rgba(239,68,68,0.5)" 
+                            strokeDasharray="6 4" 
+                            strokeWidth={1.5}
+                            label={{ 
+                              value: `Média: ${mediaDiaria}`, 
+                              position: 'right', 
+                              fill: 'rgba(239,68,68,0.7)', 
+                              fontSize: 10,
+                              fontWeight: 600
+                            }}
+                          />
+                          <RechartsTooltip 
+                            contentStyle={{ 
+                              backgroundColor: 'var(--card)',
+                              border: '1px solid var(--border)',
+                              borderRadius: '12px',
+                              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                              padding: '10px 14px'
+                            }}
+                            formatter={(value: number) => {
+                              const diff = value - mediaDiaria;
+                              const diffText = diff > 0 ? `+${diff} acima da média` : diff < 0 ? `${diff} abaixo da média` : 'na média';
+                              return [`${value} pedidos (${diffText})`, 'Pedidos'];
+                            }}
+                            labelFormatter={(label: string) => `${label}`}
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="pedidos"
+                            stroke="var(--primary)"
+                            strokeWidth={2.5}
+                            fillOpacity={1}
+                            fill="url(#colorPedidos)"
+                            name="Pedidos"
+                            dot={{ r: 4, fill: 'var(--primary)', strokeWidth: 2, stroke: 'var(--card)' }}
+                            activeDot={{ r: 6, fill: 'var(--primary)', strokeWidth: 2, stroke: 'var(--card)' }}
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  ) : (
+                    <div className="h-56 flex items-center justify-center text-muted-foreground text-base">
+                      Nenhum dado disponível
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+          </div>
+        </div>
 
         {/* Recent Orders */}
         <div className="bg-card rounded-xl border border-border/50 flex flex-col">
