@@ -2602,11 +2602,32 @@ export async function getTopProducts(establishmentId: number, period: 'today' | 
     .orderBy(sql`SUM(${orderItems.quantity}) DESC`)
     .limit(limit);
 
-  return result.map((r) => ({
-    productName: r.productName,
-    totalQuantity: Number(r.totalQuantity),
-    totalRevenue: Number(r.totalRevenue),
-  }));
+  // Faturamento total do período (todos os produtos, não só top)
+  const totalRevenueResult = await db.select({
+    total: sql<number>`COALESCE(SUM(${orderItems.totalPrice}), 0)`,
+  })
+    .from(orderItems)
+    .innerJoin(orders, eq(orderItems.orderId, orders.id))
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      eq(orders.status, 'completed'),
+      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${periodStartStr}`
+    ));
+
+  const totalPeriodRevenue = Number(totalRevenueResult[0]?.total ?? 0);
+  const topProductsRevenue = result.reduce((sum, r) => sum + Number(r.totalRevenue), 0);
+  const topProductsPct = totalPeriodRevenue > 0 ? Math.round((topProductsRevenue / totalPeriodRevenue) * 100) : 0;
+
+  return {
+    products: result.map((r) => ({
+      productName: r.productName,
+      totalQuantity: Number(r.totalQuantity),
+      totalRevenue: Number(r.totalRevenue),
+    })),
+    totalPeriodRevenue,
+    topProductsRevenue,
+    topProductsPct,
+  };
 }
 
 // ============ DASHBOARD: PEDIDOS POR MODALIDADE ============

@@ -296,11 +296,13 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
-          ) : topProducts && topProducts.length > 0 ? (
+          ) : topProducts && topProducts.products && topProducts.products.length > 0 ? (
+            <>
             <div className="space-y-4 overflow-y-auto pr-1" style={{ maxHeight: '365px', scrollbarGutter: 'stable', paddingBottom: '4px' }}>
               {(() => {
-                const maxQty = topProducts[0]?.totalQuantity || 1;
-                const totalRevenue = topProducts.reduce((sum, p) => sum + p.totalRevenue, 0);
+                const products = topProducts.products;
+                const maxQty = products[0]?.totalQuantity || 1;
+                const totalRevenue = products.reduce((sum, p) => sum + p.totalRevenue, 0);
                 const barColors = [
                   'bg-amber-500',
                   'bg-orange-500',
@@ -313,7 +315,7 @@ export default function Dashboard() {
                   'bg-indigo-400',
                   'bg-blue-400',
                 ];
-                return topProducts.slice(0, 10).map((product, index) => {
+                return products.slice(0, 10).map((product, index) => {
                   const pct = (product.totalQuantity / maxQty) * 100;
                   const revPct = totalRevenue > 0 ? Math.round((product.totalRevenue / totalRevenue) * 100) : 0;
                   const barColor = barColors[index] || 'bg-gray-400';
@@ -359,6 +361,13 @@ export default function Dashboard() {
                 });
               })()}
             </div>
+            {/* Insight: % do faturamento dos top 10 */}
+            {topProducts.totalPeriodRevenue > 0 ? (
+              <p className="text-[11px] text-muted-foreground/70 px-0 py-3">Os {topProducts.products.length} produtos mais vendidos representam {topProducts.topProductsPct}% do faturamento do período</p>
+            ) : (
+              <p className="text-[11px] text-muted-foreground/70 px-0 py-3">Não há métricas suficientes para o cálculo</p>
+            )}
+            </>
           ) : (
             <EmptyState
               icon={Trophy}
