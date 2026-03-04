@@ -8096,5 +8096,5 @@
 - [x] Dashboard: Redesenhar card Pedidos Recentes com layout de tabela (Pedido, Status, Item, Tempo, Valor)
 - [x] Dashboard: Adicionar botão "Ver todos" no header do card Pedidos Recentes
 - [x] Dashboard: Implementar contador em tempo real no tempo de espera (atualiza a cada minuto)
-- [ ] Dashboard: Limitar card Pedidos Recentes a no máximo 10 pedidos
-- [ ] Dashboard: Remover coluna Status do card Pedidos Recentes (dot colorido da timeline já indica o status)
+- [x] Dashboard: Limitar card Pedidos Recentes a no máximo 10 pedidos
+- [x] Dashboard: Remover coluna Status do card Pedidos Recentes (dot colorido da timeline já indica o status)

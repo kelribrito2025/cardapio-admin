@@ -819,10 +819,9 @@ export default function Dashboard() {
             ) : recentOrders && recentOrders.length > 0 ? (
               <div>
                 {/* Cabeçalho da tabela */}
-                <div className="grid grid-cols-[20px_70px_80px_1fr_80px_80px] gap-2 px-2 pb-2 border-b border-border/50">
+                <div className="grid grid-cols-[20px_70px_1fr_80px_80px] gap-2 px-2 pb-2 border-b border-border/50">
                   <span></span>
                   <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Pedido</span>
-                  <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Status</span>
                   <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Item</span>
                   <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Tempo</span>
                   <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Valor</span>
@@ -837,7 +836,7 @@ export default function Dashboard() {
                     if (aOrder !== bOrder) return aOrder - bOrder;
                     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
                   });
-                  return sortedOrders.map((order, idx) => {
+                  return sortedOrders.slice(0, 10).map((order, idx) => {
                     const items = order.items || [];
                     const firstName = (items[0] as any)?.name || (items[0] as any)?.productName || 'Item';
                     const extraCount = items.length - 1;
@@ -859,14 +858,14 @@ export default function Dashboard() {
                       completed: { bg: 'bg-gray-100 dark:bg-gray-500/20', text: 'text-gray-500 dark:text-gray-400', dot: 'bg-gray-400' },
                       cancelled: { bg: 'bg-red-100 dark:bg-red-500/20', text: 'text-red-700 dark:text-red-300', dot: 'bg-red-500' },
                     };
-                    const isLast = idx === sortedOrders.length - 1;
+                    const isLast = idx === Math.min(sortedOrders.length, 10) - 1;
                     const sc = statusColors[order.status] || statusColors.completed;
                     const timeText = minutesAgo < 1 ? 'agora' : minutesAgo < 60 ? `${minutesAgo} min` : `${Math.floor(minutesAgo / 60)}h ${minutesAgo % 60}min`;
 
                     return (
                       <div
                         key={order.id}
-                        className="grid grid-cols-[20px_70px_80px_1fr_80px_80px] gap-2 items-center px-2 py-3 border-b border-border/30 last:border-0 hover:bg-muted/30 transition-colors cursor-pointer"
+                        className="grid grid-cols-[20px_70px_1fr_80px_80px] gap-2 items-center px-2 py-3 border-b border-border/30 last:border-0 hover:bg-muted/30 transition-colors cursor-pointer"
                         onClick={() => navigate(`/pedidos?order=${order.id}`)}
                       >
                         {/* Timeline dot + line */}
@@ -876,9 +875,6 @@ export default function Dashboard() {
                         </div>
                         <span className="text-sm font-semibold text-foreground">
                           {(order as any).orderNumber?.startsWith('#') ? (order as any).orderNumber : `#${(order as any).orderNumber || order.id}`}
-                        </span>
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full text-center w-fit ${sc.bg} ${sc.text}`}>
-                          {statusMap[order.status]?.label || order.status}
                         </span>
                         <span className="text-xs text-muted-foreground truncate">
                           {itemSummary}
