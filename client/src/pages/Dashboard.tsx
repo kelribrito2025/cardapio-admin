@@ -308,7 +308,7 @@ export default function Dashboard() {
             </div>
           ) : topProducts && topProducts.products && topProducts.products.length > 0 ? (
             <>
-            <div className="space-y-4 overflow-y-auto pr-1" style={{ maxHeight: '365px', scrollbarGutter: 'stable', paddingBottom: '4px' }}>
+            <div className="space-y-2 overflow-y-auto pr-1" style={{ maxHeight: '365px', scrollbarGutter: 'stable', paddingBottom: '4px' }}>
               {(() => {
                 const products = topProducts.products;
                 const maxQty = products[0]?.totalQuantity || 1;
@@ -339,9 +339,9 @@ export default function Dashboard() {
                   const barColorStyle = getRankColor(index, Math.min(products.length, 10));
                   return (
                     <div key={product.productName} className="group relative">
-                      <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center justify-between mb-0.5">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-foreground">{product.productName}</span>
+                          <span className="text-xs font-medium text-foreground">{product.productName}</span>
                           <span className="text-xs text-muted-foreground">({product.totalQuantity}x)</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -349,7 +349,7 @@ export default function Dashboard() {
                           <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">{revPct}%</span>
                         </div>
                       </div>
-                      <div className="h-3 bg-muted rounded-full overflow-hidden cursor-pointer">
+                      <div className="h-2 bg-muted rounded-full overflow-hidden cursor-pointer">
                         <div
                           className="h-full rounded-full transition-all duration-500"
                           style={{ width: `${Math.max(3, pct)}%`, backgroundColor: barColorStyle }}
