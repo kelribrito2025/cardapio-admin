@@ -8123,3 +8123,4 @@
 - [x] Top bar: Adicionar tooltip no botão "Ver menu"
 - [x] Top bar: Adicionar tooltip no botão de tempo de preparo dos pedidos (3min)
 - [x] Top bar: Tooltips desaparecem após primeiro clique (persistir via localStorage)
+- [x] Top bar: Aumentar largura do campo de busca em 20%
