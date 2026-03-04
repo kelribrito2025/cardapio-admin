@@ -379,14 +379,14 @@ export default function Dashboard() {
                 });
               })()}
             </div>
-            {/* Insight: % do faturamento dos top 10 */}
-            <div className="mt-auto">
+            {/* Insight: % do faturamento dos top 10 (oculto temporariamente) */}
+            {/* <div className="mt-auto">
             {topProducts.totalPeriodRevenue > 0 ? (
               <p className="text-[11px] px-0 py-3 flex items-center gap-1"><Info className="h-3 w-3 text-muted-foreground/50 flex-shrink-0" /><span className="text-shimmer">Seus {topProducts.products.length} produtos líderes representam {topProducts.topProductsPct}% do faturamento do período</span></p>
             ) : (
               <p className="text-[11px] text-muted-foreground/70 px-0 py-3">Não há métricas suficientes para o cálculo</p>
             )}
-            </div>
+            </div> */}
             </>
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center gap-1 text-center">
@@ -540,8 +540,8 @@ export default function Dashboard() {
                       />
                     ))}
                   </div>
-                  {/* Total de clientes */}
-                  <p className="text-[11px] text-muted-foreground/70 mt-auto pt-2">{customerInsights?.totalCustomers ?? 0} clientes únicos no período</p>
+                  {/* Total de clientes (oculto temporariamente) */}
+                  {/* <p className="text-[11px] text-muted-foreground/70 mt-auto pt-2">{customerInsights?.totalCustomers ?? 0} clientes únicos no período</p> */}
                 </div>
               );
             })()}
