@@ -8107,3 +8107,4 @@
 - [x] Card Últimos 7 dias: Melhorar tooltip do gráfico com número de pedidos e comparação com média
 - [x] Card Últimos 7 dias: Adicionar linha horizontal de média semanal no gráfico
 - [x] Card Últimos 7 dias: Padronizar header no mesmo estilo do card Pedidos Recentes (ícone + título + subtítulo)
+- [x] Tempo de Preparo: Converter modal para sidebar deslizante pela direita (estilo detalhes do pedido, 15% mais larga, bg branco)
