@@ -8074,3 +8074,4 @@
 - [x] Cards Dashboard: definir alturas fixas para consistência independente do período selecionado (Modalidade=Tempo Médio=196px, Clientes=Faturamento=306px)
 - [x] Card Pedidos por Modalidade: corrigir empty state para caber na altura fixa de 196px
 - [x] Card Faturamento por Hora: adicionar ícone ao empty state para seguir o mesmo padrão dos outros cards
+- [x] PDV: Alterar seleção de modalidade de 3 cards separados para um único componente pill/tab sem ícones
