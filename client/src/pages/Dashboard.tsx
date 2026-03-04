@@ -34,6 +34,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { useLocation } from "wouter";
 import { Calendar, LayoutDashboard } from "lucide-react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
 
@@ -44,6 +45,7 @@ const periodOptions = [
 ];
 
 export default function Dashboard() {
+  const [, navigate] = useLocation();
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
   const [period, setPeriod] = useState<'today' | 'week' | 'month'>('today');
@@ -848,7 +850,8 @@ export default function Dashboard() {
                     return (
                       <div
                         key={order.id}
-                        className="rounded-lg border border-border/40 p-3 hover:bg-muted/30 transition-colors"
+                        className="rounded-lg border border-border/40 p-3 hover:bg-muted/30 transition-colors cursor-pointer"
+                        onClick={() => navigate(`/pedidos?order=${order.id}`)}
                       >
                         {/* Linha 1: #Pedido + Status + Valor */}
                         <div className="flex items-center justify-between mb-1.5">

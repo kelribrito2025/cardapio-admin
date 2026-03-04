@@ -205,6 +205,20 @@ export default function Pedidos() {
   const { data: establishment, isLoading: establishmentLoading } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
+
+  // Detectar query param ?order=ID para abrir sidebar automaticamente (vindo do Dashboard)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const orderParam = params.get('order');
+    if (orderParam) {
+      const orderId = parseInt(orderParam, 10);
+      if (!isNaN(orderId)) {
+        setSelectedOrder(orderId);
+      }
+      // Limpar o query param da URL sem recarregar
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState<number | null>(null);
   const [cancellationReason, setCancellationReason] = useState("");
