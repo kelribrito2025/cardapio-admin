@@ -2915,7 +2915,7 @@ export async function getWeeklyStats(establishmentId: number) {
   return result;
 }
 
-export async function getRecentOrders(establishmentId: number, limit: number = 5) {
+export async function getRecentOrders(establishmentId: number, limit: number = 7) {
   const db = await getDb();
   if (!db) return [];
   

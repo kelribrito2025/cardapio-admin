@@ -82,7 +82,7 @@ export default function Dashboard() {
   );
 
   const { data: recentOrders, isLoading: ordersLoading, refetch: refetchRecentOrders } = trpc.dashboard.recentOrders.useQuery(
-    { establishmentId: establishmentId!, limit: 5 },
+    { establishmentId: establishmentId!, limit: 7 },
     { enabled: !!establishmentId }
   );
 
@@ -836,7 +836,7 @@ export default function Dashboard() {
                     if (aOrder !== bOrder) return aOrder - bOrder;
                     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
                   });
-                  return sortedOrders.slice(0, 10).map((order, idx) => {
+                  return sortedOrders.slice(0, 7).map((order, idx) => {
                     const items = order.items || [];
                     const firstName = (items[0] as any)?.name || (items[0] as any)?.productName || 'Item';
                     const extraCount = items.length - 1;
@@ -858,7 +858,7 @@ export default function Dashboard() {
                       completed: { bg: 'bg-gray-100 dark:bg-gray-500/20', text: 'text-gray-500 dark:text-gray-400', dot: 'bg-gray-400' },
                       cancelled: { bg: 'bg-red-100 dark:bg-red-500/20', text: 'text-red-700 dark:text-red-300', dot: 'bg-red-500' },
                     };
-                    const isLast = idx === Math.min(sortedOrders.length, 10) - 1;
+                    const isLast = idx === Math.min(sortedOrders.length, 7) - 1;
                     const sc = statusColors[order.status] || statusColors.completed;
                     const timeText = minutesAgo < 1 ? 'agora' : minutesAgo < 60 ? `${minutesAgo} min` : `${Math.floor(minutesAgo / 60)}h ${minutesAgo % 60}min`;
 

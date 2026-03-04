@@ -8098,3 +8098,5 @@
 - [x] Dashboard: Implementar contador em tempo real no tempo de espera (atualiza a cada minuto)
 - [x] Dashboard: Limitar card Pedidos Recentes a no máximo 10 pedidos
 - [x] Dashboard: Remover coluna Status do card Pedidos Recentes (dot colorido da timeline já indica o status)
+- [x] Dashboard: Alterar limite de pedidos recentes de 5 para 10 (backend + frontend)
+- [x] Dashboard: Alterar limite de pedidos recentes de 10 para 7
