@@ -280,8 +280,8 @@ export default function Dashboard() {
               <Trophy className="h-5 w-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-base font-semibold text-foreground">Top Produtos</h3>
-              <p className="text-xs text-muted-foreground">Mais vendidos no período</p>
+              <h3 className="text-base font-semibold text-foreground">Top 10 Produtos</h3>
+              <p className="text-xs text-muted-foreground">Veja abaixo os produto mais  vendidos no período</p>
             </div>
           </div>
 
