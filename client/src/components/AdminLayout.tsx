@@ -382,7 +382,7 @@ function AvgPrepTimeButton({ establishmentId }: { establishmentId?: number }) {
                 <div>
                   <div className="text-lg font-bold text-red-600">{analysis.worstOrder.minutes} min</div>
                   <div className="text-[10px] text-muted-foreground">
-                    Pedido #{analysis.worstOrder.orderNumber} &middot; {dayNameMap[analysis.worstOrder.dayName] || analysis.worstOrder.dayName}
+                    Pedido {analysis.worstOrder.orderNumber} &middot; {dayNameMap[analysis.worstOrder.dayName] || analysis.worstOrder.dayName}
                   </div>
                 </div>
               </div>
