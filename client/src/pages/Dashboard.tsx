@@ -39,6 +39,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useLocation } from "wouter";
 import { Calendar, LayoutDashboard } from "lucide-react";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 
 const periodOptions = [
   { value: 'today' as const, label: 'Hoje' },
@@ -514,7 +515,9 @@ export default function Dashboard() {
           </div>
 
           {/* Clientes Recorrentes vs Novos */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[306px] overflow-hidden">
+          <HoverCard openDelay={300} closeDelay={200}>
+          <HoverCardTrigger asChild>
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[306px] overflow-hidden cursor-default transition-shadow hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-800/50">
             {/* Header */}
             <div className="flex items-center gap-3 mb-5">
               <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -585,6 +588,39 @@ export default function Dashboard() {
               );
             })()}
           </div>
+          </HoverCardTrigger>
+          <HoverCardContent side="top" align="center" className="w-80 p-4">
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 rounded-lg bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center">
+                  <UsersRound className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <p className="font-semibold text-sm">Resumo do Perfil de Clientes</p>
+              </div>
+              <div className="text-sm text-muted-foreground space-y-1.5">
+                <p>Nos últimos 30 dias:</p>
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                  <span><strong className="text-foreground">{customerInsights?.recurringPct ?? 0}%</strong> são clientes recorrentes</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-gray-300" />
+                  <span><strong className="text-foreground">{customerInsights?.newPct ?? 0}%</strong> são novos clientes</span>
+                </div>
+              </div>
+              <div className="bg-amber-50 dark:bg-amber-950/30 rounded-lg p-2.5 border border-amber-100 dark:border-amber-800/30">
+                <p className="text-xs text-amber-800 dark:text-amber-300">
+                  {(customerInsights?.newPct ?? 0) > 50
+                    ? '\uD83D\uDCA1 Isso indica crescimento da base de clientes.'
+                    : (customerInsights?.recurringPct ?? 0) > 50
+                    ? '\uD83D\uDCA1 Boa fidelização! A maioria dos clientes retorna.'
+                    : '\uD83D\uDCA1 Base equilibrada entre novos e recorrentes.'}
+                </p>
+              </div>
+              <p className="text-xs text-muted-foreground/70">Total analisado: <strong className="text-foreground">{customerInsights?.totalCustomers ?? 0}</strong> clientes únicos</p>
+            </div>
+          </HoverCardContent>
+          </HoverCard>
         </div>
 
         {/* Coluna direita: Tempo Médio + Faturamento por Hora */}
