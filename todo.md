@@ -8066,3 +8066,4 @@
 - [x] Card Top Produtos: voltar para 10 itens com scroll interno sem aumentar altura do card
 - [x] Card Top Produtos: altura fixa do card com max-height na lista para scroll interno (10 itens, ~7 visíveis)
 - [x] Card Top Produtos: insight de % do faturamento dos top 10 produtos sobre o faturamento total do período
+- [x] Card Top Produtos: alinhar texto de insight horizontalmente com o texto do card Perfil de Clientes

@@ -14,7 +14,8 @@ import {
   Trophy,
   Truck,
   Timer,
-  UsersRound
+  UsersRound,
+  Info
 } from "lucide-react";
 import { 
   AreaChart, 
@@ -362,11 +363,13 @@ export default function Dashboard() {
               })()}
             </div>
             {/* Insight: % do faturamento dos top 10 */}
+            <div className="mt-auto">
             {topProducts.totalPeriodRevenue > 0 ? (
-              <p className="text-[11px] text-muted-foreground/70 px-0 py-3">Os {topProducts.products.length} produtos mais vendidos representam {topProducts.topProductsPct}% do faturamento do período</p>
+              <p className="text-[11px] px-0 py-3 flex items-center gap-1"><Info className="h-3 w-3 text-muted-foreground/50 flex-shrink-0" /><span className="text-shimmer">Seus {topProducts.products.length} produtos líderes representam {topProducts.topProductsPct}% do faturamento do período</span></p>
             ) : (
               <p className="text-[11px] text-muted-foreground/70 px-0 py-3">Não há métricas suficientes para o cálculo</p>
             )}
+            </div>
             </>
           ) : (
             <EmptyState
@@ -455,7 +458,7 @@ export default function Dashboard() {
           </div>
 
           {/* Clientes Recorrentes vs Novos */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col flex-1">
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col">
             {/* Header */}
             <div className="flex items-center gap-3 mb-5">
               <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -521,7 +524,7 @@ export default function Dashboard() {
                     ))}
                   </div>
                   {/* Total de clientes */}
-                  <p className="text-[11px] text-muted-foreground/70 mt-2">{customerInsights?.totalCustomers ?? 0} clientes únicos no período</p>
+                  <p className="text-[11px] text-muted-foreground/70 mt-auto pt-2">{customerInsights?.totalCustomers ?? 0} clientes únicos no período</p>
                 </div>
               );
             })()}
