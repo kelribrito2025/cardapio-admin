@@ -263,6 +263,7 @@ export default function Pedidos() {
 
   // Estado para modal informativo do entregador
   const [driverInfoModalOpen, setDriverInfoModalOpen] = useState(false);
+  const [driverInfoOrderId, setDriverInfoOrderId] = useState<number | null>(null);
 
   // Carrossel de mensagens do modal WhatsApp (estabilizado com useMemo)
   const whatsappMessages = useMemo(() => [
@@ -1638,7 +1639,7 @@ export default function Pedidos() {
                               nextAction.driverControlled ? (
                                 <div
                                   className="flex-1 h-8 rounded-lg text-xs font-semibold flex items-center justify-center shadow-sm cursor-pointer hover:opacity-90 transition-opacity text-white" style={{ backgroundColor: '#059669' }}
-                                  onClick={() => setDriverInfoModalOpen(true)}
+                                  onClick={() => { setDriverInfoOrderId(order.id); setDriverInfoModalOpen(true); }}
                                 >
                                   Entregador
                                 </div>
@@ -1864,7 +1865,7 @@ export default function Pedidos() {
                         nextAction.driverControlled ? (
                           <div
                             className="h-8 px-4 rounded-lg text-xs font-semibold flex items-center justify-center shadow-sm cursor-pointer hover:opacity-90 transition-opacity text-white" style={{ backgroundColor: '#059669' }}
-                            onClick={() => setDriverInfoModalOpen(true)}
+                            onClick={() => { setDriverInfoOrderId(order.id); setDriverInfoModalOpen(true); }}
                           >
                             Entregador
                           </div>
@@ -2982,13 +2983,34 @@ export default function Pedidos() {
               </div>
             </div>
 
-            {/* Botão fechar */}
-            <Button
-              className="w-full rounded-xl h-10 font-semibold text-white hover:opacity-90" style={{ backgroundColor: '#059669' }}
-              onClick={() => setDriverInfoModalOpen(false)}
-            >
-              Entendi
-            </Button>
+            {/* Botões de ação */}
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1 rounded-xl h-10 font-semibold border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/30"
+                onClick={() => {
+                  if (driverInfoOrderId) {
+                    executeStatusUpdate(driverInfoOrderId, 'completed' as OrderStatus);
+                    setDriverInfoModalOpen(false);
+                    setDriverInfoOrderId(null);
+                    toast.success("Pedido finalizado pelo atendente!");
+                  }
+                }}
+                disabled={loadingOrderId !== null}
+              >
+                {loadingOrderId === driverInfoOrderId ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <><CheckCircle className="h-4 w-4 mr-1.5" /> Finalizar</>
+                )}
+              </Button>
+              <Button
+                className="flex-1 rounded-xl h-10 font-semibold text-white hover:opacity-90" style={{ backgroundColor: '#059669' }}
+                onClick={() => { setDriverInfoModalOpen(false); setDriverInfoOrderId(null); }}
+              >
+                Entendi
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

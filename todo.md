@@ -8082,3 +8082,4 @@
 - [x] Dashboard: Adicionar texto de insight no card Tempo Médio (ex: "3 min mais rápido que ontem")
 - [x] Dashboard: Centralizar verticalmente o sparkline do card Tempo Médio no lado direito
 - [x] Dashboard: Redesenhar card Tempo Médio com KPI numérico moderno (sem ring gauge), número grande + contexto + sparkline à direita
+- [x] Pedidos: Adicionar botão 'Finalizar' ao modal de Entregador responsável para permitir que o atendente finalize o pedido
