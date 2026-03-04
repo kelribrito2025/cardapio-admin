@@ -8091,3 +8091,4 @@
 - [x] Dashboard: Pedidos Recentes - pedidos novos sempre no topo da lista
 - [x] Bug: Card Pedidos Recentes mostra ID interno (#990088) em vez do número do pedido formatado (#P23)
 - [x] Dashboard: Tornar pedidos clicáveis no card Pedidos Recentes para abrir sidebar de Detalhes do Pedido
+- [x] Dashboard: Pedidos Recentes - mover tempo para mesma linha dos itens (à direita), abaixo do valor

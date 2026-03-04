@@ -854,7 +854,7 @@ export default function Dashboard() {
                         onClick={() => navigate(`/pedidos?order=${order.id}`)}
                       >
                         {/* Linha 1: #Pedido + Status + Valor */}
-                        <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center justify-between mb-1">
                           <div className="flex items-center gap-2">
                             <span className="font-semibold text-sm text-foreground">{(order as any).orderNumber?.startsWith('#') ? (order as any).orderNumber : `#${(order as any).orderNumber || order.id}`}</span>
                             <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${sc.bg} ${sc.text}`}>
@@ -866,14 +866,12 @@ export default function Dashboard() {
                           </span>
                         </div>
 
-                        {/* Linha 2: Itens resumidos */}
-                        <p className="text-xs text-muted-foreground mb-1.5 truncate">
-                          {itemSummary}
-                        </p>
-
-                        {/* Linha 3: Tempo com cor automática */}
-                        <div className="flex items-center gap-1.5">
-                          <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-1.5 py-0.5 rounded ${timeBg} ${timeColor}`}>
+                        {/* Linha 2: Itens resumidos + Tempo com cor automática */}
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-muted-foreground truncate flex-1 mr-2">
+                            {itemSummary}
+                          </p>
+                          <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-1.5 py-0.5 rounded shrink-0 ${timeBg} ${timeColor}`}>
                             <Clock className="h-3 w-3" />
                             {minutesAgo < 1 ? 'agora' : minutesAgo < 60 ? `${minutesAgo} min` : `${Math.floor(minutesAgo / 60)}h ${minutesAgo % 60}min`}
                           </span>
