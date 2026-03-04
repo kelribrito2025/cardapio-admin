@@ -1171,29 +1171,7 @@ export default function PDV() {
 
               {/* Campo de Mesa removido - agora usamos a página de Mesas */}
 
-              {/* Indicador de forma de pagamento selecionada (Mesa ou Retirada) */}
-              {(orderType === "mesa" || orderType === "retirada") && paymentMethod && (
-                 <div className="mt-3 flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/30 rounded-xl border border-green-200 dark:border-green-800">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-green-500 text-white rounded-lg">
-                      {paymentMethod === "cash" && <Banknote className="h-4 w-4" />}
-                      {paymentMethod === "card" && <CreditCard className="h-4 w-4" />}
-                      {paymentMethod === "pix" && <QrCode className="h-4 w-4" />}
-                    </div>
-                    <span className="text-sm font-medium text-green-700">
-                      {paymentMethod === "cash" && "Dinheiro"}
-                      {paymentMethod === "card" && "Cartão"}
-                      {paymentMethod === "pix" && "Pix"}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setShowPaymentSidebar(true)}
-                    className="text-sm text-green-600 hover:text-green-700 font-medium"
-                  >
-                    Alterar
-                  </button>
-                </div>
-              )}
+              {/* Indicador de forma de pagamento movido para o rodapé */}
             </div>
 
             {/* Lista de Itens */}
@@ -1362,19 +1340,31 @@ export default function PDV() {
                 >
                   <Ticket className={cn("h-5 w-5", showCouponField ? "text-red-500" : "text-gray-500")} />
                 </Button>
+                {/* Botão de Forma de Pagamento - ao lado do cupom, mesmo estilo outline */}
+                {(orderType === "mesa" || orderType === "retirada") && paymentMethod && (
+                  <Button
+                    variant="outline"
+                    className="px-3"
+                    onClick={() => setShowPaymentSidebar(true)}
+                    title={paymentMethod === "cash" ? "Dinheiro" : paymentMethod === "card" ? "Cartão" : "Pix"}
+                  >
+                    {paymentMethod === "cash" && <Banknote className="h-5 w-5 text-red-500" />}
+                    {paymentMethod === "card" && <CreditCard className="h-5 w-5 text-red-500" />}
+                    {paymentMethod === "pix" && <QrCode className="h-5 w-5 text-red-500" />}
+                  </Button>
+                )}
+                {/* Botão Limpar */}
                 <Button
                   variant="outline"
-                  className="flex-1"
+                  className="px-3"
                   onClick={clearedCart ? undoClearCart : clearCart}
                   disabled={cart.length === 0 && !clearedCart}
+                  title={clearedCart ? "Desfazer" : "Limpar"}
                 >
                   {clearedCart ? (
-                    <>
-                      <Undo2 className="h-4 w-4 mr-1" />
-                      Desfazer
-                    </>
+                    <Undo2 className="h-5 w-5" />
                   ) : (
-                    "Limpar"
+                    <Trash2 className="h-5 w-5 text-gray-500" />
                   )}
                 </Button>
                 <Button
