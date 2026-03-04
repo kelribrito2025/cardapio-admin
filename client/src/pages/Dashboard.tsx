@@ -304,22 +304,30 @@ export default function Dashboard() {
                 const products = topProducts.products;
                 const maxQty = products[0]?.totalQuantity || 1;
                 const totalRevenue = products.reduce((sum, p) => sum + p.totalRevenue, 0);
-                const barColors = [
-                  'bg-amber-500',
-                  'bg-orange-500',
-                  'bg-red-400',
-                  'bg-rose-400',
-                  'bg-pink-400',
-                  'bg-fuchsia-400',
-                  'bg-purple-400',
-                  'bg-violet-400',
-                  'bg-indigo-400',
-                  'bg-blue-400',
-                ];
+                // Degradê de ranking: verde (mais vendido) → amarelo → laranja → vermelho (menos vendido)
+                const getRankColor = (idx: number, total: number) => {
+                  if (total <= 1) return '#22c55e'; // verde
+                  const t = idx / (total - 1); // 0 = primeiro, 1 = último
+                  // Interpolação: verde → amarelo-verde → amarelo → laranja → vermelho
+                  const colors = [
+                    { r: 34, g: 197, b: 94 },   // verde (#22c55e)
+                    { r: 234, g: 179, b: 8 },    // amarelo (#eab308)
+                    { r: 249, g: 115, b: 22 },   // laranja (#f97316)
+                    { r: 239, g: 68, b: 68 },    // vermelho (#ef4444)
+                  ];
+                  const segment = t * (colors.length - 1);
+                  const i = Math.min(Math.floor(segment), colors.length - 2);
+                  const f = segment - i;
+                  const c1 = colors[i], c2 = colors[i + 1];
+                  const r = Math.round(c1.r + (c2.r - c1.r) * f);
+                  const g = Math.round(c1.g + (c2.g - c1.g) * f);
+                  const b = Math.round(c1.b + (c2.b - c1.b) * f);
+                  return `rgb(${r},${g},${b})`;
+                };
                 return products.slice(0, 10).map((product, index) => {
                   const pct = (product.totalQuantity / maxQty) * 100;
                   const revPct = totalRevenue > 0 ? Math.round((product.totalRevenue / totalRevenue) * 100) : 0;
-                  const barColor = barColors[index] || 'bg-gray-400';
+                  const barColorStyle = getRankColor(index, Math.min(products.length, 10));
                   return (
                     <div key={product.productName} className="group relative">
                       <div className="flex items-center justify-between mb-1.5">
@@ -334,8 +342,8 @@ export default function Dashboard() {
                       </div>
                       <div className="h-3 bg-muted rounded-full overflow-hidden cursor-pointer">
                         <div
-                          className={`h-full rounded-full transition-all duration-500 ${barColor}`}
-                          style={{ width: `${Math.max(3, pct)}%` }}
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{ width: `${Math.max(3, pct)}%`, backgroundColor: barColorStyle }}
                         />
                       </div>
                       {/* Tooltip on hover */}
