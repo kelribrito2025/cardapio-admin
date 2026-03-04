@@ -598,7 +598,7 @@ export default function Dashboard() {
               </div>
               <div className="min-w-0">
                 <h3 className="text-base font-semibold text-foreground">Tempo Médio</h3>
-                <p className="text-xs text-muted-foreground">Tempo médio do pedido até finalização</p>
+                <p className="text-xs text-muted-foreground">Tempo médio de preparo (aceito → pronto)</p>
               </div>
             </div>
 

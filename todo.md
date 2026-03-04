@@ -8114,3 +8114,7 @@
 - [x] Sidebar Tempo de Preparo: Remover botão de fechar (X) e substituir por dropdown de filtro
 - [x] Sidebar Tempo de Preparo: Dropdown com mesmos filtros da Dashboard (Hoje, Esta semana, Este mês)
 - [x] Sidebar Tempo de Preparo: Sincronizar filtro com o filtro selecionado na Dashboard
+- [x] Tempo Médio: Alterar cálculo de createdAt→completedAt para acceptedAt→readyAt (aceito→pronto)
+- [x] Tempo Médio: Atualizar subtítulo e labels no frontend para refletir nova métrica
+- [x] Schema: Adicionar campos acceptedAt e readyAt na tabela orders
+- [x] Backend: Atualizar fluxo de mudança de status para registrar acceptedAt e readyAt automaticamente

@@ -256,6 +256,8 @@ export const orders = mysqlTable("orders", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   completedAt: timestamp("completedAt"),
+  acceptedAt: timestamp("acceptedAt"),
+  readyAt: timestamp("readyAt"),
 });
 
 export type Order = typeof orders.$inferSelect;

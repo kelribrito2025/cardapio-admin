@@ -1959,6 +1959,12 @@ export async function updateOrderStatus(id: number, status: "new" | "preparing" 
   if (!db) throw new Error("Database not available");
   
   const updateData: Partial<Order> = { status };
+  if (status === "preparing") {
+    updateData.acceptedAt = new Date();
+  }
+  if (status === "ready") {
+    updateData.readyAt = new Date();
+  }
   if (status === "completed" || status === "cancelled") {
     updateData.completedAt = new Date();
   }
@@ -2698,15 +2704,15 @@ export async function getAvgPrepTime(establishmentId: number, period: 'today' | 
   const periodStartStr = fmtLocalDateTime(periodStart);
 
   const result = await db.select({
-    avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt}))`,
+    avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.acceptedAt}, ${orders.readyAt}))`,
     totalOrders: sql<number>`COUNT(*)`,
   })
     .from(orders)
     .where(and(
       eq(orders.establishmentId, establishmentId),
-      eq(orders.status, 'completed'),
-      sql`${orders.completedAt} IS NOT NULL`,
-      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${periodStartStr}`
+      sql`${orders.acceptedAt} IS NOT NULL`,
+      sql`${orders.readyAt} IS NOT NULL`,
+      sql`CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}) >= ${periodStartStr}`
     ));
 
   const avgSeconds = Number(result[0]?.avgSeconds ?? 0);
@@ -2731,18 +2737,18 @@ export async function getAvgPrepTimeTrend(establishmentId: number, period: 'toda
   const trendStart = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - daysBack);
   const trendStartStr = fmtLocalDateTime(trendStart);
 
-  // Buscar média por dia nos últimos 7 dias
+  // Buscar média por dia nos últimos 7 dias (tempo de preparo: acceptedAt → readyAt)
   const trendResult: any[] = await db.execute(
     sql`SELECT 
-      DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz})) as day,
-      AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt})) as avgSeconds,
+      DATE(CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz})) as day,
+      AVG(TIMESTAMPDIFF(SECOND, ${orders.acceptedAt}, ${orders.readyAt})) as avgSeconds,
       COUNT(*) as totalOrders
     FROM ${orders}
     WHERE ${orders.establishmentId} = ${establishmentId}
-      AND ${orders.status} = 'completed'
-      AND ${orders.completedAt} IS NOT NULL
-      AND CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${trendStartStr}
-    GROUP BY DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}))
+      AND ${orders.acceptedAt} IS NOT NULL
+      AND ${orders.readyAt} IS NOT NULL
+      AND CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}) >= ${trendStartStr}
+    GROUP BY DATE(CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}))
     ORDER BY day ASC`
   );
 
@@ -2766,13 +2772,13 @@ export async function getAvgPrepTimeTrend(establishmentId: number, period: 'toda
     const prevStartStr = fmtLocalDateTime(prevWeekStart);
     const prevEndStr = fmtLocalDateTime(prevWeekEnd);
     const prevResult = await db.select({
-      avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt}))`,
+      avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.acceptedAt}, ${orders.readyAt}))`,
     }).from(orders).where(and(
       eq(orders.establishmentId, establishmentId),
-      eq(orders.status, 'completed'),
-      sql`${orders.completedAt} IS NOT NULL`,
-      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${prevStartStr}`,
-      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) < ${prevEndStr}`
+      sql`${orders.acceptedAt} IS NOT NULL`,
+      sql`${orders.readyAt} IS NOT NULL`,
+      sql`CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}) >= ${prevStartStr}`,
+      sql`CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}) < ${prevEndStr}`
     ));
     previousAvg = Math.round(Number(prevResult[0]?.avgSeconds ?? 0) / 60);
   } else if (period === 'month') {
@@ -2782,13 +2788,13 @@ export async function getAvgPrepTimeTrend(establishmentId: number, period: 'toda
     const prevStartStr = fmtLocalDateTime(prevMonthStart);
     const prevEndStr = fmtLocalDateTime(prevMonthEnd);
     const prevResult = await db.select({
-      avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt}))`,
+      avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.acceptedAt}, ${orders.readyAt}))`,
     }).from(orders).where(and(
       eq(orders.establishmentId, establishmentId),
-      eq(orders.status, 'completed'),
-      sql`${orders.completedAt} IS NOT NULL`,
-      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${prevStartStr}`,
-      sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) < ${prevEndStr}`
+      sql`${orders.acceptedAt} IS NOT NULL`,
+      sql`${orders.readyAt} IS NOT NULL`,
+      sql`CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}) >= ${prevStartStr}`,
+      sql`CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}) < ${prevEndStr}`
     ));
     previousAvg = Math.round(Number(prevResult[0]?.avgSeconds ?? 0) / 60);
   }
@@ -6484,6 +6490,12 @@ export async function updateOrderStatusByExternalId(
   if (!db) throw new Error("Database not available");
   
   const updateData: Partial<Order> = { status };
+  if (status === "preparing") {
+    updateData.acceptedAt = new Date();
+  }
+  if (status === "ready") {
+    updateData.readyAt = new Date();
+  }
   if (status === "completed" || status === "cancelled") {
     updateData.completedAt = new Date();
   }
@@ -11439,46 +11451,46 @@ export async function getPrepTimeAnalysis(establishmentId: number, period: 'toda
   const yesterdayStr = fmtLocalDateTime(yesterday);
   const todayStr = fmtLocalDateTime(new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate()));
 
-  // 1. Tempo médio geral dos últimos 7 dias
+  // 1. Tempo médio de preparo (acceptedAt → readyAt)
   const avgResult = await db.select({
-    avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt}))`,
+    avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.acceptedAt}, ${orders.readyAt}))`,
     totalOrders: sql<number>`COUNT(*)`,
   }).from(orders).where(and(
     eq(orders.establishmentId, establishmentId),
-    eq(orders.status, 'completed'),
-    sql`${orders.completedAt} IS NOT NULL`,
-    sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${sevenDaysAgoStr}`
+    sql`${orders.acceptedAt} IS NOT NULL`,
+    sql`${orders.readyAt} IS NOT NULL`,
+    sql`CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}) >= ${sevenDaysAgoStr}`
   ));
 
   const avgMinutes = Number(avgResult[0]?.totalOrders ?? 0) > 0 
     ? Math.round(Number(avgResult[0]?.avgSeconds ?? 0) / 60) : 0;
   const totalOrders = Number(avgResult[0]?.totalOrders ?? 0);
 
-  // 2. Tempo médio de ontem
+  // 2. Tempo médio de ontem (acceptedAt → readyAt)
   const yesterdayResult = await db.select({
-    avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt}))`,
+    avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.acceptedAt}, ${orders.readyAt}))`,
   }).from(orders).where(and(
     eq(orders.establishmentId, establishmentId),
-    eq(orders.status, 'completed'),
-    sql`${orders.completedAt} IS NOT NULL`,
-    sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${yesterdayStr}`,
-    sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) < ${todayStr}`
+    sql`${orders.acceptedAt} IS NOT NULL`,
+    sql`${orders.readyAt} IS NOT NULL`,
+    sql`CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}) >= ${yesterdayStr}`,
+    sql`CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}) < ${todayStr}`
   ));
   const yesterdayAvgMinutes = Math.round(Number(yesterdayResult[0]?.avgSeconds ?? 0) / 60);
 
-  // 3. Dados por dia
+  // 3. Dados por dia (tempo de preparo: acceptedAt → readyAt)
   const dailyResult: any[] = await db.execute(
     sql`SELECT 
-      DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz})) as day,
-      DAYNAME(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz})) as dayName,
-      AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt})) as avgSeconds,
+      DATE(CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz})) as day,
+      DAYNAME(CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz})) as dayName,
+      AVG(TIMESTAMPDIFF(SECOND, ${orders.acceptedAt}, ${orders.readyAt})) as avgSeconds,
       COUNT(*) as totalOrders
     FROM ${orders}
     WHERE ${orders.establishmentId} = ${establishmentId}
-      AND ${orders.status} = 'completed'
-      AND ${orders.completedAt} IS NOT NULL
-      AND CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${sevenDaysAgoStr}
-    GROUP BY DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz})), DAYNAME(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}))
+      AND ${orders.acceptedAt} IS NOT NULL
+      AND ${orders.readyAt} IS NOT NULL
+      AND CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}) >= ${sevenDaysAgoStr}
+    GROUP BY DATE(CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz})), DAYNAME(CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}))
     ORDER BY day ASC`
   );
 
@@ -11498,17 +11510,17 @@ export async function getPrepTimeAnalysis(establishmentId: number, period: 'toda
   // 5. Média diária
   const avgDailyOrders = dailyData.length > 0 ? Math.round(totalOrders / dailyData.length) : 0;
 
-  // 6. Pior tempo
+  // 6. Pior tempo de preparo (acceptedAt → readyAt)
   const worstResult: any[] = await db.execute(
     sql`SELECT 
       ${orders.id}, ${orders.orderNumber},
-      TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt}) as totalSeconds,
-      DAYNAME(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz})) as dayName
+      TIMESTAMPDIFF(SECOND, ${orders.acceptedAt}, ${orders.readyAt}) as totalSeconds,
+      DAYNAME(CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz})) as dayName
     FROM ${orders}
     WHERE ${orders.establishmentId} = ${establishmentId}
-      AND ${orders.status} = 'completed'
-      AND ${orders.completedAt} IS NOT NULL
-      AND CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${sevenDaysAgoStr}
+      AND ${orders.acceptedAt} IS NOT NULL
+      AND ${orders.readyAt} IS NOT NULL
+      AND CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}) >= ${sevenDaysAgoStr}
     ORDER BY totalSeconds DESC LIMIT 1`
   );
 
@@ -11519,9 +11531,19 @@ export async function getPrepTimeAnalysis(establishmentId: number, period: 'toda
     dayName: String(worstRows[0].dayName),
   } : null;
 
-  // 7. Tempo por etapa (estimativa: 70% preparo, 30% entrega)
-  const prepMinutes = Math.round(avgMinutes * 0.7);
-  const deliveryMinutes = Math.round(avgMinutes * 0.3);
+  // 7. Tempo por etapa: preparo real (acceptedAt→readyAt) e entrega (readyAt→completedAt)
+  const prepMinutes = avgMinutes; // Tempo de preparo já é acceptedAt→readyAt
+  // Calcular entrega separadamente (readyAt→completedAt)
+  const deliveryResult = await db.select({
+    avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.readyAt}, ${orders.completedAt}))`,
+  }).from(orders).where(and(
+    eq(orders.establishmentId, establishmentId),
+    sql`${orders.readyAt} IS NOT NULL`,
+    sql`${orders.completedAt} IS NOT NULL`,
+    sql`CONVERT_TZ(${orders.acceptedAt}, '+00:00', ${tz}) >= ${sevenDaysAgoStr}`
+  ));
+  const deliveryMinutes = Number(deliveryResult[0]?.avgSeconds ?? 0) > 0 
+    ? Math.round(Number(deliveryResult[0]?.avgSeconds ?? 0) / 60) : 0;
 
   // 8. Meta
   const est = await db.select({ prepGoalMinutes: establishments.prepGoalMinutes })
