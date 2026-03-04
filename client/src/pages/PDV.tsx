@@ -1108,17 +1108,17 @@ export default function PDV() {
           <div className="w-96 border-l border-border/50 bg-muted/30 flex flex-col">
             {/* Header do Carrinho */}
             <div className="p-4 border-b border-border/50 bg-card">
-              {/* Tipo de Pedido - Pill selector */}
-              <div className="flex items-center bg-muted rounded-full p-1">
+              {/* Tipo de Pedido - Pill selector (mesmo estilo do seletor de período da Dashboard) */}
+              <div className="flex items-center gap-1 bg-muted rounded-xl p-1">
                 <button
                   onClick={() => {
                     setOrderType("mesa");
                     setPaymentMethod(null);
                   }}
                   className={cn(
-                    "flex-1 py-2 px-3 rounded-full text-xs font-medium transition-all duration-200",
+                    "flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
                     orderType === "mesa"
-                      ? "bg-green-500 text-white shadow-sm"
+                      ? "bg-card text-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -1130,9 +1130,9 @@ export default function PDV() {
                     setPaymentMethod(null);
                   }}
                   className={cn(
-                    "flex-1 py-2 px-3 rounded-full text-xs font-medium transition-all duration-200",
+                    "flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
                     orderType === "retirada"
-                      ? "bg-green-500 text-white shadow-sm"
+                      ? "bg-card text-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -1146,9 +1146,9 @@ export default function PDV() {
                     setShowDeliverySidebar(true);
                   }}
                   className={cn(
-                    "flex-1 py-2 px-3 rounded-full text-xs font-medium transition-all duration-200",
+                    "flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
                     orderType === "entrega"
-                      ? "bg-green-500 text-white shadow-sm"
+                      ? "bg-card text-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
