@@ -11395,3 +11395,122 @@ export async function processOrderNotificationInBackground(
     console.error('[BG:Notification] ❌ Erro ao processar notificação em background:', error);
   }
 }
+
+
+// ============ PREP TIME ANALYSIS (MODAL) ============
+
+export async function getPrepTimeAnalysis(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+  
+  const sevenDaysAgo = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - 7);
+  const sevenDaysAgoStr = fmtLocalDateTime(sevenDaysAgo);
+  const yesterday = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - 1);
+  const yesterdayStr = fmtLocalDateTime(yesterday);
+  const todayStr = fmtLocalDateTime(new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate()));
+
+  // 1. Tempo médio geral dos últimos 7 dias
+  const avgResult = await db.select({
+    avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt}))`,
+    totalOrders: sql<number>`COUNT(*)`,
+  }).from(orders).where(and(
+    eq(orders.establishmentId, establishmentId),
+    eq(orders.status, 'completed'),
+    sql`${orders.completedAt} IS NOT NULL`,
+    sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${sevenDaysAgoStr}`
+  ));
+
+  const avgMinutes = Number(avgResult[0]?.totalOrders ?? 0) > 0 
+    ? Math.round(Number(avgResult[0]?.avgSeconds ?? 0) / 60) : 0;
+  const totalOrders = Number(avgResult[0]?.totalOrders ?? 0);
+
+  // 2. Tempo médio de ontem
+  const yesterdayResult = await db.select({
+    avgSeconds: sql<number>`AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt}))`,
+  }).from(orders).where(and(
+    eq(orders.establishmentId, establishmentId),
+    eq(orders.status, 'completed'),
+    sql`${orders.completedAt} IS NOT NULL`,
+    sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${yesterdayStr}`,
+    sql`CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) < ${todayStr}`
+  ));
+  const yesterdayAvgMinutes = Math.round(Number(yesterdayResult[0]?.avgSeconds ?? 0) / 60);
+
+  // 3. Dados por dia
+  const dailyResult: any[] = await db.execute(
+    sql`SELECT 
+      DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz})) as day,
+      DAYNAME(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz})) as dayName,
+      AVG(TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt})) as avgSeconds,
+      COUNT(*) as totalOrders
+    FROM ${orders}
+    WHERE ${orders.establishmentId} = ${establishmentId}
+      AND ${orders.status} = 'completed'
+      AND ${orders.completedAt} IS NOT NULL
+      AND CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${sevenDaysAgoStr}
+    GROUP BY DATE(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz})), DAYNAME(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}))
+    ORDER BY day ASC`
+  );
+
+  const rows = Array.isArray(dailyResult) ? (Array.isArray(dailyResult[0]) ? dailyResult[0] : dailyResult) : [];
+  const dailyData = rows.map((r: any) => ({
+    day: String(r.day),
+    dayName: String(r.dayName),
+    avgMinutes: Number(r.totalOrders) > 0 ? Math.round(Number(r.avgSeconds) / 60) : 0,
+    totalOrders: Number(r.totalOrders),
+  }));
+
+  // 4. Melhor dia
+  const bestDay = dailyData.length > 0 
+    ? dailyData.reduce((best, d) => d.avgMinutes < best.avgMinutes && d.avgMinutes > 0 ? d : best, dailyData[0])
+    : null;
+
+  // 5. Média diária
+  const avgDailyOrders = dailyData.length > 0 ? Math.round(totalOrders / dailyData.length) : 0;
+
+  // 6. Pior tempo
+  const worstResult: any[] = await db.execute(
+    sql`SELECT 
+      ${orders.id}, ${orders.orderNumber},
+      TIMESTAMPDIFF(SECOND, ${orders.createdAt}, ${orders.completedAt}) as totalSeconds,
+      DAYNAME(CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz})) as dayName
+    FROM ${orders}
+    WHERE ${orders.establishmentId} = ${establishmentId}
+      AND ${orders.status} = 'completed'
+      AND ${orders.completedAt} IS NOT NULL
+      AND CONVERT_TZ(${orders.createdAt}, '+00:00', ${tz}) >= ${sevenDaysAgoStr}
+    ORDER BY totalSeconds DESC LIMIT 1`
+  );
+
+  const worstRows = Array.isArray(worstResult) ? (Array.isArray(worstResult[0]) ? worstResult[0] : worstResult) : [];
+  const worstOrder = worstRows.length > 0 ? {
+    orderNumber: String(worstRows[0].orderNumber),
+    minutes: Math.round(Number(worstRows[0].totalSeconds) / 60),
+    dayName: String(worstRows[0].dayName),
+  } : null;
+
+  // 7. Tempo por etapa (estimativa: 70% preparo, 30% entrega)
+  const prepMinutes = Math.round(avgMinutes * 0.7);
+  const deliveryMinutes = Math.round(avgMinutes * 0.3);
+
+  // 8. Meta
+  const est = await db.select({ prepGoalMinutes: establishments.prepGoalMinutes })
+    .from(establishments).where(eq(establishments.id, establishmentId)).limit(1);
+  const prepGoal = est[0]?.prepGoalMinutes ?? 30;
+
+  return {
+    avgMinutes, totalOrders, yesterdayAvgMinutes,
+    diffFromYesterday: yesterdayAvgMinutes > 0 ? avgMinutes - yesterdayAvgMinutes : 0,
+    dailyData, bestDay: bestDay ? { dayName: bestDay.dayName, avgMinutes: bestDay.avgMinutes } : null,
+    avgDailyOrders, worstOrder, prepMinutes, deliveryMinutes, prepGoal,
+  };
+}
+
+export async function updatePrepGoal(establishmentId: number, goalMinutes: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(establishments).set({ prepGoalMinutes: goalMinutes }).where(eq(establishments.id, establishmentId));
+}

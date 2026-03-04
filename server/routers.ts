@@ -1318,6 +1318,19 @@ export const appRouter = router({
         return db.getAvgPrepTimeTrend(input.establishmentId, input.period ?? 'today');
       }),
 
+    prepTimeAnalysis: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getPrepTimeAnalysis(input.establishmentId);
+      }),
+
+    updatePrepGoal: protectedProcedure
+      .input(z.object({ establishmentId: z.number(), goalMinutes: z.number().min(5).max(120) }))
+      .mutation(async ({ input }) => {
+        await db.updatePrepGoal(input.establishmentId, input.goalMinutes);
+        return { success: true };
+      }),
+
     customerInsights: protectedProcedure
       .input(z.object({ establishmentId: z.number() }))
       .query(async ({ input }) => {

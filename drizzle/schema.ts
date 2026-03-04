@@ -123,6 +123,8 @@ export const establishments = mysqlTable("establishments", {
   schedulingMoveMinutes: int("schedulingMoveMinutes").default(30).notNull(), // Minutos antes para mover para fila normal
   // Aceitar pedidos automaticamente
   autoAcceptOrders: boolean("autoAcceptOrders").default(false).notNull(),
+  // Meta de tempo de preparo (em minutos)
+  prepGoalMinutes: int("prepGoalMinutes").default(30),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

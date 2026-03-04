@@ -40,6 +40,13 @@ import {
   CalendarClock,
   BadgeDollarSign,
   Bot,
+  ChefHat,
+  AlertTriangle,
+  Trophy,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  Save,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -71,6 +78,24 @@ import { FeedbackModal } from "@/components/FeedbackModal";
 import { WhatsAppDisconnectedBanner } from "@/components/WhatsAppDisconnectedBanner";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useSearch } from "@/contexts/SearchContext";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Slider } from "@/components/ui/slider";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  ReferenceLine,
+} from "recharts";
 
 const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed";
 
@@ -125,27 +150,240 @@ const menuSections = [
 const navItems = menuSections.flatMap(section => section.items);
 
 // Componente de Tempo Médio de Preparo para a top bar
+// Mapa de dias em inglês para português
+const dayNameMap: Record<string, string> = {
+  'Monday': 'Seg', 'Tuesday': 'Ter', 'Wednesday': 'Qua',
+  'Thursday': 'Qui', 'Friday': 'Sex', 'Saturday': 'Sáb', 'Sunday': 'Dom',
+};
+
 function AvgPrepTimeButton({ establishmentId }: { establishmentId?: number }) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [goalValue, setGoalValue] = useState<number>(30);
+  const [goalChanged, setGoalChanged] = useState(false);
+
   const { data } = trpc.dashboard.avgPrepTime.useQuery(
     { establishmentId: establishmentId || 0, period: 'today' },
     { enabled: !!establishmentId, refetchInterval: 300000, staleTime: 120000 }
   );
+
+  const { data: analysis, refetch: refetchAnalysis } = trpc.dashboard.prepTimeAnalysis.useQuery(
+    { establishmentId: establishmentId || 0 },
+    { enabled: !!establishmentId && modalOpen, staleTime: 60000 }
+  );
+
+  const updateGoalMutation = trpc.dashboard.updatePrepGoal.useMutation({
+    onSuccess: () => {
+      toast.success('Meta de preparo atualizada!');
+      setGoalChanged(false);
+      refetchAnalysis();
+    },
+    onError: () => toast.error('Erro ao atualizar meta'),
+  });
+
+  useEffect(() => {
+    if (analysis?.prepGoal && !goalChanged) {
+      setGoalValue(analysis.prepGoal);
+    }
+  }, [analysis?.prepGoal, goalChanged]);
+
   const avgMin = data?.avgMinutes ?? null;
   if (avgMin === null) return null;
-  // Mesma lógica de cor do card Tempo Médio no Dashboard
-  const color = avgMin > 0 ? (avgMin <= 30 ? '#22c55e' : avgMin <= 60 ? '#f59e0b' : '#ef4444') : undefined;
+
+  const goal = analysis?.prepGoal ?? 30;
+  const isWithinGoal = avgMin <= goal;
+  const color = isWithinGoal ? '#22c55e' : '#ef4444';
+  const isPulsing = !isWithinGoal && avgMin > 0;
+
+  const chartData = analysis?.dailyData?.map((d: any) => ({
+    day: dayNameMap[d.dayName] || d.dayName.substring(0, 3),
+    avgMinutes: d.avgMinutes,
+    totalOrders: d.totalOrders,
+  })) ?? [];
+  const avgLine = analysis?.avgMinutes ?? 0;
+
+  const handleSaveGoal = () => {
+    if (establishmentId) {
+      updateGoalMutation.mutate({ establishmentId, goalMinutes: goalValue });
+    }
+  };
+
+  const diff = analysis?.diffFromYesterday ?? 0;
+  const diffText = diff === 0 ? 'Sem variação' : diff < 0
+    ? `${Math.abs(diff)} min mais rápido que ontem`
+    : `${diff} min mais lento que ontem`;
+
   return (
-    <div
-      className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold"
-      style={{
-        borderRadius: '10px',
-        backgroundColor: color ? `${color}15` : undefined,
-        color: color || undefined,
-      }}
-    >
-      <Clock className="h-3.5 w-3.5" style={{ color: color || undefined }} />
-      <span>{avgMin}min</span>
-    </div>
+    <>
+      <button
+        onClick={() => setModalOpen(true)}
+        className={`hidden md:flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-all hover:scale-105 ${isPulsing ? 'animate-pulse' : ''}`}
+        style={{
+          borderRadius: '10px',
+          backgroundColor: color ? `${color}15` : undefined,
+          color: color || undefined,
+          border: `1px solid ${color}30`,
+        }}
+      >
+        <Clock className="h-3.5 w-3.5" style={{ color: color || undefined }} />
+        <span>{avgMin}min</span>
+      </button>
+
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">Tempo de preparo dos pedidos</DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">Análise dos últimos 7 dias</DialogDescription>
+          </DialogHeader>
+
+          {/* KPI Principal */}
+          <div className="text-center py-4">
+            <div className="text-5xl font-bold" style={{ color }}>
+              {analysis?.avgMinutes ?? avgMin} min
+            </div>
+            <div className={`flex items-center justify-center gap-1 mt-2 text-sm ${diff <= 0 ? 'text-green-600' : 'text-red-500'}`}>
+              {diff <= 0 ? <TrendingDown className="h-4 w-4" /> : <TrendingUp className="h-4 w-4" />}
+              <span>{diffText}</span>
+            </div>
+          </div>
+
+          {/* 3 Indicadores */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-muted/50 rounded-xl p-3 text-center">
+              <Clock className="h-4 w-4 mx-auto mb-1 text-blue-500" />
+              <div className="text-lg font-bold">{analysis?.avgMinutes ?? 0} min</div>
+              <div className="text-[10px] text-muted-foreground">Tempo médio</div>
+            </div>
+            <div className="bg-muted/50 rounded-xl p-3 text-center">
+              <Target className="h-4 w-4 mx-auto mb-1 text-orange-500" />
+              <div className="text-lg font-bold">{analysis?.prepGoal ?? 30} min</div>
+              <div className="text-[10px] text-muted-foreground">Meta</div>
+            </div>
+            <div className="bg-muted/50 rounded-xl p-3 text-center">
+              <ClipboardList className="h-4 w-4 mx-auto mb-1 text-purple-500" />
+              <div className="text-lg font-bold">{analysis?.totalOrders ?? 0}</div>
+              <div className="text-[10px] text-muted-foreground">Pedidos</div>
+            </div>
+          </div>
+
+          {/* Gráfico Semanal */}
+          {chartData.length > 0 && (
+            <div className="mt-4">
+              <h4 className="text-xs font-semibold text-muted-foreground mb-2 uppercase">Tempo médio por dia</h4>
+              <div className="h-[160px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 5, right: 5, bottom: 0, left: -20 }}>
+                    <defs>
+                      <linearGradient id="prepGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={color} stopOpacity={0.3} />
+                        <stop offset="95%" stopColor={color} stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis dataKey="day" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} unit="m" />
+                    <RechartsTooltip
+                      contentStyle={{ borderRadius: 10, fontSize: 12, border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                      formatter={(value: number) => [`${value} min`, 'Tempo médio']}
+                    />
+                    <ReferenceLine y={analysis?.prepGoal ?? 30} stroke="#ef4444" strokeDasharray="5 5" label={{ value: 'Meta', position: 'right', fontSize: 10, fill: '#ef4444' }} />
+                    {avgLine > 0 && <ReferenceLine y={avgLine} stroke="#94a3b8" strokeDasharray="3 3" />}
+                    <Area type="monotone" dataKey="avgMinutes" stroke={color} fill="url(#prepGrad)" strokeWidth={2} dot={{ r: 3, fill: color }} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+
+          {/* Tempo médio por etapa */}
+          <div className="mt-4">
+            <h4 className="text-xs font-semibold text-muted-foreground mb-2 uppercase">Tempo médio por etapa</h4>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center gap-3 bg-orange-50 dark:bg-orange-950/20 rounded-xl p-3">
+                <div className="bg-orange-100 dark:bg-orange-900/40 rounded-lg p-2">
+                  <ChefHat className="h-5 w-5 text-orange-600" />
+                </div>
+                <div>
+                  <div className="text-lg font-bold">{analysis?.prepMinutes ?? 0} min</div>
+                  <div className="text-[10px] text-muted-foreground">Preparo</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 bg-blue-50 dark:bg-blue-950/20 rounded-xl p-3">
+                <div className="bg-blue-100 dark:bg-blue-900/40 rounded-lg p-2">
+                  <Bike className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <div className="text-lg font-bold">{analysis?.deliveryMinutes ?? 0} min</div>
+                  <div className="text-[10px] text-muted-foreground">Entrega</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Pior tempo da semana */}
+          {analysis?.worstOrder && (
+            <div className="mt-4">
+              <h4 className="text-xs font-semibold text-muted-foreground mb-2 uppercase">Pior tempo da semana</h4>
+              <div className="flex items-center gap-3 bg-red-50 dark:bg-red-950/20 rounded-xl p-3">
+                <div className="bg-red-100 dark:bg-red-900/40 rounded-lg p-2">
+                  <AlertTriangle className="h-5 w-5 text-red-600" />
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-red-600">{analysis.worstOrder.minutes} min</div>
+                  <div className="text-[10px] text-muted-foreground">
+                    Pedido #{analysis.worstOrder.orderNumber} &middot; {dayNameMap[analysis.worstOrder.dayName] || analysis.worstOrder.dayName}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Insights */}
+          <div className="mt-4 flex items-center gap-4 text-sm">
+            {analysis?.bestDay && (
+              <div className="flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-yellow-500" />
+                <span className="text-muted-foreground">Melhor dia:</span>
+                <span className="font-semibold">{dayNameMap[analysis.bestDay.dayName] || analysis.bestDay.dayName}</span>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <Target className="h-4 w-4 text-blue-500" />
+              <span className="text-muted-foreground">Média diária:</span>
+              <span className="font-semibold">{analysis?.avgDailyOrders ?? 0} pedidos</span>
+            </div>
+          </div>
+
+          {/* Meta de preparo configurável */}
+          <div className="mt-5 border-t pt-4">
+            <h4 className="text-xs font-semibold text-muted-foreground mb-3 uppercase">Meta de preparo</h4>
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <Slider
+                  value={[goalValue]}
+                  onValueChange={(v) => { setGoalValue(v[0]); setGoalChanged(true); }}
+                  min={5}
+                  max={120}
+                  step={5}
+                  className="w-full"
+                />
+              </div>
+              <div className="text-lg font-bold w-16 text-center">{goalValue} min</div>
+              {goalChanged && (
+                <Button
+                  size="sm"
+                  onClick={handleSaveGoal}
+                  disabled={updateGoalMutation.isPending}
+                  className="gap-1"
+                >
+                  <Save className="h-3 w-3" />
+                  Salvar
+                </Button>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
