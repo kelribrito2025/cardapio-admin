@@ -1,0 +1,14 @@
+{
+  "query": "SELECT \n  (SELECT COUNT(*) FROM categories WHERE establishmentId = 210008) as categorias,\n  (SELECT COUNT(*) FROM products WHERE establishmentId = 210008) as produtos;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT \n  (SELECT COUNT(*) FROM categories WHERE establishmentId = 210008) as categorias,\n  (SELECT COUNT(*) FROM products WHERE establishmentId = 210008) as produtos;",
+  "rows": [
+    {
+      "categorias": "2",
+      "produtos": "15"
+    }
+  ],
+  "messages": [],
+  "stdout": "categorias\tprodutos\n2\t15\n",
+  "stderr": "",
+  "execution_time_ms": 92
+}

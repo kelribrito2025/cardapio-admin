@@ -1,0 +1,115 @@
+{
+  "query": "SELECT id, name, price, status, isCombo FROM products WHERE establishmentId = 210008 ORDER BY sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, price, status, isCombo FROM products WHERE establishmentId = 210008 ORDER BY sortOrder;",
+  "rows": [
+    {
+      "id": "710008",
+      "name": "Item de teste",
+      "price": "10.00",
+      "status": "active",
+      "isCombo": "0"
+    },
+    {
+      "id": "710009",
+      "name": "PIZZA GRANDE PROMOCIONAL - 35cm - 9 Fatias",
+      "price": "38.00",
+      "status": "paused",
+      "isCombo": "0"
+    },
+    {
+      "id": "710010",
+      "name": "PIZZA FAMILIA PROMOCIONAL - 40cm - 12 Fatias  ",
+      "price": "50.00",
+      "status": "paused",
+      "isCombo": "0"
+    },
+    {
+      "id": "710011",
+      "name": "PIZZA TREM PROMOCIONAL - 70cm - 24 Fatias  ",
+      "price": "89.90",
+      "status": "paused",
+      "isCombo": "1"
+    },
+    {
+      "id": "710012",
+      "name": "PIZZA TREM (3 Partes Salgadas e 1 Doce)",
+      "price": "129.90",
+      "status": "active",
+      "isCombo": "1"
+    },
+    {
+      "id": "710013",
+      "name": "PIZZA TREM (TODA SALGADA)",
+      "price": "129.90",
+      "status": "active",
+      "isCombo": "1"
+    },
+    {
+      "id": "710014",
+      "name": "PIZZA TAMANHO FAMÍLIA 40CM",
+      "price": "75.00",
+      "status": "active",
+      "isCombo": "0"
+    },
+    {
+      "id": "710015",
+      "name": "PIZZA GRANDE  35CM  ",
+      "price": "65.00",
+      "status": "active",
+      "isCombo": "0"
+    },
+    {
+      "id": "710016",
+      "name": "PIZZA MÉDIA  30CM   ",
+      "price": "55.00",
+      "status": "active",
+      "isCombo": "0"
+    },
+    {
+      "id": "710017",
+      "name": "COMBO 1  (Grande + Média + Refri)",
+      "price": "105.00",
+      "status": "active",
+      "isCombo": "1"
+    },
+    {
+      "id": "710018",
+      "name": "COMBO 2  (Grande + Grande + Refri) ",
+      "price": "119.90",
+      "status": "active",
+      "isCombo": "1"
+    },
+    {
+      "id": "710019",
+      "name": "COMBO FAMÍLIA  ( 2 Pizzas Família 40cm + Refri Fruki Grátis)",
+      "price": "139.90",
+      "status": "active",
+      "isCombo": "1"
+    },
+    {
+      "id": "710020",
+      "name": "PIZZA GRANDE COM BORDA SOBREMESA",
+      "price": "79.00",
+      "status": "paused",
+      "isCombo": "0"
+    },
+    {
+      "id": "710021",
+      "name": "PIZZA FAMILIA COM BORDA SOBREMESA  ",
+      "price": "82.00",
+      "status": "paused",
+      "isCombo": "0"
+    },
+    {
+      "id": "710022",
+      "name": "PIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)",
+      "price": "109.90",
+      "status": "paused",
+      "isCombo": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprice\tstatus\tisCombo\n710008\tItem de teste\t10.00\tactive\t0\n710009\tPIZZA GRANDE PROMOCIONAL - 35cm - 9 Fatias\t38.00\tpaused\t0\n710010\tPIZZA FAMILIA PROMOCIONAL - 40cm - 12 Fatias  \t50.00\tpaused\t0\n710011\tPIZZA TREM PROMOCIONAL - 70cm - 24 Fatias  \t89.90\tpaused\t1\n710012\tPIZZA TREM (3 Partes Salgadas e 1 Doce)\t129.90\tactive\t1\n710013\tPIZZA TREM (TODA SALGADA)\t129.90\tactive\t1\n710014\tPIZZA TAMANHO FAMÍLIA 40CM\t75.00\tactive\t0\n710015\tPIZZA GRANDE  35CM  \t65.00\tactive\t0\n710016\tPIZZA MÉDIA  30CM   \t55.00\tactive\t0\n710017\tCOMBO 1  (Grande + Média + Refri)\t105.00\tactive\t1\n710018\tCOMBO 2  (Grande + Grande + Refri) \t119.90\tactive\t1\n710019\tCOMBO FAMÍLIA  ( 2 Pizzas Família 40cm + Refri Fruki Grátis)\t139.90\tactive\t1\n710020\tPIZZA GRANDE COM BORDA SOBREMESA\t79.00\tpaused\t0\n710021\tPIZZA FAMILIA COM BORDA SOBREMESA  \t82.00\tpaused\t0\n710022\tPIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)\t109.90\tpaused\t1\n",
+  "stderr": "",
+  "execution_time_ms": 70
+}

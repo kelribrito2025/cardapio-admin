@@ -1,0 +1,16 @@
+{
+  "query": "SELECT \n  (SELECT COUNT(*) FROM categories WHERE establishmentId = 210008) as categorias,\n  (SELECT COUNT(*) FROM products WHERE establishmentId = 210008) as produtos,\n  (SELECT COUNT(*) FROM complementGroups cg JOIN products p ON cg.productId = p.id WHERE p.establishmentId = 210008) as grupos_complementos,\n  (SELECT COUNT(*) FROM complementItems ci JOIN complementGroups cg ON ci.groupId = cg.id JOIN products p ON cg.productId = p.id WHERE p.establishmentId = 210008) as opcoes_complementos;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT \n  (SELECT COUNT(*) FROM categories WHERE establishmentId = 210008) as categorias,\n  (SELECT COUNT(*) FROM products WHERE establishmentId = 210008) as produtos,\n  (SELECT COUNT(*) FROM complementGroups cg JOIN products p ON cg.productId = p.id WHERE p.establishmentId = 210008) as grupos_complementos,\n  (SELECT COUNT(*) FROM complementItems ci JOIN complementGroups cg ON ci.groupId = cg.id JOIN products p ON cg.productId = p.id WHERE p.establishmentId = 210008) as opcoes_complementos;",
+  "rows": [
+    {
+      "categorias": "2",
+      "produtos": "15",
+      "grupos_complementos": "65",
+      "opcoes_complementos": "922"
+    }
+  ],
+  "messages": [],
+  "stdout": "categorias\tprodutos\tgrupos_complementos\topcoes_complementos\n2\t15\t65\t922\n",
+  "stderr": "",
+  "execution_time_ms": 75
+}

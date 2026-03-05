@@ -3261,7 +3261,7 @@ export default function PublicMenu() {
                                           }
                                         </span>
                                       );
-                                    } else if (displayPrice === 0) {
+                                    } else if (displayPrice === 0 && item.priceMode === 'free') {
                                       return (
                                         <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full border border-green-200">
                                           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">

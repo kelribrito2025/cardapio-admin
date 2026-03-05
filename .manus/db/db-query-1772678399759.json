@@ -1,0 +1,40 @@
+{
+  "query": "SELECT p.id, p.name, \n  (SELECT COUNT(*) FROM complementGroups cg WHERE cg.productId = p.id) as num_groups,\n  (SELECT COUNT(*) FROM complementItems ci JOIN complementGroups cg ON ci.groupId = cg.id WHERE cg.productId = p.id) as num_items\nFROM products p \nWHERE p.establishmentId = 210008 \nORDER BY num_items DESC\nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, \n  (SELECT COUNT(*) FROM complementGroups cg WHERE cg.productId = p.id) as num_groups,\n  (SELECT COUNT(*) FROM complementItems ci JOIN complementGroups cg ON ci.groupId = cg.id WHERE cg.productId = p.id) as num_items\nFROM products p \nWHERE p.establishmentId = 210008 \nORDER BY num_items DESC\nLIMIT 5;",
+  "rows": [
+    {
+      "id": "710016",
+      "name": "PIZZA MÉDIA  30CM",
+      "num_groups": "6",
+      "num_items": "94"
+    },
+    {
+      "id": "710014",
+      "name": "PIZZA TAMANHO FAMÍLIA 40CM",
+      "num_groups": "6",
+      "num_items": "87"
+    },
+    {
+      "id": "710015",
+      "name": "PIZZA GRANDE  35CM",
+      "num_groups": "6",
+      "num_items": "87"
+    },
+    {
+      "id": "710017",
+      "name": "COMBO 1  (Grande + Média + Refri)",
+      "num_groups": "5",
+      "num_items": "85"
+    },
+    {
+      "id": "710019",
+      "name": "COMBO FAMÍLIA  ( 2 Pizzas Família 40cm + Refri Fruki Grátis)",
+      "num_groups": "5",
+      "num_items": "84"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tnum_groups\tnum_items\n710016\tPIZZA MÉDIA  30CM\t6\t94\n710014\tPIZZA TAMANHO FAMÍLIA 40CM\t6\t87\n710015\tPIZZA GRANDE  35CM\t6\t87\n710017\tCOMBO 1  (Grande + Média + Refri)\t5\t85\n710019\tCOMBO FAMÍLIA  ( 2 Pizzas Família 40cm + Refri Fruki Grátis)\t5\t84\n",
+  "stderr": "",
+  "execution_time_ms": 66
+}
