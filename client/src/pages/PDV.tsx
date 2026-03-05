@@ -1099,7 +1099,7 @@ export default function PDV() {
           {/* Coluna Direita - Carrinho */}
           <div className="w-96 border-l border-border/50 bg-muted/30 flex flex-col">
             {/* Header do Carrinho */}
-            <div className="p-4 border-b border-border/50 bg-card">
+            <div className="p-4 border-b border-border/50 bg-card" style={{paddingTop: '6px', paddingBottom: '6px'}}>
               {/* Tipo de Pedido - Pill selector com sliding animation */}
               <div className="relative flex items-center bg-muted rounded-xl p-1">
                 {/* Sliding pill indicator */}
