@@ -17,7 +17,6 @@ import {
   Check,
   ChevronRight,
   Lock,
-  Trophy,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -28,11 +27,6 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
 
 const stepConfig: Record<string, {
   icon: React.ElementType;
@@ -129,7 +123,6 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
   const [expandedStepId, setExpandedStepId] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [justUnlockedStepId, setJustUnlockedStepId] = useState<string | null>(null);
   const prevCompletedRef = useRef<number | null>(null);
 
   const { data: checklist, isLoading } = trpc.dashboard.onboardingChecklist.useQuery(
@@ -147,36 +140,22 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
     }
   }, [checklist, expandedStepId]);
 
-  // Detectar desbloqueio de novo passo e animar
+  // Se completou tudo, mostrar confetti e celebração antes de dismiss
   useEffect(() => {
     if (!checklist) return;
-    const prevCount = prevCompletedRef.current;
-    
-    if (checklist.allCompleted && prevCount !== null && prevCount < checklist.totalSteps) {
-      // Completou tudo — mostrar celebração na sidebar com confetis
+    if (checklist.allCompleted && prevCompletedRef.current !== null && prevCompletedRef.current < checklist.totalSteps) {
       setShowConfetti(true);
       setShowCelebration(true);
       setSheetOpen(true);
       const timer = setTimeout(() => {
         localStorage.setItem(dismissedKey, "true");
         setDismissed(true);
-      }, 12000);
+      }, 8000);
       return () => clearTimeout(timer);
-    } else if (checklist.allCompleted && prevCount === null) {
+    } else if (checklist.allCompleted && prevCompletedRef.current === null) {
       localStorage.setItem(dismissedKey, "true");
       setDismissed(true);
-    } else if (prevCount !== null && checklist.completedCount > prevCount && !checklist.allCompleted) {
-      // Um passo foi concluído — animar o próximo passo desbloqueado
-      const firstIncomplete = checklist.steps.find(s => !s.completed);
-      if (firstIncomplete) {
-        setJustUnlockedStepId(firstIncomplete.id);
-        setExpandedStepId(firstIncomplete.id);
-        // Limpar animação após 1.5s
-        const timer = setTimeout(() => setJustUnlockedStepId(null), 1500);
-        return () => clearTimeout(timer);
-      }
     }
-    
     prevCompletedRef.current = checklist.completedCount;
   }, [checklist?.allCompleted, checklist?.completedCount]);
 
@@ -292,60 +271,53 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
     <div className="hidden md:block mb-4">
       <div className="relative rounded-xl overflow-hidden border bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/20 border-red-200/50 dark:border-red-800/30">
         {/* Decorative background pattern */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h4v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2H0v-2h20v-2H0v-2h20v-2H0v-2h20' fill='%23ef4444' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")` }} />
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h4v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2H0v-2h20v-2H0v-2h20v-2H0v-2h20' fill='%23dc2626' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")` }} />
         
+        {/* Shimmer effect */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(105deg, transparent 0%, transparent 30%, rgba(255,255,255,0.5) 45%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.5) 55%, transparent 70%, transparent 100%)',
+              animation: 'banner-shimmer 3s ease-in-out infinite',
+              animationDelay: '1s'
+            }}
+          />
+        </div>
+
         <div className="relative flex items-center gap-3 px-4 py-3">
-          {/* Icon */}
-          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-500 flex items-center justify-center shadow-sm">
-            <Rocket className="h-5 w-5 text-white" />
-          </div>
-          
-          {/* Text */}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-foreground">Primeiros Passos</p>
-            <p className="text-xs text-muted-foreground">
-              {checklist.completedCount}/{checklist.totalSteps} concluídos
-            </p>
+          {/* Ícone pulsante */}
+          <div className="relative flex-shrink-0">
+            <div className="absolute inset-0 animate-ping rounded-full bg-red-400/30 dark:bg-red-500/20" />
+            <div className="relative p-2 rounded-full bg-red-100 dark:bg-red-900/40">
+              <Rocket className="h-5 w-5 text-red-600 dark:text-red-400" />
+            </div>
           </div>
 
-          {/* Progress bar mini */}
-          <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0">
-            {checklist.steps.map((step) => (
-              <div
-                key={step.id}
-                className={cn(
-                  "w-6 h-1.5 rounded-full transition-all",
-                  step.completed ? "bg-red-500" : "bg-red-200/60 dark:bg-red-800/30"
-                )}
-              />
-            ))}
+          {/* Text */}
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm text-foreground leading-tight">
+              Configuração Inicial — <span className="text-red-600 dark:text-red-400">{checklist.completedCount}/{checklist.totalSteps}</span> concluídos
+            </p>
+            <p className="text-xs text-muted-foreground leading-tight mt-0.5">
+              Complete os passos para começar a receber pedidos!
+            </p>
           </div>
 
           {/* Action button */}
           <button
             onClick={handleReopen}
-            className="flex-shrink-0 h-8 px-3 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5"
+            className="flex-shrink-0 text-xs h-8 px-3 rounded-lg gap-1.5 font-semibold bg-red-600 hover:bg-red-700 text-white shadow-sm inline-flex items-center transition-colors"
           >
-            Continuar
-            <ArrowRight className="h-3 w-3" />
-          </button>
-
-          {/* Close button */}
-          <button
-            onClick={() => {
-              localStorage.setItem(dismissedKey, "true");
-              setDismissed(true);
-            }}
-            className="flex-shrink-0 p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-muted/60 transition-colors"
-          >
-            <X className="h-3.5 w-3.5" />
+            Completar tarefas
+            <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
     </div>
   );
 
-  // ==================== DESKTOP: Sheet lateral (sidebar) ====================
+  // ==================== DESKTOP: Sheet/Sidebar lateral ====================
   const DesktopSheet = () => (
     <Sheet open={sheetOpen} onOpenChange={(open) => {
       if (!open) handleMinimize();
@@ -424,17 +396,9 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
             const isCurrentStep = index === firstIncompleteIndex;
             const isLocked = !isCompleted && !isCurrentStep;
             const isExpanded = expandedStepId === step.id && isCurrentStep;
-            const isJustUnlocked = justUnlockedStepId === step.id;
 
-            const stepCard = (
-              <div
-                key={step.id}
-                className={cn(
-                  "relative transition-all duration-300",
-                  isLocked && "opacity-50",
-                  isJustUnlocked && "animate-step-unlock animate-step-glow"
-                )}
-              >
+            return (
+              <div key={step.id} className={cn("relative", isLocked && "opacity-50")}>
                 {/* Step card */}
                 <div
                   className={cn(
@@ -550,25 +514,6 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                 </div>
               </div>
             );
-
-            // Envolver passos bloqueados com Tooltip
-            if (isLocked) {
-              return (
-                <Tooltip key={step.id}>
-                  <TooltipTrigger asChild>
-                    {stepCard}
-                  </TooltipTrigger>
-                  <TooltipContent side="left" className="max-w-[200px]">
-                    <div className="flex items-center gap-1.5">
-                      <Lock className="h-3 w-3 flex-shrink-0" />
-                      <span>Complete o passo anterior primeiro</span>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              );
-            }
-
-            return stepCard;
           })}
         </div>
       </SheetContent>
@@ -586,60 +531,33 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
         <SheetTitle className="sr-only">Configuração Concluída</SheetTitle>
         <SheetDescription className="sr-only">Todas as etapas foram concluídas</SheetDescription>
 
-        {/* Header com degradê festivo */}
-        <div className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-red-500/90 via-rose-400/80 to-orange-400/70" />
-          <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/20 rounded-full blur-3xl" />
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-yellow-300/20 rounded-full blur-3xl" />
-          
-          <div className="relative px-6 pt-8 pb-6 text-center">
-            <div className="w-20 h-20 rounded-2xl bg-white/25 backdrop-blur-sm flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <Trophy className="h-10 w-10 text-white" />
-            </div>
-            <h2 className="text-3xl font-bold text-white tracking-tight">Parabéns!</h2>
-            <p className="text-base text-white/80 mt-2">Tudo configurado com sucesso</p>
+        <div className="flex-1 flex flex-col items-center justify-center p-10 text-center h-full">
+          <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-6">
+            <PartyPopper className="h-10 w-10 text-red-600 dark:text-red-400" />
           </div>
-        </div>
 
-        {/* Conteúdo da celebração */}
-        <div className="flex-1 flex flex-col items-center justify-center px-8 py-8 text-center">
-          <div className="w-full max-w-sm">
-            <p className="text-lg text-foreground font-medium mb-2">
-              Seu restaurante <span className="font-bold text-red-600 dark:text-red-400">{establishmentName}</span> está pronto!
-            </p>
-            <p className="text-sm text-muted-foreground mb-8">
-              Todas as configurações iniciais foram concluídas. Agora seus clientes podem fazer pedidos pelo seu cardápio digital.
-            </p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Parabéns! Tudo configurado!</h2>
+          <p className="text-muted-foreground mb-6">
+            Seu restaurante <span className="font-semibold text-foreground">{establishmentName}</span> está pronto para receber pedidos.
+            Todas as configurações iniciais foram concluídas com sucesso.
+          </p>
 
-            {/* Passos concluídos resumo */}
-            <div className="bg-red-50/60 dark:bg-red-950/20 rounded-xl p-4 mb-8">
-              <div className="flex items-center justify-center gap-2 text-red-600 dark:text-red-400 font-semibold mb-3">
-                <CheckCircle2 className="h-5 w-5" />
-                <span>{checklist.totalSteps}/{checklist.totalSteps} passos concluídos</span>
-              </div>
-              <div className="flex gap-1.5 justify-center">
-                {checklist.steps.map((step) => (
-                  <div
-                    key={step.id}
-                    className="w-8 h-2 rounded-full bg-red-500 shadow-sm shadow-red-500/20"
-                  />
-                ))}
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                setShowCelebration(false);
-                setShowConfetti(false);
-                localStorage.setItem(dismissedKey, "true");
-                setDismissed(true);
-              }}
-              className="w-full h-12 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-md shadow-red-500/20"
-            >
-              <Rocket className="h-4 w-4" />
-              Ir para o Dashboard
-            </button>
+          <div className="flex items-center justify-center gap-2 text-sm text-red-600 dark:text-red-400 font-medium mb-6">
+            <CheckCircle2 className="h-5 w-5" />
+            <span>{checklist.totalSteps}/{checklist.totalSteps} passos concluídos</span>
           </div>
+
+          <button
+            onClick={() => {
+              setShowCelebration(false);
+              setShowConfetti(false);
+              localStorage.setItem(dismissedKey, "true");
+              setDismissed(true);
+            }}
+            className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors text-sm"
+          >
+            Ir para o Dashboard
+          </button>
         </div>
       </SheetContent>
     </Sheet>
@@ -648,7 +566,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
   const CelebrationMobile = () => (
     <div className="md:hidden mb-6 rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden text-center p-8">
       <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
-        <Trophy className="h-8 w-8 text-red-600 dark:text-red-400" />
+        <PartyPopper className="h-8 w-8 text-red-600 dark:text-red-400" />
       </div>
       <h2 className="text-xl font-bold text-foreground mb-2">Parabéns! Tudo configurado!</h2>
       <p className="text-sm text-muted-foreground mb-4">
