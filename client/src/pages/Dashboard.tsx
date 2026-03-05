@@ -322,7 +322,9 @@ export default function Dashboard() {
       {/* Top Produtos + Modalidade + Tempo Médio */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Top Produtos */}
-        <div className="bg-card rounded-xl border border-border/50 pt-5 px-5 pb-0 flex flex-col">
+        <HoverCard openDelay={300} closeDelay={200}>
+        <HoverCardTrigger asChild>
+        <div className="bg-card rounded-xl border border-border/50 pt-5 px-5 pb-0 flex flex-col cursor-default transition-shadow hover:shadow-lg hover:border-amber-200 dark:hover:border-amber-800/50">
           {/* Header com ícone - mesmo estilo Formas de Pagamento */}
           <div className="flex items-center gap-3 mb-4">
             <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -436,11 +438,52 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+        </HoverCardTrigger>
+        <HoverCardContent side="bottom" align="start" className="w-80 p-4">
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-2">
+              <div className="h-7 w-7 rounded-lg bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center">
+                <Trophy className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <p className="font-semibold text-sm">Resumo dos Mais Vendidos</p>
+            </div>
+            <div className="text-sm text-muted-foreground space-y-1.5">
+              <p>No período selecionado:</p>
+              {topProducts?.products && topProducts.products.length > 0 ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                    <span>Líder: <strong className="text-foreground">{topProducts.products[0]?.productName}</strong> ({topProducts.products[0]?.totalQuantity}x)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                    <span>Total de produtos listados: <strong className="text-foreground">{topProducts.products.length}</strong></span>
+                  </div>
+                </>
+              ) : (
+                <p>Nenhum produto vendido no período.</p>
+              )}
+            </div>
+            <div className="bg-amber-50 dark:bg-amber-950/30 rounded-lg p-2.5 border border-amber-100 dark:border-amber-800/30">
+              <p className="text-xs text-amber-800 dark:text-amber-300">
+                {topProducts?.topProductsPct && topProducts.topProductsPct >= 80
+                  ? '\uD83D\uDCA1 Alta concentração! Poucos produtos dominam o faturamento.'
+                  : topProducts?.topProductsPct && topProducts.topProductsPct >= 50
+                  ? '\uD83D\uDCA1 Distribuição saudável entre os produtos mais vendidos.'
+                  : '\uD83D\uDCA1 Faturamento bem distribuído entre diversos produtos.'}
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground/70">Top produtos representam: <strong className="text-foreground">{topProducts?.topProductsPct ?? 0}%</strong> do faturamento</p>
+          </div>
+        </HoverCardContent>
+        </HoverCard>
 
         {/* Coluna do meio: Pedidos por Modalidade + Clientes */}
         <div className="flex flex-col gap-6">
           {/* Pedidos por Modalidade */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[196px] overflow-hidden">
+          <HoverCard openDelay={300} closeDelay={200}>
+          <HoverCardTrigger asChild>
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[196px] overflow-hidden cursor-default transition-shadow hover:shadow-lg hover:border-violet-200 dark:hover:border-violet-800/50">
             {/* Header igual ao WeeklyRevenueCard */}
             <div className="flex items-center gap-3 mb-5">
               <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -513,6 +556,52 @@ export default function Dashboard() {
               </div>
             )}
           </div>
+          </HoverCardTrigger>
+          <HoverCardContent side="bottom" align="center" className="w-80 p-4">
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 rounded-lg bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center">
+                  <Truck className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" />
+                </div>
+                <p className="font-semibold text-sm">Resumo por Modalidade</p>
+              </div>
+              <div className="text-sm text-muted-foreground space-y-1.5">
+                <p>No período selecionado:</p>
+                {ordersByModality && ordersByModality.length > 0 ? (
+                  <>
+                    {ordersByModality.map((item, i) => {
+                      const total = ordersByModality.reduce((sum, m) => sum + m.count, 0);
+                      const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
+                      const colors = ['bg-violet-500', 'bg-blue-500', 'bg-emerald-500'];
+                      return (
+                        <div key={item.deliveryType} className="flex items-center gap-2">
+                          <div className={`w-2.5 h-2.5 rounded-full ${colors[i % colors.length]}`} />
+                          <span><strong className="text-foreground">{pct}%</strong> {item.label} ({item.count} pedidos)</span>
+                        </div>
+                      );
+                    })}
+                  </>
+                ) : (
+                  <p>Nenhum pedido no período.</p>
+                )}
+              </div>
+              <div className="bg-violet-50 dark:bg-violet-950/30 rounded-lg p-2.5 border border-violet-100 dark:border-violet-800/30">
+                <p className="text-xs text-violet-800 dark:text-violet-300">
+                  {(() => {
+                    if (!ordersByModality || ordersByModality.length === 0) return '\uD83D\uDCA1 Sem dados para análise.';
+                    const total = ordersByModality.reduce((sum, m) => sum + m.count, 0);
+                    const dominant = ordersByModality.reduce((a, b) => a.count > b.count ? a : b);
+                    const pct = total > 0 ? Math.round((dominant.count / total) * 100) : 0;
+                    return pct >= 70
+                      ? `\uD83D\uDCA1 ${dominant.label} domina com ${pct}% dos pedidos.`
+                      : '\uD83D\uDCA1 Distribuição equilibrada entre as modalidades.';
+                  })()}
+                </p>
+              </div>
+              <p className="text-xs text-muted-foreground/70">Total: <strong className="text-foreground">{ordersByModality?.reduce((sum, m) => sum + m.count, 0) ?? 0}</strong> pedidos no período</p>
+            </div>
+          </HoverCardContent>
+          </HoverCard>
 
           {/* Clientes Recorrentes vs Novos */}
           <HoverCard openDelay={300} closeDelay={200}>
@@ -626,7 +715,9 @@ export default function Dashboard() {
         {/* Coluna direita: Tempo Médio + Faturamento por Hora */}
         <div className="flex flex-col gap-6">
           {/* Card 1: Tempo Médio */}
-          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[196px] overflow-hidden">
+          <HoverCard openDelay={300} closeDelay={200}>
+          <HoverCardTrigger asChild>
+          <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[196px] overflow-hidden cursor-default transition-shadow hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-800/50">
             {/* Header */}
             <div className="flex items-center gap-3 mb-auto">
               <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
@@ -704,6 +795,52 @@ export default function Dashboard() {
               </div>
             )}
           </div>
+          </HoverCardTrigger>
+          <HoverCardContent side="bottom" align="center" className="w-80 p-4">
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 rounded-lg bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center">
+                  <Timer className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <p className="font-semibold text-sm">Resumo do Tempo de Preparo</p>
+              </div>
+              <div className="text-sm text-muted-foreground space-y-1.5">
+                <p>No período selecionado:</p>
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                  <span>Tempo médio: <strong className="text-foreground">{avgPrepTime?.avgMinutes ?? 0} min</strong></span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                  <span>Pedidos analisados: <strong className="text-foreground">{avgPrepTime?.totalOrders ?? 0}</strong></span>
+                </div>
+                {prepTimeTrend?.previousAvg != null && prepTimeTrend.previousAvg > 0 && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-gray-400" />
+                    <span>Período anterior: <strong className="text-foreground">{prepTimeTrend.previousAvg} min</strong></span>
+                  </div>
+                )}
+              </div>
+              <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-2.5 border border-blue-100 dark:border-blue-800/30">
+                <p className="text-xs text-blue-800 dark:text-blue-300">
+                  {(() => {
+                    const current = avgPrepTime?.avgMinutes ?? 0;
+                    const previous = prepTimeTrend?.previousAvg ?? 0;
+                    if (current === 0) return '\uD83D\uDCA1 Sem dados suficientes para análise.';
+                    if (previous === 0) return '\uD83D\uDCA1 Tempo médio de ' + current + ' min no período.';
+                    const diff = previous - current;
+                    return diff > 0
+                      ? `\uD83D\uDCA1 Melhoria de ${diff} min em relação ao período anterior!`
+                      : diff < 0
+                      ? `\uD83D\uDCA1 Atenção: ${Math.abs(diff)} min mais lento que o período anterior.`
+                      : '\uD83D\uDCA1 Tempo estável em relação ao período anterior.';
+                  })()}
+                </p>
+              </div>
+              <p className="text-xs text-muted-foreground/70">Cálculo: tempo entre <strong>aceito</strong> e <strong>pronto</strong></p>
+            </div>
+          </HoverCardContent>
+          </HoverCard>
 
           {/* Card 2: Faturamento por Hora */}
           <div className="bg-card rounded-xl border border-border/50 p-5 flex flex-col h-[306px] overflow-hidden">

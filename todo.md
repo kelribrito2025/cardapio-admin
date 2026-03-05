@@ -8125,3 +8125,6 @@
 - [x] Top bar: Tooltips desaparecem após primeiro clique (persistir via localStorage)
 - [x] Top bar: Aumentar largura do campo de busca em 20%
 - [x] Dashboard: Adicionar hover/tooltip informativo no card Perfil de Clientes
+- [x] Dashboard: Adicionar HoverCard informativo no card Tempo Médio
+- [x] Dashboard: Adicionar HoverCard informativo no card Pedidos por Modalidade
+- [x] Dashboard: Adicionar HoverCard informativo no card Top 10 Mais Vendidos
