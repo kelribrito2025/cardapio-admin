@@ -218,13 +218,13 @@ export default function Configuracoes() {
     closeTime: string;
   };
   const [businessHours, setBusinessHours] = useState<BusinessHourDay[]>([
-    { dayOfWeek: 0, isActive: false, openTime: "18:00", closeTime: "23:00" }, // Domingo
-    { dayOfWeek: 1, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Segunda
-    { dayOfWeek: 2, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Terça
-    { dayOfWeek: 3, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Quarta
-    { dayOfWeek: 4, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Quinta
-    { dayOfWeek: 5, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Sexta
-    { dayOfWeek: 6, isActive: true, openTime: "18:00", closeTime: "23:00" }, // Sábado
+    { dayOfWeek: 0, isActive: false, openTime: "", closeTime: "" }, // Domingo
+    { dayOfWeek: 1, isActive: false, openTime: "", closeTime: "" }, // Segunda
+    { dayOfWeek: 2, isActive: false, openTime: "", closeTime: "" }, // Terça
+    { dayOfWeek: 3, isActive: false, openTime: "", closeTime: "" }, // Quarta
+    { dayOfWeek: 4, isActive: false, openTime: "", closeTime: "" }, // Quinta
+    { dayOfWeek: 5, isActive: false, openTime: "", closeTime: "" }, // Sexta
+    { dayOfWeek: 6, isActive: false, openTime: "", closeTime: "" }, // Sábado
   ]);
   
   // Printer state
@@ -376,8 +376,8 @@ export default function Configuracoes() {
           return {
             dayOfWeek: day.dayOfWeek,
             isActive: savedHour.isActive,
-            openTime: savedHour.openTime || "18:00",
-            closeTime: savedHour.closeTime || "23:00",
+            openTime: savedHour.openTime || "",
+            closeTime: savedHour.closeTime || "",
           };
         }
         return day;
