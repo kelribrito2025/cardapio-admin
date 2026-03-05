@@ -390,18 +390,31 @@ export async function createEstablishment(data: InsertEstablishment) {
   const nextId = (maxIdResult[0]?.maxId ?? 0) + 1;
   
   // Limpar dados residuais/órfãos que possam existir para este ID
-  // (pode acontecer se um establishment anterior com este ID foi deletado sem limpar dados associados)
-  try {
-    await db.delete(products).where(eq(products.establishmentId, nextId));
-    // Usar raw SQL para subqueries com nomes de tabela explícitos
-    await db.execute(sql`DELETE FROM \`complementItems\` WHERE \`groupId\` IN (SELECT \`id\` FROM \`complementGroups\` WHERE \`establishmentId\` = ${nextId})`);
-    await db.delete(complementGroups).where(eq(complementGroups.establishmentId, nextId));
-    await db.delete(categories).where(eq(categories.establishmentId, nextId));
-    await db.delete(businessHours).where(eq(businessHours.establishmentId, nextId));
-    await db.execute(sql`DELETE FROM \`orderItems\` WHERE \`orderId\` IN (SELECT \`id\` FROM \`orders\` WHERE \`establishmentId\` = ${nextId})`);
-    await db.delete(orders).where(eq(orders.establishmentId, nextId));
-  } catch (cleanupError) {
-    console.warn('[createEstablishment] Erro ao limpar dados residuais (não bloqueante):', cleanupError);
+  // Cada delete tem try/catch individual para que uma falha não bloqueie os outros
+  const cleanupOps = [
+    async () => {
+      // Limpar complementItems via products que pertencem a este establishment
+      await db.execute(sql`DELETE ci FROM \`complementItems\` ci INNER JOIN \`complementGroups\` cg ON ci.\`groupId\` = cg.\`id\` INNER JOIN \`products\` p ON cg.\`productId\` = p.\`id\` WHERE p.\`establishmentId\` = ${nextId}`);
+    },
+    async () => {
+      // Limpar complementGroups via products
+      await db.execute(sql`DELETE cg FROM \`complementGroups\` cg INNER JOIN \`products\` p ON cg.\`productId\` = p.\`id\` WHERE p.\`establishmentId\` = ${nextId}`);
+    },
+    async () => await db.delete(products).where(eq(products.establishmentId, nextId)),
+    async () => await db.delete(categories).where(eq(categories.establishmentId, nextId)),
+    async () => await db.delete(businessHours).where(eq(businessHours.establishmentId, nextId)),
+    async () => {
+      await db.execute(sql`DELETE FROM \`orderItems\` WHERE \`orderId\` IN (SELECT \`id\` FROM \`orders\` WHERE \`establishmentId\` = ${nextId})`);
+    },
+    async () => await db.delete(orders).where(eq(orders.establishmentId, nextId)),
+  ];
+  
+  for (const op of cleanupOps) {
+    try {
+      await op();
+    } catch (cleanupError) {
+      console.warn('[createEstablishment] Erro ao limpar dados residuais (não bloqueante):', cleanupError);
+    }
   }
   
   const result = await db.insert(establishments).values({ ...data, id: nextId });
