@@ -17,9 +17,15 @@ import {
   Check,
   ChevronRight,
 } from "lucide-react";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Confetti } from "./Confetti";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 
 const stepConfig: Record<string, {
   icon: React.ElementType;
@@ -30,39 +36,39 @@ const stepConfig: Record<string, {
   category: {
     icon: FolderPlus,
     subtitle: "Organize seus produtos",
-    description: "Crie categorias para organizar seu cardapio. Exemplo: Entradas, Pratos Principais, Bebidas, Sobremesas.",
+    description: "Crie categorias para organizar seu cardápio. Exemplo: Entradas, Pratos Principais, Bebidas, Sobremesas.",
     whyImportant: [
-      "Facilita a navegacao dos clientes pelo cardapio",
+      "Facilita a navegação dos clientes pelo cardápio",
       "Organiza seus produtos de forma profissional",
-      "Melhora a experiencia de compra",
+      "Melhora a experiência de compra",
     ],
   },
   products: {
     icon: ShoppingBag,
-    subtitle: "Monte seu cardapio",
-    description: "Adicione os produtos que seu restaurante oferece, com fotos, precos e descricoes.",
+    subtitle: "Monte seu cardápio",
+    description: "Adicione os produtos que seu restaurante oferece, com fotos, preços e descrições.",
     whyImportant: [
-      "Seus clientes poderao ver e pedir seus produtos",
+      "Seus clientes poderão ver e pedir seus produtos",
       "Fotos atraentes aumentam as vendas",
-      "Descricoes claras reduzem duvidas",
+      "Descrições claras reduzem dúvidas",
     ],
   },
   business_hours: {
     icon: Clock,
-    subtitle: "Defina horarios",
-    description: "Configure os dias e horarios de funcionamento do seu restaurante para receber pedidos.",
+    subtitle: "Defina horários",
+    description: "Configure os dias e horários de funcionamento do seu restaurante para receber pedidos.",
     whyImportant: [
       "Clientes sabem quando podem fazer pedidos",
-      "Evita pedidos fora do horario de atendimento",
-      "Automatiza a abertura e fechamento do cardapio",
+      "Evita pedidos fora do horário de atendimento",
+      "Automatiza a abertura e fechamento do cardápio",
     ],
   },
   whatsapp: {
     icon: MessageCircle,
     subtitle: "Receba pedidos",
-    description: "Conecte seu WhatsApp para receber notificacoes de novos pedidos e se comunicar com clientes.",
+    description: "Conecte seu WhatsApp para receber notificações de novos pedidos e se comunicar com clientes.",
     whyImportant: [
-      "Permite que seus clientes facam pedidos diretamente",
+      "Permite que seus clientes façam pedidos diretamente",
       "Automatiza o processo de atendimento",
       "Reduz erros em pedidos",
     ],
@@ -70,11 +76,11 @@ const stepConfig: Record<string, {
   test_order: {
     icon: ClipboardCheck,
     subtitle: "Simule um pedido",
-    description: "Faca um pedido de teste para verificar se tudo esta funcionando corretamente antes de abrir para clientes.",
+    description: "Faça um pedido de teste para verificar se tudo está funcionando corretamente antes de abrir para clientes.",
     whyImportant: [
       "Garante que o fluxo de pedidos funciona",
       "Identifica problemas antes dos clientes",
-      "Voce ve exatamente o que o cliente vera",
+      "Você vê exatamente o que o cliente verá",
     ],
   },
   photos: {
@@ -82,9 +88,9 @@ const stepConfig: Record<string, {
     subtitle: "Personalize visual",
     description: "Adicione o logo e a foto de capa do seu restaurante para criar uma identidade visual profissional.",
     whyImportant: [
-      "Transmite profissionalismo e confianca",
+      "Transmite profissionalismo e confiança",
       "Clientes reconhecem sua marca facilmente",
-      "Destaca seu restaurante da concorrencia",
+      "Destaca seu restaurante da concorrência",
     ],
   },
 };
@@ -96,7 +102,6 @@ interface WelcomeChecklistProps {
 
 export function WelcomeChecklist({ establishmentId, establishmentName }: WelcomeChecklistProps) {
   const [, navigate] = useLocation();
-  // Chaves de localStorage específicas por establishment
   const dismissedKey = `welcome_checklist_dismissed_${establishmentId}`;
   const minimizedKey = `welcome_checklist_minimized_${establishmentId}`;
 
@@ -106,14 +111,15 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
     }
     return false;
   });
-  // Modal aberto/fechado (desktop) - começa aberto
-  const [modalOpen, setModalOpen] = useState(() => {
+
+  const [sheetOpen, setSheetOpen] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem(minimizedKey) !== "true";
     }
     return true;
   });
-  const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
+
+  const [expandedStepId, setExpandedStepId] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const prevCompletedRef = useRef<number | null>(null);
@@ -123,106 +129,68 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
     { enabled: !!establishmentId && !dismissed, staleTime: 30000 }
   );
 
-  // Auto-selecionar o primeiro passo incompleto
+  // Auto-expandir o primeiro passo incompleto
   useEffect(() => {
-    if (checklist && !selectedStepId) {
+    if (checklist && !expandedStepId) {
       const firstIncomplete = checklist.steps.find(s => !s.completed);
       if (firstIncomplete) {
-        setSelectedStepId(firstIncomplete.id);
-      } else if (checklist.steps.length > 0) {
-        setSelectedStepId(checklist.steps[0].id);
+        setExpandedStepId(firstIncomplete.id);
       }
     }
-  }, [checklist, selectedStepId]);
+  }, [checklist, expandedStepId]);
 
   // Se completou tudo, mostrar confetti e celebração antes de dismiss
   useEffect(() => {
     if (!checklist) return;
-    // Detectar transição para allCompleted
     if (checklist.allCompleted && prevCompletedRef.current !== null && prevCompletedRef.current < checklist.totalSteps) {
       setShowConfetti(true);
       setShowCelebration(true);
-      setModalOpen(true);
-      // Dismiss após a celebração
+      setSheetOpen(true);
       const timer = setTimeout(() => {
-      localStorage.setItem(dismissedKey, "true");
-      setDismissed(true);
+        localStorage.setItem(dismissedKey, "true");
+        setDismissed(true);
       }, 8000);
       return () => clearTimeout(timer);
     } else if (checklist.allCompleted && prevCompletedRef.current === null) {
-      // Já estava completo ao carregar — dismiss direto
       localStorage.setItem(dismissedKey, "true");
       setDismissed(true);
     }
     prevCompletedRef.current = checklist.completedCount;
   }, [checklist?.allCompleted, checklist?.completedCount]);
 
-  const selectedStep = useMemo(() => {
-    if (!checklist || !selectedStepId) return null;
-    return checklist.steps.find(s => s.id === selectedStepId) || null;
-  }, [checklist, selectedStepId]);
-
-  const selectedConfig = selectedStepId ? stepConfig[selectedStepId] : null;
-
   if (dismissed || isLoading || !checklist) {
     return null;
   }
 
-  // Se está celebrando, mostrar tela de celebração em vez de null
   if (checklist.allCompleted && !showCelebration) {
     return null;
   }
 
   const progress = (checklist.completedCount / checklist.totalSteps) * 100;
 
-  const handleDismiss = () => {
-    localStorage.setItem(dismissedKey, "true");
-    setDismissed(true);
-  };
-
   const handleMinimize = () => {
-    setModalOpen(false);
+    setSheetOpen(false);
     localStorage.setItem(minimizedKey, "true");
   };
 
   const handleReopen = () => {
-    setModalOpen(true);
+    setSheetOpen(true);
     localStorage.removeItem(minimizedKey);
   };
 
-  const handleStartStep = () => {
-    if (selectedStep) {
-      navigate(selectedStep.href);
-    }
+  const handleStartStep = (href: string) => {
+    navigate(href);
+    handleMinimize();
   };
 
-  const handleSkipStep = () => {
-    if (!checklist) return;
-    const currentIdx = checklist.steps.findIndex(s => s.id === selectedStepId);
-    // Encontrar o próximo passo incompleto
-    for (let i = 1; i < checklist.steps.length; i++) {
-      const nextIdx = (currentIdx + i) % checklist.steps.length;
-      if (!checklist.steps[nextIdx].completed) {
-        setSelectedStepId(checklist.steps[nextIdx].id);
-        return;
-      }
-    }
+  const toggleStep = (stepId: string) => {
+    setExpandedStepId(prev => prev === stepId ? null : stepId);
   };
 
-  const stepNumber = checklist.steps.findIndex(s => s.id === selectedStepId) + 1;
-
-  // ==================== MOBILE: Card compacto (mantém o layout atual) ====================
+  // ==================== MOBILE: Card compacto ====================
   const MobileView = () => (
     <div className="md:hidden mb-6 rounded-2xl border border-border/60 bg-gradient-to-br from-card via-card to-primary/[0.03] shadow-sm overflow-hidden">
       <div className="px-5 pt-5 pb-3 relative">
-        <button
-          onClick={handleDismiss}
-          className="absolute top-3 right-3 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
-          title="Fechar"
-        >
-          <X className="h-4 w-4" />
-        </button>
-
         <div className="flex items-center gap-3">
           <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
             <PartyPopper className="h-5 w-5 text-primary" />
@@ -343,205 +311,219 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
             Completar tarefas
             <ArrowRight className="h-3.5 w-3.5" />
           </button>
-
         </div>
       </div>
     </div>
   );
 
-  // ==================== DESKTOP: Modal wizard ====================
-  const DesktopModal = () => (
-    <div className="hidden md:block fixed inset-0 z-50">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={handleMinimize} />
+  // ==================== DESKTOP: Sheet/Sidebar lateral ====================
+  const DesktopSheet = () => (
+    <Sheet open={sheetOpen} onOpenChange={(open) => {
+      if (!open) handleMinimize();
+    }}>
+      <SheetContent
+        side="right"
+        hideCloseButton
+        className="!w-[440px] !max-w-[440px] p-0 gap-0 border-l border-border/40 bg-gradient-to-b from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 overflow-hidden"
+      >
+        {/* SR-only title for accessibility */}
+        <SheetTitle className="sr-only">Configuração Inicial</SheetTitle>
+        <SheetDescription className="sr-only">Passos para configurar seu restaurante</SheetDescription>
 
-      {/* Modal */}
-      <div className="absolute inset-0 flex items-center justify-center p-8">
-        <div className="relative w-full max-w-[860px] max-h-[540px] bg-card rounded-2xl shadow-2xl border border-border/40 overflow-hidden flex">
-          
-          {/* Sidebar esquerda - vermelho Mindi */}
-          <div className="w-[300px] flex-shrink-0 bg-gradient-to-b from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white p-6 flex flex-col">
-            {/* Logo + Título */}
-            <div className="mb-6">
-              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-4">
-                <span className="text-lg font-bold text-white">M</span>
+        {/* Header vermelho com branding */}
+        <div className="px-6 pt-6 pb-4">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-sm">
+                <Sparkles className="h-5 w-5 text-white" />
               </div>
-              <h2 className="text-lg font-bold text-white">Configuracao Inicial</h2>
-              <p className="text-sm text-white/70 mt-1">Configure seu restaurante passo a passo</p>
+              <span className="text-base font-bold text-white">Mindi Setup</span>
             </div>
-
-            {/* Steps timeline */}
-            <div className="flex-1 overflow-y-auto">
-              <div className="relative">
-                {/* Linha vertical conectora */}
-                <div className="absolute left-[18px] top-[36px] bottom-[18px] w-[2px] bg-white/20" />
-
-                <div className="space-y-1">
-                  {checklist.steps.map((step, idx) => {
-                    const cfg = stepConfig[step.id];
-                    const StepIcon = cfg?.icon || Circle;
-                    const isSelected = selectedStepId === step.id;
-                    const isCompleted = step.completed;
-
-                    return (
-                      <button
-                        key={step.id}
-                        onClick={() => setSelectedStepId(step.id)}
-                        className={cn(
-                          "relative w-full flex items-center gap-3 py-2.5 px-2 rounded-lg text-left transition-all duration-200",
-                          isSelected && !isCompleted && "bg-white/15",
-                          !isSelected && "hover:bg-white/10"
-                        )}
-                      >
-                        {/* Circle indicator */}
-                        <div className={cn(
-                          "relative z-10 flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300",
-                          isCompleted
-                            ? "bg-white"
-                            : isSelected
-                              ? "bg-white ring-2 ring-white/30"
-                              : "bg-white/20 border border-white/30"
-                        )}>
-                          {isCompleted ? (
-                            <Check className="h-4 w-4 text-red-600" />
-                          ) : (
-                            <StepIcon className={cn("h-4 w-4", isSelected ? "text-red-600" : "text-white/60")} />
-                          )}
-                        </div>
-
-                        {/* Label */}
-                        <div className="flex-1 min-w-0">
-                          <span className={cn(
-                            "block text-sm font-medium truncate",
-                            isCompleted
-                              ? "text-white/70 line-through decoration-white/40"
-                              : isSelected
-                                ? "text-white font-semibold"
-                                : "text-white/80"
-                          )}>
-                            {step.label}
-                          </span>
-                          <span className={cn(
-                            "block text-xs truncate mt-0.5",
-                            isCompleted ? "text-white/40" : isSelected ? "text-white/60" : "text-white/40"
-                          )}>
-                            {cfg?.subtitle}
-                          </span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Progress footer */}
-            <div className="mt-4 pt-4 border-t border-white/20">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-white/70">Progresso</span>
-                <span className="font-semibold text-white">{checklist.completedCount}/{checklist.totalSteps}</span>
-              </div>
-              <div className="mt-2 h-1.5 bg-white/20 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-white rounded-full transition-all duration-700 ease-out"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Conteúdo direito */}
-          <div className="flex-1 p-8 flex flex-col overflow-y-auto">
-            {/* Close button */}
             <button
               onClick={handleMinimize}
-              className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
-              title="Minimizar"
+              className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
+          </div>
 
-            {selectedStep && selectedConfig ? (
-              <>
-                {/* Step indicator */}
-                <div className="mb-6">
-                  <span className={cn(
-                    "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full",
-                    selectedStep.completed
-                      ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary"
-                      : "bg-primary/10 text-primary"
-                  )}>
-                    <span className={cn(
-                      "w-1.5 h-1.5 rounded-full",
-                      selectedStep.completed ? "bg-primary" : "bg-primary"
-                    )} />
-                    {selectedStep.completed ? "Concluido" : `Passo ${stepNumber} de ${checklist.totalSteps}`}
-                  </span>
-                </div>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Primeiros Passos</h2>
+          <p className="text-sm text-white/70 mt-1">Configuração rápida e simples</p>
 
-                {/* Title */}
-                <h3 className="text-2xl font-bold text-foreground tracking-tight">
-                  {selectedStep.label}
-                </h3>
-                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                  {selectedConfig.description}
-                </p>
+          {/* Progress card */}
+          <div className="mt-5 bg-white/15 backdrop-blur-sm rounded-xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-white/90">Progresso Total</span>
+              <span className="text-2xl font-bold text-white">
+                {checklist.completedCount}/{checklist.totalSteps}
+              </span>
+            </div>
+            {/* Segmented progress bar */}
+            <div className="flex gap-1.5">
+              {checklist.steps.map((step) => (
+                <div
+                  key={step.id}
+                  className={cn(
+                    "flex-1 h-2 rounded-full transition-all duration-500",
+                    step.completed
+                      ? "bg-white"
+                      : "bg-white/25"
+                  )}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
 
-                {/* Why important box */}
-                <div className="mt-6 p-5 rounded-xl border border-border/60 bg-muted/20">
-                  <h4 className="text-sm font-semibold text-foreground mb-3">Por que isso e importante?</h4>
-                  <div className="space-y-2.5">
-                    {selectedConfig.whyImportant.map((item, idx) => (
-                      <div key={idx} className="flex items-start gap-2.5">
-                        <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-muted-foreground">{item}</span>
+        {/* Steps list - scrollable area */}
+        <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-2.5">
+          {checklist.steps.map((step) => {
+            const cfg = stepConfig[step.id];
+            const StepIcon = cfg?.icon || Circle;
+            const isExpanded = expandedStepId === step.id;
+            const isCompleted = step.completed;
+
+            return (
+              <div key={step.id} className="relative">
+                {/* Step card */}
+                <div
+                  className={cn(
+                    "w-full rounded-xl transition-all duration-300 text-left",
+                    isExpanded && !isCompleted
+                      ? "bg-white dark:bg-card shadow-lg shadow-black/10"
+                      : "bg-white/10 backdrop-blur-sm border border-white/10"
+                  )}
+                >
+                  {/* Card header - always visible */}
+                  <button
+                    onClick={() => !isCompleted && toggleStep(step.id)}
+                    className={cn(
+                      "w-full flex items-center gap-3 p-4 text-left",
+                      !isCompleted && !isExpanded && "cursor-pointer hover:bg-white/5 rounded-xl transition-colors",
+                      isExpanded && !isCompleted && "pb-0",
+                      isCompleted && "cursor-default"
+                    )}
+                  >
+                    {/* Icon circle */}
+                    <div className={cn(
+                      "flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-all",
+                      isCompleted
+                        ? "bg-white/20"
+                        : isExpanded
+                          ? "bg-red-100 dark:bg-red-900/30"
+                          : "bg-white/15"
+                    )}>
+                      {isCompleted ? (
+                        <Check className="h-5 w-5 text-white" />
+                      ) : (
+                        <StepIcon className={cn(
+                          "h-5 w-5",
+                          isExpanded ? "text-red-600 dark:text-red-400" : "text-white/80"
+                        )} />
+                      )}
+                    </div>
+
+                    {/* Text */}
+                    <div className="flex-1 min-w-0">
+                      <span className={cn(
+                        "block text-sm font-semibold truncate",
+                        isCompleted
+                          ? "text-white/70 line-through decoration-white/40"
+                          : isExpanded
+                            ? "text-foreground"
+                            : "text-white"
+                      )}>
+                        {step.label}
+                      </span>
+                      <span className={cn(
+                        "block text-xs truncate mt-0.5",
+                        isCompleted
+                          ? "text-white/40"
+                          : isExpanded
+                            ? "text-muted-foreground"
+                            : "text-white/60"
+                      )}>
+                        {cfg?.subtitle}
+                      </span>
+                    </div>
+
+                    {/* Chevron / Check indicator */}
+                    {isCompleted ? (
+                      <CheckCircle2 className="h-5 w-5 text-white/60 flex-shrink-0" />
+                    ) : (
+                      <ChevronRight className={cn(
+                        "h-4 w-4 flex-shrink-0 transition-transform duration-200",
+                        isExpanded
+                          ? "text-muted-foreground rotate-90"
+                          : "text-white/50"
+                      )} />
+                    )}
+                  </button>
+
+                  {/* Expanded content - only for active (non-completed) step */}
+                  {isExpanded && !isCompleted && (
+                    <div className="px-4 pb-4 pt-3">
+                      {/* Separator */}
+                      <div className="border-t border-border/30 dark:border-border/20 mb-4" />
+
+                      {/* Why important list */}
+                      <div className="space-y-2.5 mb-5">
+                        {cfg?.whyImportant.map((item, i) => (
+                          <div key={i} className="flex items-start gap-2.5">
+                            <Check className="h-4 w-4 text-red-500 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                            <span className="text-sm text-muted-foreground leading-snug">{item}</span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
 
-                {/* Action buttons */}
-                <div className="mt-auto pt-6 flex items-center gap-3">
-                  {!selectedStep.completed ? (
-                    <>
+                      {/* Action button */}
                       <button
-                        onClick={handleStartStep}
-                        className="flex-1 h-11 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors text-sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStartStep(step.href);
+                        }}
+                        className="w-full h-11 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
                       >
-                        Comecar este passo
+                        Começar este passo
                       </button>
-                      <button
-                        onClick={handleSkipStep}
-                        className="h-11 px-6 border border-border/60 text-sm font-medium text-muted-foreground rounded-xl hover:bg-muted/40 hover:text-foreground transition-colors"
-                      >
-                        Pular por agora
-                      </button>
-                    </>
-                  ) : (
-                    <div className="flex items-center gap-3 text-primary">
-                      <CheckCircle2 className="h-5 w-5" />
-                      <span className="text-sm font-medium">Este passo ja foi concluido!</span>
                     </div>
                   )}
                 </div>
-              </>
-            ) : (
-              <div className="flex-1 flex items-center justify-center text-muted-foreground">
-                Selecione um passo para ver os detalhes
               </div>
-            )}
-          </div>
+            );
+          })}
         </div>
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 
-  // ==================== CELEBRAÇÃO: Tela de conclusão ====================
-  const CelebrationModal = () => (
-    <div className="hidden md:block fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-      <div className="absolute inset-0 flex items-center justify-center p-8">
-        <div className="relative w-full max-w-[520px] bg-card rounded-2xl shadow-2xl border border-border/40 overflow-hidden text-center p-10">
+  // ==================== CELEBRAÇÃO: Tela de conclusão (Sheet) ====================
+  const CelebrationSheet = () => (
+    <Sheet open={true} onOpenChange={() => {}}>
+      <SheetContent
+        side="right"
+        hideCloseButton
+        className="!w-[440px] !max-w-[440px] p-0 gap-0 border-l border-border/40 overflow-hidden"
+      >
+        <SheetTitle className="sr-only">Configuração Concluída</SheetTitle>
+        <SheetDescription className="sr-only">Todas as etapas foram concluídas</SheetDescription>
+
+        <div className="flex-1 flex flex-col items-center justify-center p-10 text-center h-full">
+          <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-6">
+            <PartyPopper className="h-10 w-10 text-red-600 dark:text-red-400" />
+          </div>
+
+          <h2 className="text-2xl font-bold text-foreground mb-2">Parabéns! Tudo configurado!</h2>
+          <p className="text-muted-foreground mb-6">
+            Seu restaurante <span className="font-semibold text-foreground">{establishmentName}</span> está pronto para receber pedidos.
+            Todas as configurações iniciais foram concluídas com sucesso.
+          </p>
+
+          <div className="flex items-center justify-center gap-2 text-sm text-red-600 dark:text-red-400 font-medium mb-6">
+            <CheckCircle2 className="h-5 w-5" />
+            <span>{checklist.totalSteps}/{checklist.totalSteps} passos concluídos</span>
+          </div>
+
           <button
             onClick={() => {
               setShowCelebration(false);
@@ -549,42 +531,13 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
               localStorage.setItem(dismissedKey, "true");
               setDismissed(true);
             }}
-            className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+            className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors text-sm"
           >
-            <X className="h-4 w-4" />
+            Ir para o Dashboard
           </button>
-
-          <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-6">
-            <PartyPopper className="h-10 w-10 text-red-600 dark:text-red-400" />
-          </div>
-
-          <h2 className="text-2xl font-bold text-foreground mb-2">Parabens! Tudo configurado!</h2>
-          <p className="text-muted-foreground mb-6">
-            Seu restaurante <span className="font-semibold text-foreground">{establishmentName}</span> esta pronto para receber pedidos.
-            Todas as configuracoes iniciais foram concluidas com sucesso.
-          </p>
-
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-center gap-2 text-sm text-red-600 dark:text-red-400 font-medium">
-              <CheckCircle2 className="h-5 w-5" />
-              <span>{checklist.totalSteps}/{checklist.totalSteps} passos concluidos</span>
-            </div>
-
-            <button
-              onClick={() => {
-                setShowCelebration(false);
-                setShowConfetti(false);
-                localStorage.setItem(dismissedKey, "true");
-                setDismissed(true);
-              }}
-              className="mt-4 h-12 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors text-sm"
-            >
-              Ir para o Dashboard
-            </button>
-          </div>
         </div>
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 
   const CelebrationMobile = () => (
@@ -592,13 +545,13 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
       <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
         <PartyPopper className="h-8 w-8 text-red-600 dark:text-red-400" />
       </div>
-      <h2 className="text-xl font-bold text-foreground mb-2">Parabens! Tudo configurado!</h2>
+      <h2 className="text-xl font-bold text-foreground mb-2">Parabéns! Tudo configurado!</h2>
       <p className="text-sm text-muted-foreground mb-4">
-        Seu restaurante esta pronto para receber pedidos.
+        Seu restaurante está pronto para receber pedidos.
       </p>
       <div className="flex items-center justify-center gap-2 text-sm text-red-600 dark:text-red-400 font-medium mb-4">
         <CheckCircle2 className="h-4 w-4" />
-        <span>{checklist.totalSteps}/{checklist.totalSteps} passos concluidos</span>
+        <span>{checklist.totalSteps}/{checklist.totalSteps} passos concluídos</span>
       </div>
       <button
         onClick={() => {
@@ -625,7 +578,9 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
           onComplete={() => setShowConfetti(false)}
         />
         <CelebrationMobile />
-        <CelebrationModal />
+        <div className="hidden md:block">
+          <CelebrationSheet />
+        </div>
       </>
     );
   }
@@ -635,8 +590,10 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
       {/* Mobile: sempre card */}
       <MobileView />
 
-      {/* Desktop: modal ou barra minimizada */}
-      {modalOpen ? <DesktopModal /> : <MinimizedBar />}
+      {/* Desktop: sheet sidebar ou barra minimizada */}
+      <div className="hidden md:block">
+        {sheetOpen ? <DesktopSheet /> : <MinimizedBar />}
+      </div>
     </>
   );
 }

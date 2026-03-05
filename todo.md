@@ -8154,3 +8154,4 @@
 - [x] Bug: Modal de onboarding não aparece para novas contas (localStorage compartilhado entre contas - corrigido com chave por establishment)
 - [x] Onboarding: Passo 'Conectar WhatsApp' deve redirecionar para /pedidos e abrir modal de conexão WhatsApp automaticamente
 - [x] Padronizar barra minimizada do onboarding no estilo do banner 'produto sem foto' (ícone, texto 2 linhas, botão ação, botão X)
+- [x] Onboarding desktop: Converter de modal central para sidebar (sheet) lateral com cabeçalho vermelho, progresso segmentado, cards expandíveis
