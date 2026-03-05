@@ -853,6 +853,8 @@ export default function Catalogo() {
     })
   );
 
+  const trpcUtils = trpc.useUtils();
+
   // Queries - MUST be called before any early return
   const { data: categories, refetch: refetchCategories } = trpc.category.list.useQuery(
     { establishmentId: establishmentId! },
@@ -956,6 +958,7 @@ export default function Catalogo() {
   const createCategoryMutation = trpc.category.create.useMutation({
     onSuccess: (data) => {
       refetchCategories();
+      trpcUtils.dashboard.onboardingChecklist.invalidate();
       setCategoryDialogOpen(false);
       setNewCategoryName("");
       toast.success("Categoria criada");

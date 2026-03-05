@@ -129,7 +129,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
 
   const { data: checklist, isLoading } = trpc.dashboard.onboardingChecklist.useQuery(
     { establishmentId },
-    { enabled: !!establishmentId && !dismissed, staleTime: 30000 }
+    { enabled: !!establishmentId && !dismissed, staleTime: 5000, refetchInterval: 5000 }
   );
 
   // Auto-expandir o primeiro passo incompleto

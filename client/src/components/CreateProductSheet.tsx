@@ -118,6 +118,8 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
   const [scheduleEndTime, setScheduleEndTime] = useState("23:00");
   const [printerId, setPrinterId] = useState<string>("none");
 
+  const trpcUtils = trpc.useUtils();
+
   // Queries
   const { data: categories } = trpc.category.list.useQuery(
     { establishmentId },
@@ -159,6 +161,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
         await saveComplementGroups(data.id);
       }
       toast.success("Produto criado com sucesso!");
+      trpcUtils.dashboard.onboardingChecklist.invalidate();
       resetState();
       onOpenChange(false);
       onSuccess();

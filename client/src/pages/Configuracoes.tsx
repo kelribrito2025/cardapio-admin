@@ -447,6 +447,7 @@ export default function Configuracoes() {
       });
       // Also refetch in background to ensure full server sync
       refetch();
+      utils.dashboard.onboardingChecklist.invalidate();
       toast.success("Configurações salvas com sucesso");
     },
     onError: (error) => {
@@ -482,6 +483,7 @@ export default function Configuracoes() {
     onSuccess: () => {
       setInitialBusinessHoursLoaded(false);
       refetchBusinessHours();
+      utils.dashboard.onboardingChecklist.invalidate();
       toast.success("Horários de funcionamento salvos com sucesso");
     },
     onError: () => toast.error("Erro ao salvar horários de funcionamento"),

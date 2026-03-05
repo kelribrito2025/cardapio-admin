@@ -8162,3 +8162,4 @@
 - [x] Onboarding sidebar: Implementar toast "Complete o passo anterior primeiro" nos passos bloqueados
 - [x] Onboarding sidebar: Implementar animação de desbloqueio (scale + glow) quando passo é concluído
 - [x] Cardápio: Sem categorias mostra apenas botão 'Criar Categoria' (esconde '+ item'), com categorias mostra ambos botões
+- [x] Bug: Checklist de onboarding demora a atualizar após criar categoria — invalidar imediatamente (categoria, produto, horários, whatsapp, configurações)

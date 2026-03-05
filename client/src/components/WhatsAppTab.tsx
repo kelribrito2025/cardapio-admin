@@ -65,6 +65,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
   const [templateCancelled, setTemplateCancelled] = useState(DEFAULT_TEMPLATES.cancelled);
   const [templateReservation, setTemplateReservation] = useState(DEFAULT_TEMPLATES.reservation);
   
+  const trpcUtils = trpc.useUtils();
   const configQuery = trpc.whatsapp.getConfig.useQuery();
   const statusQuery = trpc.whatsapp.getStatus.useQuery(undefined, {
     refetchInterval: isPolling ? 3000 : false,
@@ -149,6 +150,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
   useEffect(() => {
     if (statusQuery.data?.status === 'connected') {
       setIsPolling(false);
+      trpcUtils.dashboard.onboardingChecklist.invalidate();
     }
   }, [statusQuery.data?.status]);
   
