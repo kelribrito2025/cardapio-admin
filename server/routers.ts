@@ -198,7 +198,7 @@ export const appRouter = router({
         ownerDisplayName: z.string().max(11).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        // Separar campos que vão para businessHours
+        // Separar campos auxiliares do input
         const { address, openingTime, closingTime, ...establishmentData } = input;
         
         // Se tiver endereço, colocar no campo street
@@ -212,25 +212,8 @@ export const appRouter = router({
         
         const id = await db.createEstablishment(dataToSave);
         
-        
-        // Criar horários de funcionamento se fornecidos
-        if (openingTime && closingTime) {
-          try {
-            // Criar horários para todos os dias da semana (0=Domingo a 6=Sábado)
-            const businessHoursData = [];
-            for (let day = 0; day <= 6; day++) {
-              businessHoursData.push({
-                dayOfWeek: day,
-                isActive: true,
-                openTime: openingTime,
-                closeTime: closingTime,
-              });
-            }
-            await db.saveBusinessHours(id, businessHoursData);
-          } catch (error) {
-            console.error('Erro ao criar horários de funcionamento:', error);
-          }
-        }
+        // Horários de funcionamento NÃO são criados automaticamente
+        // O utilizador deve configurá-los manualmente via "Primeiros Passos" > "Configurar atendimento"
         
         return { id };
       }),
