@@ -8146,3 +8146,4 @@
 - [x] Configurações Impressora: Unificar abas Layout e Fontes em uma só aba
 - [x] Configurações Impressora: Ocultar aba Logs
 - [x] Menu lateral Configurações: Adicionar badge "Breve" no item Pagamento Online
+- [x] Onboarding: Adaptar layout para desktop com grid de 2 colunas e menos espaço vertical
