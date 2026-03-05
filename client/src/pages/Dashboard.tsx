@@ -1124,7 +1124,7 @@ export default function Dashboard() {
             </button>
           </div>
 
-          <div className="px-5 pb-5">
+          <div className="px-5 pb-5 flex-1 flex flex-col">
             {ordersLoading ? (
               <div className="space-y-0">
                 {[1, 2, 3].map((i) => (
@@ -1222,10 +1222,10 @@ export default function Dashboard() {
                 })()}
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center gap-1 text-center py-12">
-                <Package className="h-8 w-8 text-muted-foreground/30" />
-                <p className="text-sm font-medium text-muted-foreground">Sem dados</p>
-                <p className="text-xs text-muted-foreground/70">Nenhum pedido recente</p>
+              <div className="flex-1 flex flex-col items-center justify-center gap-1 text-center min-h-[300px]">
+                <Package className="h-8 w-8 text-muted-foreground/30 mx-auto" />
+                <p className="text-sm font-medium text-muted-foreground text-center w-full">Sem dados</p>
+                <p className="text-xs text-muted-foreground/70 text-center w-full">Nenhum pedido recente</p>
               </div>
             )}
           </div>
