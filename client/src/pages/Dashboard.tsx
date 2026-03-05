@@ -1090,8 +1090,10 @@ export default function Dashboard() {
                       </ResponsiveContainer>
                     </div>
                   ) : (
-                    <div className="h-56 flex items-center justify-center text-muted-foreground text-base">
-                      Nenhum dado disponível
+                    <div className="h-56 flex flex-col items-center justify-center gap-1 text-center">
+                      <CalendarDays className="h-8 w-8 text-muted-foreground/30" />
+                      <p className="text-sm font-medium text-muted-foreground">Sem dados</p>
+                      <p className="text-xs text-muted-foreground/70">Nenhum pedido finalizado no período</p>
                     </div>
                   )}
                 </>
@@ -1220,11 +1222,11 @@ export default function Dashboard() {
                 })()}
               </div>
             ) : (
-              <EmptyState
-                icon={Package}
-                title="Nenhum pedido"
-                description="Os pedidos aparecerão aqui"
-              />
+              <div className="flex-1 flex flex-col items-center justify-center gap-1 text-center py-12">
+                <Package className="h-8 w-8 text-muted-foreground/30" />
+                <p className="text-sm font-medium text-muted-foreground">Sem dados</p>
+                <p className="text-xs text-muted-foreground/70">Nenhum pedido recente</p>
+              </div>
             )}
           </div>
         </div>

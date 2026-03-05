@@ -8128,3 +8128,5 @@
 - [x] Dashboard: Adicionar HoverCard informativo no card Tempo Médio
 - [x] Dashboard: Adicionar HoverCard informativo no card Pedidos por Modalidade
 - [x] Dashboard: Adicionar HoverCard informativo no card Top 10 Mais Vendidos
+- [x] Dashboard: Padronizar estado vazio do card Pedidos Recentes (mesmo estilo dos outros cards)
+- [x] Dashboard: Padronizar estado vazio do card Pedidos Últimos 7 dias (mesmo estilo dos outros cards)
