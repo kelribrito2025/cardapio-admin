@@ -299,31 +299,61 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
 
   // ==================== DESKTOP: Barra minimizada ====================
   const MinimizedBar = () => (
-    <div className="hidden md:block mb-6">
-      <button
-        onClick={handleReopen}
-        className="w-full flex items-center gap-4 px-5 py-3 rounded-xl border border-border/60 bg-card hover:bg-muted/30 shadow-sm transition-all duration-200 group"
-      >
-        <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
-          <Rocket className="h-4.5 w-4.5 text-primary" />
+    <div className="hidden md:block mb-4">
+      <div className="relative rounded-xl overflow-hidden border bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/20 border-red-200/50 dark:border-red-800/30">
+        {/* Decorative background pattern */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h4v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v2H0v-2h20v-2H0v-2h20v-2H0v-2h20' fill='%23dc2626' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")` }} />
+        
+        {/* Shimmer effect */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(105deg, transparent 0%, transparent 30%, rgba(255,255,255,0.5) 45%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.5) 55%, transparent 70%, transparent 100%)',
+              animation: 'banner-shimmer 3s ease-in-out infinite',
+              animationDelay: '1s'
+            }}
+          />
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-foreground">Configuracao Inicial</span>
-            <span className="text-xs font-medium text-muted-foreground">{checklist.completedCount}/{checklist.totalSteps} concluidos</span>
+
+        <div className="relative flex items-center gap-3 px-4 py-3">
+          {/* Ícone pulsante */}
+          <div className="relative flex-shrink-0">
+            <div className="absolute inset-0 animate-ping rounded-full bg-red-400/30 dark:bg-red-500/20" />
+            <div className="relative p-2 rounded-full bg-red-100 dark:bg-red-900/40">
+              <Rocket className="h-5 w-5 text-red-600 dark:text-red-400" />
+            </div>
           </div>
-          <div className="mt-1.5 h-1.5 bg-muted/60 rounded-full overflow-hidden max-w-md">
-            <div
-              className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-700 ease-out"
-              style={{ width: `${progress}%` }}
-            />
+
+          {/* Text */}
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm text-foreground leading-tight">
+              Configuração Inicial — <span className="text-red-600 dark:text-red-400">{checklist.completedCount}/{checklist.totalSteps}</span> concluídos
+            </p>
+            <p className="text-xs text-muted-foreground leading-tight mt-0.5">
+              Complete os passos para começar a receber pedidos!
+            </p>
           </div>
+
+          {/* Action button */}
+          <button
+            onClick={handleReopen}
+            className="flex-shrink-0 text-xs h-8 px-3 rounded-lg gap-1.5 font-semibold bg-red-600 hover:bg-red-700 text-white shadow-sm inline-flex items-center transition-colors"
+          >
+            Completar tarefas
+            <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+
+          {/* Dismiss button */}
+          <button
+            onClick={handleDismiss}
+            className="flex-shrink-0 p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+            aria-label="Fechar"
+          >
+            <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+          </button>
         </div>
-        <span className="text-sm font-medium text-primary group-hover:underline flex items-center gap-1">
-          Completar tarefas
-          <ChevronRight className="h-4 w-4" />
-        </span>
-      </button>
+      </div>
     </div>
   );
 
