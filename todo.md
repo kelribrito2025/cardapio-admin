@@ -8159,3 +8159,6 @@
 - [x] Onboarding sidebar: Remover título 'Mindi Setup' e colocar 'Primeiros Passos' + descrição junto ao botão X com ícone foguete
 - [x] Remover criação automática de categoria e produto padrão ao criar conta
 - [x] Onboarding sidebar: Bloquear pulos — usuário deve finalizar passo atual antes de ir ao próximo
+- [x] Onboarding sidebar: Tooltip nos passos bloqueados "Complete o passo anterior primeiro"
+- [x] Onboarding sidebar: Animação de desbloqueio quando passo é concluído e próximo se torna disponível
+- [x] Onboarding sidebar: Mensagem de parabéns com confetis na sidebar ao concluir todos os passos, depois ocultar

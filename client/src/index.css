@@ -658,3 +658,38 @@
 
 
 
+
+@keyframes step-unlock {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.97);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-step-unlock {
+  animation: step-unlock 0.6s ease-out forwards;
+}
+
+@keyframes step-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.animate-step-glow {
+  animation: step-glow 1s ease-out;
+}
