@@ -8168,3 +8168,4 @@
 - [x] Bug: Conta nova já vem com categoria e produto de teste criados automaticamente — era dados órfãos de ID reutilizado
 - [x] Bug fix: Limpar dados órfãos do establishment 210009 (categoria e produto de teste)
 - [x] Bug fix: createEstablishment deve limpar dados residuais ao reutilizar IDs (categorias, produtos, etc.)
+- [x] Bug: Cache tRPC/React Query mostra dados da conta anterior ao criar nova conta — adicionado headers no-cache na API + invalidação total do cache + limpeza localStorage ao criar conta

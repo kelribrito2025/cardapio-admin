@@ -194,8 +194,17 @@ export default function Onboarding() {
   const createEstablishmentMutation = trpc.establishment.create.useMutation({
     onSuccess: async () => {
       toast.success("Restaurante cadastrado com sucesso!");
-      await utils.establishment.get.invalidate();
-      await utils.auth.me.invalidate();
+      // Invalidar TODO o cache do tRPC para evitar dados residuais de contas anteriores
+      await utils.invalidate();
+      // Limpar localStorage de onboarding/checklist para evitar estados residuais
+      if (typeof window !== 'undefined') {
+        const keysToRemove = [
+          'onboarding_dismissed', 'onboarding_minimized',
+          'tooltip_prepTime_clicked', 'tooltip_viewMenu_clicked', 'tooltip_trial_clicked',
+          'expandedMenus', 'dashboardPeriod',
+        ];
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+      }
       window.location.href = "/";
     },
     onError: (error: { message?: string }) => {

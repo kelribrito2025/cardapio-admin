@@ -3244,6 +3244,15 @@ async function startServer() {
   // Bot API (REST endpoints para integração n8n / WhatsApp bots)
   app.use("/api/bot", createBotApiRouter());
 
+  // Desabilitar cache HTTP para respostas da API tRPC
+  app.use("/api/trpc", (req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+    next();
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

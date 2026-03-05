@@ -393,15 +393,12 @@ export async function createEstablishment(data: InsertEstablishment) {
   // (pode acontecer se um establishment anterior com este ID foi deletado sem limpar dados associados)
   try {
     await db.delete(products).where(eq(products.establishmentId, nextId));
-    await db.delete(complementItems).where(
-      sql`${complementItems.groupId} IN (SELECT id FROM ${complementGroups} WHERE ${complementGroups.establishmentId} = ${nextId})`
-    );
+    // Usar raw SQL para subqueries com nomes de tabela explícitos
+    await db.execute(sql`DELETE FROM \`complementItems\` WHERE \`groupId\` IN (SELECT \`id\` FROM \`complementGroups\` WHERE \`establishmentId\` = ${nextId})`);
     await db.delete(complementGroups).where(eq(complementGroups.establishmentId, nextId));
     await db.delete(categories).where(eq(categories.establishmentId, nextId));
     await db.delete(businessHours).where(eq(businessHours.establishmentId, nextId));
-    await db.delete(orderItems).where(
-      sql`${orderItems.orderId} IN (SELECT id FROM ${orders} WHERE ${orders.establishmentId} = ${nextId})`
-    );
+    await db.execute(sql`DELETE FROM \`orderItems\` WHERE \`orderId\` IN (SELECT \`id\` FROM \`orders\` WHERE \`establishmentId\` = ${nextId})`);
     await db.delete(orders).where(eq(orders.establishmentId, nextId));
   } catch (cleanupError) {
     console.warn('[createEstablishment] Erro ao limpar dados residuais (não bloqueante):', cleanupError);
