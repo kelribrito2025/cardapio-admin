@@ -8,7 +8,6 @@ import {
   ArrowRight,
   FolderPlus,
   ShoppingBag,
-  Clock,
   MessageCircle,
   ClipboardCheck,
   Camera,
@@ -53,16 +52,6 @@ const stepConfig: Record<string, {
       "Seus clientes poderão ver e pedir seus produtos",
       "Fotos atraentes aumentam as vendas",
       "Descrições claras reduzem dúvidas",
-    ],
-  },
-  business_hours: {
-    icon: Clock,
-    subtitle: "Defina horários",
-    description: "Configure os dias e horários de funcionamento do seu restaurante para receber pedidos.",
-    whyImportant: [
-      "Clientes sabem quando podem fazer pedidos",
-      "Evita pedidos fora do horário de atendimento",
-      "Automatiza a abertura e fechamento do cardápio",
     ],
   },
   whatsapp: {

@@ -8164,3 +8164,4 @@
 - [x] Cardápio: Sem categorias mostra apenas botão 'Criar Categoria' (esconde '+ item'), com categorias mostra ambos botões
 - [x] Botão "Ver Menu" só deve aparecer quando o utilizador tiver pelo menos 1 categoria e 1 produto criado
 - [x] Onboarding sidebar: Reduzir tamanho do card "Progresso Total" em 20%
+- [x] Onboarding: Remover passo "Configurar atendimento" (horários de funcionamento) do checklist
