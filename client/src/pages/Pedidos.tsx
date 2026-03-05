@@ -218,6 +218,14 @@ export default function Pedidos() {
       // Limpar o query param da URL sem recarregar
       window.history.replaceState({}, '', window.location.pathname);
     }
+    // Abrir modal de conexão WhatsApp automaticamente (vindo do onboarding)
+    const connectWa = params.get('connectWhatsapp');
+    if (connectWa === 'true') {
+      setQrCodeModalOpen(true);
+      setIsPollingQrCode(true);
+      // Limpar o query param da URL sem recarregar
+      window.history.replaceState({}, '', window.location.pathname);
+    }
   }, []);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState<number | null>(null);

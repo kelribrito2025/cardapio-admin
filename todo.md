@@ -8152,3 +8152,4 @@
 - [x] Onboarding modal: Ajustar cores para identidade visual Mindi (vermelho em vez de preto/zinc/verde)
 - [x] Animação de confetti ao completar todos os passos do checklist de onboarding
 - [x] Bug: Modal de onboarding não aparece para novas contas (localStorage compartilhado entre contas - corrigido com chave por establishment)
+- [x] Onboarding: Passo 'Conectar WhatsApp' deve redirecionar para /pedidos e abrir modal de conexão WhatsApp automaticamente
