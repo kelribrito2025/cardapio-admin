@@ -1120,7 +1120,7 @@ export default function PDV() {
                     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
                     return (
                       <span className={cn(
-                        "text-xs font-bold px-2.5 py-1 rounded-full",
+                        "text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0",
                         totalItems > 0
                           ? "bg-red-500 text-white"
                           : "bg-muted text-muted-foreground"
