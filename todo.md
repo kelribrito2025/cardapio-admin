@@ -8157,3 +8157,5 @@
 - [x] Onboarding desktop: Converter de modal central para sidebar (sheet) lateral com cabeçalho vermelho, progresso segmentado, cards expandíveis
 - [x] Onboarding sidebar: Tornar fundo mais claro com degradê suave e efeito glow
 - [x] Onboarding sidebar: Remover título 'Mindi Setup' e colocar 'Primeiros Passos' + descrição junto ao botão X com ícone foguete
+- [x] Remover criação automática de categoria e produto padrão ao criar conta
+- [x] Onboarding sidebar: Bloquear pulos — usuário deve finalizar passo atual antes de ir ao próximo

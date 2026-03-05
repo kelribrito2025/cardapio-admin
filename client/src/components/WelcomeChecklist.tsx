@@ -16,6 +16,7 @@ import {
   X,
   Check,
   ChevronRight,
+  Lock,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -385,14 +386,19 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
 
         {/* Steps list - scrollable area */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
-          {checklist.steps.map((step) => {
+          {checklist.steps.map((step, index) => {
             const cfg = stepConfig[step.id];
             const StepIcon = cfg?.icon || Circle;
-            const isExpanded = expandedStepId === step.id;
             const isCompleted = step.completed;
+            // Determinar o índice do primeiro passo incompleto
+            const firstIncompleteIndex = checklist.steps.findIndex(s => !s.completed);
+            // Só o passo atual (primeiro incompleto) pode ser expandido
+            const isCurrentStep = index === firstIncompleteIndex;
+            const isLocked = !isCompleted && !isCurrentStep;
+            const isExpanded = expandedStepId === step.id && isCurrentStep;
 
             return (
-              <div key={step.id} className="relative">
+              <div key={step.id} className={cn("relative", isLocked && "opacity-50")}>
                 {/* Step card */}
                 <div
                   className={cn(
@@ -401,17 +407,20 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                       ? "bg-card shadow-lg shadow-red-500/5 ring-1 ring-red-100 dark:ring-red-900/30"
                       : isCompleted
                         ? "bg-red-50/60 dark:bg-red-950/20 border border-red-100/60 dark:border-red-900/20"
-                        : "bg-muted/40 dark:bg-muted/20 border border-border/40 hover:border-red-200/60 dark:hover:border-red-800/30"
+                        : isLocked
+                          ? "bg-muted/20 dark:bg-muted/10 border border-border/20"
+                          : "bg-muted/40 dark:bg-muted/20 border border-border/40 hover:border-red-200/60 dark:hover:border-red-800/30"
                   )}
                 >
                   {/* Card header - always visible */}
                   <button
-                    onClick={() => !isCompleted && toggleStep(step.id)}
+                    onClick={() => isCurrentStep && toggleStep(step.id)}
+                    disabled={isLocked}
                     className={cn(
                       "w-full flex items-center gap-3 p-4 text-left rounded-xl transition-colors",
-                      !isCompleted && !isExpanded && "cursor-pointer",
+                      isCurrentStep && !isExpanded && "cursor-pointer",
                       isExpanded && !isCompleted && "pb-0",
-                      isCompleted && "cursor-default"
+                      (isCompleted || isLocked) && "cursor-default"
                     )}
                   >
                     {/* Icon circle */}
@@ -441,7 +450,9 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                           ? "text-red-600/70 dark:text-red-400/70 line-through decoration-red-300/50 dark:decoration-red-700/50"
                           : isExpanded
                             ? "text-foreground"
-                            : "text-foreground/80"
+                            : isLocked
+                              ? "text-muted-foreground/60"
+                              : "text-foreground/80"
                       )}>
                         {step.label}
                       </span>
@@ -449,15 +460,19 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                         "block text-xs truncate mt-0.5",
                         isCompleted
                           ? "text-red-400/50 dark:text-red-500/40"
-                          : "text-muted-foreground"
+                          : isLocked
+                            ? "text-muted-foreground/40"
+                            : "text-muted-foreground"
                       )}>
                         {cfg?.subtitle}
                       </span>
                     </div>
 
-                    {/* Chevron / Check indicator */}
+                    {/* Chevron / Check / Lock indicator */}
                     {isCompleted ? (
                       <CheckCircle2 className="h-5 w-5 text-red-500/60 dark:text-red-400/60 flex-shrink-0" />
+                    ) : isLocked ? (
+                      <Lock className="h-4 w-4 text-muted-foreground/30 flex-shrink-0" />
                     ) : (
                       <ChevronRight className={cn(
                         "h-4 w-4 flex-shrink-0 transition-transform duration-200",
@@ -468,7 +483,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                     )}
                   </button>
 
-                  {/* Expanded content - only for active (non-completed) step */}
+                  {/* Expanded content - only for current (non-completed) step */}
                   {isExpanded && !isCompleted && (
                     <div className="px-4 pb-4 pt-3">
                       {/* Separator */}
