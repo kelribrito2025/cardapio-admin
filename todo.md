@@ -8139,3 +8139,4 @@
 - [x] Corrigir cores hardcoded no cabeçalho do carrinho (PDV e PDVSlidebar) para suportar modo escuro
 - [x] Investigar delay de 3-4s ao abrir detalhes do pedido vindo da Dashboard
 - [x] Adicionar skeleton de carregamento na sidebar de detalhes do pedido
+- [x] Adicionar dropdown de motivos rápidos pré-definidos no modal de cancelamento de pedido
