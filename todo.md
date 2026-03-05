@@ -8165,3 +8165,6 @@
 - [x] Botão "Ver Menu" só deve aparecer quando o utilizador tiver pelo menos 1 categoria e 1 produto criado
 - [x] Onboarding sidebar: Reduzir tamanho do card "Progresso Total" em 20%
 - [x] Onboarding de criação de conta: Remover campo de horário de atendimento do formulário inicial
+- [x] Bug: Conta nova já vem com categoria e produto de teste criados automaticamente — era dados órfãos de ID reutilizado
+- [x] Bug fix: Limpar dados órfãos do establishment 210009 (categoria e produto de teste)
+- [x] Bug fix: createEstablishment deve limpar dados residuais ao reutilizar IDs (categorias, produtos, etc.)
