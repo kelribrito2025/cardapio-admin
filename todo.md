@@ -8156,3 +8156,4 @@
 - [x] Padronizar barra minimizada do onboarding no estilo do banner 'produto sem foto' (ícone, texto 2 linhas, botão ação, botão X)
 - [x] Onboarding desktop: Converter de modal central para sidebar (sheet) lateral com cabeçalho vermelho, progresso segmentado, cards expandíveis
 - [x] Onboarding sidebar: Tornar fundo mais claro com degradê suave e efeito glow
+- [x] Onboarding sidebar: Remover título 'Mindi Setup' e colocar 'Primeiros Passos' + descrição junto ao botão X com ícone foguete

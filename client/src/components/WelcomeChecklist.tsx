@@ -339,23 +339,23 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
           <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-rose-300/20 rounded-full blur-3xl" />
 
           <div className="relative px-6 pt-6 pb-5">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/25 backdrop-blur-sm flex items-center justify-center shadow-sm">
-                  <Sparkles className="h-5 w-5 text-white" />
+            <div className="flex items-start justify-between">
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-white/25 backdrop-blur-sm flex items-center justify-center shadow-sm flex-shrink-0 mt-0.5">
+                  <Rocket className="h-5 w-5 text-white" />
                 </div>
-                <span className="text-base font-bold text-white">Mindi Setup</span>
+                <div>
+                  <h2 className="text-2xl font-bold text-white tracking-tight">Primeiros Passos</h2>
+                  <p className="text-sm text-white/70 mt-1">Configuração rápida e simples</p>
+                </div>
               </div>
               <button
                 onClick={handleMinimize}
-                className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                className="flex-shrink-0 p-2 -mt-1 -mr-1 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
-
-            <h2 className="text-2xl font-bold text-white tracking-tight">Primeiros Passos</h2>
-            <p className="text-sm text-white/70 mt-1">Configuração rápida e simples</p>
 
             {/* Progress card */}
             <div className="mt-5 bg-white/20 backdrop-blur-sm rounded-xl p-4">
