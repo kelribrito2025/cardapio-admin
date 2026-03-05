@@ -18,7 +18,7 @@ import {
   ChevronRight,
   Lock,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Confetti } from "./Confetti";
 import {
@@ -27,6 +27,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import { toast } from "sonner";
 
 const stepConfig: Record<string, {
   icon: React.ElementType;
@@ -124,6 +125,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
   const [showConfetti, setShowConfetti] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const prevCompletedRef = useRef<number | null>(null);
+  const [justUnlockedStepId, setJustUnlockedStepId] = useState<string | null>(null);
 
   const { data: checklist, isLoading } = trpc.dashboard.onboardingChecklist.useQuery(
     { establishmentId },
@@ -139,6 +141,20 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
       }
     }
   }, [checklist, expandedStepId]);
+
+  // Detectar quando um passo é desbloqueado (completedCount muda)
+  useEffect(() => {
+    if (!checklist) return;
+    if (prevCompletedRef.current !== null && checklist.completedCount > prevCompletedRef.current && !checklist.allCompleted) {
+      const firstIncomplete = checklist.steps.find(s => !s.completed);
+      if (firstIncomplete) {
+        setJustUnlockedStepId(firstIncomplete.id);
+        setExpandedStepId(firstIncomplete.id);
+        const timer = setTimeout(() => setJustUnlockedStepId(null), 1500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [checklist?.completedCount]);
 
   // Se completou tudo, mostrar confetti e celebração antes de dismiss
   useEffect(() => {
@@ -397,19 +413,31 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
             const isLocked = !isCompleted && !isCurrentStep;
             const isExpanded = expandedStepId === step.id && isCurrentStep;
 
-            return (
-              <div key={step.id} className={cn("relative", isLocked && "opacity-50")}>
+            const isJustUnlocked = justUnlockedStepId === step.id;
+
+            const stepCard = (
+              <div key={step.id} className={cn(
+                "relative transition-all duration-500",
+                isLocked && "opacity-50",
+                isJustUnlocked && "animate-[step-unlock_0.6s_ease-out]"
+              )}>
+                {/* Glow effect for just-unlocked step */}
+                {isJustUnlocked && (
+                  <div className="absolute -inset-1 bg-gradient-to-r from-red-500/20 via-rose-500/20 to-red-500/20 rounded-2xl blur-md animate-pulse" />
+                )}
                 {/* Step card */}
                 <div
                   className={cn(
-                    "w-full rounded-xl transition-all duration-300 text-left",
+                    "relative w-full rounded-xl transition-all duration-300 text-left",
                     isExpanded && !isCompleted
                       ? "bg-card shadow-lg shadow-red-500/5 ring-1 ring-red-100 dark:ring-red-900/30"
                       : isCompleted
                         ? "bg-red-50/60 dark:bg-red-950/20 border border-red-100/60 dark:border-red-900/20"
                         : isLocked
                           ? "bg-muted/20 dark:bg-muted/10 border border-border/20"
-                          : "bg-muted/40 dark:bg-muted/20 border border-border/40 hover:border-red-200/60 dark:hover:border-red-800/30"
+                          : isJustUnlocked
+                            ? "bg-card shadow-lg ring-2 ring-red-300/60 dark:ring-red-700/40"
+                            : "bg-muted/40 dark:bg-muted/20 border border-border/40 hover:border-red-200/60 dark:hover:border-red-800/30"
                   )}
                 >
                   {/* Card header - always visible */}
@@ -514,6 +542,30 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                 </div>
               </div>
             );
+
+            // Passos bloqueados: mostrar toast ao clicar
+            if (isLocked) {
+              return (
+                <div
+                  key={step.id}
+                  className="cursor-not-allowed [&_button]:pointer-events-none"
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toast.info("Complete o passo anterior primeiro", {
+                      icon: <Lock className="h-4 w-4" />,
+                      duration: 2000,
+                    });
+                  }}
+                >
+                  {stepCard}
+                </div>
+              );
+            }
+
+            return stepCard;
           })}
         </div>
       </SheetContent>

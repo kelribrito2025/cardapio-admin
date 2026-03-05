@@ -827,6 +827,20 @@
       "when": 1772665657920,
       "tag": "0117_motionless_senator_kelly",
       "breakpoints": true
+    },
+    {
+      "idx": 118,
+      "version": "5",
+      "when": 1772737344320,
+      "tag": "0118_thin_wolf_cub",
+      "breakpoints": true
+    },
+    {
+      "idx": 119,
+      "version": "5",
+      "when": 1772737870030,
+      "tag": "0119_lush_spencer_smythe",
+      "breakpoints": true
     }
   ]
 }
