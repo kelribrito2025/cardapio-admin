@@ -1132,17 +1132,17 @@ export default function PDV() {
                 </div>
               </div>
               {/* Tipo de Pedido - Pill selector com sliding animation */}
-              <div className="relative flex items-center bg-muted rounded-xl p-1 mx-4 mb-3" style={{backgroundColor: '#ffffff'}}>
+              <div className="relative flex items-center bg-muted rounded-lg p-0.5 mx-4 mb-2" style={{backgroundColor: '#ffffff'}}>
                 {/* Sliding pill indicator */}
                 <div
-                  className="absolute top-1 bottom-1 rounded-lg bg-red-500 shadow-sm transition-all duration-300 ease-in-out"
+                  className="absolute top-0.5 bottom-0.5 rounded-md bg-red-500 shadow-sm transition-all duration-300 ease-in-out"
                   style={{
-                    width: 'calc((100% - 8px) / 3)',
+                    width: 'calc((100% - 4px) / 3)',
                     left: orderType === "mesa"
-                      ? '4px'
+                      ? '2px'
                       : orderType === "retirada"
-                        ? 'calc((100% - 8px) / 3 + 4px)'
-                        : 'calc(2 * (100% - 8px) / 3 + 4px)',
+                        ? 'calc((100% - 4px) / 3 + 2px)'
+                        : 'calc(2 * (100% - 4px) / 3 + 2px)',
                   }}
                 />
                 <button
@@ -1151,7 +1151,7 @@ export default function PDV() {
                     setPaymentMethod(null);
                   }}
                   className={cn(
-                    "relative z-10 flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-300",
+                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300",
                     orderType === "mesa"
                       ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
@@ -1165,7 +1165,7 @@ export default function PDV() {
                     setPaymentMethod(null);
                   }}
                   className={cn(
-                    "relative z-10 flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-300",
+                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300",
                     orderType === "retirada"
                       ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
@@ -1181,7 +1181,7 @@ export default function PDV() {
                     setShowDeliverySidebar(true);
                   }}
                   className={cn(
-                    "relative z-10 flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-300",
+                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300",
                     orderType === "entrega"
                       ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
