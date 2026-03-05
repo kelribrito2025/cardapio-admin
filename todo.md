@@ -8140,3 +8140,6 @@
 - [x] Investigar delay de 3-4s ao abrir detalhes do pedido vindo da Dashboard
 - [x] Adicionar skeleton de carregamento na sidebar de detalhes do pedido
 - [x] Adicionar dropdown de motivos rápidos pré-definidos no modal de cancelamento de pedido
+- [x] Tela de boas-vindas/onboarding: endpoint backend para verificar status de configuração
+- [x] Tela de boas-vindas/onboarding: componente visual com checklist de primeiros passos
+- [x] Tela de boas-vindas/onboarding: lógica de exibição condicional (primeiro acesso ou sem produtos)

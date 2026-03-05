@@ -1341,6 +1341,59 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.getRevenueByHour(input.establishmentId, input.period);
       }),
+
+    // Onboarding checklist - verifica status de configuração do estabelecimento
+    onboardingChecklist: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        const establishment = await db.getEstablishmentById(input.establishmentId);
+        if (!establishment) return null;
+
+        // 1. Verificar se tem categorias
+        const categories = await db.getCategoriesByEstablishment(input.establishmentId);
+        const hasCategories = categories.length > 0;
+
+        // 2. Verificar se tem produtos
+        const productsResult = await db.getProductsByEstablishment(input.establishmentId);
+        const hasProducts = (productsResult?.products?.length ?? 0) > 0;
+
+        // 3. Verificar se configurou atendimento (horários de funcionamento)
+        const businessHours = await db.getBusinessHoursByEstablishment(input.establishmentId);
+        const hasBusinessHours = businessHours.length > 0;
+
+        // 4. Verificar se conectou WhatsApp
+        const whatsappCfg = await db.getWhatsappConfig(input.establishmentId);
+        const hasWhatsappConnected = whatsappCfg?.status === 'connected';
+
+        // 5. Verificar se tem pedidos (testou um pedido)
+        const recentOrders = await db.getRecentOrders(input.establishmentId, 1);
+        const hasOrders = recentOrders.length > 0;
+
+        // 6. Verificar se adicionou foto e capa
+        const hasLogo = !!establishment.logo;
+        const hasCover = !!establishment.coverImage;
+        const hasPhotos = hasLogo && hasCover;
+
+        const steps = [
+          { id: 'category', label: 'Criar primeira categoria', completed: hasCategories, href: '/catalogo' },
+          { id: 'products', label: 'Adicionar primeiros produtos', completed: hasProducts, href: '/catalogo' },
+          { id: 'business_hours', label: 'Configurar atendimento', completed: hasBusinessHours, href: '/configuracoes' },
+          { id: 'whatsapp', label: 'Conectar WhatsApp', completed: hasWhatsappConnected, href: '/configuracoes' },
+          { id: 'test_order', label: 'Testar um pedido', completed: hasOrders, href: '/pdv' },
+          { id: 'photos', label: 'Adicionar foto e capa', completed: hasPhotos, href: '/configuracoes' },
+        ];
+
+        const completedCount = steps.filter(s => s.completed).length;
+        const allCompleted = completedCount === steps.length;
+
+        return {
+          steps,
+          completedCount,
+          totalSteps: steps.length,
+          allCompleted,
+          establishmentName: establishment.name,
+        };
+      }),
   }),
 
   // ============ STOCK ============
