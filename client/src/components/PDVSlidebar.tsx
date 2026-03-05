@@ -1626,7 +1626,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           {/* Coluna Direita - Carrinho */}
           <div className="w-[370px] bg-muted/30 flex flex-col">
             {/* Header do Carrinho */}
-            <div className="border-b border-border/50 bg-card" style={{backgroundColor: '#f6f8f8'}}>
+            <div className="border-b border-border/50 bg-muted/40">
               {/* Título do Carrinho */}
               <div className="px-4 pt-3 pb-2">
                 <div className="flex items-center justify-between">
@@ -1659,7 +1659,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                 </div>
               </div>
               {/* Abas: Mesa (Consumo) e Comanda - Pill selector com sliding animation */}
-              <div className="relative flex items-center bg-muted rounded-lg p-0.5 mx-4 mb-2" style={{backgroundColor: '#ffffff'}}>
+              <div className="relative flex items-center bg-background rounded-lg p-0.5 mx-4 mb-2">
                 {/* Sliding pill indicator */}
                 <div
                   className={cn(
