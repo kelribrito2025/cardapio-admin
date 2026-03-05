@@ -344,14 +344,6 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
             <ArrowRight className="h-3.5 w-3.5" />
           </button>
 
-          {/* Dismiss button */}
-          <button
-            onClick={handleDismiss}
-            className="flex-shrink-0 p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
-            aria-label="Fechar"
-          >
-            <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-          </button>
         </div>
       </div>
     </div>
