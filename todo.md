@@ -8151,3 +8151,4 @@
 - [x] Onboarding desktop: Barra de progresso minimizada quando modal é fechado, com botão para reabrir
 - [x] Onboarding modal: Ajustar cores para identidade visual Mindi (vermelho em vez de preto/zinc/verde)
 - [x] Animação de confetti ao completar todos os passos do checklist de onboarding
+- [x] Bug: Modal de onboarding não aparece para novas contas (localStorage compartilhado entre contas - corrigido com chave por establishment)

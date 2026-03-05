@@ -96,16 +96,20 @@ interface WelcomeChecklistProps {
 
 export function WelcomeChecklist({ establishmentId, establishmentName }: WelcomeChecklistProps) {
   const [, navigate] = useLocation();
+  // Chaves de localStorage específicas por establishment
+  const dismissedKey = `welcome_checklist_dismissed_${establishmentId}`;
+  const minimizedKey = `welcome_checklist_minimized_${establishmentId}`;
+
   const [dismissed, setDismissed] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("welcome_checklist_dismissed") === "true";
+      return localStorage.getItem(dismissedKey) === "true";
     }
     return false;
   });
   // Modal aberto/fechado (desktop) - começa aberto
   const [modalOpen, setModalOpen] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("welcome_checklist_minimized") !== "true";
+      return localStorage.getItem(minimizedKey) !== "true";
     }
     return true;
   });
@@ -141,13 +145,13 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
       setModalOpen(true);
       // Dismiss após a celebração
       const timer = setTimeout(() => {
-        localStorage.setItem("welcome_checklist_dismissed", "true");
-        setDismissed(true);
+      localStorage.setItem(dismissedKey, "true");
+      setDismissed(true);
       }, 8000);
       return () => clearTimeout(timer);
     } else if (checklist.allCompleted && prevCompletedRef.current === null) {
       // Já estava completo ao carregar — dismiss direto
-      localStorage.setItem("welcome_checklist_dismissed", "true");
+      localStorage.setItem(dismissedKey, "true");
       setDismissed(true);
     }
     prevCompletedRef.current = checklist.completedCount;
@@ -172,18 +176,18 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
   const progress = (checklist.completedCount / checklist.totalSteps) * 100;
 
   const handleDismiss = () => {
-    localStorage.setItem("welcome_checklist_dismissed", "true");
+    localStorage.setItem(dismissedKey, "true");
     setDismissed(true);
   };
 
   const handleMinimize = () => {
     setModalOpen(false);
-    localStorage.setItem("welcome_checklist_minimized", "true");
+    localStorage.setItem(minimizedKey, "true");
   };
 
   const handleReopen = () => {
     setModalOpen(true);
-    localStorage.removeItem("welcome_checklist_minimized");
+    localStorage.removeItem(minimizedKey);
   };
 
   const handleStartStep = () => {
@@ -520,7 +524,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
             onClick={() => {
               setShowCelebration(false);
               setShowConfetti(false);
-              localStorage.setItem("welcome_checklist_dismissed", "true");
+              localStorage.setItem(dismissedKey, "true");
               setDismissed(true);
             }}
             className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
@@ -548,7 +552,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
               onClick={() => {
                 setShowCelebration(false);
                 setShowConfetti(false);
-                localStorage.setItem("welcome_checklist_dismissed", "true");
+                localStorage.setItem(dismissedKey, "true");
                 setDismissed(true);
               }}
               className="mt-4 h-12 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors text-sm"
@@ -578,7 +582,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
         onClick={() => {
           setShowCelebration(false);
           setShowConfetti(false);
-          localStorage.setItem("welcome_checklist_dismissed", "true");
+          localStorage.setItem(dismissedKey, "true");
           setDismissed(true);
         }}
         className="w-full h-10 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors text-sm"
