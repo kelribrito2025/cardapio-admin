@@ -1340,7 +1340,7 @@ export const appRouter = router({
         const steps = [
           { id: 'category', label: 'Criar primeira categoria', completed: hasCategories, href: '/catalogo' },
           { id: 'products', label: 'Adicionar primeiros produtos', completed: hasProducts, href: '/catalogo' },
-          { id: 'business_hours', label: 'Configurar atendimento', completed: hasBusinessHours, href: '/configuracoes' },
+          { id: 'business_hours', label: 'Configurar atendimento', completed: hasBusinessHours, href: '/configuracoes?section=atendimento' },
           { id: 'whatsapp', label: 'Conectar WhatsApp', completed: hasWhatsappConnected, href: '/pedidos?connectWhatsapp=true' },
           { id: 'test_order', label: 'Testar um pedido', completed: hasOrders, href: '/pdv' },
           { id: 'photos', label: 'Adicionar foto e capa', completed: hasPhotos, href: '/configuracoes' },

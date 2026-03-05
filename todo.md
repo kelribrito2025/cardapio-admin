@@ -8170,3 +8170,4 @@
 - [x] Bug fix: createEstablishment deve limpar dados residuais ao reutilizar IDs (categorias, produtos, etc.)
 - [x] Bug: Cache tRPC/React Query mostra dados da conta anterior ao criar nova conta — adicionado headers no-cache na API + invalidação total do cache + limpeza localStorage ao criar conta
 - [x] Bug: Passo "Configurar atendimento" do onboarding já vem marcado como concluído — removida criação automática no backend + valores padrão vazios no frontend
+- [x] Bug: Passo "Configurar atendimento" do onboarding redireciona para aba Configurações → Estabelecimento em vez de Configurações → Atendimento
