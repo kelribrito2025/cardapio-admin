@@ -632,6 +632,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   );
   const outOfStockCount = outOfStockData?.count || 0;
 
+  // Get onboarding checklist to check if user has categories and products
+  const { data: onboardingChecklist } = trpc.dashboard.onboardingChecklist.useQuery(
+    { establishmentId: establishment?.id || 0 },
+    { enabled: !!establishment?.id, staleTime: 30000 }
+  );
+  const hasMenuReady = onboardingChecklist?.steps?.some(s => s.id === 'category' && s.completed) && 
+                        onboardingChecklist?.steps?.some(s => s.id === 'products' && s.completed);
+
   // Check if scheduling is enabled for this establishment
   const schedulingEnabled = establishment?.schedulingEnabled === true;
 
@@ -1279,8 +1287,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               {/* Tempo Médio de Preparo - Desktop only */}
               <AvgPrepTimeButton establishmentId={establishment?.id} />
 
-              {/* Ver Menu Button */}
-              {establishment?.menuSlug && (
+              {/* Ver Menu Button - só aparece quando tem pelo menos 1 categoria e 1 produto */}
+              {establishment?.menuSlug && hasMenuReady && (
                 <Tooltip open={menuTooltipDismissed ? false : undefined}>
                   <TooltipTrigger asChild>
                     <a
