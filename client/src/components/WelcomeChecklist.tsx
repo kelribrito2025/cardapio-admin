@@ -142,10 +142,13 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
     }
   }, [checklist, expandedStepId]);
 
-  // Detectar quando um passo é desbloqueado (completedCount muda)
+  // Detectar quando um passo é concluído — abrir sidebar automaticamente e animar desbloqueio
   useEffect(() => {
     if (!checklist) return;
     if (prevCompletedRef.current !== null && checklist.completedCount > prevCompletedRef.current && !checklist.allCompleted) {
+      // Abrir a sidebar automaticamente ao completar um passo
+      setSheetOpen(true);
+      localStorage.removeItem(minimizedKey);
       const firstIncomplete = checklist.steps.find(s => !s.completed);
       if (firstIncomplete) {
         setJustUnlockedStepId(firstIncomplete.id);
