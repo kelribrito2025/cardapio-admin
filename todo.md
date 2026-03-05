@@ -8164,7 +8164,3 @@
 - [x] Cardápio: Sem categorias mostra apenas botão 'Criar Categoria' (esconde '+ item'), com categorias mostra ambos botões
 - [x] Bug: Checklist de onboarding demora a atualizar após criar categoria — invalidar imediatamente (categoria, produto, horários, whatsapp, configurações)
 - [x] Sidebar de Primeiros Passos deve abrir automaticamente sempre que o usuário completar um passo
-- [x] Bug: Sidebar de onboarding só aparece no Dashboard — mover WelcomeChecklist para AdminLayout (global)
-- [x] Onboarding sidebar: Bloquear clique fora (overlay) para não fechar a sidebar
-- [x] Onboarding sidebar: Fechar apenas pelo botão X da sidebar
-- [x] Onboarding sidebar: Reabrir automaticamente a cada 10 segundos se fechada antes de completar todos os passos

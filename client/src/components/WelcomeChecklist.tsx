@@ -121,8 +121,6 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
     return true;
   });
 
-  const reopenTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
   const [expandedStepId, setExpandedStepId] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
@@ -133,30 +131,6 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
     { establishmentId },
     { enabled: !!establishmentId && !dismissed, staleTime: 5000, refetchInterval: 5000 }
   );
-
-  // Timer para reabrir automaticamente a cada 10 segundos se fechada
-  useEffect(() => {
-    // Limpar timer anterior
-    if (reopenTimerRef.current) {
-      clearInterval(reopenTimerRef.current);
-      reopenTimerRef.current = null;
-    }
-
-    // Se a sidebar está fechada e o onboarding não foi concluído, iniciar timer
-    if (!sheetOpen && !dismissed && checklist && !checklist.allCompleted) {
-      reopenTimerRef.current = setInterval(() => {
-        setSheetOpen(true);
-        localStorage.removeItem(minimizedKey);
-      }, 10000);
-    }
-
-    return () => {
-      if (reopenTimerRef.current) {
-        clearInterval(reopenTimerRef.current);
-        reopenTimerRef.current = null;
-      }
-    };
-  }, [sheetOpen, dismissed, checklist?.allCompleted, minimizedKey]);
 
   // Auto-expandir o primeiro passo incompleto
   useEffect(() => {
@@ -365,14 +339,11 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
   // ==================== DESKTOP: Sheet/Sidebar lateral ====================
   const DesktopSheet = () => (
     <Sheet open={sheetOpen} onOpenChange={(open) => {
-      // Bloquear fechamento por overlay — só fecha pelo botão X
-      if (!open) return;
+      if (!open) handleMinimize();
     }}>
       <SheetContent
         side="right"
         hideCloseButton
-        onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
         className="!w-[440px] !max-w-[440px] p-0 gap-0 border-l border-border/40 bg-background overflow-hidden"
       >
         {/* SR-only title for accessibility */}

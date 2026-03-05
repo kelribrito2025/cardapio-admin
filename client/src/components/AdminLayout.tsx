@@ -78,7 +78,6 @@ import { toast } from "sonner";
 import { TrialExpiredModal } from "@/components/TrialExpiredModal";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { WhatsAppDisconnectedBanner } from "@/components/WhatsAppDisconnectedBanner";
-import { WelcomeChecklist } from "@/components/WelcomeChecklist";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useSearch } from "@/contexts/SearchContext";
 import {
@@ -1587,14 +1586,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         establishmentId={establishment?.id}
         establishmentName={establishment?.name}
       />
-
-      {/* Welcome Checklist - global, aparece em todas as páginas */}
-      {establishment?.id && (
-        <WelcomeChecklist
-          establishmentId={establishment.id}
-          establishmentName={establishment?.name}
-        />
-      )}
 
       {/* Modal obrigatório de upgrade quando trial expira */}
       {/* Não mostra na página de planos (exceção) */}
