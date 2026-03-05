@@ -239,24 +239,24 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                 className={cn(
                   "group flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all duration-200",
                   step.completed
-                    ? "bg-emerald-50/60 dark:bg-emerald-950/20"
+                    ? "bg-primary/5 dark:bg-primary/10"
                     : "bg-muted/30 hover:bg-muted/60 hover:shadow-sm cursor-pointer"
                 )}
               >
                 <div className="flex-shrink-0">
                   {step.completed ? (
-                    <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                    <CheckCircle2 className="h-5 w-5 text-primary" />
                   ) : (
                     <div className="h-5 w-5 rounded-full border-2 border-muted-foreground/30 group-hover:border-primary/50 transition-colors" />
                   )}
                 </div>
                 <div className={cn(
                   "flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors",
-                  step.completed ? "bg-emerald-100/80 dark:bg-emerald-900/30" : "bg-muted/60 group-hover:bg-primary/10"
+                  step.completed ? "bg-primary/10 dark:bg-primary/20" : "bg-muted/60 group-hover:bg-primary/10"
                 )}>
-                  <StepIcon className={cn("h-3.5 w-3.5", step.completed ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground group-hover:text-primary")} />
+                  <StepIcon className={cn("h-3.5 w-3.5", step.completed ? "text-primary" : "text-muted-foreground group-hover:text-primary")} />
                 </div>
-                <span className={cn("flex-1 text-sm font-medium", step.completed ? "text-emerald-700 dark:text-emerald-400 line-through decoration-emerald-400/50" : "text-foreground")}>
+                <span className={cn("flex-1 text-sm font-medium", step.completed ? "text-primary line-through decoration-primary/50" : "text-foreground")}>
                   {step.label}
                 </span>
                 {!step.completed && (
@@ -310,22 +310,22 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
       <div className="absolute inset-0 flex items-center justify-center p-8">
         <div className="relative w-full max-w-[860px] max-h-[540px] bg-card rounded-2xl shadow-2xl border border-border/40 overflow-hidden flex">
           
-          {/* Sidebar esquerda - dark */}
-          <div className="w-[300px] flex-shrink-0 bg-zinc-900 dark:bg-zinc-950 text-white p-6 flex flex-col">
+          {/* Sidebar esquerda - vermelho Mindi */}
+          <div className="w-[300px] flex-shrink-0 bg-gradient-to-b from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 text-white p-6 flex flex-col">
             {/* Logo + Título */}
             <div className="mb-6">
-              <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center mb-4">
-                <span className="text-lg font-bold text-primary">M</span>
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-4">
+                <span className="text-lg font-bold text-white">M</span>
               </div>
               <h2 className="text-lg font-bold text-white">Configuracao Inicial</h2>
-              <p className="text-sm text-zinc-400 mt-1">Configure seu restaurante passo a passo</p>
+              <p className="text-sm text-white/70 mt-1">Configure seu restaurante passo a passo</p>
             </div>
 
             {/* Steps timeline */}
             <div className="flex-1 overflow-y-auto">
               <div className="relative">
                 {/* Linha vertical conectora */}
-                <div className="absolute left-[18px] top-[36px] bottom-[18px] w-[2px] bg-zinc-700" />
+                <div className="absolute left-[18px] top-[36px] bottom-[18px] w-[2px] bg-white/20" />
 
                 <div className="space-y-1">
                   {checklist.steps.map((step, idx) => {
@@ -340,23 +340,23 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                         onClick={() => setSelectedStepId(step.id)}
                         className={cn(
                           "relative w-full flex items-center gap-3 py-2.5 px-2 rounded-lg text-left transition-all duration-200",
-                          isSelected && !isCompleted && "bg-white/10",
-                          !isSelected && "hover:bg-white/5"
+                          isSelected && !isCompleted && "bg-white/15",
+                          !isSelected && "hover:bg-white/10"
                         )}
                       >
                         {/* Circle indicator */}
                         <div className={cn(
                           "relative z-10 flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300",
                           isCompleted
-                            ? "bg-emerald-500"
+                            ? "bg-white"
                             : isSelected
-                              ? "bg-primary ring-2 ring-primary/30"
-                              : "bg-zinc-700 border border-zinc-600"
+                              ? "bg-white ring-2 ring-white/30"
+                              : "bg-white/20 border border-white/30"
                         )}>
                           {isCompleted ? (
-                            <Check className="h-4 w-4 text-white" />
+                            <Check className="h-4 w-4 text-red-600" />
                           ) : (
-                            <StepIcon className={cn("h-4 w-4", isSelected ? "text-white" : "text-zinc-400")} />
+                            <StepIcon className={cn("h-4 w-4", isSelected ? "text-red-600" : "text-white/60")} />
                           )}
                         </div>
 
@@ -365,16 +365,16 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                           <span className={cn(
                             "block text-sm font-medium truncate",
                             isCompleted
-                              ? "text-emerald-400 line-through decoration-emerald-500/50"
+                              ? "text-white/70 line-through decoration-white/40"
                               : isSelected
-                                ? "text-primary"
-                                : "text-zinc-300"
+                                ? "text-white font-semibold"
+                                : "text-white/80"
                           )}>
                             {step.label}
                           </span>
                           <span className={cn(
                             "block text-xs truncate mt-0.5",
-                            isCompleted ? "text-zinc-500" : isSelected ? "text-primary/60" : "text-zinc-500"
+                            isCompleted ? "text-white/40" : isSelected ? "text-white/60" : "text-white/40"
                           )}>
                             {cfg?.subtitle}
                           </span>
@@ -387,14 +387,14 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
             </div>
 
             {/* Progress footer */}
-            <div className="mt-4 pt-4 border-t border-zinc-700/50">
+            <div className="mt-4 pt-4 border-t border-white/20">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-zinc-400">Progresso</span>
+                <span className="text-white/70">Progresso</span>
                 <span className="font-semibold text-white">{checklist.completedCount}/{checklist.totalSteps}</span>
               </div>
-              <div className="mt-2 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+              <div className="mt-2 h-1.5 bg-white/20 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-700 ease-out"
+                  className="h-full bg-white rounded-full transition-all duration-700 ease-out"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -419,12 +419,12 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                   <span className={cn(
                     "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full",
                     selectedStep.completed
-                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                      ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary"
                       : "bg-primary/10 text-primary"
                   )}>
                     <span className={cn(
                       "w-1.5 h-1.5 rounded-full",
-                      selectedStep.completed ? "bg-emerald-500" : "bg-primary"
+                      selectedStep.completed ? "bg-primary" : "bg-primary"
                     )} />
                     {selectedStep.completed ? "Concluido" : `Passo ${stepNumber} de ${checklist.totalSteps}`}
                   </span>
@@ -444,7 +444,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                   <div className="space-y-2.5">
                     {selectedConfig.whyImportant.map((item, idx) => (
                       <div key={idx} className="flex items-start gap-2.5">
-                        <Check className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                        <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                         <span className="text-sm text-muted-foreground">{item}</span>
                       </div>
                     ))}
@@ -457,7 +457,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                     <>
                       <button
                         onClick={handleStartStep}
-                        className="flex-1 h-11 bg-zinc-900 dark:bg-white dark:text-zinc-900 text-white font-semibold rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors text-sm"
+                        className="flex-1 h-11 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors text-sm"
                       >
                         Comecar este passo
                       </button>
@@ -469,7 +469,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                       </button>
                     </>
                   ) : (
-                    <div className="flex items-center gap-3 text-emerald-600 dark:text-emerald-400">
+                    <div className="flex items-center gap-3 text-primary">
                       <CheckCircle2 className="h-5 w-5" />
                       <span className="text-sm font-medium">Este passo ja foi concluido!</span>
                     </div>
