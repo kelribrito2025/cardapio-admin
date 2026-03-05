@@ -8150,3 +8150,4 @@
 - [x] Onboarding desktop: Redesenhar como modal wizard com sidebar de passos e detalhes à direita
 - [x] Onboarding desktop: Barra de progresso minimizada quando modal é fechado, com botão para reabrir
 - [x] Onboarding modal: Ajustar cores para identidade visual Mindi (vermelho em vez de preto/zinc/verde)
+- [x] Animação de confetti ao completar todos os passos do checklist de onboarding

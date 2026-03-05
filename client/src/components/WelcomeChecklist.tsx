@@ -17,8 +17,9 @@ import {
   Check,
   ChevronRight,
 } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { Confetti } from "./Confetti";
 
 const stepConfig: Record<string, {
   icon: React.ElementType;
@@ -109,6 +110,9 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
     return true;
   });
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const prevCompletedRef = useRef<number | null>(null);
 
   const { data: checklist, isLoading } = trpc.dashboard.onboardingChecklist.useQuery(
     { establishmentId },
@@ -127,13 +131,27 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
     }
   }, [checklist, selectedStepId]);
 
-  // Se completou tudo, marcar como dismissed
+  // Se completou tudo, mostrar confetti e celebração antes de dismiss
   useEffect(() => {
-    if (checklist?.allCompleted) {
+    if (!checklist) return;
+    // Detectar transição para allCompleted
+    if (checklist.allCompleted && prevCompletedRef.current !== null && prevCompletedRef.current < checklist.totalSteps) {
+      setShowConfetti(true);
+      setShowCelebration(true);
+      setModalOpen(true);
+      // Dismiss após a celebração
+      const timer = setTimeout(() => {
+        localStorage.setItem("welcome_checklist_dismissed", "true");
+        setDismissed(true);
+      }, 8000);
+      return () => clearTimeout(timer);
+    } else if (checklist.allCompleted && prevCompletedRef.current === null) {
+      // Já estava completo ao carregar — dismiss direto
       localStorage.setItem("welcome_checklist_dismissed", "true");
       setDismissed(true);
     }
-  }, [checklist?.allCompleted]);
+    prevCompletedRef.current = checklist.completedCount;
+  }, [checklist?.allCompleted, checklist?.completedCount]);
 
   const selectedStep = useMemo(() => {
     if (!checklist || !selectedStepId) return null;
@@ -142,7 +160,12 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
 
   const selectedConfig = selectedStepId ? stepConfig[selectedStepId] : null;
 
-  if (dismissed || isLoading || !checklist || checklist.allCompleted) {
+  if (dismissed || isLoading || !checklist) {
+    return null;
+  }
+
+  // Se está celebrando, mostrar tela de celebração em vez de null
+  if (checklist.allCompleted && !showCelebration) {
     return null;
   }
 
@@ -486,6 +509,100 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
       </div>
     </div>
   );
+
+  // ==================== CELEBRAÇÃO: Tela de conclusão ====================
+  const CelebrationModal = () => (
+    <div className="hidden md:block fixed inset-0 z-50">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+      <div className="absolute inset-0 flex items-center justify-center p-8">
+        <div className="relative w-full max-w-[520px] bg-card rounded-2xl shadow-2xl border border-border/40 overflow-hidden text-center p-10">
+          <button
+            onClick={() => {
+              setShowCelebration(false);
+              setShowConfetti(false);
+              localStorage.setItem("welcome_checklist_dismissed", "true");
+              setDismissed(true);
+            }}
+            className="absolute top-4 right-4 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+          >
+            <X className="h-4 w-4" />
+          </button>
+
+          <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-6">
+            <PartyPopper className="h-10 w-10 text-red-600 dark:text-red-400" />
+          </div>
+
+          <h2 className="text-2xl font-bold text-foreground mb-2">Parabens! Tudo configurado!</h2>
+          <p className="text-muted-foreground mb-6">
+            Seu restaurante <span className="font-semibold text-foreground">{establishmentName}</span> esta pronto para receber pedidos.
+            Todas as configuracoes iniciais foram concluidas com sucesso.
+          </p>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-center gap-2 text-sm text-red-600 dark:text-red-400 font-medium">
+              <CheckCircle2 className="h-5 w-5" />
+              <span>{checklist.totalSteps}/{checklist.totalSteps} passos concluidos</span>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowCelebration(false);
+                setShowConfetti(false);
+                localStorage.setItem("welcome_checklist_dismissed", "true");
+                setDismissed(true);
+              }}
+              className="mt-4 h-12 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors text-sm"
+            >
+              Ir para o Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const CelebrationMobile = () => (
+    <div className="md:hidden mb-6 rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden text-center p-8">
+      <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
+        <PartyPopper className="h-8 w-8 text-red-600 dark:text-red-400" />
+      </div>
+      <h2 className="text-xl font-bold text-foreground mb-2">Parabens! Tudo configurado!</h2>
+      <p className="text-sm text-muted-foreground mb-4">
+        Seu restaurante esta pronto para receber pedidos.
+      </p>
+      <div className="flex items-center justify-center gap-2 text-sm text-red-600 dark:text-red-400 font-medium mb-4">
+        <CheckCircle2 className="h-4 w-4" />
+        <span>{checklist.totalSteps}/{checklist.totalSteps} passos concluidos</span>
+      </div>
+      <button
+        onClick={() => {
+          setShowCelebration(false);
+          setShowConfetti(false);
+          localStorage.setItem("welcome_checklist_dismissed", "true");
+          setDismissed(true);
+        }}
+        className="w-full h-10 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors text-sm"
+      >
+        Ir para o Dashboard
+      </button>
+    </div>
+  );
+
+  // Se está em modo celebração
+  if (showCelebration) {
+    return (
+      <>
+        <Confetti
+          active={showConfetti}
+          duration={5000}
+          particleCount={200}
+          onComplete={() => setShowConfetti(false)}
+        />
+        <CelebrationMobile />
+        <CelebrationModal />
+      </>
+    );
+  }
 
   return (
     <>
