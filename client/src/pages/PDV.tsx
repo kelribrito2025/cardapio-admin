@@ -1009,18 +1009,6 @@ export default function PDV() {
               )}
             </div>
 
-            {/* Barra de Busca */}
-            <div className="px-4 py-3 border-b border-border/50">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar produto..."
-                  value={localSearchQuery}
-                  onChange={(e) => setLocalSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
 
             {/* Grid de Produtos */}
             <div className="flex-1 overflow-y-auto p-4">

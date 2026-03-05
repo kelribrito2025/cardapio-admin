@@ -8131,3 +8131,4 @@
 - [x] Dashboard: Padronizar estado vazio do card Pedidos Recentes (mesmo estilo dos outros cards)
 - [x] Dashboard: Padronizar estado vazio do card Pedidos Últimos 7 dias (mesmo estilo dos outros cards)
 - [x] Top bar: Campo de busca deve funcionar também na página /pdv (Frente de Caixa)
+- [x] PDV: Remover campo de busca local (abaixo das categorias) pois a top bar já faz a busca
