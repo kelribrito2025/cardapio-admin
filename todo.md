@@ -8143,3 +8143,6 @@
 - [x] Tela de boas-vindas/onboarding: endpoint backend para verificar status de configuração
 - [x] Tela de boas-vindas/onboarding: componente visual com checklist de primeiros passos
 - [x] Tela de boas-vindas/onboarding: lógica de exibição condicional (primeiro acesso ou sem produtos)
+- [x] Configurações Impressora: Unificar abas Layout e Fontes em uma só aba
+- [x] Configurações Impressora: Ocultar aba Logs
+- [x] Menu lateral Configurações: Adicionar badge "Breve" no item Pagamento Online

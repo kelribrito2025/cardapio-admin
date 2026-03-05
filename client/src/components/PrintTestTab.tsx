@@ -930,14 +930,10 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       </Card>
 
       <Tabs defaultValue="layout" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="layout" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
-            <span className="hidden sm:inline">Layout</span>
-          </TabsTrigger>
-          <TabsTrigger value="fonts" className="flex items-center gap-2">
-            <Type className="h-4 w-4" />
-            <span className="hidden sm:inline">Fontes</span>
+            <span className="hidden sm:inline">Layout e Fontes</span>
           </TabsTrigger>
           <TabsTrigger value="mindi" className="flex items-center gap-2">
             <Smartphone className="h-4 w-4" />
@@ -946,10 +942,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
           <TabsTrigger value="api" className="flex items-center gap-2">
             <Key className="h-4 w-4" />
             <span className="hidden sm:inline">API</span>
-          </TabsTrigger>
-          <TabsTrigger value="logs" className="flex items-center gap-2">
-            <ScrollText className="h-4 w-4" />
-            <span className="hidden sm:inline">Logs</span>
           </TabsTrigger>
         </TabsList>
         
@@ -1107,20 +1099,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
             </CardContent>
           </Card>
 
-          <div className="flex gap-3">
-            <Button onClick={handleSaveSettings} disabled={saveSettingsMutation.isPending}>
-              <Save className="h-4 w-4 mr-2" />
-              {saveSettingsMutation.isPending ? "Salvando..." : "Salvar"}
-            </Button>
-            <Button variant="outline" onClick={resetToDefaults}>
-              <RotateCcw className="h-4 w-4 mr-2" />
-              Restaurar Padrão
-            </Button>
-          </div>
-        </TabsContent>
-        
-        {/* Fonts Tab */}
-        <TabsContent value="fonts" className="space-y-4 mt-4">
           <Card className="shadow-none">
             <CardHeader>
               <CardTitle>Configurações de Fonte</CardTitle>
@@ -1459,10 +1437,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
           <PrinterApiKeySection establishmentId={establishmentId} />
         </TabsContent>
 
-        {/* Logs Tab */}
-        <TabsContent value="logs" className="space-y-4 mt-4">
-          <PrintLogsTab establishmentId={establishmentId} />
-        </TabsContent>
+
       </Tabs>
     </div>
   );

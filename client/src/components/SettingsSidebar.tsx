@@ -56,7 +56,7 @@ const menuItems: MenuItem[] = [
     ],
   },
   { id: "impressora", label: "Impressora e Teste", icon: Printer },
-  { id: "pagamento-online", label: "Pagamento Online", icon: CreditCard },
+  { id: "pagamento-online", label: "Pagamento Online", icon: CreditCard, disabled: true },
   { id: "integracoes", label: "Integrações", icon: Puzzle, disabled: true },
   { id: "conta-seguranca", label: "Conta e Segurança", icon: ShieldCheck },
 ];
