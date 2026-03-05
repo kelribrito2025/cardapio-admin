@@ -2,7 +2,6 @@ import { AdminLayout } from "@/components/AdminLayout";
 import { StatCard, PageHeader, SectionCard, StatusBadge, EmptyState } from "@/components/shared";
 import { WeeklyRevenueCard } from "@/components/WeeklyRevenueCard";
 import { HeatmapCard } from "@/components/HeatmapCard";
-import { WelcomeChecklist } from "@/components/WelcomeChecklist";
 import { trpc } from "@/lib/trpc";
 import { 
   ShoppingBag, 
@@ -232,14 +231,6 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
-
-      {/* Welcome Checklist - aparece para novos usuários */}
-      {establishmentId && (
-        <WelcomeChecklist
-          establishmentId={establishmentId}
-          establishmentName={establishment?.name}
-        />
-      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-6">
