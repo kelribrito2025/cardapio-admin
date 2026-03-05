@@ -1625,7 +1625,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           {/* Coluna Direita - Carrinho */}
           <div className="w-[370px] bg-muted/30 flex flex-col">
             {/* Header do Carrinho */}
-            <div className="px-3 border-b border-border/50 bg-card" style={{paddingTop: '8px', paddingBottom: '8px'}}>
+            <div className="px-3 border-b border-border/50 bg-card" style={{paddingTop: '8px', paddingBottom: '8px', backgroundColor: '#f5f6f7'}}>
               {/* Abas: Mesa (Consumo) e Comanda - lado a lado */}
               <div className="flex gap-2">
                 {/* Mesa (número) - aba Consumo */}
