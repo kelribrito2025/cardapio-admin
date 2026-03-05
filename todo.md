@@ -8161,3 +8161,4 @@
 - [x] Onboarding sidebar: Bloquear pulos — usuário deve finalizar passo atual antes de ir ao próximo
 - [x] Onboarding sidebar: Implementar toast "Complete o passo anterior primeiro" nos passos bloqueados
 - [x] Onboarding sidebar: Implementar animação de desbloqueio (scale + glow) quando passo é concluído
+- [x] Cardápio: Sem categorias mostra apenas botão 'Criar Categoria' (esconde '+ item'), com categorias mostra ambos botões

@@ -1297,6 +1297,7 @@ export default function Catalogo() {
   };
 
   const products = productsData?.products || [];
+  const hasCategories = localCategories.length > 0;
 
   // Count products without photos
   const productsWithoutPhoto = useMemo(() => {
@@ -1313,14 +1314,23 @@ export default function Catalogo() {
           icon={<UtensilsCrossed className="h-6 w-6 text-blue-600" />}
           actions={
             <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={() => setCategoryDialogOpen(true)} className="hidden md:flex rounded-lg h-9 px-3 text-xs sm:text-sm sm:px-3.5">
-                <FolderPlus className="h-4 w-4 mr-1.5 sm:mr-2" />
-                <span className="text-xs sm:text-sm">categoria</span>
-              </Button>
-              <Button onClick={() => setProductSheetOpen(true)} className="hidden md:flex rounded-lg h-9 px-3 text-xs sm:text-sm sm:px-3.5">
-                <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
-                <span className="text-xs sm:text-sm">item</span>
-              </Button>
+              {hasCategories && (
+                <Button variant="outline" onClick={() => setCategoryDialogOpen(true)} className="hidden md:flex rounded-lg h-9 px-3 text-xs sm:text-sm sm:px-3.5">
+                  <FolderPlus className="h-4 w-4 mr-1.5 sm:mr-2" />
+                  <span className="text-xs sm:text-sm">categoria</span>
+                </Button>
+              )}
+              {hasCategories ? (
+                <Button onClick={() => setProductSheetOpen(true)} className="hidden md:flex rounded-lg h-9 px-3 text-xs sm:text-sm sm:px-3.5">
+                  <Plus className="h-4 w-4 mr-1.5 sm:mr-2" />
+                  <span className="text-xs sm:text-sm">item</span>
+                </Button>
+              ) : (
+                <Button onClick={() => setCategoryDialogOpen(true)} className="hidden md:flex rounded-lg h-9 px-3 text-xs sm:text-sm sm:px-3.5">
+                  <FolderPlus className="h-4 w-4 mr-1.5 sm:mr-2" />
+                  <span className="text-xs sm:text-sm">categoria</span>
+                </Button>
+              )}
             </div>
           }
         />
@@ -1429,22 +1439,35 @@ export default function Catalogo() {
             </button>
           )}
         </div>
-        <Button
-          size="icon"
-          variant="outline"
-          onClick={() => setCategoryDialogOpen(true)}
-          className="h-10 w-10 rounded-xl flex-shrink-0"
-        >
-          <FolderPlus className="h-5 w-5" />
-        </Button>
-        <Button
-          size="icon"
-          onClick={() => setProductSheetOpen(true)}
-          className="h-10 w-10 rounded-xl flex-shrink-0"
-          style={{ backgroundColor: '#db262f', color: 'white' }}
-        >
-          <Plus className="h-5 w-5" />
-        </Button>
+        {hasCategories ? (
+          <>
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={() => setCategoryDialogOpen(true)}
+              className="h-10 w-10 rounded-xl flex-shrink-0"
+            >
+              <FolderPlus className="h-5 w-5" />
+            </Button>
+            <Button
+              size="icon"
+              onClick={() => setProductSheetOpen(true)}
+              className="h-10 w-10 rounded-xl flex-shrink-0"
+              style={{ backgroundColor: '#db262f', color: 'white' }}
+            >
+              <Plus className="h-5 w-5" />
+            </Button>
+          </>
+        ) : (
+          <Button
+            size="icon"
+            onClick={() => setCategoryDialogOpen(true)}
+            className="h-10 w-10 rounded-xl flex-shrink-0"
+            style={{ backgroundColor: '#db262f', color: 'white' }}
+          >
+            <FolderPlus className="h-5 w-5" />
+          </Button>
+        )}
       </div>
 
       {/* Products List */}
@@ -1470,12 +1493,12 @@ export default function Catalogo() {
       ) : products.length === 0 && localCategories.length === 0 ? (
         <SectionCard>
           <EmptyState
-            icon={UtensilsCrossed}
-            title="Nenhum produto encontrado"
-            description="Comece adicionando seu primeiro produto ao catálogo"
+            icon={FolderPlus}
+            title="Nenhuma categoria criada"
+            description="Comece criando sua primeira categoria para organizar o cardápio"
             action={{
-              label: "Criar Produto",
-              onClick: () => setProductSheetOpen(true)
+              label: "Criar Categoria",
+              onClick: () => setCategoryDialogOpen(true)
             }}
           />
         </SectionCard>
