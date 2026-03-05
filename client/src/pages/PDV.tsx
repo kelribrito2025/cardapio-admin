@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { useLocation } from "wouter";
+import { useSearch } from "@/contexts/SearchContext";
 import { 
   UtensilsCrossed, 
   ShoppingBag, 
@@ -244,7 +245,10 @@ export default function PDV() {
     }
     return [];
   });
-  const [searchQuery, setSearchQuery] = useState("");
+  const { searchQuery: globalSearch } = useSearch();
+  const [localSearchQuery, setLocalSearchQuery] = useState("");
+  // Combinar busca global (topbar) com busca local do PDV
+  const searchQuery = globalSearch || localSearchQuery;
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productQuantity, setProductQuantity] = useState(1);
   const [productObservation, setProductObservation] = useState("");
@@ -1011,8 +1015,8 @@ export default function PDV() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Buscar produto..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={localSearchQuery}
+                  onChange={(e) => setLocalSearchQuery(e.target.value)}
                   className="pl-10"
                 />
               </div>
