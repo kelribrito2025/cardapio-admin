@@ -1151,12 +1151,13 @@ export default function PDV() {
                     setPaymentMethod(null);
                   }}
                   className={cn(
-                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300",
+                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300 flex items-center justify-center gap-1.5",
                     orderType === "mesa"
                       ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
+                  <UtensilsCrossed className="w-3 h-3" />
                   Consumo
                 </button>
                 <button
@@ -1165,12 +1166,13 @@ export default function PDV() {
                     setPaymentMethod(null);
                   }}
                   className={cn(
-                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300",
+                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300 flex items-center justify-center gap-1.5",
                     orderType === "retirada"
                       ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
+                  <ShoppingBag className="w-3 h-3" />
                   Retirada
                 </button>
                 <button
@@ -1181,12 +1183,13 @@ export default function PDV() {
                     setShowDeliverySidebar(true);
                   }}
                   className={cn(
-                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300",
+                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300 flex items-center justify-center gap-1.5",
                     orderType === "entrega"
                       ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
+                  <Bike className="w-3 h-3" />
                   Entrega
                 </button>
               </div>
