@@ -8134,3 +8134,5 @@
 - [x] PDV: Remover campo de busca local (abaixo das categorias) pois a top bar já faz a busca
 - [x] Menu público: Itens com preço 0 só devem mostrar "Grátis" se priceMode=free, não por ter preço zero
 - [x] PDV: Adicionar cabeçalho do carrinho com título dinâmico, contagem de itens e descrição contextual
+
+- [x] Padronizar cabeçalho do carrinho na PDVSlidebar (Mapa de Mesas) igual ao PDV (ícone, título, descrição, badge, botões de modo com ícones)

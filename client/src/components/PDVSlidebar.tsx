@@ -5,6 +5,7 @@ import { formatCurrency } from "@/lib/utils";
 import { 
   UtensilsCrossed, 
   ShoppingBag, 
+  Bike,
   Plus, 
   Minus, 
   Trash2, 
@@ -1625,41 +1626,81 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
           {/* Coluna Direita - Carrinho */}
           <div className="w-[370px] bg-muted/30 flex flex-col">
             {/* Header do Carrinho */}
-            <div className="px-3 border-b border-border/50 bg-card" style={{paddingTop: '8px', paddingBottom: '8px', backgroundColor: '#f5f6f7'}}>
-              {/* Abas: Mesa (Consumo) e Comanda - lado a lado */}
-              <div className="flex gap-2">
-                {/* Mesa (número) - aba Consumo */}
+            <div className="border-b border-border/50 bg-card" style={{backgroundColor: '#f6f8f8'}}>
+              {/* Título do Carrinho */}
+              <div className="px-4 pt-3 pb-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                      <ShoppingBag className="w-4 h-4 text-red-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-foreground leading-tight">Mesa {tableDisplayName}</h3>
+                      <p className="text-xs text-muted-foreground leading-tight mt-0.5">
+                        {cart.length === 0
+                          ? 'Adicione produtos para iniciar um pedido.'
+                          : 'Revise os itens e envie para a comanda.'}
+                      </p>
+                    </div>
+                  </div>
+                  {(() => {
+                    const totalItems = cart.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
+                    return (
+                      <span className={cn(
+                        "text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0",
+                        totalItems > 0
+                          ? "bg-red-500 text-white"
+                          : "bg-muted text-muted-foreground"
+                      )}>
+                        {totalItems} {totalItems === 1 ? 'item' : 'itens'}
+                      </span>
+                    );
+                  })()}
+                </div>
+              </div>
+              {/* Abas: Mesa (Consumo) e Comanda - Pill selector com sliding animation */}
+              <div className="relative flex items-center bg-muted rounded-lg p-0.5 mx-4 mb-2" style={{backgroundColor: '#ffffff'}}>
+                {/* Sliding pill indicator */}
+                <div
+                  className={cn(
+                    "absolute top-0.5 bottom-0.5 rounded-md shadow-sm transition-all duration-300 ease-in-out",
+                    isCurrentTableReserved ? "bg-blue-500" : "bg-red-500"
+                  )}
+                  style={{
+                    width: 'calc((100% - 4px) / 2)',
+                    left: selectedTab === 'consumo'
+                      ? '2px'
+                      : 'calc((100% - 4px) / 2 + 2px)',
+                  }}
+                />
                 <button
                   onClick={() => setSelectedTab('consumo')}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-2 p-2 rounded-lg transition-all",
+                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300 flex items-center justify-center gap-1.5",
                     selectedTab === 'consumo'
-                      ? isCurrentTableReserved
-                        ? "bg-blue-500 text-white"
-                        : "bg-red-500 text-white"
-                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                      ? "text-white"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <UtensilsCrossed className="h-4 w-4" />
-                  <span className="text-sm font-medium">Mesa {tableDisplayName}</span>
+                  <UtensilsCrossed className="w-3 h-3" />
+                  Mesa {tableDisplayName}
                 </button>
-
-                {/* Comanda - aba Comanda (desabilitado se não houver comanda aberta) */}
                 <button
-                  onClick={() => setSelectedTab('comanda')}
-                  disabled={!tabId}
+                  onClick={() => {
+                    if (tabId) setSelectedTab('comanda');
+                  }}
                   className={cn(
-                    "flex-1 flex items-center justify-center gap-2 p-2 rounded-lg transition-all",
+                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300 flex items-center justify-center gap-1.5",
                     !tabId
-                      ? "bg-muted text-muted-foreground/50 cursor-not-allowed opacity-50"
+                      ? "text-muted-foreground/50 cursor-not-allowed opacity-50"
                       : selectedTab === 'comanda'
-                        ? "bg-red-500 text-white"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                        ? "text-white"
+                        : "text-muted-foreground hover:text-foreground"
                   )}
                   title={!tabId ? "Mesa sem comanda aberta" : "Ver itens da comanda"}
                 >
-                  <Receipt className="h-4 w-4" />
-                  <span className="text-sm font-medium">Comanda</span>
+                  <Receipt className="w-3 h-3" />
+                  Comanda
                 </button>
               </div>
             </div>
