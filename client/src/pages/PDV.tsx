@@ -1102,20 +1102,34 @@ export default function PDV() {
             <div className="border-b border-border/50 bg-card" style={{backgroundColor: '#f6f8f8'}}>
               {/* Título do Carrinho */}
               <div className="px-4 pt-3 pb-2">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold text-foreground">Carrinho</h3>
-                  <span className="text-xs text-muted-foreground">
-                    {(() => {
-                      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-                      return `• ${totalItems} ${totalItems === 1 ? 'item' : 'itens'}`;
-                    })()}
-                  </span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                      <ShoppingBag className="w-4 h-4 text-red-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-foreground leading-tight">Carrinho</h3>
+                      <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
+                        {cart.length === 0
+                          ? 'Adicione produtos para iniciar um pedido.'
+                          : 'Revise os itens e escolha como o pedido será atendido.'}
+                      </p>
+                    </div>
+                  </div>
+                  {(() => {
+                    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                    return (
+                      <span className={cn(
+                        "text-xs font-bold px-2.5 py-1 rounded-full",
+                        totalItems > 0
+                          ? "bg-red-500 text-white"
+                          : "bg-muted text-muted-foreground"
+                      )}>
+                        {totalItems} {totalItems === 1 ? 'item' : 'itens'}
+                      </span>
+                    );
+                  })()}
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {cart.length === 0
-                    ? 'Adicione produtos para iniciar um pedido.'
-                    : 'Revise os itens e escolha como o pedido será atendido.'}
-                </p>
               </div>
               {/* Tipo de Pedido - Pill selector com sliding animation */}
               <div className="relative flex items-center bg-muted rounded-xl p-1 mx-4 mb-3" style={{backgroundColor: '#ffffff'}}>
