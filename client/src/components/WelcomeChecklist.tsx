@@ -324,59 +324,67 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
       <SheetContent
         side="right"
         hideCloseButton
-        className="!w-[440px] !max-w-[440px] p-0 gap-0 border-l border-border/40 bg-gradient-to-b from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 overflow-hidden"
+        className="!w-[440px] !max-w-[440px] p-0 gap-0 border-l border-border/40 bg-background overflow-hidden"
       >
         {/* SR-only title for accessibility */}
         <SheetTitle className="sr-only">Configuração Inicial</SheetTitle>
         <SheetDescription className="sr-only">Passos para configurar seu restaurante</SheetDescription>
 
-        {/* Header vermelho com branding */}
-        <div className="px-6 pt-6 pb-4">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-sm">
-                <Sparkles className="h-5 w-5 text-white" />
+        {/* Header com degradê suave e glow */}
+        <div className="relative overflow-hidden">
+          {/* Fundo degradê suave */}
+          <div className="absolute inset-0 bg-gradient-to-br from-red-500/90 via-red-400/80 to-rose-400/70 dark:from-red-600/80 dark:via-red-500/70 dark:to-rose-500/60" />
+          {/* Glow effect */}
+          <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/20 rounded-full blur-3xl" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-rose-300/20 rounded-full blur-3xl" />
+
+          <div className="relative px-6 pt-6 pb-5">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/25 backdrop-blur-sm flex items-center justify-center shadow-sm">
+                  <Sparkles className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-base font-bold text-white">Mindi Setup</span>
               </div>
-              <span className="text-base font-bold text-white">Mindi Setup</span>
+              <button
+                onClick={handleMinimize}
+                className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
-            <button
-              onClick={handleMinimize}
-              className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
 
-          <h2 className="text-2xl font-bold text-white tracking-tight">Primeiros Passos</h2>
-          <p className="text-sm text-white/70 mt-1">Configuração rápida e simples</p>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Primeiros Passos</h2>
+            <p className="text-sm text-white/70 mt-1">Configuração rápida e simples</p>
 
-          {/* Progress card */}
-          <div className="mt-5 bg-white/15 backdrop-blur-sm rounded-xl p-4">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-white/90">Progresso Total</span>
-              <span className="text-2xl font-bold text-white">
-                {checklist.completedCount}/{checklist.totalSteps}
-              </span>
-            </div>
-            {/* Segmented progress bar */}
-            <div className="flex gap-1.5">
-              {checklist.steps.map((step) => (
-                <div
-                  key={step.id}
-                  className={cn(
-                    "flex-1 h-2 rounded-full transition-all duration-500",
-                    step.completed
-                      ? "bg-white"
-                      : "bg-white/25"
-                  )}
-                />
-              ))}
+            {/* Progress card */}
+            <div className="mt-5 bg-white/20 backdrop-blur-sm rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-white/90">Progresso Total</span>
+                <span className="text-2xl font-bold text-white">
+                  {checklist.completedCount}/{checklist.totalSteps}
+                </span>
+              </div>
+              {/* Segmented progress bar */}
+              <div className="flex gap-1.5">
+                {checklist.steps.map((step) => (
+                  <div
+                    key={step.id}
+                    className={cn(
+                      "flex-1 h-2 rounded-full transition-all duration-500",
+                      step.completed
+                        ? "bg-white shadow-sm shadow-white/30"
+                        : "bg-white/25"
+                    )}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Steps list - scrollable area */}
-        <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-2.5">
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
           {checklist.steps.map((step) => {
             const cfg = stepConfig[step.id];
             const StepIcon = cfg?.icon || Circle;
@@ -390,16 +398,18 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                   className={cn(
                     "w-full rounded-xl transition-all duration-300 text-left",
                     isExpanded && !isCompleted
-                      ? "bg-white dark:bg-card shadow-lg shadow-black/10"
-                      : "bg-white/10 backdrop-blur-sm border border-white/10"
+                      ? "bg-card shadow-lg shadow-red-500/5 ring-1 ring-red-100 dark:ring-red-900/30"
+                      : isCompleted
+                        ? "bg-red-50/60 dark:bg-red-950/20 border border-red-100/60 dark:border-red-900/20"
+                        : "bg-muted/40 dark:bg-muted/20 border border-border/40 hover:border-red-200/60 dark:hover:border-red-800/30"
                   )}
                 >
                   {/* Card header - always visible */}
                   <button
                     onClick={() => !isCompleted && toggleStep(step.id)}
                     className={cn(
-                      "w-full flex items-center gap-3 p-4 text-left",
-                      !isCompleted && !isExpanded && "cursor-pointer hover:bg-white/5 rounded-xl transition-colors",
+                      "w-full flex items-center gap-3 p-4 text-left rounded-xl transition-colors",
+                      !isCompleted && !isExpanded && "cursor-pointer",
                       isExpanded && !isCompleted && "pb-0",
                       isCompleted && "cursor-default"
                     )}
@@ -408,17 +418,17 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                     <div className={cn(
                       "flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-all",
                       isCompleted
-                        ? "bg-white/20"
+                        ? "bg-gradient-to-br from-red-500 to-rose-500 shadow-sm shadow-red-500/20"
                         : isExpanded
                           ? "bg-red-100 dark:bg-red-900/30"
-                          : "bg-white/15"
+                          : "bg-muted/60 dark:bg-muted/40"
                     )}>
                       {isCompleted ? (
                         <Check className="h-5 w-5 text-white" />
                       ) : (
                         <StepIcon className={cn(
                           "h-5 w-5",
-                          isExpanded ? "text-red-600 dark:text-red-400" : "text-white/80"
+                          isExpanded ? "text-red-600 dark:text-red-400" : "text-muted-foreground"
                         )} />
                       )}
                     </div>
@@ -428,20 +438,18 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                       <span className={cn(
                         "block text-sm font-semibold truncate",
                         isCompleted
-                          ? "text-white/70 line-through decoration-white/40"
+                          ? "text-red-600/70 dark:text-red-400/70 line-through decoration-red-300/50 dark:decoration-red-700/50"
                           : isExpanded
                             ? "text-foreground"
-                            : "text-white"
+                            : "text-foreground/80"
                       )}>
                         {step.label}
                       </span>
                       <span className={cn(
                         "block text-xs truncate mt-0.5",
                         isCompleted
-                          ? "text-white/40"
-                          : isExpanded
-                            ? "text-muted-foreground"
-                            : "text-white/60"
+                          ? "text-red-400/50 dark:text-red-500/40"
+                          : "text-muted-foreground"
                       )}>
                         {cfg?.subtitle}
                       </span>
@@ -449,13 +457,13 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
 
                     {/* Chevron / Check indicator */}
                     {isCompleted ? (
-                      <CheckCircle2 className="h-5 w-5 text-white/60 flex-shrink-0" />
+                      <CheckCircle2 className="h-5 w-5 text-red-500/60 dark:text-red-400/60 flex-shrink-0" />
                     ) : (
                       <ChevronRight className={cn(
                         "h-4 w-4 flex-shrink-0 transition-transform duration-200",
                         isExpanded
-                          ? "text-muted-foreground rotate-90"
-                          : "text-white/50"
+                          ? "text-red-500 rotate-90"
+                          : "text-muted-foreground/50"
                       )} />
                     )}
                   </button>
@@ -482,7 +490,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                           e.stopPropagation();
                           handleStartStep(step.href);
                         }}
-                        className="w-full h-11 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+                        className="w-full h-11 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm shadow-red-500/20"
                       >
                         Começar este passo
                       </button>
