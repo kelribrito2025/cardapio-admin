@@ -1,0 +1,16 @@
+{
+  "query": "SELECT u.id, u.email, e.id as est_id, e.name as est_name FROM users u LEFT JOIN establishments e ON e.userId = u.id WHERE u.email = 'teste@conta.com';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT u.id, u.email, e.id as est_id, e.name as est_name FROM users u LEFT JOIN establishments e ON e.userId = u.id WHERE u.email = 'teste@conta.com';",
+  "rows": [
+    {
+      "id": "1454622",
+      "email": "teste@conta.com",
+      "est_id": "210016",
+      "est_name": "fdsfdssdfs"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\test_id\test_name\n1454622\tteste@conta.com\t210016\tfdsfdssdfs\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

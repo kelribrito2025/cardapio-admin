@@ -1,0 +1,19 @@
+{
+  "query": "SELECT u.id, u.email, u.name, u.createdAt, e.id as establishment_id, e.name as establishment_name, e.createdAt as est_created_at FROM users u LEFT JOIN establishments e ON e.userId = u.id WHERE u.email = 'teste@conta.com';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT u.id, u.email, u.name, u.createdAt, e.id as establishment_id, e.name as establishment_name, e.createdAt as est_created_at FROM users u LEFT JOIN establishments e ON e.userId = u.id WHERE u.email = 'teste@conta.com';",
+  "rows": [
+    {
+      "id": "1454622",
+      "email": "teste@conta.com",
+      "name": "teste",
+      "createdAt": "2026-03-05 22:35:38",
+      "establishment_id": "210016",
+      "establishment_name": "fdsfdssdfs",
+      "est_created_at": "2026-03-05 22:35:52"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tname\tcreatedAt\testablishment_id\testablishment_name\test_created_at\n1454622\tteste@conta.com\tteste\t2026-03-05 22:35:38\t210016\tfdsfdssdfs\t2026-03-05 22:35:52\n",
+  "stderr": "",
+  "execution_time_ms": 93
+}
