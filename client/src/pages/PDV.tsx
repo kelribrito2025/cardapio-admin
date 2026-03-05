@@ -1108,8 +1108,8 @@ export default function PDV() {
                       <ShoppingBag className="w-4 h-4 text-red-500" />
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-foreground leading-tight">Carrinho</h3>
-                      <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
+                      <h3 className="text-lg font-bold text-foreground leading-tight">Carrinho</h3>
+                      <p className="text-xs text-muted-foreground leading-tight mt-0.5">
                         {cart.length === 0
                           ? 'Adicione produtos para iniciar um pedido.'
                           : 'Revise os itens e escolha como o pedido será atendido.'}
