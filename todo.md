@@ -8147,3 +8147,5 @@
 - [x] Configurações Impressora: Ocultar aba Logs
 - [x] Menu lateral Configurações: Adicionar badge "Breve" no item Pagamento Online
 - [x] Onboarding: Adaptar layout para desktop com grid de 2 colunas e menos espaço vertical
+- [x] Onboarding desktop: Redesenhar como modal wizard com sidebar de passos e detalhes à direita
+- [x] Onboarding desktop: Barra de progresso minimizada quando modal é fechado, com botão para reabrir
