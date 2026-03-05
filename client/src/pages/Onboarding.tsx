@@ -155,8 +155,6 @@ export default function Onboarding() {
   
   // Form state - Step 2 (Configurações de Atendimento)
   const [address, setAddress] = useState("");
-  const [openingTime, setOpeningTime] = useState("18:00");
-  const [closingTime, setClosingTime] = useState("23:00");
   const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<string[]>(["pix"]);
   const [minDeliveryTime, setMinDeliveryTime] = useState("20");
   const [maxDeliveryTime, setMaxDeliveryTime] = useState("50");
@@ -258,7 +256,7 @@ export default function Onboarding() {
   const isStep1Valid = name.trim() !== "" && menuSlug.trim() !== "" && deliveryType !== "" && isSlugAvailable && isInstagramValid && isWhatsAppValid;
 
   // Validation for Step 2
-  const isStep2Valid = address.trim() !== "" && openingTime !== "" && closingTime !== "" && selectedPaymentMethods.length > 0;
+  const isStep2Valid = address.trim() !== "" && selectedPaymentMethods.length > 0;
 
   // Validation for Step 3
   const isStep3Valid = selectedObjectives.length > 0 && howFound !== "";
@@ -320,8 +318,7 @@ export default function Onboarding() {
       
       // Step 2 - Configurações de Atendimento
       address: address.trim() || undefined,
-      openingTime: openingTime || undefined,
-      closingTime: closingTime || undefined,
+
       acceptsPix: selectedPaymentMethods.includes("pix"),
       acceptsCash: selectedPaymentMethods.includes("cash"),
       acceptsCard: selectedPaymentMethods.includes("card"),
@@ -728,33 +725,6 @@ export default function Onboarding() {
                   </div>
                 </div>
 
-                {/* Horário de atendimento */}
-                <div className="space-y-1">
-                  <Label className="text-xs lg:text-sm xl:text-base 2xl:text-lg font-semibold text-foreground">
-                    Horário de atendimento
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <div className="relative flex-1">
-                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        type="time"
-                        value={openingTime}
-                        onChange={(e) => setOpeningTime(e.target.value)}
-                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
-                      />
-                    </div>
-                    <span className="text-muted-foreground font-medium text-xs lg:text-sm">às</span>
-                    <div className="relative flex-1">
-                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        type="time"
-                        value={closingTime}
-                        onChange={(e) => setClosingTime(e.target.value)}
-                        className="h-10 lg:h-12 xl:h-13 2xl:h-14 pl-10 rounded-lg border-border bg-muted/50 focus:bg-card focus:border-primary focus:ring-primary/20 text-sm lg:text-base xl:text-lg"
-                      />
-                    </div>
-                  </div>
-                </div>
 
                 {/* Formas de pagamento */}
                 <div className="space-y-1">
