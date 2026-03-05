@@ -8137,3 +8137,5 @@
 
 - [x] Padronizar cabeçalho do carrinho na PDVSlidebar (Mapa de Mesas) igual ao PDV (ícone, título, descrição, badge, botões de modo com ícones)
 - [x] Corrigir cores hardcoded no cabeçalho do carrinho (PDV e PDVSlidebar) para suportar modo escuro
+- [x] Investigar delay de 3-4s ao abrir detalhes do pedido vindo da Dashboard
+- [x] Adicionar skeleton de carregamento na sidebar de detalhes do pedido

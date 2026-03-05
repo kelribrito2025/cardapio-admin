@@ -482,7 +482,7 @@ export default function Pedidos() {
 
   const allOrders = allOrdersData?.orders || [];
 
-  const { data: orderDetails } = trpc.orders.get.useQuery(
+  const { data: orderDetails, isLoading: orderDetailsLoading, isFetching: orderDetailsFetching } = trpc.orders.get.useQuery(
     { id: selectedOrder! },
     { enabled: !!selectedOrder }
   );
@@ -1998,6 +1998,79 @@ export default function Pedidos() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+
+          {(orderDetailsLoading || orderDetailsFetching) && !orderDetails && (
+            <div className="overflow-y-auto flex-1 p-6 space-y-6 animate-in fade-in duration-200">
+              {/* Skeleton: Order ID and Status */}
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <div className="skeleton h-6 w-40 rounded" />
+                  <div className="skeleton h-4 w-56 rounded" />
+                </div>
+                <div className="skeleton h-7 w-24 rounded-lg" />
+              </div>
+
+              {/* Skeleton: Status Timeline */}
+              <div className="bg-muted/30 rounded-xl p-4 space-y-3">
+                <div className="skeleton h-4 w-32 rounded" />
+                <div className="flex items-center gap-3">
+                  <div className="skeleton h-8 w-8 rounded-full" />
+                  <div className="skeleton h-4 w-48 rounded" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="skeleton h-8 w-8 rounded-full" />
+                  <div className="skeleton h-4 w-40 rounded" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="skeleton h-8 w-8 rounded-full" />
+                  <div className="skeleton h-4 w-36 rounded" />
+                </div>
+              </div>
+
+              {/* Skeleton: Customer Info */}
+              <div className="bg-muted/30 rounded-xl p-4 space-y-3">
+                <div className="skeleton h-4 w-28 rounded" />
+                <div className="flex items-center gap-3">
+                  <div className="skeleton h-10 w-10 rounded-full" />
+                  <div className="space-y-1.5">
+                    <div className="skeleton h-4 w-36 rounded" />
+                    <div className="skeleton h-3 w-28 rounded" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Skeleton: Order Items */}
+              <div className="space-y-3">
+                <div className="skeleton h-4 w-24 rounded" />
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="flex items-center gap-3 py-2">
+                    <div className="skeleton h-12 w-12 rounded-lg" />
+                    <div className="flex-1 space-y-1.5">
+                      <div className="skeleton h-4 w-40 rounded" />
+                      <div className="skeleton h-3 w-24 rounded" />
+                    </div>
+                    <div className="skeleton h-4 w-16 rounded" />
+                  </div>
+                ))}
+              </div>
+
+              {/* Skeleton: Payment Summary */}
+              <div className="bg-muted/30 rounded-xl p-4 space-y-2">
+                <div className="flex justify-between">
+                  <div className="skeleton h-4 w-20 rounded" />
+                  <div className="skeleton h-4 w-16 rounded" />
+                </div>
+                <div className="flex justify-between">
+                  <div className="skeleton h-4 w-28 rounded" />
+                  <div className="skeleton h-4 w-16 rounded" />
+                </div>
+                <div className="border-t border-border/50 pt-2 flex justify-between">
+                  <div className="skeleton h-5 w-12 rounded" />
+                  <div className="skeleton h-5 w-20 rounded" />
+                </div>
+              </div>
+            </div>
+          )}
 
           {orderDetails && (
             <div className="overflow-y-auto flex-1">
