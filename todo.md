@@ -8223,3 +8223,4 @@
 - [x] Admin: Recriar utilizador djigorlousada@hotmail.com para o estabelecimento 210008
 - [x] Bug: Taxa de entrega "Por Bairros" — ao salvar, os bairros cadastrados são limpos/apagados (corrigido: substituída lógica de mutations individuais por batch sync)
 - [x] Remover texto "Esta tela fechará automaticamente em alguns segundos" da sidebar de Parabéns do onboarding
+- [x] Menu Público: Spotlight/Overlay no ícone ≡ após primeiro pedido do cliente para guiá-lo a abrir o menu lateral

@@ -8,6 +8,7 @@ import { orderSSE, statusMap } from "@/lib/orderSSE";
 import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, ChevronLeft, Store, Utensils, Menu, Star, StarHalf, ShoppingBag, Ticket, Clock, X, CreditCard, Banknote, QrCode, FileText, Info, Share2, Minus, Plus, Trash2, Phone, Package, MessageCircle, CheckCircle, XCircle, Bike, Copy, Loader2, Eye, RefreshCw, UtensilsCrossed, Gift, RotateCcw, Check, Zap, Rocket, CalendarClock, Wallet, ArrowUpRight, ArrowDownLeft, AlertTriangle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { MenuSpotlight } from "@/components/MenuSpotlight";
 
 // Tipo do item do carrinho
 type CartItem = {
@@ -207,6 +208,8 @@ export default function PublicMenu() {
   const [cancellationReasonDisplay, setCancellationReasonDisplay] = useState<string | null>(null);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showMenuSpotlight, setShowMenuSpotlight] = useState(false);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
 
   const [expandedOrderIds, setExpandedOrderIds] = useState<Set<string>>(new Set());
   // Track canReview status per order in history: { orderId: { checked: boolean, canReview: boolean } }
@@ -711,9 +714,20 @@ export default function PublicMenu() {
       const establishmentId = data?.establishment?.id;
       if (establishmentId) {
         const existingOrders = loadOrdersFromStorage(establishmentId);
+        // Verificar se é o primeiro pedido do cliente neste estabelecimento
+        const isFirstOrder = existingOrders.length === 0;
         const updatedOrders = [newOrder, ...existingOrders];
         saveOrdersToStorage(establishmentId, updatedOrders);
         setUserOrders(updatedOrders);
+        
+        // Mostrar spotlight do menu após o primeiro pedido (com delay para o modal de sucesso aparecer primeiro)
+        const spotlightShownKey = `menu_spotlight_shown_${establishmentId}`;
+        if (isFirstOrder && !localStorage.getItem(spotlightShownKey)) {
+          localStorage.setItem(spotlightShownKey, 'true');
+          // O spotlight será ativado quando o cliente fechar o modal de sucesso (clicar em "Acompanhar pedido")
+          // Usamos um flag para saber que deve mostrar
+          localStorage.setItem(`menu_spotlight_pending_${establishmentId}`, 'true');
+        }
       }
       setSelectedOrderId(newOrder.id);
       // Usar orderId para tracking SSE (evita colisão com reset diário)
@@ -1432,7 +1446,7 @@ export default function PublicMenu() {
 
   // Bloquear scroll do body quando modais estão abertos
   useEffect(() => {
-    const isAnyModalOpen = showOrdersModal || showTrackingModal || showMobileBag || checkoutStep > 0 || showInfoModal || showCouponModal || showReviewsModal || showRatingModal || selectedProduct !== null || showFullscreenImage || showNavigationModal || showLoyaltyModal || showNeighborhoodModal || showMobileMenu || showDeliveryTypeModal;
+    const isAnyModalOpen = showOrdersModal || showTrackingModal || showMobileBag || checkoutStep > 0 || showInfoModal || showCouponModal || showReviewsModal || showRatingModal || selectedProduct !== null || showFullscreenImage || showNavigationModal || showLoyaltyModal || showNeighborhoodModal || showMobileMenu || showDeliveryTypeModal || showMenuSpotlight;
     
     if (isAnyModalOpen) {
       document.body.style.overflow = 'hidden';
@@ -1443,7 +1457,7 @@ export default function PublicMenu() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [showOrdersModal, showTrackingModal, showMobileBag, checkoutStep, showInfoModal, showCouponModal, showReviewsModal, showRatingModal, selectedProduct, showFullscreenImage, showNavigationModal, showLoyaltyModal, showNeighborhoodModal, showMobileMenu, showDeliveryTypeModal]);
+  }, [showOrdersModal, showTrackingModal, showMobileBag, checkoutStep, showInfoModal, showCouponModal, showReviewsModal, showRatingModal, selectedProduct, showFullscreenImage, showNavigationModal, showLoyaltyModal, showNeighborhoodModal, showMobileMenu, showDeliveryTypeModal, showMenuSpotlight]);
 
   // Scroll the category nav to show the active category button
   const scrollCategoryNavToActive = useCallback((categoryId: number) => {
@@ -1858,7 +1872,7 @@ export default function PublicMenu() {
             </nav>
 
             {/* Mobile Menu Button */}
-            <button className="md:hidden p-2 text-gray-600 hover:text-gray-900 mr-4" onClick={() => setShowMobileMenu(true)}>
+            <button ref={mobileMenuButtonRef} className="md:hidden p-2 text-gray-600 hover:text-gray-900 mr-4 relative z-[201]" onClick={() => setShowMobileMenu(true)}>
               <Menu className="h-5 w-5" />
             </button>
           </div>
@@ -4822,6 +4836,20 @@ setOnlinePaymentUrl(null);
                     setOnlinePaymentUrl(null);
                     setCreatedOrderNumber(null);
                     setIsSendingOrder(false);
+                    
+                    // Verificar se deve mostrar o spotlight do menu (primeiro pedido)
+                    const estId = data?.establishment?.id;
+                    if (estId) {
+                      const pendingKey = `menu_spotlight_pending_${estId}`;
+                      if (localStorage.getItem(pendingKey)) {
+                        localStorage.removeItem(pendingKey);
+                        // Mostrar spotlight com delay para o tracking modal abrir primeiro
+                        setTimeout(() => {
+                          setShowTrackingModal(false);
+                          setTimeout(() => setShowMenuSpotlight(true), 300);
+                        }, 2000);
+                      }
+                    }
                   }}
                   className="w-full py-3.5 bg-primary text-white font-semibold rounded-xl transition-colors hover:bg-primary/90 flex items-center justify-center gap-2"
                 >
@@ -7633,6 +7661,18 @@ setOnlinePaymentUrl(null);
             </div>
           </div>
         </div>
+      )}
+
+      {/* Menu Spotlight Overlay - aparece após o primeiro pedido */}
+      {showMenuSpotlight && (
+        <MenuSpotlight
+          targetRef={mobileMenuButtonRef}
+          onDismiss={() => setShowMenuSpotlight(false)}
+          onOpenMenu={() => {
+            setShowMenuSpotlight(false);
+            setShowMobileMenu(true);
+          }}
+        />
       )}
     </div>
   );
