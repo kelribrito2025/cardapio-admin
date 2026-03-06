@@ -635,6 +635,13 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
 
         {/* Content */}
         <div className="flex-1 flex flex-col items-center justify-center px-8 py-8 text-center">
+          {/* Celebration icon */}
+          <div className="relative mb-5">
+            <div className="absolute inset-0 animate-ping rounded-full bg-green-400/20" style={{ animationDuration: '2s' }} />
+            <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-green-100 to-emerald-200 dark:from-green-900/40 dark:to-emerald-800/30 flex items-center justify-center shadow-md shadow-green-500/20">
+              <PartyPopper className="h-8 w-8 text-green-600 dark:text-green-400" />
+            </div>
+          </div>
           <p className="text-muted-foreground mb-6 leading-relaxed">
             Seu restaurante <span className="font-semibold text-foreground">{establishmentName}</span> está pronto para receber pedidos.
             Todas as configurações iniciais foram concluídas!

@@ -8196,3 +8196,4 @@
 - [x] Auth: Reverter fluxo "Esqueceu a senha" para o estado original (enviar link de recuperação)
 - [x] Onboarding: Mover passo "Adicionar foto e capa" para antes de "Conectar WhatsApp" (nova ordem: categoria → produtos → atendimento → foto/capa → whatsapp → testar pedido)
 - [x] Bug: Sidebar Primeiros Passos abre/fecha/abre novamente ao completar uma tarefa — comportamento de flickering
+- [x] Bug: Ícone não aparece acima da mensagem "Seu restaurante está pronto" na tela de celebração (Parabéns) da sidebar Primeiros Passos
