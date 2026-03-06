@@ -8186,3 +8186,4 @@
 - [x] Produto: Tornar seleção de categoria obrigatória no sheet de criação/edição — não permitir salvar sem categoria selecionada
 - [x] Produto: Remover opção "Sem categoria" do dropdown de categorias no sheet de criação/edição
 - [x] PDV: Aumentar tamanho do cabeçalho do carrinho (título, subtítulo, ícone) e dos 3 botões de tipo de pedido (Consumo, Retirada, Entrega)
+- [x] PDV: Remover ícone ShoppingBag (sacola vermelha) ao lado do título "Carrinho" no cabeçalho do carrinho
