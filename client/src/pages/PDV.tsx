@@ -1101,15 +1101,15 @@ export default function PDV() {
             {/* Header do Carrinho */}
             <div className="border-b border-border/50 bg-muted/40">
               {/* Título do Carrinho */}
-              <div className="px-4 pt-3 pb-2">
+              <div className="px-4 pt-4 pb-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
-                      <ShoppingBag className="w-4 h-4 text-red-500" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                      <ShoppingBag className="w-5 h-5 text-red-500" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-foreground leading-tight">Carrinho</h3>
-                      <p className="text-xs text-muted-foreground leading-tight mt-0.5">
+                      <h3 className="text-xl font-bold text-foreground leading-tight">Carrinho</h3>
+                      <p className="text-sm text-muted-foreground leading-tight mt-0.5">
                         {cart.length === 0
                           ? 'Adicione produtos para iniciar um pedido.'
                           : 'Revise os itens e escolha como o pedido será atendido.'}
@@ -1120,7 +1120,7 @@ export default function PDV() {
                     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
                     return (
                       <span className={cn(
-                        "text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0",
+                        "text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap shrink-0",
                         totalItems > 0
                           ? "bg-red-500 text-white"
                           : "bg-muted text-muted-foreground"
@@ -1132,17 +1132,17 @@ export default function PDV() {
                 </div>
               </div>
               {/* Tipo de Pedido - Pill selector com sliding animation */}
-              <div className="relative flex items-center bg-background rounded-lg p-0.5 mx-4 mb-2">
+              <div className="relative flex items-center bg-background rounded-xl p-1 mx-4 mb-3">
                 {/* Sliding pill indicator */}
                 <div
-                  className="absolute top-0.5 bottom-0.5 rounded-md bg-red-500 shadow-sm transition-all duration-300 ease-in-out"
+                  className="absolute top-1 bottom-1 rounded-lg bg-red-500 shadow-sm transition-all duration-300 ease-in-out"
                   style={{
-                    width: 'calc((100% - 4px) / 3)',
+                    width: 'calc((100% - 8px) / 3)',
                     left: orderType === "mesa"
-                      ? '2px'
+                      ? '4px'
                       : orderType === "retirada"
-                        ? 'calc((100% - 4px) / 3 + 2px)'
-                        : 'calc(2 * (100% - 4px) / 3 + 2px)',
+                        ? 'calc((100% - 8px) / 3 + 4px)'
+                        : 'calc(2 * (100% - 8px) / 3 + 4px)',
                   }}
                 />
                 <button
@@ -1151,13 +1151,13 @@ export default function PDV() {
                     setPaymentMethod(null);
                   }}
                   className={cn(
-                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300 flex items-center justify-center gap-1.5",
+                    "relative z-10 flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-300 flex items-center justify-center gap-2",
                     orderType === "mesa"
                       ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <UtensilsCrossed className="w-3 h-3" />
+                  <UtensilsCrossed className="w-4 h-4" />
                   Consumo
                 </button>
                 <button
@@ -1166,13 +1166,13 @@ export default function PDV() {
                     setPaymentMethod(null);
                   }}
                   className={cn(
-                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300 flex items-center justify-center gap-1.5",
+                    "relative z-10 flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-300 flex items-center justify-center gap-2",
                     orderType === "retirada"
                       ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <ShoppingBag className="w-3 h-3" />
+                  <ShoppingBag className="w-4 h-4" />
                   Retirada
                 </button>
                 <button
@@ -1183,13 +1183,13 @@ export default function PDV() {
                     setShowDeliverySidebar(true);
                   }}
                   className={cn(
-                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300 flex items-center justify-center gap-1.5",
+                    "relative z-10 flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-300 flex items-center justify-center gap-2",
                     orderType === "entrega"
                       ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <Bike className="w-3 h-3" />
+                  <Bike className="w-4 h-4" />
                   Entrega
                 </button>
               </div>
