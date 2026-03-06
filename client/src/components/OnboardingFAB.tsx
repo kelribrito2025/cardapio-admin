@@ -1,18 +1,24 @@
 import { Rocket } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import { WelcomeChecklist } from "./WelcomeChecklist";
 import { cn } from "@/lib/utils";
+import { useNewOrders } from "@/contexts/NewOrdersContext";
 
 /**
  * OnboardingFAB - Botão flutuante global com ícone de foguete.
  * Aparece em TODAS as páginas enquanto o onboarding não estiver completo.
  * É o único ponto de abertura da sidebar de Primeiros Passos.
+ * 
+ * Controla a abertura/fecho da sidebar via externalOpen/onExternalClose.
+ * Para evitar flickering, usa um ref para debounce de aberturas rápidas.
  */
 export function OnboardingFAB() {
-  const [fabOpen, setFabOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const openDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data: establishment } = trpc.establishment.get.useQuery();
+  const { isAudioUnlocked } = useNewOrders();
   const establishmentId = establishment?.id;
 
   const { data: checklist } = trpc.dashboard.onboardingChecklist.useQuery(
@@ -30,16 +36,35 @@ export function OnboardingFAB() {
 
   // Calcular completedCount ajustado (incluindo sound_notification override)
   const adjustedCompletedCount = checklist ? checklist.steps.filter(s => {
-    if (s.id === 'sound_notification') return soundActivated || s.completed;
+    if (s.id === 'sound_notification') return soundActivated || isAudioUnlocked || s.completed;
     return s.completed;
   }).length : 0;
 
   const adjustedAllCompleted = checklist ? adjustedCompletedCount === checklist.steps.length : false;
 
+  // Abrir sidebar com debounce para evitar flickering
+  const openSidebar = useCallback(() => {
+    if (openDebounceRef.current) {
+      clearTimeout(openDebounceRef.current);
+    }
+    openDebounceRef.current = setTimeout(() => {
+      setSidebarOpen(true);
+    }, 50);
+  }, []);
+
+  // Fechar sidebar (chamado pelo WelcomeChecklist quando o utilizador fecha)
+  const closeSidebar = useCallback(() => {
+    if (openDebounceRef.current) {
+      clearTimeout(openDebounceRef.current);
+      openDebounceRef.current = null;
+    }
+    setSidebarOpen(false);
+  }, []);
+
   // Callback: WelcomeChecklist pede para abrir (ex: passo concluído)
   const handleRequestOpen = useCallback(() => {
-    setFabOpen(true);
-  }, []);
+    openSidebar();
+  }, [openSidebar]);
 
   // Não mostrar se dismissed, completo, ou sem dados
   if (isDismissed || adjustedAllCompleted || !checklist || !establishmentId) {
@@ -49,9 +74,9 @@ export function OnboardingFAB() {
   return (
     <>
       {/* FAB Button - só aparece quando a sidebar está fechada */}
-      {!fabOpen && (
+      {!sidebarOpen && (
         <button
-          onClick={() => setFabOpen(true)}
+          onClick={openSidebar}
           className={cn(
             "fixed bottom-6 right-6 z-50 group",
             "w-14 h-14 rounded-full",
@@ -81,8 +106,8 @@ export function OnboardingFAB() {
       <WelcomeChecklist
         establishmentId={establishmentId}
         establishmentName={establishment?.name}
-        externalOpen={fabOpen}
-        onExternalClose={() => setFabOpen(false)}
+        externalOpen={sidebarOpen}
+        onExternalClose={closeSidebar}
         onRequestOpen={handleRequestOpen}
         hideMinimizedBar
       />

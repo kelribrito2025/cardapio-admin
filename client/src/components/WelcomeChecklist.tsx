@@ -143,8 +143,8 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
     return false;
   });
 
-  // Sidebar começa fechada — só abre pelo FAB ou ao completar um passo
-  const [sheetOpen, setSheetOpen] = useState(false);
+  // A sidebar é controlada externamente pelo FAB via externalOpen/onExternalClose
+  // Não há estado interno de sheetOpen para evitar flickering
 
   const [expandedStepId, setExpandedStepId] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -204,17 +204,16 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
         // Notificar o FAB para abrir (uma única vez)
         if (onRequestOpen) {
           onRequestOpen();
-        } else {
-          // Fallback: abrir directamente se não há FAB (não deveria acontecer)
-          setSheetOpen(true);
-          localStorage.removeItem(minimizedKey);
         }
       } else {
         // Todos os passos concluídos: mostrar celebração
         setShowConfetti(true);
         setShowCelebration(true);
         showCelebrationRef.current = true;
-        setSheetOpen(true);
+        // Abrir a sidebar para mostrar a celebração
+        if (onRequestOpen) {
+          onRequestOpen();
+        }
         const timer = setTimeout(() => {
           localStorage.setItem(dismissedKey, "true");
           setDismissed(true);
@@ -232,14 +231,8 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
     }
   }, [checklist?.allCompleted]);
 
-  // Sincronizar abertura externa (FAB)
-  useEffect(() => {
-    if (externalOpen) {
-      setSheetOpen(true);
-      localStorage.removeItem(minimizedKey);
-      onExternalClose?.();
-    }
-  }, [externalOpen]);
+  // sheetOpen é derivado de externalOpen (controlado pelo FAB)
+  const sheetOpen = !!externalOpen;
 
   // Override local: sound_notification é controlado pelo localStorage (client-side)
   const soundActivated = typeof window !== 'undefined' && localStorage.getItem(soundActivatedKey) === 'true';
@@ -273,19 +266,30 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
   const progress = (adjustedChecklist.completedCount / adjustedChecklist.totalSteps) * 100;
 
   const handleMinimize = () => {
-    setSheetOpen(false);
     onExternalClose?.();
   };
 
   const handleReopen = () => {
-    setSheetOpen(true);
-    localStorage.removeItem(minimizedKey);
+    onRequestOpen?.();
   };
 
   const handleActivateSound = async () => {
     const result = await unlockAudio();
     if (result) {
+      // Marcar como ativado no checklist
       localStorage.setItem(soundActivatedKey, 'true');
+      // IMPORTANTE: Também habilitar o som nas configurações globais
+      localStorage.setItem('notificationSoundEnabled', 'true');
+      // Disparar evento storage para sincronizar com AdminLayout
+      window.dispatchEvent(new Event('storage'));
+      // Tocar som de teste para confirmar que funciona
+      setTimeout(() => {
+        const testAudio = new Audio('/notification.mp3');
+        testAudio.volume = 0.5;
+        testAudio.play().catch(err => {
+          console.log('[Som] Erro ao tocar som de teste:', err);
+        });
+      }, 100);
       toast.success('Notificação sonora ativada!', { icon: <Volume2 className="h-4 w-4" /> });
     } else {
       toast.error('Não foi possível ativar o som. Tente novamente.');

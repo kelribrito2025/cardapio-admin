@@ -8206,3 +8206,5 @@
 - [x] FAB deve aparecer em todas as páginas incluindo Dashboard
 - [x] WelcomeChecklist só deve abrir pelo FAB (não automaticamente)
 - [x] Corrigir flickering: sidebar abre/fecha/abre ao completar passo
+- [x] Bug: Som não toca ao ativar notificação sonora no passo do onboarding — marca como concluído mas não ativa o som
+- [x] Bug: Sidebar de Primeiros Passos ainda abre/fecha/abre ao completar um passo (flickering persiste)
