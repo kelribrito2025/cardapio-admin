@@ -1,0 +1,18 @@
+{
+  "query": "SELECT e.id as estId, e.userId, e.name as estName, u.id as userId, u.email, u.passwordHash, u.loginMethod FROM establishments e LEFT JOIN users u ON e.userId = u.id WHERE e.id = 210007;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT e.id as estId, e.userId, e.name as estName, u.id as userId, u.email, u.passwordHash, u.loginMethod FROM establishments e LEFT JOIN users u ON e.userId = u.id WHERE e.id = 210007;",
+  "rows": [
+    {
+      "estId": "210007",
+      "userId": "NULL",
+      "estName": "Tchê Restaurante",
+      "email": "NULL",
+      "passwordHash": "NULL",
+      "loginMethod": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "estId\tuserId\testName\tuserId\temail\tpasswordHash\tloginMethod\n210007\t1341357\tTchê Restaurante\tNULL\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

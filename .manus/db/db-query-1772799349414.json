@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, userId, name FROM establishments WHERE id = 210007;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, userId, name FROM establishments WHERE id = 210007;",
+  "rows": [
+    {
+      "id": "210007",
+      "userId": "1341357",
+      "name": "Tchê Restaurante"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\tname\n210007\t1341357\tTchê Restaurante\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}

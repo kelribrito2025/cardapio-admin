@@ -8192,3 +8192,4 @@
 - [x] Onboarding: Impedir que a sidebar de Primeiros Passos feche ao clicar fora — só deve fechar pelo botão X
 - [x] Top bar: Reverter botão "Ver Menu" para aparecer sempre, sem exigir categoria e produto cadastrados
 - [x] Configurações: Remover card "Notificações SMS" e mover card "Pedidos" para o lugar dele (ao lado de Formas de pagamento)
+- [x] Auth: Alterar fluxo "Esqueceu a senha" — ao inserir email correto, mostrar campos para inserir e confirmar nova senha directamente (temporário, sem link de recuperação)
