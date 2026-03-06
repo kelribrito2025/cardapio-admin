@@ -8183,3 +8183,4 @@
 - [x] Onboarding: Remover card de "Progresso Total" (barra segmentada + contador) da sidebar Primeiros Passos
 - [x] Onboarding: Adicionar indicador de progresso textual "X de 6 passos" ao lado do subtítulo na sidebar Primeiros Passos
 - [x] Bug: Celebração com confetti não aparece ao completar o último passo do onboarding — sidebar desaparece imediatamente
+- [x] Produto: Tornar seleção de categoria obrigatória no sheet de criação/edição — não permitir salvar sem categoria selecionada

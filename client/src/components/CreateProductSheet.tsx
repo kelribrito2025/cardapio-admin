@@ -563,6 +563,11 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
       setStep(1);
       return;
     }
+    if (!categoryId || categoryId === "none") {
+      toast.error("Selecione uma categoria para o produto");
+      setStep(1);
+      return;
+    }
     if (!price || parsePriceInput(price) === "0") {
       toast.error("Defina o preço do produto");
       return;
@@ -774,6 +779,10 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
           onClick={() => {
             if (!name.trim()) {
               toast.error("Nome do produto é obrigatório");
+              return;
+            }
+            if (!categoryId || categoryId === "none") {
+              toast.error("Selecione uma categoria para o produto");
               return;
             }
             setStep(2);
