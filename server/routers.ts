@@ -436,9 +436,12 @@ export const appRouter = router({
         const { establishmentId, ...data } = input;
         await db.updateEstablishmentAccountData(establishmentId, data);
         
-        // Se o nome do responsável foi alterado, atualizar também o nome do usuário
+        // Se o nome do responsável foi alterado, atualizar o nome do dono do estabelecimento
         if (input.responsibleName) {
-          await db.updateUserName(ctx.user.id, input.responsibleName);
+          // Buscar o estabelecimento para obter o userId correcto (pode ser diferente do admin logado)
+          const establishment = await db.getEstablishmentById(establishmentId);
+          const targetUserId = establishment?.userId ?? ctx.user.id;
+          await db.updateUserName(targetUserId, input.responsibleName);
         }
         
         return { success: true };
