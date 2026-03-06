@@ -388,7 +388,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-white tracking-tight">Primeiros Passos</h2>
-                  <p className="text-sm text-white/70 mt-1">Configuração rápida e simples</p>
+                  <p className="text-sm text-white/70 mt-1">Configuração rápida e simples · <span className="text-white/90 font-medium">{checklist.completedCount} de {checklist.totalSteps} passos</span></p>
                 </div>
               </div>
               <button

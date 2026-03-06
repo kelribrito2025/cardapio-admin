@@ -8181,3 +8181,4 @@
 - [x] Onboarding: Ao clicar "Adicionar Produto" no passo "Adicionar primeiros produtos", abrir automaticamente o sheet de criação de produto na página Catálogo
 - [x] Onboarding: Mover passo "Testar um pedido" para a última posição do checklist (após "Adicionar foto e capa")
 - [x] Onboarding: Remover card de "Progresso Total" (barra segmentada + contador) da sidebar Primeiros Passos
+- [x] Onboarding: Adicionar indicador de progresso textual "X de 6 passos" ao lado do subtítulo na sidebar Primeiros Passos
