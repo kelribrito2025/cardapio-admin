@@ -129,7 +129,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
 
   const { data: checklist, isLoading } = trpc.dashboard.onboardingChecklist.useQuery(
     { establishmentId },
-    { enabled: !!establishmentId && !dismissed, staleTime: 30000 }
+    { enabled: !!establishmentId && !dismissed, staleTime: 5000, refetchOnWindowFocus: true }
   );
 
   // Auto-expandir o primeiro passo incompleto
@@ -142,7 +142,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
     }
   }, [checklist, expandedStepId]);
 
-  // Detectar quando um passo é desbloqueado (completedCount muda)
+  // Detectar quando um passo é desbloqueado (completedCount muda) e reabrir a sidebar
   useEffect(() => {
     if (!checklist) return;
     if (prevCompletedRef.current !== null && checklist.completedCount > prevCompletedRef.current && !checklist.allCompleted) {
@@ -150,6 +150,9 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
       if (firstIncomplete) {
         setJustUnlockedStepId(firstIncomplete.id);
         setExpandedStepId(firstIncomplete.id);
+        // Reabrir a sidebar automaticamente ao completar um passo
+        setSheetOpen(true);
+        localStorage.removeItem(minimizedKey);
         const timer = setTimeout(() => setJustUnlockedStepId(null), 1500);
         return () => clearTimeout(timer);
       }

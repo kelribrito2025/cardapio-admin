@@ -453,6 +453,8 @@ export default function Configuracoes() {
 
   const updateMutation = trpc.establishment.update.useMutation({
     onSuccess: (_data, variables) => {
+      // Invalidar checklist do onboarding (para passos como foto/capa)
+      utils.dashboard.onboardingChecklist.invalidate();
       // Optimistic cache update: merge the sent variables into the cached establishment data
       // This avoids the race condition of setInitialDataLoaded(false) + refetch() where
       // the useEffect would run with stale data before refetch completes
@@ -497,6 +499,7 @@ export default function Configuracoes() {
     onSuccess: () => {
       setInitialBusinessHoursLoaded(false);
       refetchBusinessHours();
+      utils.dashboard.onboardingChecklist.invalidate();
       toast.success("Horários de funcionamento salvos com sucesso");
     },
     onError: () => toast.error("Erro ao salvar horários de funcionamento"),

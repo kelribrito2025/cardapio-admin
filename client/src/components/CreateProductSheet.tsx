@@ -152,12 +152,14 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
   // Mutations
   const uploadMutation = trpc.upload.image.useMutation();
 
+  const productSheetUtils = trpc.useUtils();
   const createMutation = trpc.product.create.useMutation({
     onSuccess: async (data) => {
       // Save complement groups
       if (complementGroups.length > 0) {
         await saveComplementGroups(data.id);
       }
+      productSheetUtils.dashboard.onboardingChecklist.invalidate();
       toast.success("Produto criado com sucesso!");
       resetState();
       onOpenChange(false);

@@ -953,9 +953,11 @@ export default function Catalogo() {
     onError: () => toast.error("Erro ao excluir produto"),
   });
 
+  const catalogoUtils = trpc.useUtils();
   const createCategoryMutation = trpc.category.create.useMutation({
     onSuccess: (data) => {
       refetchCategories();
+      catalogoUtils.dashboard.onboardingChecklist.invalidate();
       setCategoryDialogOpen(false);
       setNewCategoryName("");
       toast.success("Categoria criada");

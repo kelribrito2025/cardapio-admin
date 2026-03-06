@@ -8172,3 +8172,4 @@
 - [x] Bug: Passo "Configurar atendimento" do onboarding já vem marcado como concluído — removida criação automática no backend + valores padrão vazios no frontend
 - [x] Bug: Passo "Configurar atendimento" do onboarding redireciona para aba Configurações → Estabelecimento em vez de Configurações → Atendimento
 - [x] Scroll automático para o card de horários de funcionamento ao acessar aba Atendimento pelo onboarding
+- [x] Bug: Sidebar de onboarding não atualiza em tempo real ao completar tarefa — invalidar/refetch checklist após cada mutation relevante
