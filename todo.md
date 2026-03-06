@@ -8174,3 +8174,5 @@
 - [x] Scroll automático para o card de horários de funcionamento ao acessar aba Atendimento pelo onboarding
 - [x] Bug: Sidebar de onboarding não atualiza em tempo real ao completar tarefa — invalidar/refetch checklist após cada mutation relevante
 - [x] Sidebar Primeiros Passos: Garantir reabertura automática sempre que um novo passo é concluído
+- [x] Animação de desbloqueio: scale + glow vermelho no próximo passo ao concluir um passo
+- [x] Celebração na sidebar: tela de parabéns com Trophy, degradê festivo, confetis e botão "Ir para o Dashboard" ao concluir todos os passos (auto-dismiss 12s)

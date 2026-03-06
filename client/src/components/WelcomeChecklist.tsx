@@ -17,6 +17,8 @@ import {
   Check,
   ChevronRight,
   Lock,
+  Trophy,
+  Star,
 } from "lucide-react";
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { cn } from "@/lib/utils";
@@ -165,7 +167,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
         // Sempre reabrir a sidebar ao completar um passo
         setSheetOpen(true);
         localStorage.removeItem(minimizedKey);
-        const timer = setTimeout(() => setJustUnlockedStepId(null), 1500);
+        const timer = setTimeout(() => setJustUnlockedStepId(null), 2500);
         prevCompletedRef.current = checklist.completedCount;
         return () => clearTimeout(timer);
       } else {
@@ -177,7 +179,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
         const timer = setTimeout(() => {
           localStorage.setItem(dismissedKey, "true");
           setDismissed(true);
-        }, 8000);
+        }, 12000);
         return () => clearTimeout(timer);
       }
     }
@@ -435,11 +437,14 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
               <div key={step.id} className={cn(
                 "relative transition-all duration-500",
                 isLocked && "opacity-50",
-                isJustUnlocked && "animate-[step-unlock_0.6s_ease-out]"
+                isJustUnlocked && "animate-[step-unlock_0.8s_cubic-bezier(0.34,1.56,0.64,1)]"
               )}>
                 {/* Glow effect for just-unlocked step */}
                 {isJustUnlocked && (
-                  <div className="absolute -inset-1 bg-gradient-to-r from-red-500/20 via-rose-500/20 to-red-500/20 rounded-2xl blur-md animate-pulse" />
+                  <>
+                    <div className="absolute -inset-1.5 bg-gradient-to-r from-red-500/30 via-rose-400/40 to-red-500/30 rounded-2xl blur-lg animate-pulse" />
+                    <div className="absolute -inset-1 bg-gradient-to-r from-red-500/20 via-rose-500/25 to-red-500/20 rounded-2xl blur-md" style={{ animation: 'glow-pulse 1.5s ease-in-out infinite' }} />
+                  </>
                 )}
                 {/* Step card */}
                 <div
@@ -599,48 +604,90 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
         <SheetTitle className="sr-only">Configuração Concluída</SheetTitle>
         <SheetDescription className="sr-only">Todas as etapas foram concluídas</SheetDescription>
 
-        <div className="flex-1 flex flex-col items-center justify-center p-10 text-center h-full">
-          <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-6">
-            <PartyPopper className="h-10 w-10 text-red-600 dark:text-red-400" />
+        {/* Header com degradê festivo */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/90 via-red-500/80 to-rose-500/90 dark:from-amber-600/80 dark:via-red-600/70 dark:to-rose-600/80" />
+          {/* Glow effects */}
+          <div className="absolute -top-20 -right-20 w-60 h-60 bg-yellow-300/30 rounded-full blur-3xl" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-rose-300/30 rounded-full blur-3xl" />
+          {/* Floating stars */}
+          <div className="absolute top-4 right-12 animate-bounce" style={{ animationDelay: '0.2s', animationDuration: '2s' }}>
+            <Star className="h-4 w-4 text-yellow-200/60 fill-yellow-200/60" />
+          </div>
+          <div className="absolute top-8 right-24 animate-bounce" style={{ animationDelay: '0.8s', animationDuration: '2.5s' }}>
+            <Star className="h-3 w-3 text-white/40 fill-white/40" />
+          </div>
+          <div className="absolute bottom-6 left-16 animate-bounce" style={{ animationDelay: '1.2s', animationDuration: '3s' }}>
+            <Star className="h-3.5 w-3.5 text-yellow-200/50 fill-yellow-200/50" />
           </div>
 
-          <h2 className="text-2xl font-bold text-foreground mb-2">Parabéns! Tudo configurado!</h2>
-          <p className="text-muted-foreground mb-6">
+          <div className="relative px-6 pt-10 pb-8 flex flex-col items-center text-center">
+            {/* Trophy icon with glow */}
+            <div className="relative mb-4">
+              <div className="absolute inset-0 animate-ping rounded-full bg-yellow-300/20" style={{ animationDuration: '2s' }} />
+              <div className="relative w-20 h-20 rounded-full bg-white/25 backdrop-blur-sm flex items-center justify-center shadow-lg shadow-amber-500/20">
+                <Trophy className="h-10 w-10 text-yellow-100 drop-shadow-md" />
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Parabéns!</h2>
+            <p className="text-sm text-white/80 mt-1">Configuração concluída com sucesso</p>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 flex flex-col items-center justify-center px-8 py-8 text-center">
+          <p className="text-muted-foreground mb-6 leading-relaxed">
             Seu restaurante <span className="font-semibold text-foreground">{establishmentName}</span> está pronto para receber pedidos.
-            Todas as configurações iniciais foram concluídas com sucesso.
+            Todas as configurações iniciais foram concluídas!
           </p>
 
-          <div className="flex items-center justify-center gap-2 text-sm text-red-600 dark:text-red-400 font-medium mb-6">
-            <CheckCircle2 className="h-5 w-5" />
-            <span>{checklist.totalSteps}/{checklist.totalSteps} passos concluídos</span>
+          {/* Completed steps summary */}
+          <div className="w-full bg-green-50 dark:bg-green-950/20 border border-green-200/60 dark:border-green-800/30 rounded-xl p-4 mb-6">
+            <div className="flex items-center justify-center gap-2 text-sm text-green-700 dark:text-green-400 font-semibold">
+              <CheckCircle2 className="h-5 w-5" />
+              <span>{checklist.totalSteps}/{checklist.totalSteps} passos concluídos</span>
+            </div>
+            <div className="flex gap-1 mt-3">
+              {checklist.steps.map((step) => (
+                <div key={step.id} className="flex-1 h-2 rounded-full bg-green-500 dark:bg-green-400 shadow-sm shadow-green-500/20" />
+              ))}
+            </div>
           </div>
 
+          {/* Action button */}
           <button
             onClick={() => {
               setShowCelebration(false);
               setShowConfetti(false);
               localStorage.setItem(dismissedKey, "true");
               setDismissed(true);
+              navigate("/");
             }}
-            className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors text-sm"
+            className="w-full h-12 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-md shadow-red-500/20"
           >
+            <Rocket className="h-4 w-4" />
             Ir para o Dashboard
           </button>
+
+          <p className="text-xs text-muted-foreground/60 mt-4">Esta tela fechará automaticamente em alguns segundos</p>
         </div>
       </SheetContent>
     </Sheet>
   );
 
   const CelebrationMobile = () => (
-    <div className="md:hidden mb-6 rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden text-center p-8">
-      <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
-        <PartyPopper className="h-8 w-8 text-red-600 dark:text-red-400" />
+    <div className="md:hidden mb-6 rounded-2xl border border-amber-200/60 dark:border-amber-800/30 bg-gradient-to-br from-amber-50 via-card to-rose-50 dark:from-amber-950/20 dark:via-card dark:to-rose-950/20 shadow-lg overflow-hidden text-center p-8">
+      <div className="relative mx-auto mb-4 w-16 h-16">
+        <div className="absolute inset-0 animate-ping rounded-full bg-amber-400/20" style={{ animationDuration: '2s' }} />
+        <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/40 dark:to-amber-800/30 flex items-center justify-center shadow-md shadow-amber-500/20">
+          <Trophy className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+        </div>
       </div>
       <h2 className="text-xl font-bold text-foreground mb-2">Parabéns! Tudo configurado!</h2>
       <p className="text-sm text-muted-foreground mb-4">
         Seu restaurante está pronto para receber pedidos.
       </p>
-      <div className="flex items-center justify-center gap-2 text-sm text-red-600 dark:text-red-400 font-medium mb-4">
+      <div className="flex items-center justify-center gap-2 text-sm text-green-700 dark:text-green-400 font-semibold mb-4">
         <CheckCircle2 className="h-4 w-4" />
         <span>{checklist.totalSteps}/{checklist.totalSteps} passos concluídos</span>
       </div>
@@ -650,11 +697,14 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
           setShowConfetti(false);
           localStorage.setItem(dismissedKey, "true");
           setDismissed(true);
+          navigate("/");
         }}
-        className="w-full h-10 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors text-sm"
+        className="w-full h-10 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-md shadow-red-500/20"
       >
+        <Rocket className="h-3.5 w-3.5" />
         Ir para o Dashboard
       </button>
+      <p className="text-xs text-muted-foreground/60 mt-3">Esta tela fechará automaticamente em alguns segundos</p>
     </div>
   );
 
