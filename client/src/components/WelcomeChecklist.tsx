@@ -155,7 +155,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
 
   const { data: checklist, isLoading } = trpc.dashboard.onboardingChecklist.useQuery(
     { establishmentId },
-    { enabled: !!establishmentId && !dismissed, staleTime: 5000, refetchOnWindowFocus: true, placeholderData: (prev) => prev }
+    { enabled: !!establishmentId && !dismissed, staleTime: 0, refetchOnWindowFocus: true, placeholderData: (prev) => prev }
   );
 
   // Override local: sound_notification é controlado pelo localStorage (client-side)

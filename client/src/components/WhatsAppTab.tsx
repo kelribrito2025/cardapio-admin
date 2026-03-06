@@ -147,16 +147,25 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
   
   const utils = trpc.useUtils();
 
-  // Stop polling when connected & invalidate onboarding checklist
+  // Stop polling when connected & force refetch onboarding checklist
   useEffect(() => {
     if (statusQuery.data?.status === 'connected') {
       setIsPolling(false);
-      // Invalidar o checklist do onboarding após um breve delay para garantir
-      // que o backend já tem o status atualizado da API do UAZAPI
-      const timer = setTimeout(() => {
+      // O getStatus do backend já atualizou o DB com status='connected'.
+      // Forçar refetch imediato do checklist (invalidate + refetch para ignorar staleTime).
+      // Múltiplas tentativas para garantir que o backend já processou a mudança.
+      const timers: ReturnType<typeof setTimeout>[] = [];
+      const forceRefresh = () => {
         utils.dashboard.onboardingChecklist.invalidate();
-      }, 1500);
-      return () => clearTimeout(timer);
+        utils.dashboard.onboardingChecklist.refetch();
+      };
+      // Refetch imediato
+      forceRefresh();
+      // Refetch após 1s (backup)
+      timers.push(setTimeout(forceRefresh, 1000));
+      // Refetch após 3s (garantia)
+      timers.push(setTimeout(forceRefresh, 3000));
+      return () => timers.forEach(clearTimeout);
     }
   }, [statusQuery.data?.status]);
   
