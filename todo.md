@@ -8178,3 +8178,4 @@
 - [x] Celebração na sidebar: tela de parabéns com Trophy, degradê festivo, confetis e botão "Ir para o Dashboard" ao concluir todos os passos (auto-dismiss 12s)
 - [x] Onboarding: Ao clicar "Começar este passo" no passo "Criar primeira categoria", abrir automaticamente o modal de Nova Categoria na página Catálogo
 - [x] Onboarding: Alterar texto do botão do passo "Criar primeira categoria" de "Começar este passo" para "Criar Categoria"
+- [x] Onboarding: Ao clicar "Adicionar Produto" no passo "Adicionar primeiros produtos", abrir automaticamente o sheet de criação de produto na página Catálogo

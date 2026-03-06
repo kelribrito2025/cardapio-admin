@@ -835,11 +835,18 @@ export default function Catalogo() {
     }
   }, [establishment]);
 
-  // Auto-open new category dialog when coming from onboarding
+  // Auto-open new category dialog or product sheet when coming from onboarding
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('action') === 'new-category') {
+    const action = params.get('action');
+    if (action === 'new-category') {
       setCategoryDialogOpen(true);
+      // Clean up the URL without triggering navigation
+      const url = new URL(window.location.href);
+      url.searchParams.delete('action');
+      window.history.replaceState({}, '', url.pathname);
+    } else if (action === 'new-product') {
+      setProductSheetOpen(true);
       // Clean up the URL without triggering navigation
       const url = new URL(window.location.href);
       url.searchParams.delete('action');
