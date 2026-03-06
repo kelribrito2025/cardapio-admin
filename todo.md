@@ -8173,3 +8173,4 @@
 - [x] Bug: Passo "Configurar atendimento" do onboarding redireciona para aba Configurações → Estabelecimento em vez de Configurações → Atendimento
 - [x] Scroll automático para o card de horários de funcionamento ao acessar aba Atendimento pelo onboarding
 - [x] Bug: Sidebar de onboarding não atualiza em tempo real ao completar tarefa — invalidar/refetch checklist após cada mutation relevante
+- [x] Sidebar Primeiros Passos: Garantir reabertura automática sempre que um novo passo é concluído

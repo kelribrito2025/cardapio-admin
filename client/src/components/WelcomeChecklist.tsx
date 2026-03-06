@@ -142,41 +142,54 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
     }
   }, [checklist, expandedStepId]);
 
-  // Detectar quando um passo é desbloqueado (completedCount muda) e reabrir a sidebar
+  // Inicializar prevCompletedRef assim que o checklist carrega pela primeira vez
+  useEffect(() => {
+    if (checklist && prevCompletedRef.current === null) {
+      prevCompletedRef.current = checklist.completedCount;
+    }
+  }, [checklist]);
+
+  // Detectar quando um passo é concluído (completedCount aumenta) e reabrir a sidebar
   useEffect(() => {
     if (!checklist) return;
-    if (prevCompletedRef.current !== null && checklist.completedCount > prevCompletedRef.current && !checklist.allCompleted) {
-      const firstIncomplete = checklist.steps.find(s => !s.completed);
-      if (firstIncomplete) {
-        setJustUnlockedStepId(firstIncomplete.id);
-        setExpandedStepId(firstIncomplete.id);
-        // Reabrir a sidebar automaticamente ao completar um passo
+    if (prevCompletedRef.current === null) return;
+    
+    if (checklist.completedCount > prevCompletedRef.current) {
+      if (!checklist.allCompleted) {
+        // Passo concluído mas ainda há passos pendentes: reabrir sidebar
+        const firstIncomplete = checklist.steps.find(s => !s.completed);
+        if (firstIncomplete) {
+          setJustUnlockedStepId(firstIncomplete.id);
+          setExpandedStepId(firstIncomplete.id);
+        }
+        // Sempre reabrir a sidebar ao completar um passo
         setSheetOpen(true);
         localStorage.removeItem(minimizedKey);
         const timer = setTimeout(() => setJustUnlockedStepId(null), 1500);
+        prevCompletedRef.current = checklist.completedCount;
+        return () => clearTimeout(timer);
+      } else {
+        // Todos os passos concluídos: mostrar celebração
+        setShowConfetti(true);
+        setShowCelebration(true);
+        setSheetOpen(true);
+        prevCompletedRef.current = checklist.completedCount;
+        const timer = setTimeout(() => {
+          localStorage.setItem(dismissedKey, "true");
+          setDismissed(true);
+        }, 8000);
         return () => clearTimeout(timer);
       }
     }
-  }, [checklist?.completedCount]);
+  }, [checklist?.completedCount, checklist?.allCompleted]);
 
-  // Se completou tudo, mostrar confetti e celebração antes de dismiss
+  // Se já estava tudo completo no carregamento inicial, dismiss direto
   useEffect(() => {
-    if (!checklist) return;
-    if (checklist.allCompleted && prevCompletedRef.current !== null && prevCompletedRef.current < checklist.totalSteps) {
-      setShowConfetti(true);
-      setShowCelebration(true);
-      setSheetOpen(true);
-      const timer = setTimeout(() => {
-        localStorage.setItem(dismissedKey, "true");
-        setDismissed(true);
-      }, 8000);
-      return () => clearTimeout(timer);
-    } else if (checklist.allCompleted && prevCompletedRef.current === null) {
+    if (checklist && checklist.allCompleted && prevCompletedRef.current !== null && prevCompletedRef.current === checklist.completedCount && !showCelebration) {
       localStorage.setItem(dismissedKey, "true");
       setDismissed(true);
     }
-    prevCompletedRef.current = checklist.completedCount;
-  }, [checklist?.allCompleted, checklist?.completedCount]);
+  }, [checklist?.allCompleted]);
 
   if (dismissed || isLoading || !checklist) {
     return null;
