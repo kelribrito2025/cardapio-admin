@@ -1,13 +1,19 @@
 import { useEffect, useState, useRef } from "react";
-import { X, ClipboardList, Ticket, Star, ArrowRight } from "lucide-react";
+import { ClipboardList, Ticket, Star, ArrowRight, Wallet } from "lucide-react";
 
 interface MenuSpotlightProps {
   targetRef: React.RefObject<HTMLElement | null>;
   onDismiss: () => void;
   onOpenMenu: () => void;
+  /** Whether reviews feature is enabled for this establishment */
+  reviewsEnabled?: boolean;
+  /** Whether loyalty/coupon feature is enabled */
+  loyaltyEnabled?: boolean;
+  /** Whether cashback feature is enabled */
+  cashbackEnabled?: boolean;
 }
 
-export function MenuSpotlight({ targetRef, onDismiss, onOpenMenu }: MenuSpotlightProps) {
+export function MenuSpotlight({ targetRef, onDismiss, onOpenMenu, reviewsEnabled, loyaltyEnabled, cashbackEnabled }: MenuSpotlightProps) {
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -34,15 +40,6 @@ export function MenuSpotlight({ targetRef, onDismiss, onOpenMenu }: MenuSpotligh
     };
   }, [targetRef]);
 
-  // Fechar ao pressionar Escape
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onDismiss();
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [onDismiss]);
-
   if (!targetRect) return null;
 
   // Dimensões do spotlight (círculo ao redor do botão)
@@ -55,19 +52,54 @@ export function MenuSpotlight({ targetRef, onDismiss, onOpenMenu }: MenuSpotligh
   const tooltipTop = targetRect.bottom + 16;
   const tooltipRight = window.innerWidth - targetRect.right + targetRect.width / 2 - 12;
 
+  // Handler unificado: fechar spotlight + abrir menu
+  const handleOpenMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onOpenMenu();
+  };
+
+  // Itens condicionais
+  const featureItems: Array<{ icon: React.ReactNode; label: string; desc: string }> = [];
+  
+  // Meus Pedidos — sempre visível
+  featureItems.push({
+    icon: <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0"><ClipboardList className="h-4 w-4 text-blue-500" /></div>,
+    label: "Meus Pedidos",
+    desc: "acompanhe em tempo real",
+  });
+
+  // Cupons — só se fidelidade ativa
+  if (loyaltyEnabled) {
+    featureItems.push({
+      icon: <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0"><Ticket className="h-4 w-4 text-green-500" /></div>,
+      label: "Cupons",
+      desc: "descontos exclusivos",
+    });
+  }
+
+  // Cashback — só se cashback ativo
+  if (cashbackEnabled) {
+    featureItems.push({
+      icon: <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0"><Wallet className="h-4 w-4 text-purple-500" /></div>,
+      label: "Cashback",
+      desc: "ganhe de volta a cada pedido",
+    });
+  }
+
+  // Avaliações — só se reviews ativas
+  if (reviewsEnabled) {
+    featureItems.push({
+      icon: <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0"><Star className="h-4 w-4 text-amber-500" /></div>,
+      label: "Avaliações",
+      desc: "deixe sua opinião",
+    });
+  }
+
   return (
     <div
       ref={overlayRef}
       className={`fixed inset-0 z-[200] transition-opacity duration-500 ${isVisible ? "opacity-100" : "opacity-0"}`}
-      onClick={(e) => {
-        // Se clicou no overlay (fora do spotlight), fechar
-        const clickX = e.clientX;
-        const clickY = e.clientY;
-        const dist = Math.sqrt((clickX - spotlightCx) ** 2 + (clickY - spotlightCy) ** 2);
-        if (dist > spotlightR) {
-          onDismiss();
-        }
-      }}
+      // NÃO fecha ao clicar fora — só fecha via "Abrir Menu" ou ícone hamburger
     >
       {/* SVG Overlay com recorte circular */}
       <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: "none" }}>
@@ -122,11 +154,7 @@ export function MenuSpotlight({ targetRef, onDismiss, onOpenMenu }: MenuSpotligh
           borderRadius: "50%",
           zIndex: 201,
         }}
-        onClick={(e) => {
-          e.stopPropagation();
-          onOpenMenu();
-          onDismiss();
-        }}
+        onClick={handleOpenMenu}
       />
 
       {/* Tooltip / Card informativo */}
@@ -152,19 +180,10 @@ export function MenuSpotlight({ targetRef, onDismiss, onOpenMenu }: MenuSpotligh
         
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-red-500 to-rose-500 px-5 py-3 flex items-center justify-between">
+          <div className="bg-gradient-to-r from-red-500 to-rose-500 px-5 py-3 flex items-center">
             <span className="text-white font-bold text-sm flex items-center gap-2">
               <span className="text-lg">🎉</span> Pedido enviado!
             </span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDismiss();
-              }}
-              className="p-1 hover:bg-white/20 rounded-full transition-colors"
-            >
-              <X className="h-4 w-4 text-white" />
-            </button>
           </div>
           
           {/* Body */}
@@ -174,33 +193,17 @@ export function MenuSpotlight({ targetRef, onDismiss, onOpenMenu }: MenuSpotligh
             </p>
             
             <div className="space-y-2.5">
-              <div className="flex items-center gap-3 text-sm text-gray-600">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                  <ClipboardList className="h-4 w-4 text-blue-500" />
+              {featureItems.map((item, i) => (
+                <div key={i} className="flex items-center gap-3 text-sm text-gray-600">
+                  {item.icon}
+                  <span><strong className="text-gray-800">{item.label}</strong> — {item.desc}</span>
                 </div>
-                <span><strong className="text-gray-800">Meus Pedidos</strong> — acompanhe em tempo real</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-gray-600">
-                <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
-                  <Ticket className="h-4 w-4 text-green-500" />
-                </div>
-                <span><strong className="text-gray-800">Cupons</strong> — descontos exclusivos</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-gray-600">
-                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
-                  <Star className="h-4 w-4 text-amber-500" />
-                </div>
-                <span><strong className="text-gray-800">Avaliações</strong> — deixe sua opinião</span>
-              </div>
+              ))}
             </div>
             
             {/* CTA */}
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenMenu();
-                onDismiss();
-              }}
+              onClick={handleOpenMenu}
               className="w-full mt-4 py-2.5 bg-gradient-to-r from-red-500 to-rose-500 text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2 hover:from-red-600 hover:to-rose-600 transition-all shadow-md shadow-red-500/20 active:scale-[0.98]"
             >
               Abrir Menu

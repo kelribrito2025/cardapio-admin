@@ -7672,6 +7672,9 @@ setOnlinePaymentUrl(null);
             setShowMenuSpotlight(false);
             setShowMobileMenu(true);
           }}
+          reviewsEnabled={establishment?.reviewsEnabled !== false}
+          loyaltyEnabled={!!loyaltyEnabled?.enabled}
+          cashbackEnabled={!!cashbackEnabled?.enabled}
         />
       )}
     </div>
