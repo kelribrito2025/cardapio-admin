@@ -8208,3 +8208,5 @@
 - [x] Corrigir flickering: sidebar abre/fecha/abre ao completar passo
 - [x] Bug: Som não toca ao ativar notificação sonora no passo do onboarding — marca como concluído mas não ativa o som
 - [x] Bug: Sidebar de Primeiros Passos ainda abre/fecha/abre ao completar um passo (flickering persiste)
+- [x] Bug: Sidebar Primeiros Passos não abre automaticamente para novos utilizadores ao criar conta e entrar pela primeira vez
+- [x] Bug: Flickering persiste — sidebar fecha e reabre ao completar tarefa (estado resetado ou disparado duas vezes)

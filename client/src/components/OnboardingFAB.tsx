@@ -1,5 +1,5 @@
 import { Rocket } from "lucide-react";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import { WelcomeChecklist } from "./WelcomeChecklist";
 import { cn } from "@/lib/utils";
@@ -10,12 +10,15 @@ import { useNewOrders } from "@/contexts/NewOrdersContext";
  * Aparece em TODAS as páginas enquanto o onboarding não estiver completo.
  * É o único ponto de abertura da sidebar de Primeiros Passos.
  * 
- * Controla a abertura/fecho da sidebar via externalOpen/onExternalClose.
- * Para evitar flickering, usa um ref para debounce de aberturas rápidas.
+ * Arquitectura simplificada:
+ * - sidebarOpen é o ÚNICO estado que controla a sidebar
+ * - Sem debounce — mudanças são directas e síncronas
+ * - Auto-abre na primeira visita do utilizador
+ * - onRequestOpen é chamado pelo WelcomeChecklist ao completar um passo
  */
 export function OnboardingFAB() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const openDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasAutoOpened = useRef(false);
 
   const { data: establishment } = trpc.establishment.get.useQuery();
   const { isAudioUnlocked } = useNewOrders();
@@ -42,29 +45,33 @@ export function OnboardingFAB() {
 
   const adjustedAllCompleted = checklist ? adjustedCompletedCount === checklist.steps.length : false;
 
-  // Abrir sidebar com debounce para evitar flickering
-  const openSidebar = useCallback(() => {
-    if (openDebounceRef.current) {
-      clearTimeout(openDebounceRef.current);
-    }
-    openDebounceRef.current = setTimeout(() => {
+  // Auto-abrir na primeira visita do utilizador (novo utilizador)
+  // Usa localStorage para saber se já abriu antes
+  useEffect(() => {
+    if (!establishmentId || !checklist || isDismissed || adjustedAllCompleted) return;
+    if (hasAutoOpened.current) return;
+    
+    const autoOpenKey = `onboarding_auto_opened_${establishmentId}`;
+    const alreadyAutoOpened = localStorage.getItem(autoOpenKey) === 'true';
+    
+    if (!alreadyAutoOpened) {
+      // Novo utilizador — abrir automaticamente
+      hasAutoOpened.current = true;
+      localStorage.setItem(autoOpenKey, 'true');
       setSidebarOpen(true);
-    }, 50);
-  }, []);
+    }
+  }, [establishmentId, checklist, isDismissed, adjustedAllCompleted]);
 
   // Fechar sidebar (chamado pelo WelcomeChecklist quando o utilizador fecha)
   const closeSidebar = useCallback(() => {
-    if (openDebounceRef.current) {
-      clearTimeout(openDebounceRef.current);
-      openDebounceRef.current = null;
-    }
     setSidebarOpen(false);
   }, []);
 
   // Callback: WelcomeChecklist pede para abrir (ex: passo concluído)
+  // Directamente seta o estado — sem debounce
   const handleRequestOpen = useCallback(() => {
-    openSidebar();
-  }, [openSidebar]);
+    setSidebarOpen(true);
+  }, []);
 
   // Não mostrar se dismissed, completo, ou sem dados
   if (isDismissed || adjustedAllCompleted || !checklist || !establishmentId) {
@@ -76,7 +83,7 @@ export function OnboardingFAB() {
       {/* FAB Button - só aparece quando a sidebar está fechada */}
       {!sidebarOpen && (
         <button
-          onClick={openSidebar}
+          onClick={() => setSidebarOpen(true)}
           className={cn(
             "fixed bottom-6 right-6 z-50 group",
             "w-14 h-14 rounded-full",
