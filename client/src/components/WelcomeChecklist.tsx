@@ -127,9 +127,10 @@ interface WelcomeChecklistProps {
   onExternalClose?: () => void;
   onRequestOpen?: () => void;
   hideMinimizedBar?: boolean;
+  onCelebrationChange?: (celebrating: boolean) => void;
 }
 
-export function WelcomeChecklist({ establishmentId, establishmentName, externalOpen, onExternalClose, onRequestOpen, hideMinimizedBar }: WelcomeChecklistProps) {
+export function WelcomeChecklist({ establishmentId, establishmentName, externalOpen, onExternalClose, onRequestOpen, hideMinimizedBar, onCelebrationChange }: WelcomeChecklistProps) {
   const [, navigate] = useLocation();
   const { unlockAudio, isAudioUnlocked } = useNewOrders();
   const dismissedKey = `welcome_checklist_dismissed_${establishmentId}`;
@@ -156,71 +157,10 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
     { enabled: !!establishmentId && !dismissed, staleTime: 10000, refetchOnWindowFocus: true, placeholderData: (prev) => prev }
   );
 
-  // Auto-expandir o primeiro passo incompleto
-  useEffect(() => {
-    if (checklist && !expandedStepId) {
-      const firstIncomplete = checklist.steps.find(s => !s.completed);
-      if (firstIncomplete) {
-        setExpandedStepId(firstIncomplete.id);
-      }
-    }
-  }, [checklist, expandedStepId]);
-
-  // Inicializar prevCompletedRef assim que o checklist carrega pela primeira vez
-  useEffect(() => {
-    if (checklist && prevCompletedRef.current === null) {
-      prevCompletedRef.current = checklist.completedCount;
-    }
-  }, [checklist]);
-
-  // Detectar quando um passo é concluído e notificar o FAB para abrir
-  // Usa hasHandledRef para garantir que cada mudança só é processada UMA vez
-  useEffect(() => {
-    if (!checklist) return;
-    if (prevCompletedRef.current === null) return;
-    if (hasHandledRef.current === checklist.completedCount) return;
-    
-    if (checklist.completedCount > prevCompletedRef.current) {
-      hasHandledRef.current = checklist.completedCount;
-      prevCompletedRef.current = checklist.completedCount;
-      
-      if (!checklist.allCompleted) {
-        const firstIncomplete = checklist.steps.find(s => !s.completed);
-        if (firstIncomplete) {
-          setJustUnlockedStepId(firstIncomplete.id);
-          setExpandedStepId(firstIncomplete.id);
-          setTimeout(() => setJustUnlockedStepId(null), 2500);
-        }
-        onRequestOpen?.();
-      } else {
-        setShowConfetti(true);
-        setShowCelebration(true);
-        showCelebrationRef.current = true;
-        onRequestOpen?.();
-        const timer = setTimeout(() => {
-          localStorage.setItem(dismissedKey, "true");
-          setDismissed(true);
-        }, 12000);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [checklist?.completedCount, checklist?.allCompleted]);
-
-  // Se já estava tudo completo no carregamento inicial, dismiss direto
-  useEffect(() => {
-    if (checklist && checklist.allCompleted && prevCompletedRef.current !== null && prevCompletedRef.current === checklist.completedCount && !showCelebrationRef.current) {
-      localStorage.setItem(dismissedKey, "true");
-      setDismissed(true);
-    }
-  }, [checklist?.allCompleted]);
-
-  // sheetOpen derivado de externalOpen (controlado pelo FAB)
-  const sheetOpen = !!externalOpen;
-
   // Override local: sound_notification é controlado pelo localStorage (client-side)
   const soundActivated = typeof window !== 'undefined' && localStorage.getItem(soundActivatedKey) === 'true';
 
-  // Aplicar override nos dados do checklist
+  // Aplicar override nos dados do checklist (ANTES dos useEffects que dependem dele)
   const adjustedChecklist = useMemo(() => {
     if (!checklist) return null;
     const adjustedSteps = checklist.steps.map(step => {
@@ -237,6 +177,69 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
       allCompleted: completedCount === adjustedSteps.length,
     };
   }, [checklist, soundActivated, isAudioUnlocked]);
+
+  // Auto-expandir o primeiro passo incompleto
+  useEffect(() => {
+    if (adjustedChecklist && !expandedStepId) {
+      const firstIncomplete = adjustedChecklist.steps.find(s => !s.completed);
+      if (firstIncomplete) {
+        setExpandedStepId(firstIncomplete.id);
+      }
+    }
+  }, [adjustedChecklist, expandedStepId]);
+
+  // Inicializar prevCompletedRef assim que o adjustedChecklist carrega pela primeira vez
+  useEffect(() => {
+    if (adjustedChecklist && prevCompletedRef.current === null) {
+      prevCompletedRef.current = adjustedChecklist.completedCount;
+    }
+  }, [adjustedChecklist]);
+
+  // Detectar quando um passo é concluído (usando adjustedChecklist que inclui overrides client-side)
+  // Usa hasHandledRef para garantir que cada mudança só é processada UMA vez
+  useEffect(() => {
+    if (!adjustedChecklist) return;
+    if (prevCompletedRef.current === null) return;
+    if (hasHandledRef.current === adjustedChecklist.completedCount) return;
+    
+    if (adjustedChecklist.completedCount > prevCompletedRef.current) {
+      hasHandledRef.current = adjustedChecklist.completedCount;
+      prevCompletedRef.current = adjustedChecklist.completedCount;
+      
+      if (!adjustedChecklist.allCompleted) {
+        const firstIncomplete = adjustedChecklist.steps.find(s => !s.completed);
+        if (firstIncomplete) {
+          setJustUnlockedStepId(firstIncomplete.id);
+          setExpandedStepId(firstIncomplete.id);
+          setTimeout(() => setJustUnlockedStepId(null), 2500);
+        }
+        onRequestOpen?.();
+      } else {
+        setShowConfetti(true);
+        setShowCelebration(true);
+        showCelebrationRef.current = true;
+        onCelebrationChange?.(true);
+        onRequestOpen?.();
+        const timer = setTimeout(() => {
+          localStorage.setItem(dismissedKey, "true");
+          setDismissed(true);
+          onCelebrationChange?.(false);
+        }, 12000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [adjustedChecklist?.completedCount, adjustedChecklist?.allCompleted]);
+
+  // Se já estava tudo completo no carregamento inicial, dismiss direto
+  useEffect(() => {
+    if (adjustedChecklist && adjustedChecklist.allCompleted && prevCompletedRef.current !== null && prevCompletedRef.current === adjustedChecklist.completedCount && !showCelebrationRef.current) {
+      localStorage.setItem(dismissedKey, "true");
+      setDismissed(true);
+    }
+  }, [adjustedChecklist?.allCompleted]);
+
+  // sheetOpen derivado de externalOpen (controlado pelo FAB)
+  const sheetOpen = !!externalOpen;
 
   if (dismissed || isLoading || !adjustedChecklist) {
     return null;

@@ -10,14 +10,12 @@ import { useNewOrders } from "@/contexts/NewOrdersContext";
  * Aparece em TODAS as páginas enquanto o onboarding não estiver completo.
  * É o único ponto de abertura da sidebar de Primeiros Passos.
  * 
- * Arquitectura simplificada:
- * - sidebarOpen é o ÚNICO estado que controla a sidebar
- * - Sem debounce — mudanças são directas e síncronas
- * - Auto-abre na primeira visita do utilizador
- * - onRequestOpen é chamado pelo WelcomeChecklist ao completar um passo
+ * Mantém-se montado durante a celebração para que o WelcomeChecklist
+ * possa mostrar o confetti e a mensagem de parabéns.
  */
 export function OnboardingFAB() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isCelebrating, setIsCelebrating] = useState(false);
   const hasAutoOpened = useRef(false);
 
   const { data: establishment } = trpc.establishment.get.useQuery();
@@ -46,7 +44,6 @@ export function OnboardingFAB() {
   const adjustedAllCompleted = checklist ? adjustedCompletedCount === checklist.steps.length : false;
 
   // Auto-abrir na primeira visita do utilizador (novo utilizador)
-  // Usa localStorage para saber se já abriu antes
   useEffect(() => {
     if (!establishmentId || !checklist || isDismissed || adjustedAllCompleted) return;
     if (hasAutoOpened.current) return;
@@ -55,33 +52,45 @@ export function OnboardingFAB() {
     const alreadyAutoOpened = localStorage.getItem(autoOpenKey) === 'true';
     
     if (!alreadyAutoOpened) {
-      // Novo utilizador — abrir automaticamente
       hasAutoOpened.current = true;
       localStorage.setItem(autoOpenKey, 'true');
       setSidebarOpen(true);
     }
   }, [establishmentId, checklist, isDismissed, adjustedAllCompleted]);
 
-  // Fechar sidebar (chamado pelo WelcomeChecklist quando o utilizador fecha)
+  // Fechar sidebar
   const closeSidebar = useCallback(() => {
     setSidebarOpen(false);
   }, []);
 
   // Callback: WelcomeChecklist pede para abrir (ex: passo concluído)
-  // Directamente seta o estado — sem debounce
   const handleRequestOpen = useCallback(() => {
     setSidebarOpen(true);
   }, []);
 
-  // Não mostrar se dismissed, completo, ou sem dados
-  if (isDismissed || adjustedAllCompleted || !checklist || !establishmentId) {
+  // Callback: WelcomeChecklist notifica sobre estado de celebração
+  const handleCelebrationChange = useCallback((celebrating: boolean) => {
+    setIsCelebrating(celebrating);
+    if (!celebrating) {
+      // Celebração acabou — fechar sidebar e permitir unmount
+      setSidebarOpen(false);
+    }
+  }, []);
+
+  // Não mostrar se dismissed ou sem dados
+  // MAS manter montado durante a celebração (isCelebrating) mesmo que allCompleted
+  if (isDismissed || !checklist || !establishmentId) {
+    return null;
+  }
+
+  if (adjustedAllCompleted && !isCelebrating) {
     return null;
   }
 
   return (
     <>
-      {/* FAB Button - só aparece quando a sidebar está fechada */}
-      {!sidebarOpen && (
+      {/* FAB Button - só aparece quando a sidebar está fechada E não está a celebrar */}
+      {!sidebarOpen && !isCelebrating && (
         <button
           onClick={() => setSidebarOpen(true)}
           className={cn(
@@ -116,6 +125,7 @@ export function OnboardingFAB() {
         externalOpen={sidebarOpen}
         onExternalClose={closeSidebar}
         onRequestOpen={handleRequestOpen}
+        onCelebrationChange={handleCelebrationChange}
         hideMinimizedBar
       />
     </>

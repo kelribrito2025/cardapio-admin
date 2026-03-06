@@ -8210,3 +8210,4 @@
 - [x] Bug: Sidebar de Primeiros Passos ainda abre/fecha/abre ao completar um passo (flickering persiste)
 - [x] Bug: Sidebar Primeiros Passos não abre automaticamente para novos utilizadores ao criar conta e entrar pela primeira vez
 - [x] Bug: Flickering persiste — sidebar fecha e reabre ao completar tarefa (estado resetado ou disparado duas vezes)
+- [x] Bug: Sidebar de celebração (confetti + Parabéns) não abre ao completar todos os passos do onboarding
