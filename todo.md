@@ -8194,3 +8194,4 @@
 - [x] Configurações: Remover card "Notificações SMS" e mover card "Pedidos" para o lugar dele (ao lado de Formas de pagamento)
 - [x] Auth: Alterar fluxo "Esqueceu a senha" — ao inserir email correto, mostrar campos para inserir e confirmar nova senha directamente (temporário, sem link de recuperação)
 - [x] Auth: Reverter fluxo "Esqueceu a senha" para o estado original (enviar link de recuperação)
+- [x] Onboarding: Mover passo "Adicionar foto e capa" para antes de "Conectar WhatsApp" (nova ordem: categoria → produtos → atendimento → foto/capa → whatsapp → testar pedido)
