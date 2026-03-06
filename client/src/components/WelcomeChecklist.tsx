@@ -399,29 +399,6 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
               </button>
             </div>
 
-            {/* Progress card */}
-            <div className="mt-4 bg-white/20 backdrop-blur-sm rounded-lg p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-white/90">Progresso Total</span>
-                <span className="text-lg font-bold text-white">
-                  {checklist.completedCount}/{checklist.totalSteps}
-                </span>
-              </div>
-              {/* Segmented progress bar */}
-              <div className="flex gap-1">
-                {checklist.steps.map((step) => (
-                  <div
-                    key={step.id}
-                    className={cn(
-                      "flex-1 h-1.5 rounded-full transition-all duration-500",
-                      step.completed
-                        ? "bg-white shadow-sm shadow-white/30"
-                        : "bg-white/25"
-                    )}
-                  />
-                ))}
-              </div>
-            </div>
           </div>
         </div>
 
