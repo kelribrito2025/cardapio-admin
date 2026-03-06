@@ -8222,3 +8222,4 @@
 - [x] Bug (persistente): Passo "Conectar WhatsApp" do onboarding ainda não atualiza imediatamente após conexão — corrigido: invalidate adicionado no Pedidos.tsx (onde o utilizador realmente conecta o WhatsApp)
 - [x] Admin: Recriar utilizador djigorlousada@hotmail.com para o estabelecimento 210008
 - [x] Bug: Taxa de entrega "Por Bairros" — ao salvar, os bairros cadastrados são limpos/apagados (corrigido: substituída lógica de mutations individuais por batch sync)
+- [x] Remover texto "Esta tela fechará automaticamente em alguns segundos" da sidebar de Parabéns do onboarding

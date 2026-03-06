@@ -513,7 +513,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
             <Rocket className="h-3.5 w-3.5" />
             Ir para o Dashboard
           </button>
-          <p className="text-xs text-muted-foreground/60 mt-3">Esta tela fechará automaticamente em alguns segundos</p>
+
         </div>
         {/* Desktop celebration sheet */}
         <div className="hidden md:block">
@@ -590,7 +590,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
                   Ir para o Dashboard
                 </button>
 
-                <p className="text-xs text-muted-foreground/60 mt-4">Esta tela fechará automaticamente em alguns segundos</p>
+
               </div>
             </SheetContent>
           </Sheet>
