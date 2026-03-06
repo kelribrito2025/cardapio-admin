@@ -81,7 +81,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
   // Step 1: Basic info
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [categoryId, setCategoryId] = useState<string>("none");
+  const [categoryId, setCategoryId] = useState<string>("");
   const [status, setStatus] = useState<"active" | "paused">("active");
   const [hasStock, setHasStock] = useState(false);
   const [stockQuantity, setStockQuantity] = useState("");
@@ -238,7 +238,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
     setStep2Sub("groups-list");
     setName("");
     setDescription("");
-    setCategoryId("none");
+    setCategoryId("");
     setStatus("active");
     setHasStock(false);
     setStockQuantity("");
@@ -277,7 +277,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
     if (open && isEditing && existingProduct && !dataLoaded) {
       setName(existingProduct.name || "");
       setDescription(existingProduct.description || "");
-      setCategoryId(existingProduct.categoryId ? String(existingProduct.categoryId) : "none");
+      setCategoryId(existingProduct.categoryId ? String(existingProduct.categoryId) : "");
       setStatus((existingProduct.status as "active" | "paused") || "active");
       setHasStock(existingProduct.hasStock || false);
       setStockQuantity(existingProduct.stockQuantity !== null && existingProduct.stockQuantity !== undefined ? String(existingProduct.stockQuantity) : "");
@@ -563,7 +563,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
       setStep(1);
       return;
     }
-    if (!categoryId || categoryId === "none") {
+    if (!categoryId) {
       toast.error("Selecione uma categoria para o produto");
       setStep(1);
       return;
@@ -578,7 +578,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
         id: productId,
         name: name.trim(),
         description: description.trim() || null,
-        categoryId: categoryId && categoryId !== "none" ? Number(categoryId) : null,
+        categoryId: categoryId ? Number(categoryId) : null,
         price: parsePriceInput(price),
         images: images.length > 0 ? images : [],
         status,
@@ -591,7 +591,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
         establishmentId,
         name: name.trim(),
         description: description.trim() || undefined,
-        categoryId: categoryId && categoryId !== "none" ? Number(categoryId) : null,
+        categoryId: categoryId ? Number(categoryId) : null,
         price: parsePriceInput(price),
         images: images.length > 0 ? images : [],
         status,
@@ -710,9 +710,6 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
               <SelectValue placeholder="Selecione uma categoria" />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
-              <SelectItem value="none" className="rounded-lg text-muted-foreground">
-                Sem categoria
-              </SelectItem>
               {categories?.map((cat) => (
                 <SelectItem key={cat.id} value={String(cat.id)} className="rounded-lg">
                   {cat.name}
@@ -781,7 +778,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
               toast.error("Nome do produto é obrigatório");
               return;
             }
-            if (!categoryId || categoryId === "none") {
+            if (!categoryId) {
               toast.error("Selecione uma categoria para o produto");
               return;
             }
@@ -1638,7 +1635,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Categoria</span>
                 <span className="font-medium">
-                  {categoryId !== "none" ? categories?.find(c => String(c.id) === categoryId)?.name || "—" : "Sem categoria"}
+                  {categoryId ? categories?.find(c => String(c.id) === categoryId)?.name || "—" : "—"}
                 </span>
               </div>
               <div className="flex justify-between text-xs">
