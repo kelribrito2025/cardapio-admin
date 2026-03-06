@@ -221,12 +221,6 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
         showCelebrationRef.current = true;
         onCelebrationChange?.(true);
         onRequestOpen?.();
-        const timer = setTimeout(() => {
-          localStorage.setItem(dismissedKey, "true");
-          setDismissed(true);
-          onCelebrationChange?.(false);
-        }, 12000);
-        return () => clearTimeout(timer);
       }
     }
   }, [adjustedChecklist?.completedCount, adjustedChecklist?.allCompleted]);
