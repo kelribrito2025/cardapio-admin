@@ -133,6 +133,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
   const [expandedStepId, setExpandedStepId] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const showCelebrationRef = useRef(false);
   const prevCompletedRef = useRef<number | null>(null);
   const [justUnlockedStepId, setJustUnlockedStepId] = useState<string | null>(null);
 
@@ -181,6 +182,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
         // Todos os passos concluídos: mostrar celebração
         setShowConfetti(true);
         setShowCelebration(true);
+        showCelebrationRef.current = true;
         setSheetOpen(true);
         prevCompletedRef.current = checklist.completedCount;
         const timer = setTimeout(() => {
@@ -194,7 +196,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
 
   // Se já estava tudo completo no carregamento inicial, dismiss direto
   useEffect(() => {
-    if (checklist && checklist.allCompleted && prevCompletedRef.current !== null && prevCompletedRef.current === checklist.completedCount && !showCelebration) {
+    if (checklist && checklist.allCompleted && prevCompletedRef.current !== null && prevCompletedRef.current === checklist.completedCount && !showCelebrationRef.current) {
       localStorage.setItem(dismissedKey, "true");
       setDismissed(true);
     }

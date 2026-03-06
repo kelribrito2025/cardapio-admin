@@ -8182,3 +8182,4 @@
 - [x] Onboarding: Mover passo "Testar um pedido" para a última posição do checklist (após "Adicionar foto e capa")
 - [x] Onboarding: Remover card de "Progresso Total" (barra segmentada + contador) da sidebar Primeiros Passos
 - [x] Onboarding: Adicionar indicador de progresso textual "X de 6 passos" ao lado do subtítulo na sidebar Primeiros Passos
+- [x] Bug: Celebração com confetti não aparece ao completar o último passo do onboarding — sidebar desaparece imediatamente
