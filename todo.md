@@ -8226,3 +8226,5 @@
 - [x] Menu Público: Spotlight/Overlay no ícone ≡ após primeiro pedido do cliente para guiá-lo a abrir o menu lateral
 - [x] Spotlight: Não fechar ao clicar fora — só fecha via botão "Abrir Menu" ou ícone hamburger
 - [x] Spotlight: Mostrar itens condicionalmente (Avaliações se ativo, Cupons se fidelidade ativo, Cashback se ativo)
+- [x] Admin: Atualizar user ID 1471505 — email para gauteriocristinedeise283@gmail.com e nome para Deise
+- [x] Bug: Ao alterar nome do responsável em Configurações, o avatar de perfil no header não atualiza (corrigido: adicionado refetch explícito do auth.me + invalidate do getAccountData)

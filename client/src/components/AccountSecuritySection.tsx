@@ -49,8 +49,11 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
   const updateAccountMutation = trpc.establishment.updateAccountData.useMutation({
     onSuccess: async () => {
       toast.success("Dados da conta atualizados com sucesso!");
-      // Invalidar cache do auth.me para atualizar o nome do perfil em tempo real
+      // Forçar refetch do auth.me para atualizar o nome do perfil em tempo real
       await utils.auth.me.invalidate();
+      await utils.auth.me.refetch();
+      // Também invalidar os dados da conta para manter consistência
+      await utils.establishment.getAccountData.invalidate();
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao atualizar dados da conta");
