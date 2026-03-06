@@ -368,6 +368,8 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
       <SheetContent
         side="right"
         hideCloseButton
+        onInteractOutside={(e) => e.preventDefault()}
+        onPointerDownOutside={(e) => e.preventDefault()}
         className="!w-[440px] !max-w-[440px] p-0 gap-0 border-l border-border/40 bg-background overflow-hidden"
       >
         {/* SR-only title for accessibility */}
