@@ -8187,3 +8187,4 @@
 - [x] Produto: Remover opção "Sem categoria" do dropdown de categorias no sheet de criação/edição
 - [x] PDV: Aumentar tamanho do cabeçalho do carrinho (título, subtítulo, ícone) e dos 3 botões de tipo de pedido (Consumo, Retirada, Entrega)
 - [x] PDV: Remover ícone ShoppingBag (sacola vermelha) ao lado do título "Carrinho" no cabeçalho do carrinho
+- [x] Sidebar: Alterar borda da foto do restaurante para vermelho claro visível
