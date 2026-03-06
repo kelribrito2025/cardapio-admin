@@ -125,10 +125,11 @@ interface WelcomeChecklistProps {
   establishmentName?: string;
   externalOpen?: boolean;
   onExternalClose?: () => void;
+  onRequestOpen?: () => void;
   hideMinimizedBar?: boolean;
 }
 
-export function WelcomeChecklist({ establishmentId, establishmentName, externalOpen, onExternalClose, hideMinimizedBar }: WelcomeChecklistProps) {
+export function WelcomeChecklist({ establishmentId, establishmentName, externalOpen, onExternalClose, onRequestOpen, hideMinimizedBar }: WelcomeChecklistProps) {
   const [, navigate] = useLocation();
   const { unlockAudio, isAudioUnlocked } = useNewOrders();
   const dismissedKey = `welcome_checklist_dismissed_${establishmentId}`;
@@ -142,12 +143,8 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
     return false;
   });
 
-  const [sheetOpen, setSheetOpen] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem(minimizedKey) !== "true";
-    }
-    return true;
-  });
+  // Sidebar começa fechada — só abre pelo FAB ou ao completar um passo
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const [expandedStepId, setExpandedStepId] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -178,35 +175,42 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
     }
   }, [checklist]);
 
-  // Detectar quando um passo é concluído (completedCount aumenta) e reabrir a sidebar
-  // Usar um debounce para evitar flickering ao refetch
-  const reopenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Detectar quando um passo é concluído (completedCount aumenta) e notificar o FAB
+  // Usa flag hasHandledRef para garantir que cada mudança só é processada uma vez
+  const hasHandledRef = useRef<number | null>(null);
   
   useEffect(() => {
     if (!checklist) return;
     if (prevCompletedRef.current === null) return;
     
+    // Evitar processar a mesma mudança mais de uma vez
+    if (hasHandledRef.current === checklist.completedCount) return;
+    
     if (checklist.completedCount > prevCompletedRef.current) {
-      // Limpar qualquer timer pendente
-      if (reopenTimerRef.current) clearTimeout(reopenTimerRef.current);
+      hasHandledRef.current = checklist.completedCount;
+      prevCompletedRef.current = checklist.completedCount;
       
       if (!checklist.allCompleted) {
-        // Passo concluído mas ainda há passos pendentes: reabrir sidebar com pequeno delay
+        // Passo concluído mas ainda há passos pendentes
         const firstIncomplete = checklist.steps.find(s => !s.completed);
-        prevCompletedRef.current = checklist.completedCount;
         
-        reopenTimerRef.current = setTimeout(() => {
-          if (firstIncomplete) {
-            setJustUnlockedStepId(firstIncomplete.id);
-            setExpandedStepId(firstIncomplete.id);
-          }
+        // Atualizar o passo expandido
+        if (firstIncomplete) {
+          setJustUnlockedStepId(firstIncomplete.id);
+          setExpandedStepId(firstIncomplete.id);
+          setTimeout(() => setJustUnlockedStepId(null), 2500);
+        }
+        
+        // Notificar o FAB para abrir (uma única vez)
+        if (onRequestOpen) {
+          onRequestOpen();
+        } else {
+          // Fallback: abrir directamente se não há FAB (não deveria acontecer)
           setSheetOpen(true);
           localStorage.removeItem(minimizedKey);
-          setTimeout(() => setJustUnlockedStepId(null), 2500);
-        }, 300);
+        }
       } else {
         // Todos os passos concluídos: mostrar celebração
-        prevCompletedRef.current = checklist.completedCount;
         setShowConfetti(true);
         setShowCelebration(true);
         showCelebrationRef.current = true;
@@ -218,10 +222,6 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
         return () => clearTimeout(timer);
       }
     }
-    
-    return () => {
-      if (reopenTimerRef.current) clearTimeout(reopenTimerRef.current);
-    };
   }, [checklist?.completedCount, checklist?.allCompleted]);
 
   // Se já estava tudo completo no carregamento inicial, dismiss direto
@@ -274,7 +274,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
 
   const handleMinimize = () => {
     setSheetOpen(false);
-    localStorage.setItem(minimizedKey, "true");
+    onExternalClose?.();
   };
 
   const handleReopen = () => {

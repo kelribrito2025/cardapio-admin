@@ -8202,3 +8202,7 @@
 - [x] Onboarding: Criar botão flutuante global (FAB) com ícone de foguete no canto inferior direito, visível em todas as páginas, que abre a sidebar ao clicar
 - [x] Onboarding: Sidebar deve reabrir automaticamente ao completar um passo em qualquer página (não apenas na Dashboard)
 - [x] Onboarding: Manter barra de "Configuração Inicial" na Dashboard enquanto os passos não estiverem todos concluídos
+- [x] Bug: Sidebar Primeiros Passos abre/fecha/abre novamente ao completar um passo — deve abrir apenas uma vez
+- [x] FAB deve aparecer em todas as páginas incluindo Dashboard
+- [x] WelcomeChecklist só deve abrir pelo FAB (não automaticamente)
+- [x] Corrigir flickering: sidebar abre/fecha/abre ao completar passo
