@@ -8198,3 +8198,7 @@
 - [x] Bug: Sidebar Primeiros Passos abre/fecha/abre novamente ao completar uma tarefa — comportamento de flickering
 - [x] Bug: Ícone não aparece acima da mensagem "Seu restaurante está pronto" na tela de celebração (Parabéns) da sidebar Primeiros Passos
 - [x] Onboarding: Passo "Testar um pedido" deve redirecionar para o menu público (não PDV) e só marcar como concluído quando receber o primeiro pedido pelo menu
+- [x] Onboarding: Adicionar novo passo "Ativar notificação sonora" — ao ativar, o passo é concluído
+- [x] Onboarding: Criar botão flutuante global (FAB) com ícone de foguete no canto inferior direito, visível em todas as páginas, que abre a sidebar ao clicar
+- [x] Onboarding: Sidebar deve reabrir automaticamente ao completar um passo em qualquer página (não apenas na Dashboard)
+- [x] Onboarding: Manter barra de "Configuração Inicial" na Dashboard enquanto os passos não estiverem todos concluídos

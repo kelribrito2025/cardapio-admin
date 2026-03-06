@@ -12,6 +12,7 @@ import {
   MessageCircle,
   ClipboardCheck,
   Camera,
+  Volume2,
   Sparkles,
   X,
   Check,
@@ -31,6 +32,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { toast } from "sonner";
+import { useNewOrders } from "@/contexts/NewOrdersContext";
 
 const stepConfig: Record<string, {
   icon: React.ElementType;
@@ -83,6 +85,17 @@ const stepConfig: Record<string, {
     ],
     buttonLabel: "Conectar WhatsApp",
   },
+  sound_notification: {
+    icon: Volume2,
+    subtitle: "Receba alertas de pedidos",
+    description: "Ative o som de notificação para ser alertado sempre que um novo pedido chegar. Assim você nunca perde um pedido!",
+    whyImportant: [
+      "Você é avisado imediatamente quando chega um pedido",
+      "Reduz o tempo de resposta ao cliente",
+      "Evita que pedidos passem despercebidos",
+    ],
+    buttonLabel: "Ativar Som",
+  },
   test_order: {
     icon: ClipboardCheck,
     subtitle: "Teste pelo menu público",
@@ -110,12 +123,17 @@ const stepConfig: Record<string, {
 interface WelcomeChecklistProps {
   establishmentId: number;
   establishmentName?: string;
+  externalOpen?: boolean;
+  onExternalClose?: () => void;
+  hideMinimizedBar?: boolean;
 }
 
-export function WelcomeChecklist({ establishmentId, establishmentName }: WelcomeChecklistProps) {
+export function WelcomeChecklist({ establishmentId, establishmentName, externalOpen, onExternalClose, hideMinimizedBar }: WelcomeChecklistProps) {
   const [, navigate] = useLocation();
+  const { unlockAudio, isAudioUnlocked } = useNewOrders();
   const dismissedKey = `welcome_checklist_dismissed_${establishmentId}`;
   const minimizedKey = `welcome_checklist_minimized_${establishmentId}`;
+  const soundActivatedKey = `welcome_checklist_sound_activated_${establishmentId}`;
 
   const [dismissed, setDismissed] = useState(() => {
     if (typeof window !== "undefined") {
@@ -214,15 +232,45 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
     }
   }, [checklist?.allCompleted]);
 
-  if (dismissed || isLoading || !checklist) {
+  // Sincronizar abertura externa (FAB)
+  useEffect(() => {
+    if (externalOpen) {
+      setSheetOpen(true);
+      localStorage.removeItem(minimizedKey);
+      onExternalClose?.();
+    }
+  }, [externalOpen]);
+
+  // Override local: sound_notification é controlado pelo localStorage (client-side)
+  const soundActivated = typeof window !== 'undefined' && localStorage.getItem(soundActivatedKey) === 'true';
+
+  // Aplicar override nos dados do checklist
+  const adjustedChecklist = useMemo(() => {
+    if (!checklist) return null;
+    const adjustedSteps = checklist.steps.map(step => {
+      if (step.id === 'sound_notification') {
+        return { ...step, completed: soundActivated || isAudioUnlocked };
+      }
+      return step;
+    });
+    const completedCount = adjustedSteps.filter(s => s.completed).length;
+    return {
+      ...checklist,
+      steps: adjustedSteps,
+      completedCount,
+      allCompleted: completedCount === adjustedSteps.length,
+    };
+  }, [checklist, soundActivated, isAudioUnlocked]);
+
+  if (dismissed || isLoading || !adjustedChecklist) {
     return null;
   }
 
-  if (checklist.allCompleted && !showCelebration) {
+  if (adjustedChecklist.allCompleted && !showCelebration) {
     return null;
   }
 
-  const progress = (checklist.completedCount / checklist.totalSteps) * 100;
+  const progress = (adjustedChecklist.completedCount / adjustedChecklist.totalSteps) * 100;
 
   const handleMinimize = () => {
     setSheetOpen(false);
@@ -232,6 +280,16 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
   const handleReopen = () => {
     setSheetOpen(true);
     localStorage.removeItem(minimizedKey);
+  };
+
+  const handleActivateSound = async () => {
+    const result = await unlockAudio();
+    if (result) {
+      localStorage.setItem(soundActivatedKey, 'true');
+      toast.success('Notificação sonora ativada!', { icon: <Volume2 className="h-4 w-4" /> });
+    } else {
+      toast.error('Não foi possível ativar o som. Tente novamente.');
+    }
   };
 
   const handleStartStep = (href: string) => {
@@ -266,7 +324,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
               Primeiros passos
             </span>
             <span className="text-xs font-semibold text-foreground">
-              {checklist.completedCount}/{checklist.totalSteps}
+              {adjustedChecklist.completedCount}/{adjustedChecklist.totalSteps}
             </span>
           </div>
           <div className="h-1.5 bg-muted/60 rounded-full overflow-hidden">
@@ -280,7 +338,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
 
       <div className="px-5 pb-4">
         <div className="grid grid-cols-1 gap-1.5">
-          {checklist.steps.map((step) => {
+          {adjustedChecklist.steps.map((step) => {
             const cfg = stepConfig[step.id];
             const StepIcon = cfg?.icon || Circle;
             const isMenuLink = step.id === 'test_order' && step.href.startsWith('/menu/');
@@ -307,6 +365,20 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                 )}
               </>
             );
+            if (step.id === 'sound_notification' && !step.completed) {
+              return (
+                <button
+                  key={step.id}
+                  onClick={() => handleActivateSound()}
+                  className={cn(
+                    "group flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all duration-200",
+                    "bg-muted/30 hover:bg-muted/60 hover:shadow-sm cursor-pointer"
+                  )}
+                >
+                  {stepContent}
+                </button>
+              );
+            }
             if (isMenuLink && !step.completed) {
               return (
                 <a
@@ -374,7 +446,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
           {/* Text */}
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-sm text-foreground leading-tight">
-              Configuração Inicial — <span className="text-red-600 dark:text-red-400">{checklist.completedCount}/{checklist.totalSteps}</span> concluídos
+              Configuração Inicial — <span className="text-red-600 dark:text-red-400">{adjustedChecklist.completedCount}/{adjustedChecklist.totalSteps}</span> concluídos
             </p>
             <p className="text-xs text-muted-foreground leading-tight mt-0.5">
               Complete os passos para começar a receber pedidos!
@@ -426,7 +498,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-white tracking-tight">Primeiros Passos</h2>
-                  <p className="text-sm text-white/70 mt-1">Configuração rápida e simples · <span className="text-white/90 font-medium">{checklist.completedCount} de {checklist.totalSteps} passos</span></p>
+                  <p className="text-sm text-white/70 mt-1">Configuração rápida e simples · <span className="text-white/90 font-medium">{adjustedChecklist.completedCount} de {adjustedChecklist.totalSteps} passos</span></p>
                 </div>
               </div>
               <button
@@ -442,12 +514,12 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
 
         {/* Steps list - scrollable area */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
-          {checklist.steps.map((step, index) => {
+          {adjustedChecklist.steps.map((step, index) => {
             const cfg = stepConfig[step.id];
             const StepIcon = cfg?.icon || Circle;
             const isCompleted = step.completed;
             // Determinar o índice do primeiro passo incompleto
-            const firstIncompleteIndex = checklist.steps.findIndex(s => !s.completed);
+            const firstIncompleteIndex = adjustedChecklist.steps.findIndex(s => !s.completed);
             // Só o passo atual (primeiro incompleto) pode ser expandido
             const isCurrentStep = index === firstIncompleteIndex;
             const isLocked = !isCompleted && !isCurrentStep;
@@ -571,7 +643,18 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                       </div>
 
                       {/* Action button */}
-                      {step.id === 'test_order' && step.href.startsWith('/menu/') ? (
+                      {step.id === 'sound_notification' ? (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleActivateSound();
+                          }}
+                          className="w-full h-11 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm shadow-red-500/20"
+                        >
+                          <Volume2 className="h-4 w-4" />
+                          {cfg?.buttonLabel || "Ativar Som"}
+                        </button>
+                      ) : step.id === 'test_order' && step.href.startsWith('/menu/') ? (
                         <a
                           href={step.href}
                           target="_blank"
@@ -690,10 +773,10 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
           <div className="w-full bg-green-50 dark:bg-green-950/20 border border-green-200/60 dark:border-green-800/30 rounded-xl p-4 mb-6">
             <div className="flex items-center justify-center gap-2 text-sm text-green-700 dark:text-green-400 font-semibold">
               <CheckCircle2 className="h-5 w-5" />
-              <span>{checklist.totalSteps}/{checklist.totalSteps} passos concluídos</span>
+              <span>{adjustedChecklist.totalSteps}/{adjustedChecklist.totalSteps} passos concluídos</span>
             </div>
             <div className="flex gap-1 mt-3">
-              {checklist.steps.map((step) => (
+              {adjustedChecklist.steps.map((step) => (
                 <div key={step.id} className="flex-1 h-2 rounded-full bg-green-500 dark:bg-green-400 shadow-sm shadow-green-500/20" />
               ))}
             </div>
@@ -734,7 +817,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
       </p>
       <div className="flex items-center justify-center gap-2 text-sm text-green-700 dark:text-green-400 font-semibold mb-4">
         <CheckCircle2 className="h-4 w-4" />
-        <span>{checklist.totalSteps}/{checklist.totalSteps} passos concluídos</span>
+        <span>{adjustedChecklist.totalSteps}/{adjustedChecklist.totalSteps} passos concluídos</span>
       </div>
       <button
         onClick={() => {
@@ -778,7 +861,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
 
       {/* Desktop: sheet sidebar ou barra minimizada */}
       <div className="hidden md:block">
-        {sheetOpen ? <DesktopSheet /> : <MinimizedBar />}
+        {sheetOpen ? <DesktopSheet /> : (!hideMinimizedBar && <MinimizedBar />)}
       </div>
     </>
   );

@@ -34,6 +34,7 @@ import Financas from "./pages/Financas";
 import EntregadorDetalhes from "./pages/EntregadorDetalhes";
 import BotWhatsApp from "./pages/BotWhatsApp";
 import { GlobalPDVHandle } from "./components/GlobalPDVHandle";
+import { OnboardingFAB } from "./components/OnboardingFAB";
 
 // Admin Pages (Super Admin)
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -63,6 +64,7 @@ function AdminRoutes() {
     <SearchProvider>
     <NewOrdersProvider>
       <GlobalPDVHandle />
+      <OnboardingFAB />
       <Switch>
         {/* App routes - Admin Panel */}
         <Route path="/" component={Dashboard} />

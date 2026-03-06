@@ -1343,6 +1343,7 @@ export const appRouter = router({
           { id: 'business_hours', label: 'Configurar atendimento', completed: hasBusinessHours, href: '/configuracoes?section=atendimento' },
           { id: 'photos', label: 'Adicionar foto e capa', completed: hasPhotos, href: '/configuracoes' },
           { id: 'whatsapp', label: 'Conectar WhatsApp', completed: hasWhatsappConnected, href: '/pedidos?connectWhatsapp=true' },
+          { id: 'sound_notification', label: 'Ativar notificação sonora', completed: false, href: '#sound' },
           { id: 'test_order', label: 'Testar um pedido', completed: hasOrders, href: establishment.menuSlug ? `/menu/${establishment.menuSlug}` : '/pdv' },
         ];
 
