@@ -8211,3 +8211,4 @@
 - [x] Bug: Sidebar Primeiros Passos não abre automaticamente para novos utilizadores ao criar conta e entrar pela primeira vez
 - [x] Bug: Flickering persiste — sidebar fecha e reabre ao completar tarefa (estado resetado ou disparado duas vezes)
 - [x] Bug: Sidebar de celebração (confetti + Parabéns) não abre ao completar todos os passos do onboarding
+- [x] Bug: Passo "Conectar WhatsApp" demora a atualizar após conexão bem-sucedida — deve marcar como concluído imediatamente

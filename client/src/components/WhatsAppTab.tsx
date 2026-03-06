@@ -145,10 +145,14 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
     }
   }, [configQuery.data]);
   
-  // Stop polling when connected
+  const utils = trpc.useUtils();
+
+  // Stop polling when connected & invalidate onboarding checklist immediately
   useEffect(() => {
     if (statusQuery.data?.status === 'connected') {
       setIsPolling(false);
+      // Invalidar o checklist do onboarding para atualizar imediatamente o passo "Conectar WhatsApp"
+      utils.dashboard.onboardingChecklist.invalidate();
     }
   }, [statusQuery.data?.status]);
   
