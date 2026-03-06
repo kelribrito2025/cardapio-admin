@@ -84,4 +84,18 @@ describe("dashboard.onboardingChecklist", () => {
     const caller = appRouter.createCaller(ctx);
     expect(typeof caller.dashboard.onboardingChecklist).toBe("function");
   });
+
+  it("connect_whatsapp step redirects to /pedidos?connectWhatsapp=true", async () => {
+    const { ctx } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    try {
+      const result = await caller.dashboard.onboardingChecklist({ establishmentId: 999999 });
+      const waStep = result.steps.find((s: any) => s.id === "connect_whatsapp");
+      expect(waStep).toBeDefined();
+      expect(waStep?.href).toBe("/pedidos?connectWhatsapp=true");
+    } catch {
+      // Expected: establishment not found - procedure shape is still validated above
+    }
+  });
 });

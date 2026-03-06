@@ -373,14 +373,16 @@ export default function Pedidos() {
     },
   });
   
-  // Parar polling quando conectado
+  // Parar polling quando conectado e atualizar checklist de onboarding
   useEffect(() => {
     if (whatsappStatus?.status === 'connected' && isPollingQrCode) {
       setIsPollingQrCode(false);
       setQrCodeModalOpen(false);
       toast.success("WhatsApp conectado com sucesso!");
+      // Invalidar o checklist de onboarding para que o passo "Conectar WhatsApp" seja marcado imediatamente
+      utils.dashboard.onboardingChecklist.invalidate();
     }
-  }, [whatsappStatus?.status, isPollingQrCode]);
+  }, [whatsappStatus?.status, isPollingQrCode, utils]);
 
   // Modal informativo: exibir APENAS uma vez para novos usuários que nunca conectaram WhatsApp
   useEffect(() => {

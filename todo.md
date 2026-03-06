@@ -8219,3 +8219,4 @@
 - [x] Bug: Passo "Conectar WhatsApp" do onboarding só atualiza ao navegar para outra página — deve atualizar imediatamente após conexão
 - [x] Onboarding: Passo "Adicionar primeiros produtos" deve abrir directamente a sidebar de Novo Produto ao clicar no botão (já implementado via ?action=new-product)
 - [x] Bug: Passo "Adicionar foto e capa" do onboarding não redireciona para a aba de estabelecimento nas configurações
+- [x] Bug (persistente): Passo "Conectar WhatsApp" do onboarding ainda não atualiza imediatamente após conexão — corrigido: invalidate adicionado no Pedidos.tsx (onde o utilizador realmente conecta o WhatsApp)
