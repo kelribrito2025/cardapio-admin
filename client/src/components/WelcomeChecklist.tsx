@@ -19,6 +19,7 @@ import {
   Lock,
   Trophy,
   Star,
+  ExternalLink,
 } from "lucide-react";
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { cn } from "@/lib/utils";
@@ -84,14 +85,14 @@ const stepConfig: Record<string, {
   },
   test_order: {
     icon: ClipboardCheck,
-    subtitle: "Simule um pedido",
-    description: "Faça um pedido de teste para verificar se tudo está funcionando corretamente antes de abrir para clientes.",
+    subtitle: "Teste pelo menu público",
+    description: "Acesse seu menu público e faça um pedido de teste como se fosse um cliente. Assim você verá exatamente a experiência do seu cliente.",
     whyImportant: [
-      "Garante que o fluxo de pedidos funciona",
-      "Identifica problemas antes dos clientes",
-      "Você vê exatamente o que o cliente verá",
+      "Veja seu cardápio como o cliente vê",
+      "Garante que o fluxo completo funciona",
+      "Identifica problemas antes dos clientes reais",
     ],
-    buttonLabel: "Fazer Pedido Teste",
+    buttonLabel: "Abrir Meu Menu",
   },
   photos: {
     icon: Camera,
@@ -282,17 +283,9 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
           {checklist.steps.map((step) => {
             const cfg = stepConfig[step.id];
             const StepIcon = cfg?.icon || Circle;
-            return (
-              <button
-                key={step.id}
-                onClick={() => navigate(step.href)}
-                className={cn(
-                  "group flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all duration-200",
-                  step.completed
-                    ? "bg-primary/5 dark:bg-primary/10"
-                    : "bg-muted/30 hover:bg-muted/60 hover:shadow-sm cursor-pointer"
-                )}
-              >
+            const isMenuLink = step.id === 'test_order' && step.href.startsWith('/menu/');
+            const stepContent = (
+              <>
                 <div className="flex-shrink-0">
                   {step.completed ? (
                     <CheckCircle2 className="h-5 w-5 text-primary" />
@@ -310,8 +303,38 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                   {step.label}
                 </span>
                 {!step.completed && (
-                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                  isMenuLink ? <ExternalLink className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all" /> : <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                 )}
+              </>
+            );
+            if (isMenuLink && !step.completed) {
+              return (
+                <a
+                  key={step.id}
+                  href={step.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "group flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all duration-200",
+                    "bg-muted/30 hover:bg-muted/60 hover:shadow-sm cursor-pointer"
+                  )}
+                >
+                  {stepContent}
+                </a>
+              );
+            }
+            return (
+              <button
+                key={step.id}
+                onClick={() => navigate(step.href)}
+                className={cn(
+                  "group flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left transition-all duration-200",
+                  step.completed
+                    ? "bg-primary/5 dark:bg-primary/10"
+                    : "bg-muted/30 hover:bg-muted/60 hover:shadow-sm cursor-pointer"
+                )}
+              >
+                {stepContent}
               </button>
             );
           })}
@@ -548,15 +571,31 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                       </div>
 
                       {/* Action button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleStartStep(step.href);
-                        }}
-                        className="w-full h-11 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm shadow-red-500/20"
-                      >
-                        {cfg?.buttonLabel || "Começar este passo"}
-                      </button>
+                      {step.id === 'test_order' && step.href.startsWith('/menu/') ? (
+                        <a
+                          href={step.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMinimize();
+                          }}
+                          className="w-full h-11 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm shadow-red-500/20"
+                        >
+                          {cfg?.buttonLabel || "Começar este passo"}
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStartStep(step.href);
+                          }}
+                          className="w-full h-11 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm shadow-red-500/20"
+                        >
+                          {cfg?.buttonLabel || "Começar este passo"}
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
