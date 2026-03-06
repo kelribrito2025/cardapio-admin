@@ -139,7 +139,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
 
   const { data: checklist, isLoading } = trpc.dashboard.onboardingChecklist.useQuery(
     { establishmentId },
-    { enabled: !!establishmentId && !dismissed, staleTime: 5000, refetchOnWindowFocus: true }
+    { enabled: !!establishmentId && !dismissed, staleTime: 10000, refetchOnWindowFocus: true, placeholderData: (prev) => prev }
   );
 
   // Auto-expandir o primeiro passo incompleto
@@ -160,31 +160,38 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
   }, [checklist]);
 
   // Detectar quando um passo é concluído (completedCount aumenta) e reabrir a sidebar
+  // Usar um debounce para evitar flickering ao refetch
+  const reopenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
   useEffect(() => {
     if (!checklist) return;
     if (prevCompletedRef.current === null) return;
     
     if (checklist.completedCount > prevCompletedRef.current) {
+      // Limpar qualquer timer pendente
+      if (reopenTimerRef.current) clearTimeout(reopenTimerRef.current);
+      
       if (!checklist.allCompleted) {
-        // Passo concluído mas ainda há passos pendentes: reabrir sidebar
+        // Passo concluído mas ainda há passos pendentes: reabrir sidebar com pequeno delay
         const firstIncomplete = checklist.steps.find(s => !s.completed);
-        if (firstIncomplete) {
-          setJustUnlockedStepId(firstIncomplete.id);
-          setExpandedStepId(firstIncomplete.id);
-        }
-        // Sempre reabrir a sidebar ao completar um passo
-        setSheetOpen(true);
-        localStorage.removeItem(minimizedKey);
-        const timer = setTimeout(() => setJustUnlockedStepId(null), 2500);
         prevCompletedRef.current = checklist.completedCount;
-        return () => clearTimeout(timer);
+        
+        reopenTimerRef.current = setTimeout(() => {
+          if (firstIncomplete) {
+            setJustUnlockedStepId(firstIncomplete.id);
+            setExpandedStepId(firstIncomplete.id);
+          }
+          setSheetOpen(true);
+          localStorage.removeItem(minimizedKey);
+          setTimeout(() => setJustUnlockedStepId(null), 2500);
+        }, 300);
       } else {
         // Todos os passos concluídos: mostrar celebração
+        prevCompletedRef.current = checklist.completedCount;
         setShowConfetti(true);
         setShowCelebration(true);
         showCelebrationRef.current = true;
         setSheetOpen(true);
-        prevCompletedRef.current = checklist.completedCount;
         const timer = setTimeout(() => {
           localStorage.setItem(dismissedKey, "true");
           setDismissed(true);
@@ -192,6 +199,10 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
         return () => clearTimeout(timer);
       }
     }
+    
+    return () => {
+      if (reopenTimerRef.current) clearTimeout(reopenTimerRef.current);
+    };
   }, [checklist?.completedCount, checklist?.allCompleted]);
 
   // Se já estava tudo completo no carregamento inicial, dismiss direto

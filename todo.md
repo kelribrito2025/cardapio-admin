@@ -8195,3 +8195,4 @@
 - [x] Auth: Alterar fluxo "Esqueceu a senha" — ao inserir email correto, mostrar campos para inserir e confirmar nova senha directamente (temporário, sem link de recuperação)
 - [x] Auth: Reverter fluxo "Esqueceu a senha" para o estado original (enviar link de recuperação)
 - [x] Onboarding: Mover passo "Adicionar foto e capa" para antes de "Conectar WhatsApp" (nova ordem: categoria → produtos → atendimento → foto/capa → whatsapp → testar pedido)
+- [x] Bug: Sidebar Primeiros Passos abre/fecha/abre novamente ao completar uma tarefa — comportamento de flickering
