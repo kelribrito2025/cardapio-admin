@@ -1287,8 +1287,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               {/* Tempo Médio de Preparo - Desktop only */}
               <AvgPrepTimeButton establishmentId={establishment?.id} />
 
-              {/* Ver Menu Button - só aparece quando tem pelo menos 1 categoria e 1 produto */}
-              {establishment?.menuSlug && hasMenuReady && (
+              {/* Ver Menu Button */}
+              {establishment?.menuSlug && (
                 <Tooltip open={menuTooltipDismissed ? false : undefined}>
                   <TooltipTrigger asChild>
                     <a
