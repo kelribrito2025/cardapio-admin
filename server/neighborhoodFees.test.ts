@@ -194,6 +194,77 @@ describe("Neighborhood Fee Logic", () => {
     });
   });
 
+  describe("Sync Batch Logic", () => {
+    // Simulate the sync logic that determines which fees to create, update, or delete
+    function computeSyncOps(
+      existing: { id: number; neighborhood: string; fee: string }[],
+      incoming: { id?: number; neighborhood: string; fee: string }[]
+    ) {
+      const existingIds = existing.map(f => f.id);
+      const clientIds = incoming.filter(f => f.id).map(f => f.id!);
+
+      const toDelete = existingIds.filter(id => !clientIds.includes(id));
+      const toCreate = incoming.filter(f => !f.id || !existingIds.includes(f.id));
+      const toUpdate = incoming.filter(f => f.id && existingIds.includes(f.id));
+
+      return { toDelete, toCreate, toUpdate };
+    }
+
+    it("should detect new fees to create", () => {
+      const existing = [{ id: 1, neighborhood: "Centro", fee: "5.00" }];
+      const incoming = [
+        { id: 1, neighborhood: "Centro", fee: "5.00" },
+        { neighborhood: "Jardim", fee: "8.00" },
+      ];
+      const ops = computeSyncOps(existing, incoming);
+      expect(ops.toCreate.length).toBe(1);
+      expect(ops.toCreate[0].neighborhood).toBe("Jardim");
+      expect(ops.toDelete.length).toBe(0);
+      expect(ops.toUpdate.length).toBe(1);
+    });
+
+    it("should detect fees to delete", () => {
+      const existing = [
+        { id: 1, neighborhood: "Centro", fee: "5.00" },
+        { id: 2, neighborhood: "Jardim", fee: "8.00" },
+      ];
+      const incoming = [{ id: 1, neighborhood: "Centro", fee: "5.00" }];
+      const ops = computeSyncOps(existing, incoming);
+      expect(ops.toDelete).toEqual([2]);
+      expect(ops.toCreate.length).toBe(0);
+    });
+
+    it("should detect fees to update", () => {
+      const existing = [{ id: 1, neighborhood: "Centro", fee: "5.00" }];
+      const incoming = [{ id: 1, neighborhood: "Centro", fee: "7.00" }];
+      const ops = computeSyncOps(existing, incoming);
+      expect(ops.toUpdate.length).toBe(1);
+      expect(ops.toUpdate[0].fee).toBe("7.00");
+    });
+
+    it("should handle empty incoming (delete all)", () => {
+      const existing = [
+        { id: 1, neighborhood: "Centro", fee: "5.00" },
+        { id: 2, neighborhood: "Jardim", fee: "8.00" },
+      ];
+      const incoming: { id?: number; neighborhood: string; fee: string }[] = [];
+      const ops = computeSyncOps(existing, incoming);
+      expect(ops.toDelete).toEqual([1, 2]);
+      expect(ops.toCreate.length).toBe(0);
+    });
+
+    it("should handle empty existing (create all)", () => {
+      const existing: { id: number; neighborhood: string; fee: string }[] = [];
+      const incoming = [
+        { neighborhood: "Centro", fee: "5.00" },
+        { neighborhood: "Jardim", fee: "8.00" },
+      ];
+      const ops = computeSyncOps(existing, incoming);
+      expect(ops.toCreate.length).toBe(2);
+      expect(ops.toDelete.length).toBe(0);
+    });
+  });
+
   describe("Neighborhood Fee Data Structure", () => {
     it("should have correct structure for neighborhood fee", () => {
       const fee = {

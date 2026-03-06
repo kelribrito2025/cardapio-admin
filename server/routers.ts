@@ -2885,6 +2885,21 @@ export const appRouter = router({
         await db.deleteAllNeighborhoodFees(input.establishmentId);
         return { success: true };
       }),
+
+    // Sincronizar todas as taxas por bairro de uma vez (batch)
+    sync: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        fees: z.array(z.object({
+          id: z.number().optional(),
+          neighborhood: z.string(),
+          fee: z.string(),
+        })),
+      }))
+      .mutation(async ({ input }) => {
+        const updated = await db.syncNeighborhoodFees(input.establishmentId, input.fees);
+        return updated;
+      }),
   }),
 
   // ============ PRINTERS ============

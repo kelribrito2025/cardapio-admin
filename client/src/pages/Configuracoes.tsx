@@ -505,7 +505,7 @@ export default function Configuracoes() {
     onError: () => toast.error("Erro ao salvar horários de funcionamento"),
   });
   
-  // Neighborhood fees mutations
+  // Neighborhood fees mutations (individual - kept for backwards compatibility)
   const createNeighborhoodFeeMutation = trpc.neighborhoodFees.create.useMutation({
     onSuccess: () => {
       setInitialNeighborhoodFeesLoaded(false);
@@ -528,6 +528,20 @@ export default function Configuracoes() {
       refetchNeighborhoodFees();
     },
     onError: () => toast.error("Erro ao remover taxa por bairro"),
+  });
+
+  // Batch sync mutation - saves all neighborhood fees in a single request
+  const syncNeighborhoodFeesMutation = trpc.neighborhoodFees.sync.useMutation({
+    onSuccess: (updatedFees) => {
+      // Update local state with the server response directly
+      setNeighborhoodFees(updatedFees.map(f => ({
+        id: f.id,
+        neighborhood: f.neighborhood,
+        fee: f.fee,
+      })));
+      setInitialNeighborhoodFeesLoaded(true);
+    },
+    onError: () => toast.error("Erro ao salvar taxas por bairro"),
   });
   
   // Printer mutations
@@ -828,39 +842,18 @@ export default function Configuracoes() {
       autoAcceptOrders,
     });
     
-    // Salvar taxas por bairro se o tipo for byNeighborhood
+    // Salvar taxas por bairro se o tipo for byNeighborhood (batch sync)
     if (deliveryFeeType === "byNeighborhood") {
-      // Processar bairros: criar novos, atualizar existentes, deletar removidos
-      const existingIds = neighborhoodFeesData?.map(f => f.id) || [];
-      const currentIds = neighborhoodFees.filter(f => f.id).map(f => f.id!);
-      
-      // Deletar bairros removidos
-      for (const id of existingIds) {
-        if (!currentIds.includes(id)) {
-          deleteNeighborhoodFeeMutation.mutate({ id });
-        }
-      }
-      
-      // Criar ou atualizar bairros
-      for (const fee of neighborhoodFees) {
-        if (!fee.neighborhood.trim()) continue; // Ignorar bairros sem nome
-        
-        if (fee.id) {
-          // Atualizar existente
-          updateNeighborhoodFeeMutation.mutate({
-            id: fee.id,
-            neighborhood: fee.neighborhood,
-            fee: fee.fee,
-          });
-        } else {
-          // Criar novo
-          createNeighborhoodFeeMutation.mutate({
-            establishmentId: establishment.id,
-            neighborhood: fee.neighborhood,
-            fee: fee.fee,
-          });
-        }
-      }
+      syncNeighborhoodFeesMutation.mutate({
+        establishmentId: establishment.id,
+        fees: neighborhoodFees
+          .filter(f => f.neighborhood.trim()) // Ignorar bairros sem nome
+          .map(f => ({
+            id: f.id,
+            neighborhood: f.neighborhood,
+            fee: f.fee,
+          })),
+      });
     }
   };
 

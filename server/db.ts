@@ -4872,6 +4872,56 @@ export async function deleteAllNeighborhoodFees(establishmentId: number) {
   await db.delete(neighborhoodFees).where(eq(neighborhoodFees.establishmentId, establishmentId));
 }
 
+/**
+ * Sync all neighborhood fees for an establishment in a single batch operation.
+ * Deletes removed fees, updates existing ones, and creates new ones.
+ */
+export async function syncNeighborhoodFees(
+  establishmentId: number,
+  fees: { id?: number; neighborhood: string; fee: string }[]
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Get current fees from DB
+  const existing = await db.select().from(neighborhoodFees)
+    .where(eq(neighborhoodFees.establishmentId, establishmentId));
+  const existingIds = existing.map(f => f.id);
+
+  // IDs that the client still has
+  const clientIds = fees.filter(f => f.id).map(f => f.id!);
+
+  // Delete removed fees
+  for (const id of existingIds) {
+    if (!clientIds.includes(id)) {
+      await db.delete(neighborhoodFees).where(eq(neighborhoodFees.id, id));
+    }
+  }
+
+  // Create or update
+  for (const fee of fees) {
+    if (!fee.neighborhood.trim()) continue;
+    if (fee.id && existingIds.includes(fee.id)) {
+      // Update existing
+      await db.update(neighborhoodFees)
+        .set({ neighborhood: fee.neighborhood, fee: fee.fee })
+        .where(eq(neighborhoodFees.id, fee.id));
+    } else {
+      // Create new
+      await db.insert(neighborhoodFees).values({
+        establishmentId,
+        neighborhood: fee.neighborhood,
+        fee: fee.fee,
+      });
+    }
+  }
+
+  // Return updated list
+  return db.select().from(neighborhoodFees)
+    .where(eq(neighborhoodFees.establishmentId, establishmentId))
+    .orderBy(asc(neighborhoodFees.neighborhood));
+}
+
 
 // ============ ESTABLISHMENT STATUS FUNCTIONS ============
 

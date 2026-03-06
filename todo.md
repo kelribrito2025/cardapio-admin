@@ -8220,3 +8220,5 @@
 - [x] Onboarding: Passo "Adicionar primeiros produtos" deve abrir directamente a sidebar de Novo Produto ao clicar no botão (já implementado via ?action=new-product)
 - [x] Bug: Passo "Adicionar foto e capa" do onboarding não redireciona para a aba de estabelecimento nas configurações
 - [x] Bug (persistente): Passo "Conectar WhatsApp" do onboarding ainda não atualiza imediatamente após conexão — corrigido: invalidate adicionado no Pedidos.tsx (onde o utilizador realmente conecta o WhatsApp)
+- [x] Admin: Recriar utilizador djigorlousada@hotmail.com para o estabelecimento 210008
+- [x] Bug: Taxa de entrega "Por Bairros" — ao salvar, os bairros cadastrados são limpos/apagados (corrigido: substituída lógica de mutations individuais por batch sync)
