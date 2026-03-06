@@ -144,6 +144,20 @@ export default function Configuracoes() {
     }
   }, [currentLocation]);
 
+  // Scroll automático para o card de horários quando vem do onboarding
+  useEffect(() => {
+    if (activeSection === 'atendimento' && businessHoursCardRef.current) {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('section') === 'atendimento') {
+        // Pequeno delay para garantir que o DOM renderizou
+        const timer = setTimeout(() => {
+          businessHoursCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [activeSection]);
+
   // Establishment form state
   const [name, setName] = useState("");
   const [logo, setLogo] = useState("");
@@ -299,6 +313,7 @@ export default function Configuracoes() {
   // Social dropdown state for preview
   const [showSocialDropdown, setShowSocialDropdown] = useState(false);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
+  const businessHoursCardRef = useRef<HTMLDivElement>(null);
   
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -2190,6 +2205,7 @@ export default function Configuracoes() {
           </div>
 
           {/* Horários de Funcionamento */}
+          <div ref={businessHoursCardRef}>
           <SectionCard title="Horários de funcionamento">
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
@@ -2333,6 +2349,7 @@ export default function Configuracoes() {
               </Button>
             </div>
           </SectionCard>
+          </div>
             </div>
           )}
 
