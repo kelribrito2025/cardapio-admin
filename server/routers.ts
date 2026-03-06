@@ -26,7 +26,9 @@ export const appRouter = router({
   admin: adminRouter,
   
   auth: router({
-    me: publicProcedure.query(opts => opts.ctx.user),
+    me: publicProcedure.query(opts => {
+      return opts.ctx.user;
+    }),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
@@ -436,12 +438,14 @@ export const appRouter = router({
         const { establishmentId, ...data } = input;
         await db.updateEstablishmentAccountData(establishmentId, data);
         
-        // Se o nome do responsável foi alterado, atualizar o nome do dono do estabelecimento
+        // Se o nome do responsável foi alterado, atualizar o nome do dono do estabelecimento e o ownerDisplayName
         if (input.responsibleName) {
           // Buscar o estabelecimento para obter o userId correcto (pode ser diferente do admin logado)
           const establishment = await db.getEstablishmentById(establishmentId);
           const targetUserId = establishment?.userId ?? ctx.user.id;
           await db.updateUserName(targetUserId, input.responsibleName);
+          // Também atualizar o ownerDisplayName para manter o avatar sincronizado
+          await db.updateEstablishment(establishmentId, { ownerDisplayName: input.responsibleName });
         }
         
         return { success: true };

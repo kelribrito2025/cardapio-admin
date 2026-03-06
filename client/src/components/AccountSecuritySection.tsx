@@ -52,8 +52,9 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
       // Forçar refetch do auth.me para atualizar o nome do perfil em tempo real
       await utils.auth.me.invalidate();
       await utils.auth.me.refetch();
-      // Também invalidar os dados da conta para manter consistência
+      // Também invalidar os dados da conta e do establishment para manter consistência
       await utils.establishment.getAccountData.invalidate();
+      await utils.establishment.get.invalidate();
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao atualizar dados da conta");
