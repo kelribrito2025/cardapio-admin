@@ -128,9 +128,10 @@ interface WelcomeChecklistProps {
   onRequestOpen?: () => void;
   hideMinimizedBar?: boolean;
   onCelebrationChange?: (celebrating: boolean) => void;
+  onStateChange?: (state: { completedCount: number; totalSteps: number; allCompleted: boolean; isDismissed: boolean }) => void;
 }
 
-export function WelcomeChecklist({ establishmentId, establishmentName, externalOpen, onExternalClose, onRequestOpen, hideMinimizedBar, onCelebrationChange }: WelcomeChecklistProps) {
+export function WelcomeChecklist({ establishmentId, establishmentName, externalOpen, onExternalClose, onRequestOpen, hideMinimizedBar, onCelebrationChange, onStateChange }: WelcomeChecklistProps) {
   const [, navigate] = useLocation();
   const { unlockAudio, isAudioUnlocked } = useNewOrders();
   const dismissedKey = `welcome_checklist_dismissed_${establishmentId}`;
@@ -154,7 +155,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
 
   const { data: checklist, isLoading } = trpc.dashboard.onboardingChecklist.useQuery(
     { establishmentId },
-    { enabled: !!establishmentId && !dismissed, staleTime: 10000, refetchOnWindowFocus: true, placeholderData: (prev) => prev }
+    { enabled: !!establishmentId && !dismissed, staleTime: 5000, refetchOnWindowFocus: true, placeholderData: (prev) => prev }
   );
 
   // Override local: sound_notification é controlado pelo localStorage (client-side)
@@ -237,6 +238,25 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
       setDismissed(true);
     }
   }, [adjustedChecklist?.allCompleted]);
+
+  // Reportar estado ao componente pai (FAB) para que ele saiba o progresso sem query própria
+  useEffect(() => {
+    if (adjustedChecklist) {
+      onStateChange?.({
+        completedCount: adjustedChecklist.completedCount,
+        totalSteps: adjustedChecklist.totalSteps,
+        allCompleted: adjustedChecklist.allCompleted,
+        isDismissed: dismissed,
+      });
+    } else if (dismissed) {
+      onStateChange?.({
+        completedCount: 0,
+        totalSteps: 0,
+        allCompleted: true,
+        isDismissed: true,
+      });
+    }
+  }, [adjustedChecklist?.completedCount, adjustedChecklist?.allCompleted, dismissed]);
 
   // sheetOpen derivado de externalOpen (controlado pelo FAB)
   const sheetOpen = !!externalOpen;

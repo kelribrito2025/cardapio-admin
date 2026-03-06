@@ -8212,3 +8212,5 @@
 - [x] Bug: Flickering persiste — sidebar fecha e reabre ao completar tarefa (estado resetado ou disparado duas vezes)
 - [x] Bug: Sidebar de celebração (confetti + Parabéns) não abre ao completar todos os passos do onboarding
 - [x] Bug: Passo "Conectar WhatsApp" demora a atualizar após conexão bem-sucedida — deve marcar como concluído imediatamente
+- [x] Bug: WhatsApp ainda demora a atualizar no checklist após conexão (invalidate pode não estar funcionando)
+- [x] Bug: Celebração com confetti ainda não aparece ao completar todos os passos do onboarding

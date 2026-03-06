@@ -147,12 +147,16 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
   
   const utils = trpc.useUtils();
 
-  // Stop polling when connected & invalidate onboarding checklist immediately
+  // Stop polling when connected & invalidate onboarding checklist
   useEffect(() => {
     if (statusQuery.data?.status === 'connected') {
       setIsPolling(false);
-      // Invalidar o checklist do onboarding para atualizar imediatamente o passo "Conectar WhatsApp"
-      utils.dashboard.onboardingChecklist.invalidate();
+      // Invalidar o checklist do onboarding após um breve delay para garantir
+      // que o backend já tem o status atualizado da API do UAZAPI
+      const timer = setTimeout(() => {
+        utils.dashboard.onboardingChecklist.invalidate();
+      }, 1500);
+      return () => clearTimeout(timer);
     }
   }, [statusQuery.data?.status]);
   

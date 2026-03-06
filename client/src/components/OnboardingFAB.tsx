@@ -3,49 +3,34 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import { WelcomeChecklist } from "./WelcomeChecklist";
 import { cn } from "@/lib/utils";
-import { useNewOrders } from "@/contexts/NewOrdersContext";
 
 /**
  * OnboardingFAB - Botão flutuante global com ícone de foguete.
  * Aparece em TODAS as páginas enquanto o onboarding não estiver completo.
  * É o único ponto de abertura da sidebar de Primeiros Passos.
  * 
- * Mantém-se montado durante a celebração para que o WelcomeChecklist
- * possa mostrar o confetti e a mensagem de parabéns.
+ * NÃO tem query própria — recebe o estado do WelcomeChecklist via callbacks.
+ * Isto garante que o FAB nunca desmonta o WelcomeChecklist antes da celebração.
  */
 export function OnboardingFAB() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCelebrating, setIsCelebrating] = useState(false);
   const hasAutoOpened = useRef(false);
 
+  // Estado recebido do WelcomeChecklist via onStateChange
+  const [checklistState, setChecklistState] = useState<{
+    completedCount: number;
+    totalSteps: number;
+    allCompleted: boolean;
+    isDismissed: boolean;
+  } | null>(null);
+
   const { data: establishment } = trpc.establishment.get.useQuery();
-  const { isAudioUnlocked } = useNewOrders();
   const establishmentId = establishment?.id;
-
-  const { data: checklist } = trpc.dashboard.onboardingChecklist.useQuery(
-    { establishmentId: establishmentId || 0 },
-    { enabled: !!establishmentId, staleTime: 30000 }
-  );
-
-  // Verificar se o checklist foi dismissed via localStorage
-  const dismissedKey = establishmentId ? `welcome_checklist_dismissed_${establishmentId}` : '';
-  const isDismissed = typeof window !== 'undefined' && dismissedKey && localStorage.getItem(dismissedKey) === 'true';
-
-  // Override local para sound_notification
-  const soundActivatedKey = establishmentId ? `welcome_checklist_sound_activated_${establishmentId}` : '';
-  const soundActivated = typeof window !== 'undefined' && soundActivatedKey && localStorage.getItem(soundActivatedKey) === 'true';
-
-  // Calcular completedCount ajustado (incluindo sound_notification override)
-  const adjustedCompletedCount = checklist ? checklist.steps.filter(s => {
-    if (s.id === 'sound_notification') return soundActivated || isAudioUnlocked || s.completed;
-    return s.completed;
-  }).length : 0;
-
-  const adjustedAllCompleted = checklist ? adjustedCompletedCount === checklist.steps.length : false;
 
   // Auto-abrir na primeira visita do utilizador (novo utilizador)
   useEffect(() => {
-    if (!establishmentId || !checklist || isDismissed || adjustedAllCompleted) return;
+    if (!establishmentId || !checklistState || checklistState.isDismissed || checklistState.allCompleted) return;
     if (hasAutoOpened.current) return;
     
     const autoOpenKey = `onboarding_auto_opened_${establishmentId}`;
@@ -56,41 +41,48 @@ export function OnboardingFAB() {
       localStorage.setItem(autoOpenKey, 'true');
       setSidebarOpen(true);
     }
-  }, [establishmentId, checklist, isDismissed, adjustedAllCompleted]);
+  }, [establishmentId, checklistState]);
 
-  // Fechar sidebar
   const closeSidebar = useCallback(() => {
     setSidebarOpen(false);
   }, []);
 
-  // Callback: WelcomeChecklist pede para abrir (ex: passo concluído)
   const handleRequestOpen = useCallback(() => {
     setSidebarOpen(true);
   }, []);
 
-  // Callback: WelcomeChecklist notifica sobre estado de celebração
   const handleCelebrationChange = useCallback((celebrating: boolean) => {
     setIsCelebrating(celebrating);
+    if (celebrating) {
+      // Garantir que a sidebar está aberta durante a celebração
+      setSidebarOpen(true);
+    }
     if (!celebrating) {
-      // Celebração acabou — fechar sidebar e permitir unmount
       setSidebarOpen(false);
     }
   }, []);
 
-  // Não mostrar se dismissed ou sem dados
-  // MAS manter montado durante a celebração (isCelebrating) mesmo que allCompleted
-  if (isDismissed || !checklist || !establishmentId) {
+  const handleStateChange = useCallback((state: {
+    completedCount: number;
+    totalSteps: number;
+    allCompleted: boolean;
+    isDismissed: boolean;
+  }) => {
+    setChecklistState(state);
+  }, []);
+
+  // Não mostrar se sem establishment
+  if (!establishmentId) {
     return null;
   }
 
-  if (adjustedAllCompleted && !isCelebrating) {
-    return null;
-  }
+  // Verificar se deve esconder (dismissed ou allCompleted sem celebração)
+  const shouldHideFAB = checklistState?.isDismissed || (checklistState?.allCompleted && !isCelebrating);
 
   return (
     <>
-      {/* FAB Button - só aparece quando a sidebar está fechada E não está a celebrar */}
-      {!sidebarOpen && !isCelebrating && (
+      {/* FAB Button - só aparece quando a sidebar está fechada, não está a celebrar, e o checklist não está completo/dismissed */}
+      {!sidebarOpen && !isCelebrating && !shouldHideFAB && checklistState && (
         <button
           onClick={() => setSidebarOpen(true)}
           className={cn(
@@ -110,7 +102,7 @@ export function OnboardingFAB() {
           {/* Badge de progresso */}
           <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center">
             <span className="text-[10px] font-bold text-red-600">
-              {adjustedCompletedCount}/{checklist.totalSteps}
+              {checklistState.completedCount}/{checklistState.totalSteps}
             </span>
           </div>
 
@@ -118,7 +110,7 @@ export function OnboardingFAB() {
         </button>
       )}
 
-      {/* WelcomeChecklist sidebar */}
+      {/* WelcomeChecklist sidebar - SEMPRE montado enquanto houver establishmentId */}
       <WelcomeChecklist
         establishmentId={establishmentId}
         establishmentName={establishment?.name}
@@ -126,6 +118,7 @@ export function OnboardingFAB() {
         onExternalClose={closeSidebar}
         onRequestOpen={handleRequestOpen}
         onCelebrationChange={handleCelebrationChange}
+        onStateChange={handleStateChange}
         hideMinimizedBar
       />
     </>
