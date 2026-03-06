@@ -835,6 +835,18 @@ export default function Catalogo() {
     }
   }, [establishment]);
 
+  // Auto-open new category dialog when coming from onboarding
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('action') === 'new-category') {
+      setCategoryDialogOpen(true);
+      // Clean up the URL without triggering navigation
+      const url = new URL(window.location.href);
+      url.searchParams.delete('action');
+      window.history.replaceState({}, '', url.pathname);
+    }
+  }, []);
+
   // DnD Sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {

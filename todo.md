@@ -8176,3 +8176,4 @@
 - [x] Sidebar Primeiros Passos: Garantir reabertura automática sempre que um novo passo é concluído
 - [x] Animação de desbloqueio: scale + glow vermelho no próximo passo ao concluir um passo
 - [x] Celebração na sidebar: tela de parabéns com Trophy, degradê festivo, confetis e botão "Ir para o Dashboard" ao concluir todos os passos (auto-dismiss 12s)
+- [x] Onboarding: Ao clicar "Começar este passo" no passo "Criar primeira categoria", abrir automaticamente o modal de Nova Categoria na página Catálogo
