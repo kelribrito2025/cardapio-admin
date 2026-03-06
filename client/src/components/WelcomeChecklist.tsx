@@ -36,6 +36,7 @@ const stepConfig: Record<string, {
   subtitle: string;
   description: string;
   whyImportant: string[];
+  buttonLabel: string;
 }> = {
   category: {
     icon: FolderPlus,
@@ -46,6 +47,7 @@ const stepConfig: Record<string, {
       "Organiza seus produtos de forma profissional",
       "Melhora a experiência de compra",
     ],
+    buttonLabel: "Criar Categoria",
   },
   products: {
     icon: ShoppingBag,
@@ -56,6 +58,7 @@ const stepConfig: Record<string, {
       "Fotos atraentes aumentam as vendas",
       "Descrições claras reduzem dúvidas",
     ],
+    buttonLabel: "Adicionar Produto",
   },
   business_hours: {
     icon: Clock,
@@ -66,6 +69,7 @@ const stepConfig: Record<string, {
       "Evita pedidos fora do horário de atendimento",
       "Automatiza a abertura e fechamento do cardápio",
     ],
+    buttonLabel: "Configurar Horários",
   },
   whatsapp: {
     icon: MessageCircle,
@@ -76,6 +80,7 @@ const stepConfig: Record<string, {
       "Automatiza o processo de atendimento",
       "Reduz erros em pedidos",
     ],
+    buttonLabel: "Conectar WhatsApp",
   },
   test_order: {
     icon: ClipboardCheck,
@@ -86,6 +91,7 @@ const stepConfig: Record<string, {
       "Identifica problemas antes dos clientes",
       "Você vê exatamente o que o cliente verá",
     ],
+    buttonLabel: "Fazer Pedido Teste",
   },
   photos: {
     icon: Camera,
@@ -96,6 +102,7 @@ const stepConfig: Record<string, {
       "Clientes reconhecem sua marca facilmente",
       "Destaca seu restaurante da concorrência",
     ],
+    buttonLabel: "Adicionar Fotos",
   },
 };
 
@@ -556,7 +563,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName }: Welcome
                         }}
                         className="w-full h-11 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-sm shadow-red-500/20"
                       >
-                        Começar este passo
+                        {cfg?.buttonLabel || "Começar este passo"}
                       </button>
                     </div>
                   )}
