@@ -94,7 +94,7 @@ export function WhatsAppDisconnectedBanner() {
   return (
     <div
       className={cn(
-        "relative mx-3 lg:mx-6 mb-3 lg:mb-4 mt-0 rounded-xl overflow-hidden",
+        "relative mx-3 lg:mx-6 mb-3 lg:mb-4 mt-0 rounded-xl overflow-hidden max-w-[67%]",
         "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg",
         isHiding
           ? "animate-out fade-out slide-out-to-bottom-2 duration-300"

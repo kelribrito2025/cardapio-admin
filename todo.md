@@ -8215,3 +8215,4 @@
 - [x] Bug: WhatsApp ainda demora a atualizar no checklist após conexão (invalidate pode não estar funcionando)
 - [x] Bug: Celebração com confetti ainda não aparece ao completar todos os passos do onboarding
 - [x] Remover auto-dismiss de 12s da celebração do onboarding — utilizador fecha manualmente pelo botão ou X
+- [x] Reduzir largura da barra de WhatsApp desconectado em 33%
