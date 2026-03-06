@@ -1628,15 +1628,12 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
             {/* Header do Carrinho */}
             <div className="border-b border-border/50 bg-muted/40">
               {/* Título do Carrinho */}
-              <div className="px-4 pt-3 pb-2">
+              <div className="px-4 pt-4 pb-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
-                      <ShoppingBag className="w-4 h-4 text-red-500" />
-                    </div>
+                  <div className="flex items-center gap-3">
                     <div>
-                      <h3 className="text-lg font-bold text-foreground leading-tight">Mesa {tableDisplayName}</h3>
-                      <p className="text-xs text-muted-foreground leading-tight mt-0.5">
+                      <h3 className="text-xl font-bold text-foreground leading-tight">Mesa {tableDisplayName}</h3>
+                      <p className="text-sm text-muted-foreground leading-tight mt-0.5">
                         {cart.length === 0
                           ? 'Adicione produtos para iniciar um pedido.'
                           : 'Revise os itens e envie para a comanda.'}
@@ -1647,7 +1644,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     const totalItems = cart.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
                     return (
                       <span className={cn(
-                        "text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0",
+                        "text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap shrink-0",
                         totalItems > 0
                           ? "bg-red-500 text-white"
                           : "bg-muted text-muted-foreground"
@@ -1659,30 +1656,30 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                 </div>
               </div>
               {/* Abas: Mesa (Consumo) e Comanda - Pill selector com sliding animation */}
-              <div className="relative flex items-center bg-background rounded-lg p-0.5 mx-4 mb-2">
+              <div className="relative flex items-center bg-background rounded-xl p-1 mx-4 mb-3">
                 {/* Sliding pill indicator */}
                 <div
                   className={cn(
-                    "absolute top-0.5 bottom-0.5 rounded-md shadow-sm transition-all duration-300 ease-in-out",
+                    "absolute top-1 bottom-1 rounded-lg shadow-sm transition-all duration-300 ease-in-out",
                     isCurrentTableReserved ? "bg-blue-500" : "bg-red-500"
                   )}
                   style={{
-                    width: 'calc((100% - 4px) / 2)',
+                    width: 'calc((100% - 8px) / 2)',
                     left: selectedTab === 'consumo'
-                      ? '2px'
-                      : 'calc((100% - 4px) / 2 + 2px)',
+                      ? '4px'
+                      : 'calc((100% - 8px) / 2 + 4px)',
                   }}
                 />
                 <button
                   onClick={() => setSelectedTab('consumo')}
                   className={cn(
-                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300 flex items-center justify-center gap-1.5",
+                    "relative z-10 flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-300 flex items-center justify-center gap-2",
                     selectedTab === 'consumo'
                       ? "text-white"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <UtensilsCrossed className="w-3 h-3" />
+                  <UtensilsCrossed className="w-4 h-4" />
                   Mesa {tableDisplayName}
                 </button>
                 <button
@@ -1690,7 +1687,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     if (tabId) setSelectedTab('comanda');
                   }}
                   className={cn(
-                    "relative z-10 flex-1 px-3 py-1 text-xs font-medium rounded-md transition-colors duration-300 flex items-center justify-center gap-1.5",
+                    "relative z-10 flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-300 flex items-center justify-center gap-2",
                     !tabId
                       ? "text-muted-foreground/50 cursor-not-allowed opacity-50"
                       : selectedTab === 'comanda'
@@ -1699,7 +1696,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                   )}
                   title={!tabId ? "Mesa sem comanda aberta" : "Ver itens da comanda"}
                 >
-                  <Receipt className="w-3 h-3" />
+                  <Receipt className="w-4 h-4" />
                   Comanda
                 </button>
               </div>
