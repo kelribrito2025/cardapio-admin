@@ -8217,3 +8217,5 @@
 - [x] Remover auto-dismiss de 12s da celebração do onboarding — utilizador fecha manualmente pelo botão ou X
 - [x] Reduzir largura da barra de WhatsApp desconectado em 33%
 - [x] Bug: Passo "Conectar WhatsApp" do onboarding só atualiza ao navegar para outra página — deve atualizar imediatamente após conexão
+- [x] Onboarding: Passo "Adicionar primeiros produtos" deve abrir directamente a sidebar de Novo Produto ao clicar no botão (já implementado via ?action=new-product)
+- [x] Bug: Passo "Adicionar foto e capa" do onboarding não redireciona para a aba de estabelecimento nas configurações
