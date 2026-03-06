@@ -1342,8 +1342,8 @@ export const appRouter = router({
           { id: 'products', label: 'Adicionar primeiros produtos', completed: hasProducts, href: '/catalogo?action=new-product' },
           { id: 'business_hours', label: 'Configurar atendimento', completed: hasBusinessHours, href: '/configuracoes?section=atendimento' },
           { id: 'whatsapp', label: 'Conectar WhatsApp', completed: hasWhatsappConnected, href: '/pedidos?connectWhatsapp=true' },
-          { id: 'test_order', label: 'Testar um pedido', completed: hasOrders, href: '/pdv' },
           { id: 'photos', label: 'Adicionar foto e capa', completed: hasPhotos, href: '/configuracoes' },
+          { id: 'test_order', label: 'Testar um pedido', completed: hasOrders, href: '/pdv' },
         ];
 
         const completedCount = steps.filter(s => s.completed).length;
