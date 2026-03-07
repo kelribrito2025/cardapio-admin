@@ -426,7 +426,7 @@ export default function StoryViewer({
               <button
                 onClick={handleActionClick}
                 onPointerDown={(e) => e.stopPropagation()}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white text-black font-semibold text-sm shadow-lg active:scale-[0.98] transition-transform pointer-events-auto"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-red-600 text-white font-semibold text-sm shadow-lg shadow-red-600/40 active:scale-[0.98] transition-transform pointer-events-auto animate-pulse"
               >
                 <ChevronUp className="h-4 w-4" />
                 {actionButtonLabel}

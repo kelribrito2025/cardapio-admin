@@ -8315,3 +8315,4 @@
 - [x] Bug: Ao navegar para o 2o story, barra de progresso 100% — corrigido com manualNavRef flag para evitar que cleanup do timer acumule elapsed ao navegar
 - [x] Bug: Ao navegar para o 2o story, barra de progresso 100% — corrigido com manualNavRef flag
 - [x] Reordenar menu sidebar: Stories acima de Cupons (Stories, Cupons, Campanhas)
+- [x] Stories: Botão de ação (Ver produto / Pedir agora) no menu público com cor vermelha e animação pulsante
