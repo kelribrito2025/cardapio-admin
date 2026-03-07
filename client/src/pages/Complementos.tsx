@@ -44,6 +44,7 @@ import {
   Package,
   AlertTriangle,
   HelpCircle,
+  FileText,
 } from "lucide-react";
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
@@ -557,6 +558,9 @@ function SortableComplementItem({
               >
                 Editar
               </button>
+              {item.description && (
+                <FileText className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
+              )}
               {/* Badges */}
               {isExclusive && (
                 <Tooltip>

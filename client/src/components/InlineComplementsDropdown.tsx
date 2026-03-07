@@ -19,6 +19,7 @@ import {
   Check,
   MoreVertical,
   Package,
+  FileText,
 } from "lucide-react";
 import {
   Tooltip,
@@ -682,6 +683,9 @@ function SortableInlineItem({
               >
                 Editar
               </button>
+              {item.description && (
+                <FileText className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
+              )}
               {/* Badges */}
               {item.badgeText && (
                 <Badge variant="secondary" className="bg-red-100 text-red-600 border-red-200 animate-pulse text-[9px] px-1 py-0 h-4 flex-shrink-0">
