@@ -8292,3 +8292,4 @@
 - [x] Stories: Corrigir espaçamentos da página para ficar no padrão das demais páginas admin
 - [x] Substituir ícone de Stories de CircleDot para Clapperboard na sidebar e na página (ícone azul na página)
 - [x] Bug: Borda dos stories no menu público não muda para cinza após visualizar todos (deve persistir com localStorage)
+- [x] Stories: Melhorar long press para pausar (distinguir tap rápido de press longo, igual Instagram)

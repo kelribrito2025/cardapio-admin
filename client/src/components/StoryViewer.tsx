@@ -33,6 +33,7 @@ function timeAgo(date: Date | string): string {
 }
 
 const STORY_DURATION = 5000; // 5 segundos
+const LONG_PRESS_THRESHOLD = 200; // ms — acima disso é long press (pausa), abaixo é tap (navegar)
 
 // Gerar ou recuperar sessionId para analytics de views
 function getOrCreateSessionId(): string {
@@ -63,6 +64,11 @@ export default function StoryViewer({
   const elapsedRef = useRef<number>(0);
   const viewedStoriesRef = useRef<Set<number>>(new Set());
   const allViewedCalledRef = useRef(false);
+
+  // Long press detection refs
+  const pressStartTimeRef = useRef<number>(0);
+  const pressStartXRef = useRef<number>(0);
+  const isLongPressRef = useRef(false);
 
   const sessionId = useMemo(() => getOrCreateSessionId(), []);
   const recordViewMutation = trpc.publicStories.recordView.useMutation();
@@ -164,10 +170,39 @@ export default function StoryViewer({
     };
   }, []);
 
-  const handleTap = (e: React.MouseEvent | React.TouchEvent) => {
+  // --- Lógica de interação: Long Press = Pausar, Tap Rápido = Navegar ---
+  // Funciona igual ao Instagram:
+  // - Toque rápido (<200ms): navega (esquerda = anterior, direita = próximo)
+  // - Toque longo (>200ms): pausa o story, ao soltar retoma sem navegar
+
+  const getClientX = (e: React.MouseEvent | React.TouchEvent): number => {
+    if ("touches" in e) {
+      return e.touches[0]?.clientX ?? e.changedTouches[0]?.clientX ?? 0;
+    }
+    return e.clientX;
+  };
+
+  const handlePressStart = (e: React.MouseEvent | React.TouchEvent) => {
+    pressStartTimeRef.current = Date.now();
+    pressStartXRef.current = getClientX(e);
+    isLongPressRef.current = false;
+    setPaused(true);
+  };
+
+  const handlePressEnd = (e: React.MouseEvent | React.TouchEvent) => {
+    const pressDuration = Date.now() - pressStartTimeRef.current;
+    setPaused(false);
+
+    // Se foi long press (>200ms), apenas retoma — não navega
+    if (pressDuration >= LONG_PRESS_THRESHOLD) {
+      isLongPressRef.current = true;
+      return;
+    }
+
+    // Tap rápido — navegar baseado na posição do toque
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const clientX = "touches" in e ? e.changedTouches[0].clientX : e.clientX;
-    const tapX = clientX - rect.left;
+    const endX = "changedTouches" in e ? e.changedTouches[0]?.clientX ?? 0 : (e as React.MouseEvent).clientX;
+    const tapX = endX - rect.left;
     const halfWidth = rect.width / 2;
 
     if (tapX < halfWidth) {
@@ -177,18 +212,34 @@ export default function StoryViewer({
     }
   };
 
+  // Prevenir onClick nativo para evitar dupla navegação
+  const handleClick = (e: React.MouseEvent) => {
+    // Se foi long press, o handlePressEnd já tratou — ignorar o click
+    // Se foi tap rápido, o handlePressEnd já navegou — ignorar o click também
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   if (!currentStory) return null;
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
       {/* Container do story */}
       <div
-        className="relative w-full h-full max-w-[480px] mx-auto flex flex-col"
-        onClick={handleTap}
-        onMouseDown={() => setPaused(true)}
-        onMouseUp={() => setPaused(false)}
-        onTouchStart={() => setPaused(true)}
-        onTouchEnd={() => setPaused(false)}
+        className="relative w-full h-full max-w-[480px] mx-auto flex flex-col select-none"
+        onClick={handleClick}
+        onMouseDown={handlePressStart}
+        onMouseUp={handlePressEnd}
+        onMouseLeave={() => {
+          // Se o mouse sair da área enquanto pressionado, retomar
+          if (paused) setPaused(false);
+        }}
+        onTouchStart={handlePressStart}
+        onTouchEnd={handlePressEnd}
+        onTouchCancel={() => {
+          // Se o touch for cancelado, retomar
+          if (paused) setPaused(false);
+        }}
       >
         {/* Imagem de fundo */}
         <div className="absolute inset-0 flex items-center justify-center bg-black">
@@ -261,6 +312,8 @@ export default function StoryViewer({
                 e.stopPropagation();
                 onClose();
               }}
+              onMouseDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
               className="p-1.5 rounded-full hover:bg-white/10 transition-colors flex-shrink-0"
             >
               <X className="h-5 w-5 text-white" />
