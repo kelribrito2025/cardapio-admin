@@ -48,6 +48,7 @@ import {
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn, capitalizeFirst } from "@/lib/utils";
@@ -155,27 +156,27 @@ function ItemExpandedDetails({
       {/* Description Section */}
       <div className="bg-muted/30 rounded-lg p-3 space-y-2">
         <h6 className="font-medium text-xs flex items-center gap-1.5">
-          <span className="text-blue-500 text-sm">&#9679;</span>
-          Descri\u00e7\u00e3o
+          <Pencil className="h-3.5 w-3.5" />
+          Descrição do complemento
         </h6>
         <p className="text-xs text-muted-foreground">
-          Descri\u00e7\u00e3o opcional exibida no menu p\u00fablico abaixo do nome do complemento.
+          Texto descritivo exibido abaixo do nome do complemento no menu público (opcional).
         </p>
-        <div className="flex items-center gap-2 flex-wrap">
-          <Input
-            placeholder="Ex: Porção de 200g, Molho especial da casa..."
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="max-w-[300px] h-8 text-xs"
-            maxLength={255}
-          />
+        <Textarea
+          placeholder="Ex: Molho artesanal feito com tomates frescos e manjericão..."
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="text-xs min-h-[60px] resize-none"
+          rows={2}
+        />
+        <div className="flex items-center gap-2">
           <Button
             size="sm"
-            className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white"
+            className="h-8 text-xs bg-red-700 hover:bg-red-800 text-white"
             onClick={handleSaveDescription}
             disabled={isUpdating}
           >
-            {isUpdating ? "Salvando..." : "Salvar"}
+            {isUpdating ? "Salvando..." : "Salvar descrição"}
           </Button>
           {item.description && (
             <Button
@@ -185,7 +186,7 @@ function ItemExpandedDetails({
               onClick={() => {
                 setDescription("");
                 onUpdateItem(item.id, { description: null });
-                toast.success("Descri\u00e7\u00e3o removida");
+                toast.success("Descrição removida");
               }}
               disabled={isUpdating}
             >

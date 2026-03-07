@@ -8255,3 +8255,4 @@
 - [x] Menu Público: Complementos sem descrição devem manter botões +/- na linha do nome (layout original); só com descrição usar segunda linha
 - [x] Grupos: Clicar no card do complemento deve abrir o dropdown de detalhes (igual à setinha)
 - [x] Complementos: Clicar no card do complemento na página /complementos deve abrir o dropdown de detalhes (igual à setinha)
+- [x] Complementos: Igualar visual do campo de descrição na página /complementos ao visual da /catalogo (textarea grande, título com ícone de lápis, botão vermelho, corrigir caracteres unicode)
