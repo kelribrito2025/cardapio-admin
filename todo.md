@@ -8264,3 +8264,7 @@
 - [x] Sidebar desktop do WelcomeChecklist: Aplicar visual do card mobile Bem-vindo ao Mindi (header limpo, barra de progresso, ícones suaves) — apenas visual
 - [x] Redesenhar página de Parabéns (celebration) no estilo limpo do Bem-vindo ao Mindi — sem gradiente pesado, fundo claro, ícones suaves
 - [x] Celebration: Transformar modal de Parabéns de sidebar/card para Dialog centralizado na tela (desktop e mobile)
+- [x] Celebration: Atualizar texto do modal com lista de benefícios (compartilhar cardápio, receber pedidos, gerenciar pedidos)
+- [x] Celebration: Substituir barra de progresso verde por texto "Setup completo — 7 de 7 etapas concluídas"
+- [x] Celebration: Adicionar botão "Compartilhar Cardápio" com ícone de compartilhar abaixo do botão Dashboard
+- [x] Celebration: Criar modal de compartilhamento overlay com link do cardápio, botão Copiar link e botão Compartilhar no WhatsApp

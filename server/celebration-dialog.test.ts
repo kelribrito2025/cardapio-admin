@@ -3,123 +3,148 @@ import { readFileSync } from "fs";
 import { join } from "path";
 
 /**
- * Tests to verify that the celebration/congratulations modal
- * uses a centered Dialog instead of a sidebar Sheet.
- * 
- * The celebration should:
- * 1. Use Dialog component (not Sheet) for the celebration view
- * 2. Be unified for both mobile and desktop (single Dialog)
- * 3. Include confetti, progress bar, message, and CTA button
- * 4. Not allow closing by clicking outside (onInteractOutside preventDefault)
+ * Tests to verify the celebration modal:
+ * 1. Uses Dialog component (not Sheet) for the celebration view
+ * 2. Unified for both mobile and desktop (single Dialog)
+ * 3. Updated text with benefits list instead of old message
+ * 4. "Setup completo" text instead of progress bar
+ * 5. "Compartilhar Cardápio" button with share modal
+ * 6. Share modal with copy link and WhatsApp share
  */
 
 const welcomeChecklistPath = join(__dirname, "../client/src/components/WelcomeChecklist.tsx");
 const source = readFileSync(welcomeChecklistPath, "utf-8");
 
-describe("Celebration modal uses Dialog instead of Sheet", () => {
+// Helper: extract the celebration section (from CELEBRATION CONTENT marker to next top-level return)
+function getCelebrationSection(): string {
+  const celebrationStart = source.indexOf("// ==================== CELEBRATION CONTENT ====================");
+  const ifIdx = source.indexOf("if (showCelebration)", celebrationStart);
+  const returnInIf = source.indexOf("return (", ifIdx);
+  const nextReturn = source.indexOf("  return (", returnInIf + 10);
+  return source.substring(celebrationStart, nextReturn);
+}
+
+describe("Celebration modal structure", () => {
   it("should import Dialog components", () => {
-    expect(source).toContain("import {");
+    expect(source).toContain('from "@/components/ui/dialog"');
     expect(source).toContain("Dialog,");
     expect(source).toContain("DialogContent,");
-    expect(source).toContain("DialogTitle,");
-    expect(source).toContain("DialogDescription,");
-    expect(source).toContain('from "@/components/ui/dialog"');
   });
 
-  it("should use Dialog in celebration section, not Sheet", () => {
-    // Extract the celebration section
-    const celebrationStart = source.indexOf("// ==================== CELEBRATION CONTENT ====================");
-    const celebrationEnd = source.indexOf("return (", source.indexOf("return (", celebrationStart) + 1);
-    
-    expect(celebrationStart).toBeGreaterThan(-1);
-    
-    // The celebration section should contain Dialog
-    const celebrationSection = source.substring(celebrationStart, celebrationStart + 3000);
-    expect(celebrationSection).toContain("<Dialog");
-    expect(celebrationSection).toContain("<DialogContent");
-    expect(celebrationSection).toContain("<DialogTitle");
-    expect(celebrationSection).toContain("<DialogDescription");
-  });
-
-  it("should NOT use Sheet in celebration section", () => {
-    // Find the celebration block - ends at the next return statement (the normal checklist)
-    const celebrationStart = source.indexOf("// ==================== CELEBRATION CONTENT ====================");
-    // Find the end of celebration by looking for the next main section marker
-    const celebrationEnd = source.indexOf("// ==================== MOBILE", celebrationStart);
-    // If marker not found, use a large range
-    const endIdx = celebrationEnd > celebrationStart ? celebrationEnd : celebrationStart + 5000;
-    
-    expect(celebrationStart).toBeGreaterThan(-1);
-    
-    const celebrationSection = source.substring(celebrationStart, endIdx);
-    
-    // Should NOT contain Sheet components in the celebration section
-    expect(celebrationSection).not.toContain("<Sheet ");
-    expect(celebrationSection).not.toContain("<SheetContent");
+  it("should use Dialog in celebration, not Sheet", () => {
+    const section = getCelebrationSection();
+    expect(section).toContain("<Dialog");
+    expect(section).toContain("<DialogContent");
+    expect(section).not.toContain("<Sheet ");
+    expect(section).not.toContain("<SheetContent");
   });
 
   it("should have a single unified Dialog for both mobile and desktop", () => {
-    const celebrationStart = source.indexOf("// ==================== CELEBRATION CONTENT ====================");
-    // Find the if (showCelebration) block and its return
-    const ifIdx = source.indexOf("if (showCelebration)", celebrationStart);
-    const returnInIf = source.indexOf("return (", ifIdx);
-    // The celebration block ends at the closing of the if block (next top-level return)
-    const nextReturn = source.indexOf("  return (", returnInIf + 10);
-    
-    expect(ifIdx).toBeGreaterThan(celebrationStart);
-    expect(nextReturn).toBeGreaterThan(returnInIf);
-    
-    const celebrationSection = source.substring(returnInIf, nextReturn);
-    
-    // Should have exactly one Dialog (unified for mobile + desktop)
-    const dialogCount = (celebrationSection.match(/<Dialog /g) || []).length;
-    expect(dialogCount).toBe(1);
-    
+    const section = getCelebrationSection();
+    // Count the celebration Dialog (not the share modal)
+    const dialogOpenTags = section.match(/<Dialog /g) || [];
+    // Should have 2 Dialogs: celebration + share modal
+    expect(dialogOpenTags.length).toBe(2);
     // Should NOT have responsive breakpoint classes that split mobile/desktop
-    expect(celebrationSection).not.toContain("hidden md:block");
+    expect(section).not.toContain("hidden md:block");
   });
 
   it("should prevent closing by clicking outside", () => {
-    const celebrationStart = source.indexOf("// ==================== CELEBRATION CONTENT ====================");
-    const celebrationSection = source.substring(celebrationStart, celebrationStart + 3000);
-    
-    expect(celebrationSection).toContain("onInteractOutside");
-    expect(celebrationSection).toContain("preventDefault");
+    const section = getCelebrationSection();
+    expect(section).toContain("onInteractOutside");
+    expect(section).toContain("preventDefault");
+  });
+});
+
+describe("Celebration modal text content", () => {
+  it("should have 'Setup completo' text instead of progress bar", () => {
+    const section = getCelebrationSection();
+    expect(section).toContain("Setup completo");
+    expect(section).toContain("etapas concluídas");
   });
 
-  it("should include Confetti component", () => {
-    const celebrationStart = source.indexOf("// ==================== CELEBRATION CONTENT ====================");
-    const celebrationSection = source.substring(celebrationStart, celebrationStart + 3000);
-    
-    expect(celebrationSection).toContain("<Confetti");
+  it("should NOT have the old progress bar", () => {
+    const section = getCelebrationSection();
+    // The old progress bar had "Todos os passos concluídos" and a green gradient bar
+    expect(section).not.toContain("Todos os passos concluídos");
+    // Should not have the progress bar div
+    expect(section).not.toContain("from-green-500 to-green-400 rounded-full w-full");
   });
 
-  it("should include PartyPopper icon", () => {
-    const celebrationStart = source.indexOf("// ==================== CELEBRATION CONTENT ====================");
-    const celebrationSection = source.substring(celebrationStart, celebrationStart + 3000);
-    
-    expect(celebrationSection).toContain("<PartyPopper");
+  it("should have benefits list", () => {
+    const section = getCelebrationSection();
+    expect(section).toContain("Agora você já pode:");
+    expect(section).toContain("Compartilhar seu cardápio");
+    expect(section).toContain("Receber pedidos online");
+    expect(section).toContain("Gerenciar pedidos no painel");
   });
 
-  it("should include progress bar showing all steps completed", () => {
-    const celebrationStart = source.indexOf("// ==================== CELEBRATION CONTENT ====================");
-    const celebrationSection = source.substring(celebrationStart, celebrationStart + 5000);
-    
-    expect(celebrationSection).toContain("Todos os passos concluídos");
-    expect(celebrationSection).toContain("from-green-500");
+  it("should still have PartyPopper icon and Parabéns title", () => {
+    const section = getCelebrationSection();
+    expect(section).toContain("<PartyPopper");
+    expect(section).toContain("Parabéns!");
   });
 
-  it("should include 'Ir para o Dashboard' button", () => {
-    const celebrationStart = source.indexOf("// ==================== CELEBRATION CONTENT ====================");
-    const celebrationSection = source.substring(celebrationStart, celebrationStart + 5000);
-    
-    expect(celebrationSection).toContain("Ir para o Dashboard");
-    expect(celebrationSection).toContain("<Rocket");
+  it("should have 'Ir para o Dashboard' button", () => {
+    const section = getCelebrationSection();
+    expect(section).toContain("Ir para o Dashboard");
+    expect(section).toContain("<Rocket");
+  });
+});
+
+describe("Share functionality", () => {
+  it("should have 'Compartilhar Cardápio' button", () => {
+    const section = getCelebrationSection();
+    expect(section).toContain("Compartilhar Cardápio");
+    expect(section).toContain("setShowShareModal(true)");
   });
 
-  it("should have handleDismissCelebration function", () => {
+  it("should have Share2 icon for the share button", () => {
+    const section = getCelebrationSection();
+    expect(section).toContain("<Share2");
+  });
+
+  it("should have a share modal with Dialog", () => {
+    const section = getCelebrationSection();
+    expect(section).toContain("showShareModal");
+    expect(section).toContain("Compartilhar Cardápio");
+  });
+
+  it("should have copy link functionality", () => {
+    const section = getCelebrationSection();
+    expect(section).toContain("Copiar link");
+    expect(section).toContain("handleCopyLink");
+    expect(section).toContain("navigator.clipboard.writeText");
+  });
+
+  it("should have WhatsApp share functionality", () => {
+    const section = getCelebrationSection();
+    expect(section).toContain("Compartilhar no WhatsApp");
+    expect(section).toContain("handleShareWhatsApp");
+    expect(section).toContain("wa.me");
+  });
+
+  it("should construct menu URL from menuSlug", () => {
+    expect(source).toContain("v2.mindi.com.br/menu/");
+    expect(source).toContain("menuSlug");
+  });
+
+  it("should show the menu link in the share modal", () => {
+    const section = getCelebrationSection();
+    expect(section).toContain("{menuUrl}");
+    expect(section).toContain("<Link2");
+  });
+
+  it("should show 'Copiado!' feedback after copying", () => {
+    const section = getCelebrationSection();
+    expect(section).toContain("linkCopied");
+    expect(section).toContain("Copiado!");
+  });
+});
+
+describe("handleDismissCelebration", () => {
+  it("should exist and set dismissed in localStorage", () => {
     expect(source).toContain("handleDismissCelebration");
-    // Should set dismissed in localStorage
     expect(source).toContain('localStorage.setItem(dismissedKey, "true")');
   });
 });
