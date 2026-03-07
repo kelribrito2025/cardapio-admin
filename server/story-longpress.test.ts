@@ -2,77 +2,93 @@ import { describe, it, expect } from "vitest";
 import fs from "fs";
 import path from "path";
 
-describe("Story Long Press to Pause (igual Instagram)", () => {
+describe("Story Pointer Events Navigation (mobile + desktop)", () => {
   const viewerPath = path.resolve(__dirname, "../client/src/components/StoryViewer.tsx");
   const content = fs.readFileSync(viewerPath, "utf-8");
 
   it("should define LONG_PRESS_THRESHOLD constant", () => {
     expect(content).toContain("LONG_PRESS_THRESHOLD");
-    // Should be 500ms for better mobile compatibility
-    expect(content).toMatch(/LONG_PRESS_THRESHOLD\s*=\s*500/);
+    expect(content).toMatch(/LONG_PRESS_THRESHOLD\s*=\s*400/);
   });
 
-  it("should have pressStartTimeRef for tracking press duration", () => {
-    expect(content).toContain("pressStartTimeRef");
-    expect(content).toContain("useRef<number>(0)");
+  it("should use Pointer Events instead of separate touch/mouse handlers", () => {
+    // Must use onPointerDown/onPointerUp
+    expect(content).toContain("onPointerDown={handlePointerDown}");
+    expect(content).toContain("onPointerUp={handlePointerUp}");
+    expect(content).toContain("onPointerCancel={handlePointerCancel}");
+    // Must NOT have separate touch/mouse handlers on the container
+    expect(content).not.toContain("onTouchStart={handleTouchStart}");
+    expect(content).not.toContain("onTouchEnd={handleTouchEnd}");
+    expect(content).not.toContain("onMouseDown={handleMouseDown}");
+    expect(content).not.toContain("onMouseUp={handleMouseUp}");
   });
 
-  it("should have isPressActiveRef to track active press state", () => {
-    expect(content).toContain("isPressActiveRef");
+  it("should track active pointer ID to prevent multi-touch issues", () => {
+    expect(content).toContain("activePointerIdRef");
+    expect(content).toContain("e.pointerId");
   });
 
-  it("should have separate handleTouchStart for mobile", () => {
-    expect(content).toContain("handleTouchStart");
-    expect(content).toContain("pressStartTimeRef.current = Date.now()");
+  it("should have debounce mechanism to prevent double navigation", () => {
+    expect(content).toContain("lastNavTimeRef");
+    expect(content).toContain("NAV_DEBOUNCE");
+  });
+
+  it("should use setPointerCapture for reliable pointer tracking", () => {
+    expect(content).toContain("setPointerCapture");
+  });
+
+  it("should have handlePointerDown that records start time and pauses", () => {
+    expect(content).toContain("handlePointerDown");
+    expect(content).toContain("pointerStartTimeRef.current = Date.now()");
     expect(content).toContain("setPaused(true)");
   });
 
-  it("should have separate handleTouchEnd for mobile", () => {
-    expect(content).toContain("handleTouchEnd");
+  it("should have handlePointerUp that checks press duration", () => {
+    expect(content).toContain("handlePointerUp");
     expect(content).toContain("LONG_PRESS_THRESHOLD");
     expect(content).toContain("setPaused(false)");
   });
 
   it("should not navigate on long press release (>= threshold)", () => {
-    const handleTouchEndStart = content.indexOf("handleTouchEnd");
-    const handleTouchEndSection = content.substring(handleTouchEndStart, handleTouchEndStart + 800);
-    expect(handleTouchEndSection).toContain(">= LONG_PRESS_THRESHOLD");
-    expect(handleTouchEndSection).toContain("return");
+    const handlePointerUpStart = content.indexOf("handlePointerUp");
+    const section = content.substring(handlePointerUpStart, handlePointerUpStart + 800);
+    expect(section).toContain(">= LONG_PRESS_THRESHOLD");
+    expect(section).toContain("return");
   });
 
   it("should navigate on quick tap based on tap position", () => {
-    const handleTouchEndStart = content.indexOf("handleTouchEnd");
-    const handleTouchEndSection = content.substring(handleTouchEndStart, handleTouchEndStart + 800);
-    expect(handleTouchEndSection).toContain("halfWidth");
-    expect(handleTouchEndSection).toContain("goPrev()");
-    expect(handleTouchEndSection).toContain("goNext()");
+    const handlePointerUpStart = content.indexOf("handlePointerUp");
+    const section = content.substring(handlePointerUpStart, handlePointerUpStart + 800);
+    expect(section).toContain("halfWidth");
+    expect(section).toContain("goPrev()");
+    expect(section).toContain("goNext()");
   });
 
-  it("should use separate handlers for mouse (desktop) events", () => {
-    expect(content).toContain("onMouseDown={handleMouseDown}");
-    expect(content).toContain("onMouseUp={handleMouseUp}");
+  it("should use touch-action: none to prevent browser default behaviors", () => {
+    expect(content).toContain('touchAction: "none"');
   });
 
-  it("should use separate handlers for touch (mobile) events", () => {
-    expect(content).toContain("onTouchStart={handleTouchStart}");
-    expect(content).toContain("onTouchEnd={handleTouchEnd}");
-  });
-
-  it("should have touch-none class to prevent browser default touch behaviors", () => {
-    expect(content).toContain("touch-none");
-  });
-
-  it("should handle mouse leave and touch cancel to resume", () => {
-    expect(content).toContain("onMouseLeave");
-    expect(content).toContain("onTouchCancel");
-  });
-
-  it("should stop propagation on close button to prevent pause/navigation", () => {
-    expect(content).toContain('onMouseDown={(e) => e.stopPropagation()}');
-    expect(content).toContain('onTouchStart={(e) => e.stopPropagation()}');
-  });
-
-  it("should have select-none class to prevent text selection during long press", () => {
+  it("should have select-none class to prevent text selection", () => {
     expect(content).toContain("select-none");
+  });
+
+  it("should use updater function in goNext to avoid stale closure", () => {
+    expect(content).toContain("setCurrentIndex((prev)");
+    expect(content).toContain("prev < stories.length - 1");
+  });
+
+  it("should stop propagation on close button pointer events", () => {
+    expect(content).toContain('onPointerDown={(e) => e.stopPropagation()}');
+  });
+
+  it("should have pointer-events-none on overlays and pointer-events-auto on buttons", () => {
+    // Overlays should not block touches
+    const overlayMatches = content.match(/pointer-events-none/g);
+    expect(overlayMatches).toBeTruthy();
+    expect(overlayMatches!.length).toBeGreaterThanOrEqual(3);
+    // Buttons should be clickable
+    const buttonMatches = content.match(/pointer-events-auto/g);
+    expect(buttonMatches).toBeTruthy();
+    expect(buttonMatches!.length).toBeGreaterThanOrEqual(2);
   });
 });

@@ -8311,3 +8311,4 @@
 - [x] Bug: No mobile, tocar na direita do story fecha em vez de avançar para o próximo (overlays bloqueavam toques — corrigido com pointer-events-none)
 - [ ] Bug: Seletor de produto no CreateStoryDialog voltou a mostrar "Nenhum produto encontrado" (mobile)
 - [x] Bug: Segundo story não carrega no menu público — corrigido com handlers separados para touch/mouse, threshold 500ms, touch-none e pointer-events-none
+- [x] Bug PERSISTENTE: No mobile, ao avançar do 1o story para o 2o, viewer fechava — corrigido com Pointer Events unificados + debounce + updater function no goNext

@@ -52,8 +52,7 @@ function promoTimeRemaining(expiresAt: Date | string): string | null {
 }
 
 const STORY_DURATION = 5000;
-// No mobile, toques rápidos podem levar 100-300ms, então usamos 500ms como threshold
-const LONG_PRESS_THRESHOLD = 500;
+const LONG_PRESS_THRESHOLD = 400; // ms
 
 function getOrCreateSessionId(): string {
   const key = "mindi_story_session";
@@ -85,11 +84,14 @@ export default function StoryViewer({
   const viewedStoriesRef = useRef<Set<number>>(new Set());
   const allViewedCalledRef = useRef(false);
 
-  // Touch/press tracking
-  const pressStartTimeRef = useRef<number>(0);
-  const pressStartXRef = useRef<number>(0);
-  const pressStartYRef = useRef<number>(0);
-  const isPressActiveRef = useRef(false);
+  // Pointer tracking — usa apenas Pointer Events para evitar dupla chamada
+  const pointerStartTimeRef = useRef<number>(0);
+  const pointerStartXRef = useRef<number>(0);
+  const activePointerIdRef = useRef<number | null>(null);
+
+  // Debounce para prevenir dupla navegação
+  const lastNavTimeRef = useRef<number>(0);
+  const NAV_DEBOUNCE = 300; // ms mínimo entre navegações
 
   const sessionId = useMemo(() => getOrCreateSessionId(), []);
   const recordViewMutation = trpc.publicStories.recordView.useMutation();
@@ -112,37 +114,54 @@ export default function StoryViewer({
 
   const currentStory = stories[currentIndex];
 
+  // goNext com updater function para evitar stale closure
   const goNext = useCallback(() => {
-    if (currentIndex < stories.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
-      setProgress(0);
-      setImageLoaded(false);
-      elapsedRef.current = 0;
-    } else {
-      const story = stories[currentIndex];
-      if (story && !viewedStoriesRef.current.has(story.id)) {
-        viewedStoriesRef.current.add(story.id);
-        recordViewMutation.mutate({ storyId: story.id, sessionId });
-        if (onStoryViewed) {
-          onStoryViewed(story.id);
+    const now = Date.now();
+    if (now - lastNavTimeRef.current < NAV_DEBOUNCE) return;
+    lastNavTimeRef.current = now;
+
+    setCurrentIndex((prev) => {
+      if (prev < stories.length - 1) {
+        setProgress(0);
+        setImageLoaded(false);
+        elapsedRef.current = 0;
+        return prev + 1;
+      } else {
+        // Último story — marcar como visto e fechar
+        const story = stories[prev];
+        if (story && !viewedStoriesRef.current.has(story.id)) {
+          viewedStoriesRef.current.add(story.id);
+          recordViewMutation.mutate({ storyId: story.id, sessionId });
+          if (onStoryViewed) {
+            onStoryViewed(story.id);
+          }
         }
+        if (viewedStoriesRef.current.size === stories.length && onAllViewed && !allViewedCalledRef.current) {
+          allViewedCalledRef.current = true;
+          onAllViewed();
+        }
+        // Agendar close para o próximo tick para evitar conflitos de state
+        setTimeout(() => onClose(), 0);
+        return prev;
       }
-      if (viewedStoriesRef.current.size === stories.length && onAllViewed && !allViewedCalledRef.current) {
-        allViewedCalledRef.current = true;
-        onAllViewed();
-      }
-      onClose();
-    }
-  }, [currentIndex, stories.length, stories, onClose, onAllViewed, onStoryViewed, sessionId]);
+    });
+  }, [stories, onClose, onAllViewed, onStoryViewed, sessionId]);
 
   const goPrev = useCallback(() => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1);
-      setProgress(0);
-      setImageLoaded(false);
-      elapsedRef.current = 0;
-    }
-  }, [currentIndex]);
+    const now = Date.now();
+    if (now - lastNavTimeRef.current < NAV_DEBOUNCE) return;
+    lastNavTimeRef.current = now;
+
+    setCurrentIndex((prev) => {
+      if (prev > 0) {
+        setProgress(0);
+        setImageLoaded(false);
+        elapsedRef.current = 0;
+        return prev - 1;
+      }
+      return prev;
+    });
+  }, []);
 
   // Timer de progresso
   useEffect(() => {
@@ -186,30 +205,33 @@ export default function StoryViewer({
     };
   }, []);
 
-  // ==========================================
-  // TOUCH HANDLING — Abordagem simplificada
-  // Usa onTouchStart/onTouchEnd no container
-  // Tap rápido (<500ms) = navegar
-  // Long press (>=500ms) = pausar, ao soltar retoma sem navegar
-  // ==========================================
-
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    if (!touch) return;
-    pressStartTimeRef.current = Date.now();
-    pressStartXRef.current = touch.clientX;
-    pressStartYRef.current = touch.clientY;
-    isPressActiveRef.current = true;
+  // ==========================================
+  // POINTER EVENTS — Abordagem unificada
+  // Usa apenas onPointerDown/onPointerUp para evitar
+  // dupla chamada (touch + mouse sintetizado)
+  // ==========================================
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    // Ignorar se já temos um pointer ativo (multi-touch)
+    if (activePointerIdRef.current !== null) return;
+    
+    activePointerIdRef.current = e.pointerId;
+    pointerStartTimeRef.current = Date.now();
+    pointerStartXRef.current = e.clientX;
     setPaused(true);
+    
+    // Capturar o pointer para receber pointerup mesmo fora do elemento
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   }, []);
 
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (!isPressActiveRef.current) return;
-    isPressActiveRef.current = false;
+  const handlePointerUp = useCallback((e: React.PointerEvent) => {
+    // Ignorar se não é o pointer que iniciou
+    if (activePointerIdRef.current !== e.pointerId) return;
+    activePointerIdRef.current = null;
     
-    const pressDuration = Date.now() - pressStartTimeRef.current;
+    const pressDuration = Date.now() - pointerStartTimeRef.current;
     setPaused(false);
 
     // Long press — apenas retoma, não navega
@@ -217,48 +239,7 @@ export default function StoryViewer({
       return;
     }
 
-    // Tap rápido — navegar
-    const touch = e.changedTouches[0];
-    if (!touch) return;
-    
-    const container = containerRef.current;
-    if (!container) return;
-    
-    const rect = container.getBoundingClientRect();
-    const tapX = touch.clientX - rect.left;
-    const halfWidth = rect.width / 2;
-
-    if (tapX < halfWidth) {
-      goPrev();
-    } else {
-      goNext();
-    }
-  }, [goNext, goPrev]);
-
-  const handleTouchCancel = useCallback(() => {
-    isPressActiveRef.current = false;
-    setPaused(false);
-  }, []);
-
-  // MOUSE HANDLING (desktop) — separado do touch
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    pressStartTimeRef.current = Date.now();
-    pressStartXRef.current = e.clientX;
-    isPressActiveRef.current = true;
-    setPaused(true);
-  }, []);
-
-  const handleMouseUp = useCallback((e: React.MouseEvent) => {
-    if (!isPressActiveRef.current) return;
-    isPressActiveRef.current = false;
-    
-    const pressDuration = Date.now() - pressStartTimeRef.current;
-    setPaused(false);
-
-    if (pressDuration >= LONG_PRESS_THRESHOLD) {
-      return;
-    }
-
+    // Tap rápido — navegar baseado na posição
     const container = containerRef.current;
     if (!container) return;
     
@@ -273,9 +254,9 @@ export default function StoryViewer({
     }
   }, [goNext, goPrev]);
 
-  const handleMouseLeave = useCallback(() => {
-    if (isPressActiveRef.current) {
-      isPressActiveRef.current = false;
+  const handlePointerCancel = useCallback((e: React.PointerEvent) => {
+    if (activePointerIdRef.current === e.pointerId) {
+      activePointerIdRef.current = null;
       setPaused(false);
     }
   }, []);
@@ -289,21 +270,20 @@ export default function StoryViewer({
     ? promoTimeRemaining(currentStory.promoExpiresAt)
     : null;
 
-  const handleActionClick = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+  const handleActionClick = useCallback((e: React.PointerEvent | React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    // Cancelar qualquer press ativo
-    isPressActiveRef.current = false;
+    activePointerIdRef.current = null;
     setPaused(false);
     if (currentStory?.productId && onProductAction) {
       onProductAction(currentStory.productId);
     }
   }, [currentStory, onProductAction]);
 
-  const handleCloseClick = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+  const handleCloseClick = useCallback((e: React.PointerEvent | React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    isPressActiveRef.current = false;
+    activePointerIdRef.current = null;
     setPaused(false);
     onClose();
   }, [onClose]);
@@ -312,16 +292,14 @@ export default function StoryViewer({
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
-      {/* Container principal — recebe TODOS os eventos de toque/mouse */}
+      {/* Container principal — usa APENAS Pointer Events */}
       <div
         ref={containerRef}
-        className="relative w-full h-full max-w-[480px] mx-auto flex flex-col select-none touch-none"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchCancel}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
+        className="relative w-full h-full max-w-[480px] mx-auto flex flex-col select-none"
+        style={{ touchAction: "none" }}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
       >
         {/* Imagem de fundo */}
         <div className="absolute inset-0 flex items-center justify-center bg-black pointer-events-none">
@@ -337,7 +315,7 @@ export default function StoryViewer({
           />
         </div>
 
-        {/* Overlay superior — pointer-events-none para não bloquear toques */}
+        {/* Overlay superior — pointer-events-none */}
         <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/60 via-black/20 to-transparent pt-2 px-3 pb-12 pointer-events-none">
           {/* Barras de progresso */}
           <div className="flex gap-1 mb-3">
@@ -386,12 +364,10 @@ export default function StoryViewer({
               </span>
             </div>
 
-            {/* Botão fechar */}
+            {/* Botão fechar — pointer-events-auto */}
             <button
-              onTouchEnd={handleCloseClick}
-              onTouchStart={(e) => e.stopPropagation()}
               onClick={handleCloseClick}
-              onMouseDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
               className="p-2 rounded-full hover:bg-white/10 transition-colors flex-shrink-0 pointer-events-auto"
             >
               <X className="h-5 w-5 text-white" />
@@ -431,13 +407,11 @@ export default function StoryViewer({
               </div>
             )}
 
-            {/* Botão de ação */}
+            {/* Botão de ação — pointer-events-auto */}
             {hasAction && (
               <button
-                onTouchEnd={handleActionClick}
-                onTouchStart={(e) => e.stopPropagation()}
                 onClick={handleActionClick}
-                onMouseDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white text-black font-semibold text-sm shadow-lg active:scale-[0.98] transition-transform pointer-events-auto"
               >
                 <ChevronUp className="h-4 w-4" />
