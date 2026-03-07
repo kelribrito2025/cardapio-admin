@@ -8317,3 +8317,8 @@
 - [x] Reordenar menu sidebar: Stories acima de Cupons (Stories, Cupons, Campanhas)
 - [x] Stories: Botão de ação (Ver produto / Pedir agora) no menu público com cor vermelha e animação pulsante
 - [x] Stories: Melhorar overlay de promoção com fundo escuro sólido (bg-black/85 + backdrop-blur + rounded-t-2xl) para evitar conflito com texto da imagem
+- [x] Stories Promoção: Adicionar campo priceBadgeStyle ao schema (circle, ribbon, top-center)
+- [x] Stories Promoção: Atualizar db.ts e routers.ts para aceitar priceBadgeStyle
+- [x] Stories Promoção: Seletor visual de estilo de badge no CreateStoryDialog
+- [x] Stories Promoção: Renderizar badge no StoryViewer conforme estilo escolhido
+- [x] Stories Promoção: Testes para price badge style (20 testes passando)

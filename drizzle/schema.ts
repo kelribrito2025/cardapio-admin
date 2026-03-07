@@ -1137,6 +1137,8 @@ export const stories = mysqlTable("stories", {
   promoPrice: varchar("promoPrice", { length: 20 }),
   // Para tipo "promo": validade da promoção (null = sem limite)
   promoExpiresAt: timestamp("promoExpiresAt"),
+  // Para tipo "promo": estilo do badge de preço (circle, ribbon, top-center)
+  priceBadgeStyle: mysqlEnum("priceBadgeStyle", ["circle", "ribbon", "top-center"]).default("circle"),
   // Para tipos "product" e "promo": texto do botão de ação
   actionLabel: varchar("actionLabel", { length: 40 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

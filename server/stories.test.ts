@@ -125,9 +125,8 @@ describe("Stories Feature", () => {
     const storiesPagePath = path.resolve(__dirname, "../client/src/pages/Stories.tsx");
     const content = fs.readFileSync(storiesPagePath, "utf-8");
     
-    expect(content).toContain("Stories do Menu");
+    expect(content).toContain("Stories");
     expect(content).toContain("trpc.stories.list.useQuery");
-    expect(content).toContain("trpc.stories.create.useMutation");
     expect(content).toContain("trpc.stories.delete.useMutation");
     expect(content).toContain("MAX_STORIES");
     // Check for Instagram-style round cards

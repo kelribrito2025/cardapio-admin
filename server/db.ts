@@ -11663,6 +11663,7 @@ export async function createStory(data: {
   promoPrice?: string | null;
   promoExpiresAt?: Date | null;
   actionLabel?: string | null;
+  priceBadgeStyle?: "circle" | "ribbon" | "top-center" | null;
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -11678,6 +11679,7 @@ export async function createStory(data: {
     promoPrice: data.promoPrice ?? null,
     promoExpiresAt: data.promoExpiresAt ?? null,
     actionLabel: data.actionLabel ?? null,
+    priceBadgeStyle: data.priceBadgeStyle ?? null,
   });
   return { id: Number(result[0].insertId) };
 }

@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 type StoryType = "simple" | "product" | "promo";
+type PriceBadgeStyle = "circle" | "ribbon" | "top-center";
 
 interface CreateStoryDialogProps {
   open: boolean;
@@ -72,6 +73,9 @@ export default function CreateStoryDialog({
   // Action label
   const [actionLabel, setActionLabel] = useState("");
 
+  // Price badge style
+  const [priceBadgeStyle, setPriceBadgeStyle] = useState<PriceBadgeStyle>("circle");
+
   // Fetch products for selection
   const { data: productsData } = trpc.product.list.useQuery(
     { establishmentId, status: "active" },
@@ -111,6 +115,7 @@ export default function CreateStoryDialog({
     setPromoExpiryDate("");
     setPromoExpiryTime("");
     setActionLabel("");
+    setPriceBadgeStyle("circle");
     setUploading(false);
     setShowProductList(false);
     onOpenChange(false);
@@ -193,6 +198,7 @@ export default function CreateStoryDialog({
       data.promoText = promoText.trim() || undefined;
       data.promoPrice = promoPrice.trim() || undefined;
       data.actionLabel = actionLabel.trim() || "Pedir agora";
+      data.priceBadgeStyle = priceBadgeStyle;
       if (selectedProduct) {
         data.productId = selectedProduct.id;
       }
@@ -529,6 +535,86 @@ export default function CreateStoryDialog({
                       maxLength={20}
                     />
                   </div>
+
+                  {/* Estilo do badge de preço */}
+                  {promoPrice.trim() && (
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium">
+                        Estilo do badge de preço
+                      </Label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {[
+                          {
+                            value: "circle" as PriceBadgeStyle,
+                            label: "Circular",
+                            desc: "Badge flutuante",
+                            preview: (
+                              <div className="relative w-full aspect-[3/4] bg-gradient-to-b from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-lg overflow-hidden">
+                                <div className="absolute bottom-0 left-0 right-0 h-[45%] bg-black/70 rounded-t-xl" />
+                                <div className="absolute left-1/2 -translate-x-1/2 bottom-[38%] w-8 h-8 rounded-full bg-red-600 flex items-center justify-center shadow-lg border-2 border-white">
+                                  <span className="text-[6px] font-bold text-white">R$</span>
+                                </div>
+                              </div>
+                            ),
+                          },
+                          {
+                            value: "ribbon" as PriceBadgeStyle,
+                            label: "Faixa",
+                            desc: "Diagonal no canto",
+                            preview: (
+                              <div className="relative w-full aspect-[3/4] bg-gradient-to-b from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-lg overflow-hidden">
+                                <div className="absolute bottom-0 left-0 right-0 h-[45%] bg-black/70 rounded-t-xl" />
+                                <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+                                  <div className="absolute -left-3 top-2 w-16 bg-red-600 text-center rotate-[-35deg] shadow-md">
+                                    <span className="text-[5px] font-bold text-white">R$</span>
+                                  </div>
+                                </div>
+                              </div>
+                            ),
+                          },
+                          {
+                            value: "top-center" as PriceBadgeStyle,
+                            label: "Topo",
+                            desc: "Fixo no centro",
+                            preview: (
+                              <div className="relative w-full aspect-[3/4] bg-gradient-to-b from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-lg overflow-hidden">
+                                <div className="absolute bottom-0 left-0 right-0 h-[45%] bg-black/70 rounded-t-xl" />
+                                <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-red-600 px-2 py-0.5 rounded-full shadow-md">
+                                  <span className="text-[5px] font-bold text-white">R$</span>
+                                </div>
+                              </div>
+                            ),
+                          },
+                        ].map((opt) => (
+                          <button
+                            key={opt.value}
+                            onClick={() => setPriceBadgeStyle(opt.value)}
+                            className={cn(
+                              "flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 transition-all",
+                              priceBadgeStyle === opt.value
+                                ? "border-primary bg-primary/5 shadow-sm"
+                                : "border-border/50 hover:border-border hover:bg-muted/30"
+                            )}
+                          >
+                            <div className="w-full max-w-[60px]">
+                              {opt.preview}
+                            </div>
+                            <div className="text-center">
+                              <p className={cn(
+                                "text-xs font-semibold",
+                                priceBadgeStyle === opt.value ? "text-primary" : "text-foreground"
+                              )}>
+                                {opt.label}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground leading-tight">
+                                {opt.desc}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Validade da promoção */}
                   <div className="space-y-3">

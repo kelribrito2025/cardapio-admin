@@ -6414,6 +6414,7 @@ export const appRouter = router({
         promoPrice: z.string().max(20).optional(),
         promoExpiresAt: z.date().optional(),
         actionLabel: z.string().max(40).optional(),
+        priceBadgeStyle: z.enum(["circle", "ribbon", "top-center"]).optional(),
       }))
       .mutation(async ({ input }) => {
         // Verificar limite de 5 stories ativos
@@ -6464,6 +6465,7 @@ export const appRouter = router({
           promoPrice: input.promoPrice ?? null,
           promoExpiresAt: input.promoExpiresAt ?? null,
           actionLabel: input.actionLabel ?? null,
+          priceBadgeStyle: input.priceBadgeStyle ?? null,
         });
 
         return { id: result.id, imageUrl: url, expiresAt, type: input.type };

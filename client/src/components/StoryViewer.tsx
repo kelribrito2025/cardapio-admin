@@ -14,6 +14,7 @@ interface Story {
   promoPrice?: string | null;
   promoExpiresAt?: string | Date | null;
   actionLabel?: string | null;
+  priceBadgeStyle?: "circle" | "ribbon" | "top-center" | null;
 }
 
 interface StoryViewerProps {
@@ -389,6 +390,34 @@ export default function StoryViewer({
           </div>
         </div>
 
+        {/* Badge de preço flutuante — estilo "circle" (entre imagem e overlay) */}
+        {currentStory.type === "promo" && currentStory.promoPrice && (currentStory.priceBadgeStyle === "circle" || !currentStory.priceBadgeStyle) && (
+          <div className="absolute z-20 pointer-events-none" style={{ bottom: "calc(35% + 8px)", left: "50%", transform: "translateX(-50%)" }}>
+            <div className="w-20 h-20 rounded-full bg-red-600 flex flex-col items-center justify-center shadow-2xl border-[3px] border-white/90 animate-bounce" style={{ animationDuration: "2s" }}>
+              <span className="text-white text-[10px] font-medium -mb-0.5">por apenas</span>
+              <span className="text-white text-base font-extrabold leading-tight">{currentStory.promoPrice}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Badge de preço — estilo "ribbon" (faixa diagonal no canto superior esquerdo) */}
+        {currentStory.type === "promo" && currentStory.promoPrice && currentStory.priceBadgeStyle === "ribbon" && (
+          <div className="absolute top-0 left-0 z-20 w-36 h-36 overflow-hidden pointer-events-none">
+            <div className="absolute top-[26px] -left-[30px] w-[200px] bg-red-600 text-center py-1.5 shadow-lg" style={{ transform: "rotate(-40deg)" }}>
+              <span className="text-white text-sm font-extrabold tracking-wide drop-shadow-md">{currentStory.promoPrice}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Badge de preço — estilo "top-center" (fixo no topo central abaixo das barras de progresso) */}
+        {currentStory.type === "promo" && currentStory.promoPrice && currentStory.priceBadgeStyle === "top-center" && (
+          <div className="absolute z-20 pointer-events-none" style={{ top: "70px", left: "50%", transform: "translateX(-50%)" }}>
+            <div className="bg-red-600 px-5 py-2 rounded-full shadow-xl border-2 border-white/80">
+              <span className="text-white text-base font-extrabold drop-shadow-md">{currentStory.promoPrice}</span>
+            </div>
+          </div>
+        )}
+
         {/* Overlay inferior — Promoção e/ou Botão de ação */}
         {(currentStory.type === "promo" || hasAction) && (
           <div className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none">
@@ -408,11 +437,7 @@ export default function StoryViewer({
                     </p>
                   )}
                   <div className="flex items-center justify-center gap-3">
-                    {currentStory.promoPrice && (
-                      <span className="text-white text-xl font-bold">
-                        {currentStory.promoPrice}
-                      </span>
-                    )}
+                    {/* Preço inline apenas se badge style é circle (já mostrado no badge flutuante) — para ribbon e top-center também já está visível */}
                     {promoCountdown && (
                       <div className="flex items-center gap-1 text-white/60 text-xs">
                         <Clock className="h-3 w-3" />
