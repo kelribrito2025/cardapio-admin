@@ -2134,20 +2134,20 @@ export default function PublicMenu() {
                         className={`flex items-center gap-1 rounded-lg px-1.5 py-0.5 transition-colors ${establishment.reviewsEnabled !== false ? 'hover:bg-gray-100 cursor-pointer' : 'cursor-default'}`}
                       >
                         {/* Ícone de estrela */}
-                        <Star className="h-3.5 w-3.5 md:h-4 md:w-4 text-yellow-400 fill-yellow-400" />
-                        <span className="text-xs md:text-sm font-semibold text-gray-800">
+                        <Star className="h-4.5 w-4.5 md:h-5 md:w-5 text-yellow-400 fill-yellow-400" />
+                        <span className="text-sm md:text-base font-semibold text-gray-800">
                           {establishment.reviewsEnabled !== false
                             ? (establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0')
                             : '5.0'}
                         </span>
                         {/* Quantidade de avaliações - apenas número no mobile */}
-                        <span className="text-xs text-gray-500 md:hidden">
+                        <span className="text-sm text-gray-500 md:hidden">
                           ({establishment.reviewsEnabled !== false
                             ? (establishment.reviewCount || 0)
                             : (establishment.fakeReviewCount || 355)})
                         </span>
                         {/* Quantidade de avaliações - texto completo no desktop */}
-                        <span className="text-sm text-gray-500 hidden md:inline">
+                        <span className="text-base text-gray-500 hidden md:inline">
                           {establishment.reviewsEnabled !== false
                             ? `(${establishment.reviewCount || 0} ${(establishment.reviewCount || 0) === 1 ? 'avaliação' : 'avaliações'})`
                             : `(${establishment.fakeReviewCount || 355} avaliações)`}

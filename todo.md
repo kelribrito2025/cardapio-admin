@@ -8244,3 +8244,4 @@
 - [x] Menu Público: Substituir texto técnico "Mín: X | Máx: X" por texto dinâmico humano (Escolha X opções, Escolha até X opções, etc.)
 - [x] Menu Público: Adicionar contador visual de seleção em tempo real (ex: "1 / 2 selecionados")
 - [x] Menu Público: Remover contador visual de seleção (não é necessário)
+- [x] Menu Público: Aumentar tamanho do ícone de estrela e texto de quantidade de avaliações
