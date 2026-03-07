@@ -32,6 +32,12 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
 
 const stepConfig: Record<string, {
@@ -475,6 +481,15 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
   };
 
   // ==================== CELEBRATION CONTENT ====================
+  const handleDismissCelebration = () => {
+    setShowCelebration(false);
+    setShowConfetti(false);
+    localStorage.setItem(dismissedKey, "true");
+    setDismissed(true);
+    onCelebrationChange?.(false);
+    navigate("/");
+  };
+
   if (showCelebration) {
     return (
       <>
@@ -484,123 +499,63 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
           particleCount={200}
           onComplete={() => setShowConfetti(false)}
         />
-        {/* Mobile celebration */}
-        <div className="md:hidden mb-6 rounded-2xl border border-border/60 bg-gradient-to-br from-card via-card to-primary/[0.03] shadow-sm overflow-hidden">
-          <div className="px-5 pt-5 pb-3">
-            <div className="flex items-center gap-3">
-              <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <Trophy className="h-5 w-5 text-green-600 dark:text-green-400" />
+        {/* Dialog centralizado — mobile e desktop */}
+        <Dialog open={true} onOpenChange={(open) => { if (!open) handleDismissCelebration(); }}>
+          <DialogContent
+            showCloseButton={false}
+            onInteractOutside={(e) => e.preventDefault()}
+            onPointerDownOutside={(e) => e.preventDefault()}
+            className="sm:max-w-[420px] p-0 gap-0 rounded-2xl border-border/60 overflow-hidden bg-background"
+          >
+            <DialogTitle className="sr-only">Configuração Concluída</DialogTitle>
+            <DialogDescription className="sr-only">Todas as etapas foram concluídas</DialogDescription>
+
+            {/* Conteúdo centralizado */}
+            <div className="flex flex-col items-center text-center px-8 pt-10 pb-6">
+              {/* Ícone grande */}
+              <div className="relative mb-6">
+                <div className="w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                  <PartyPopper className="h-10 w-10 text-green-600 dark:text-green-400" />
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-bold text-foreground tracking-tight">Parabéns! Tudo configurado!</h2>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Seu restaurante <span className="font-medium text-foreground">{establishmentName || ""}</span> está pronto para receber pedidos.
-                </p>
+
+              {/* Título */}
+              <h2 className="text-2xl font-bold text-foreground tracking-tight mb-2">Parabéns!</h2>
+              <p className="text-sm text-muted-foreground mb-1">Configuração concluída com sucesso</p>
+
+              {/* Barra de progresso */}
+              <div className="w-full mt-4 mb-6">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs font-medium text-green-700 dark:text-green-400 flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    Todos os passos concluídos
+                  </span>
+                  <span className="text-xs font-semibold text-foreground">
+                    {adjustedChecklist.totalSteps}/{adjustedChecklist.totalSteps}
+                  </span>
+                </div>
+                <div className="h-1.5 bg-muted/60 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full w-full" />
+                </div>
               </div>
+
+              {/* Mensagem */}
+              <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+                Seu restaurante <span className="font-semibold text-foreground">{establishmentName}</span> está pronto para receber pedidos.
+                Todas as configurações iniciais foram concluídas!
+              </p>
+
+              {/* Botão */}
+              <button
+                onClick={handleDismissCelebration}
+                className="w-full h-11 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-md shadow-red-500/20"
+              >
+                <Rocket className="h-4 w-4" />
+                Ir para o Dashboard
+              </button>
             </div>
-
-            <div className="mt-3">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs font-medium text-green-700 dark:text-green-400 flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  Todos os passos concluídos
-                </span>
-                <span className="text-xs font-semibold text-foreground">
-                  {adjustedChecklist.totalSteps}/{adjustedChecklist.totalSteps}
-                </span>
-              </div>
-              <div className="h-1.5 bg-muted/60 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full w-full" />
-              </div>
-            </div>
-          </div>
-
-          <div className="px-5 pb-4 pt-2">
-            <button
-              onClick={() => {
-                setShowCelebration(false);
-                setShowConfetti(false);
-                localStorage.setItem(dismissedKey, "true");
-                setDismissed(true);
-                navigate("/");
-              }}
-              className="w-full h-10 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-md shadow-red-500/20"
-            >
-              <Rocket className="h-3.5 w-3.5" />
-              Ir para o Dashboard
-            </button>
-          </div>
-        </div>
-        {/* Desktop celebration sheet */}
-        <div className="hidden md:block">
-          <Sheet open={true} onOpenChange={() => {}}>
-            <SheetContent
-              side="right"
-              hideCloseButton
-              className="!w-[440px] !max-w-[440px] p-0 gap-0 border-l border-border/40 bg-background overflow-hidden"
-            >
-              <SheetTitle className="sr-only">Configuração Concluída</SheetTitle>
-              <SheetDescription className="sr-only">Todas as etapas foram concluídas</SheetDescription>
-
-              {/* Header estilo Bem-vindo ao Mindi */}
-              <div className="px-6 pt-6 pb-4 border-b border-border/40">
-                <div className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                    <Trophy className="h-5 w-5 text-green-600 dark:text-green-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-foreground tracking-tight">Parabéns!</h2>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Configuração concluída com sucesso
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-medium text-green-700 dark:text-green-400 flex items-center gap-1.5">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      Todos os passos concluídos
-                    </span>
-                    <span className="text-xs font-semibold text-foreground">
-                      {adjustedChecklist.totalSteps}/{adjustedChecklist.totalSteps}
-                    </span>
-                  </div>
-                  <div className="h-1.5 bg-muted/60 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full w-full" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 flex flex-col items-center justify-center px-8 py-10 text-center">
-                <div className="relative mb-5">
-                  <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                    <PartyPopper className="h-8 w-8 text-green-600 dark:text-green-400" />
-                  </div>
-                </div>
-                <p className="text-muted-foreground mb-8 leading-relaxed">
-                  Seu restaurante <span className="font-semibold text-foreground">{establishmentName}</span> está pronto para receber pedidos.
-                  Todas as configurações iniciais foram concluídas!
-                </p>
-
-                <button
-                  onClick={() => {
-                    setShowCelebration(false);
-                    setShowConfetti(false);
-                    localStorage.setItem(dismissedKey, "true");
-                    setDismissed(true);
-                    navigate("/");
-                  }}
-                  className="w-full h-12 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-md shadow-red-500/20"
-                >
-                  <Rocket className="h-4 w-4" />
-                  Ir para o Dashboard
-                </button>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
+          </DialogContent>
+        </Dialog>
       </>
     );
   }
