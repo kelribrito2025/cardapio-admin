@@ -124,37 +124,103 @@ const saveOrdersToStorage = (establishmentId: number, orders: UserOrder[]) => {
 // Componente para descrição expansível com "Ver mais / Ver menos"
 function ExpandableDescription({ text }: { text: string }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [truncatedText, setTruncatedText] = useState('');
   const [needsClamp, setNeedsClamp] = useState(false);
-  const textRef = useRef<HTMLParagraphElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const hiddenRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const el = textRef.current;
-    if (el) {
-      // Verifica se o texto excede 3 linhas (~60px com line-height 1.625 e text-sm)
-      const lineHeight = parseFloat(getComputedStyle(el).lineHeight) || 20;
-      const maxHeight = lineHeight * 3;
-      setNeedsClamp(el.scrollHeight > maxHeight + 2);
+    // Usa um elemento oculto para medir quantos caracteres cabem em 3 linhas
+    const container = measureRef.current;
+    const hidden = hiddenRef.current;
+    if (!container || !hidden) return;
+
+    // Configura o container de medição
+    const style = window.getComputedStyle(container);
+    const lineHeight = parseFloat(style.lineHeight) || 20;
+    const maxHeight = lineHeight * 3 + 2; // 3 linhas com margem
+
+    // Mede o texto completo
+    hidden.textContent = text;
+    const fullHeight = hidden.offsetHeight;
+
+    if (fullHeight <= maxHeight) {
+      setNeedsClamp(false);
+      setTruncatedText(text);
+      return;
     }
+
+    setNeedsClamp(true);
+
+    // Busca binária para encontrar o ponto de truncamento
+    // Reserva espaço para "... Ver mais" (~12 caracteres)
+    const suffix = '... ';
+    let low = 0;
+    let high = text.length;
+    let best = 0;
+
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      hidden.textContent = text.slice(0, mid) + suffix + 'Ver mais';
+      if (hidden.offsetHeight <= maxHeight) {
+        best = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    // Ajusta para não cortar no meio de uma palavra
+    let cutPoint = best;
+    while (cutPoint > 0 && text[cutPoint] !== ' ' && text[cutPoint] !== '.') {
+      cutPoint--;
+    }
+    if (cutPoint === 0) cutPoint = best; // fallback
+
+    setTruncatedText(text.slice(0, cutPoint).trimEnd());
   }, [text]);
 
   return (
-    <div>
-      <p
-        ref={textRef}
-        className={`text-sm text-gray-600 leading-relaxed transition-all duration-300 ${
-          !isExpanded && needsClamp ? 'line-clamp-3' : ''
-        }`}
+    <div className="relative">
+      {/* Elemento oculto para medição */}
+      <div
+        ref={measureRef}
+        className="text-sm leading-relaxed absolute invisible pointer-events-none"
+        style={{ width: '100%', top: 0, left: 0 }}
+        aria-hidden="true"
       >
-        {text}
+        <span ref={hiddenRef} />
+      </div>
+
+      {/* Texto visível */}
+      <p className="text-sm text-gray-600 leading-relaxed">
+        {isExpanded || !needsClamp ? (
+          <>
+            {text}
+            {needsClamp && (
+              <>
+                {' '}
+                <button
+                  onClick={() => setIsExpanded(false)}
+                  className="text-xs font-medium text-red-500 hover:text-red-600 transition-colors inline whitespace-nowrap"
+                >
+                  Ver menos
+                </button>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            {truncatedText}...{' '}
+            <button
+              onClick={() => setIsExpanded(true)}
+              className="text-xs font-medium text-red-500 hover:text-red-600 transition-colors inline whitespace-nowrap"
+            >
+              Ver mais
+            </button>
+          </>
+        )}
       </p>
-      {needsClamp && (
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="text-xs font-medium text-red-500 hover:text-red-600 mt-1 transition-colors"
-        >
-          {isExpanded ? 'Ver menos \u2191' : 'Ver mais \u2192'}
-        </button>
-      )}
     </div>
   );
 }
