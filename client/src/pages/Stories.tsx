@@ -141,11 +141,8 @@ export default function Stories() {
       <div className="container max-w-4xl py-6 md:py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-foreground">Stories do Menu</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Publique stories com imagens para divulgar promoções, combos e novidades no seu cardápio público.
-            Stories expiram automaticamente após 24 horas.
-          </p>
+          <h1 className="text-2xl font-bold flex items-center gap-2"><ImageIcon className="h-6 w-6 text-purple-600" />Stories</h1>
+          <p className="text-base text-muted-foreground">Divulgue promoções e novidades no cardápio público</p>
         </div>
 
         {/* Stories Grid - Estilo Instagram */}

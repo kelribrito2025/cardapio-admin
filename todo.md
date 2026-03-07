@@ -8286,3 +8286,4 @@
 - [x] Stories: Borda cinza no logo do menu público quando usuário já visualizou todos os stories (igual Instagram)
 - [x] Stories: Resetar estado "visto" quando restaurante publicar novo story (comparação de IDs no sessionStorage)
 - [x] Stories Admin: Substituir modal de preview por StoryViewer fullscreen (mesmo do menu público)
+- [x] Stories: Ajustar header da página para ficar no padrão das demais páginas admin (descrição mais curta)
