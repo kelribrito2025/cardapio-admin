@@ -467,7 +467,7 @@ function SortableComplementItem({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "bg-card rounded-lg border border-border/50",
+        "group bg-card rounded-lg border border-border/50",
         isDragging && "shadow-lg ring-2 ring-primary/30",
         !item.isActive && "bg-muted/40"
       )}
@@ -554,12 +554,22 @@ function SortableComplementItem({
               <button
                 type="button"
                 onClick={() => setIsEditingName(true)}
-                className="hidden md:inline text-red-600 hover:text-red-700 text-[10px] font-medium flex-shrink-0 hover:underline"
+                className="hidden md:hidden md:group-hover:inline text-red-600 hover:text-red-700 text-[10px] font-medium flex-shrink-0 hover:underline"
               >
                 Editar
               </button>
               {item.description && (
-                <FileText className="h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
+                <>
+                  <span className="text-gray-300 text-sm flex-shrink-0">|</span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <FileText className="h-3.5 w-3.5 text-gray-400 flex-shrink-0 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-[250px]">
+                      <p className="text-xs">{item.description}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </>
               )}
               {/* Badges */}
               {isExclusive && (

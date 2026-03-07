@@ -8257,3 +8257,6 @@
 - [x] Complementos: Clicar no card do complemento na página /complementos deve abrir o dropdown de detalhes (igual à setinha)
 - [x] Complementos: Igualar visual do campo de descrição na página /complementos ao visual da /catalogo (textarea grande, título com ícone de lápis, botão vermelho, corrigir caracteres unicode)
 - [x] Catalogo + Complementos: Adicionar ícone FileText cinza discreto ao lado do nome do complemento quando tem descrição cadastrada
+- [x] Catalogo + Complementos: Adicionar tooltip ao ícone FileText que exibe a descrição completa ao passar o mouse
+- [x] Catalogo + Complementos: Botão "Editar" só aparece no hover do card (desktop), escondido por padrão
+- [x] Catalogo + Complementos: Adicionar separador "|" antes do ícone FileText (ex: Nome | ícone)
