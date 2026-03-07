@@ -18,7 +18,9 @@ import {
   X,
   Search,
   ChevronDown,
+  ChevronUp,
   Clock,
+  Eye,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -44,7 +46,7 @@ export default function CreateStoryDialog({
   activeStoriesCount,
   maxStories,
 }: CreateStoryDialogProps) {
-  const [step, setStep] = useState<"type" | "image" | "details">("type");
+  const [step, setStep] = useState<"type" | "image" | "details" | "preview">("type");
   const [storyType, setStoryType] = useState<StoryType>("simple");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string>("");
@@ -142,12 +144,7 @@ export default function CreateStoryDialog({
         setImagePreview(dataUrl);
         setImageBase64(dataUrl.split(",")[1]);
         setImageMimeType(file.type);
-        // Avançar para detalhes se não for simple
-        if (storyType === "simple") {
-          setStep("details");
-        } else {
-          setStep("details");
-        }
+        setStep("details");
       };
       reader.readAsDataURL(file);
 
@@ -228,18 +225,53 @@ export default function CreateStoryDialog({
     }
   }, [storyType]);
 
+  // Determine the effective action label for preview
+  const effectiveActionLabel = actionLabel.trim() || (storyType === "product" ? "Ver produto" : "Pedir agora");
+  const hasAction = storyType !== "simple" && (storyType === "product" ? !!selectedProduct : !!selectedProduct);
+
+  // Compute promo countdown for preview
+  const getPromoCountdownPreview = (): string | null => {
+    if (storyType !== "promo") return null;
+    if (!promoHasExpiry || !promoExpiryDate) return null;
+    const dateStr = promoExpiryTime
+      ? `${promoExpiryDate}T${promoExpiryTime}`
+      : `${promoExpiryDate}T23:59`;
+    const exp = new Date(dateStr);
+    const now = new Date();
+    const diffMs = exp.getTime() - now.getTime();
+    if (diffMs <= 0) return "Expirada";
+    const diffMin = Math.floor(diffMs / 60000);
+    if (diffMin < 60) return `Termina em ${diffMin}min`;
+    const diffH = Math.floor(diffMin / 60);
+    if (diffH < 24) return `Termina em ${diffH}h`;
+    return `Válida até ${exp.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}`;
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[480px] max-h-[90vh] overflow-y-auto rounded-2xl p-0">
-        <div className="p-6">
-          <DialogTitle className="text-lg font-bold text-foreground mb-1">
-            Novo Story
-          </DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground mb-5">
-            {step === "type" && "Escolha o tipo de story que deseja publicar"}
-            {step === "image" && "Selecione a imagem do story"}
-            {step === "details" && "Configure os detalhes do story"}
-          </DialogDescription>
+      <DialogContent className={cn(
+        "max-h-[90vh] overflow-y-auto rounded-2xl p-0",
+        step === "preview" ? "sm:max-w-[400px]" : "sm:max-w-[480px]"
+      )}>
+        <div className={step === "preview" ? "p-0" : "p-6"}>
+          {step !== "preview" && (
+            <>
+              <DialogTitle className="text-lg font-bold text-foreground mb-1">
+                Novo Story
+              </DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground mb-5">
+                {step === "type" && "Escolha o tipo de story que deseja publicar"}
+                {step === "image" && "Selecione a imagem do story"}
+                {step === "details" && "Configure os detalhes do story"}
+              </DialogDescription>
+            </>
+          )}
+          {step === "preview" && (
+            <>
+              <DialogTitle className="sr-only">Preview do Story</DialogTitle>
+              <DialogDescription className="sr-only">Pré-visualização de como o story ficará no menu público</DialogDescription>
+            </>
+          )}
 
           {/* Step 1: Escolher tipo */}
           {step === "type" && (
@@ -361,7 +393,7 @@ export default function CreateStoryDialog({
                     onClick={() => setStep("details")}
                     className="flex-1"
                   >
-                    {storyType === "simple" ? "Publicar" : "Continuar"}
+                    Continuar
                   </Button>
                 )}
               </div>
@@ -696,10 +728,158 @@ export default function CreateStoryDialog({
                 >
                   Voltar
                 </Button>
+                {storyType === "simple" ? (
+                  /* Para simple, vai direto ao preview */
+                  <Button
+                    onClick={() => setStep("preview")}
+                    disabled={!canPublish}
+                    className="flex-1 gap-2"
+                  >
+                    <Eye className="h-4 w-4" />
+                    Pré-visualizar
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => setStep("preview")}
+                    disabled={!canPublish}
+                    className="flex-1 gap-2"
+                  >
+                    <Eye className="h-4 w-4" />
+                    Pré-visualizar
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Preview — Visualização realista do story */}
+          {step === "preview" && imagePreview && (
+            <div className="flex flex-col">
+              {/* Header do preview */}
+              <div className="px-4 pt-4 pb-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-semibold text-foreground">Pré-visualização</span>
+                </div>
+                <span className="text-[11px] text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-full">
+                  Como o cliente verá
+                </span>
+              </div>
+
+              {/* Story Preview Container — simula o viewer real */}
+              <div className="relative mx-4 mb-3 rounded-2xl overflow-hidden bg-black" style={{ aspectRatio: "9/16", maxHeight: "520px" }}>
+                {/* Imagem de fundo */}
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+
+                {/* Overlay superior — barras de progresso + header */}
+                <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/60 via-black/20 to-transparent pt-2 px-3 pb-8">
+                  {/* Barra de progresso simulada */}
+                  <div className="flex gap-1 mb-3">
+                    <div className="flex-1 h-[2.5px] rounded-full bg-white/30 overflow-hidden">
+                      <div className="h-full bg-white rounded-full w-[60%]" />
+                    </div>
+                  </div>
+
+                  {/* Header: logo placeholder + nome + tempo */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-white/30 flex items-center justify-center flex-shrink-0">
+                      <span className="text-white text-[10px] font-bold">R</span>
+                    </div>
+                    <span className="text-white text-xs font-semibold">Seu restaurante</span>
+                    <span className="text-white/50 text-[10px]">agora</span>
+                  </div>
+                </div>
+
+                {/* Badge de preço — circle */}
+                {storyType === "promo" && promoPrice.trim() && (priceBadgeStyle === "circle" || !priceBadgeStyle) && (
+                  <div className="absolute z-20" style={{ bottom: "calc(35% + 8px)", left: "50%", transform: "translateX(-50%)" }}>
+                    <div className="w-16 h-16 rounded-full bg-red-600 flex flex-col items-center justify-center shadow-2xl border-[2.5px] border-white/90 animate-bounce" style={{ animationDuration: "2s" }}>
+                      <span className="text-white text-[8px] font-medium -mb-0.5">por apenas</span>
+                      <span className="text-white text-xs font-extrabold leading-tight">{promoPrice}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Badge de preço — ribbon */}
+                {storyType === "promo" && promoPrice.trim() && priceBadgeStyle === "ribbon" && (
+                  <div className="absolute top-0 left-0 z-20 w-28 h-28 overflow-hidden">
+                    <div className="absolute top-[20px] -left-[24px] w-[160px] bg-red-600 text-center py-1 shadow-lg" style={{ transform: "rotate(-40deg)" }}>
+                      <span className="text-white text-xs font-extrabold tracking-wide drop-shadow-md">{promoPrice}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Badge de preço — top-center */}
+                {storyType === "promo" && promoPrice.trim() && priceBadgeStyle === "top-center" && (
+                  <div className="absolute z-20" style={{ top: "56px", left: "50%", transform: "translateX(-50%)" }}>
+                    <div className="bg-red-600 px-4 py-1.5 rounded-full shadow-xl border-2 border-white/80">
+                      <span className="text-white text-sm font-extrabold drop-shadow-md">{promoPrice}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Overlay inferior — Promoção e/ou Botão de ação */}
+                {(storyType === "promo" || storyType === "product") && (
+                  <div className="absolute bottom-0 left-0 right-0 z-10">
+                    <div className="bg-black/85 backdrop-blur-md px-3 pt-4 pb-5 rounded-t-2xl">
+                      {/* Dados da promoção */}
+                      {storyType === "promo" && (
+                        <div className="mb-3 text-center">
+                          {promoTitle.trim() && (
+                            <h3 className="text-white text-base font-bold mb-0.5 line-clamp-2">
+                              {promoTitle.slice(0, 60)}
+                            </h3>
+                          )}
+                          {promoText.trim() && (
+                            <p className="text-white/80 text-xs mb-1.5 line-clamp-2">
+                              {promoText.slice(0, 100)}
+                            </p>
+                          )}
+                          {getPromoCountdownPreview() && (
+                            <div className="flex items-center justify-center gap-1 text-white/60 text-[10px]">
+                              <Clock className="h-2.5 w-2.5" />
+                              <span>{getPromoCountdownPreview()}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Botão de ação (product precisa de produto selecionado, promo precisa de produto vinculado) */}
+                      {((storyType === "product" && selectedProduct) || (storyType === "promo" && selectedProduct)) && (
+                        <div className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-red-600 text-white font-semibold text-xs shadow-lg shadow-red-600/40 animate-pulse">
+                          <ChevronUp className="h-3.5 w-3.5" />
+                          {effectiveActionLabel}
+                        </div>
+                      )}
+
+                      {/* Indicação de que não tem botão quando não há produto */}
+                      {storyType === "promo" && !selectedProduct && (
+                        <p className="text-white/40 text-[10px] text-center">
+                          Sem produto vinculado — sem botão de ação
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Botões do preview */}
+              <div className="px-4 pb-4 flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setStep("details")}
+                  className="flex-1"
+                >
+                  Editar
+                </Button>
                 <Button
                   onClick={handlePublish}
                   disabled={!canPublish || uploading}
-                  className="flex-1"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
                 >
                   {uploading ? (
                     <div className="flex items-center gap-2">
@@ -707,7 +887,9 @@ export default function CreateStoryDialog({
                       Publicando...
                     </div>
                   ) : (
-                    "Publicar story"
+                    <>
+                      Publicar story
+                    </>
                   )}
                 </Button>
               </div>

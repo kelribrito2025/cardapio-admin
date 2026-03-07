@@ -8322,3 +8322,7 @@
 - [x] Stories Promoção: Seletor visual de estilo de badge no CreateStoryDialog
 - [x] Stories Promoção: Renderizar badge no StoryViewer conforme estilo escolhido
 - [x] Stories Promoção: Testes para price badge style (20 testes passando)
+- [x] Stories: Adicionar passo de preview antes de publicar (tipo → imagem → detalhes → preview → publicar)
+- [x] Stories: Preview realista mostrando como o story ficará no menu público (imagem, overlay, badge de preço, botão de ação)
+- [x] Stories: Botão "Pré-visualizar" no passo de detalhes leva ao preview, botão "Publicar" só no preview
+- [x] Stories: Testes para preview step (27 testes passando)
