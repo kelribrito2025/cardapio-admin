@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import StoryViewer from "@/components/StoryViewer";
 
 const MAX_STORIES = 5;
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -42,7 +43,8 @@ export default function Stories() {
   const establishmentId = establishment?.id;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
-  const [previewStory, setPreviewStory] = useState<{ id: number; imageUrl: string; createdAt: string; expiresAt: string } | null>(null);
+  const [showStoryViewer, setShowStoryViewer] = useState(false);
+  const [storyViewerIndex, setStoryViewerIndex] = useState(0);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
 
   const { data: storiesList, isLoading, refetch } = trpc.stories.list.useQuery(
@@ -71,7 +73,7 @@ export default function Stories() {
       toast.success("Story excluído");
       refetch();
       setDeleteConfirm(null);
-      setPreviewStory(null);
+      setShowStoryViewer(false);
     },
     onError: (err) => {
       toast.error(err.message || "Erro ao excluir story");
@@ -190,7 +192,11 @@ export default function Stories() {
             activeStories.map((story) => (
               <div key={story.id} className="flex flex-col items-center gap-2 flex-shrink-0">
                 <button
-                  onClick={() => setPreviewStory(story as any)}
+                  onClick={() => {
+                    const idx = activeStories.findIndex(s => s.id === story.id);
+                    setStoryViewerIndex(idx >= 0 ? idx : 0);
+                    setShowStoryViewer(true);
+                  }}
                   className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden group"
                 >
                   {/* Borda degradê Instagram */}
@@ -308,38 +314,21 @@ export default function Stories() {
           className="hidden"
         />
 
-        {/* Modal de preview do story */}
-        <Dialog open={!!previewStory} onOpenChange={() => setPreviewStory(null)}>
-          <DialogContent className="sm:max-w-[400px] p-0 gap-0 rounded-2xl overflow-hidden bg-black">
-            <DialogTitle className="sr-only">Preview do Story</DialogTitle>
-            <DialogDescription className="sr-only">Visualização do story</DialogDescription>
-            {previewStory && (
-              <div className="relative">
-                <img
-                  src={previewStory.imageUrl}
-                  alt="Story preview"
-                  className="w-full max-h-[70vh] object-contain"
-                />
-                {/* Info overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-3.5 w-3.5 text-white/70" />
-                      <span className="text-xs text-white/70">{timeRemaining(previewStory.expiresAt)}</span>
-                    </div>
-                    <button
-                      onClick={() => setDeleteConfirm(previewStory.id)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/80 hover:bg-red-500 text-white text-xs font-medium transition-colors"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                      Excluir
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+        {/* StoryViewer fullscreen (mesmo do menu público) */}
+        {showStoryViewer && activeStories.length > 0 && (
+          <StoryViewer
+            stories={activeStories.map(s => ({
+              id: s.id,
+              imageUrl: s.imageUrl,
+              createdAt: s.createdAt,
+              expiresAt: s.expiresAt,
+            }))}
+            restaurantName={establishment?.name || "Meu Restaurante"}
+            restaurantLogo={establishment?.logo}
+            initialIndex={storyViewerIndex}
+            onClose={() => setShowStoryViewer(false)}
+          />
+        )}
 
         {/* Modal de confirmação de exclusão */}
         <Dialog open={deleteConfirm !== null} onOpenChange={() => setDeleteConfirm(null)}>

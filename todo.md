@@ -8285,3 +8285,4 @@
 - [x] Story Analytics: Exibir contagem de views em cada story no painel admin
 - [x] Stories: Borda cinza no logo do menu público quando usuário já visualizou todos os stories (igual Instagram)
 - [x] Stories: Resetar estado "visto" quando restaurante publicar novo story (comparação de IDs no sessionStorage)
+- [x] Stories Admin: Substituir modal de preview por StoryViewer fullscreen (mesmo do menu público)
