@@ -8233,3 +8233,4 @@
 - [x] Permitir clicar no texto da descrição para expandir/recolher (além do botão Ver mais/Ver menos)
 - [x] Menu Público: Sticky header nos grupos de complementos — nome do grupo fica fixo no topo do modal enquanto o utilizador faz scroll pelos itens do grupo
 - [x] Menu Público: Header sticky do grupo de complementos deve ficar mais próximo da borda da foto, escondendo itens que aparecem entre a foto e o header
+- [x] Bug: Borda superior do grupo de complementos não aparece — pseudo-elemento branco está a cobrir a borda de cima do rounded-xl

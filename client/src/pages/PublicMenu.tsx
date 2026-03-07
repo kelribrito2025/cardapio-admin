@@ -3144,7 +3144,7 @@ export default function PublicMenu() {
                         {/* Header do Grupo - Sticky */}
                         <div className={`relative px-4 py-3 border-b transition-colors duration-300 sticky z-10 rounded-t-xl ${isGroupComplete ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`} style={{paddingTop: '8px', height: '58px', top: 0}}>
                           {/* Cobertura branca acima do header sticky para esconder itens que scrollaram */}
-                          <div className="absolute left-[-2px] right-[-2px] bg-white pointer-events-none" style={{ bottom: '100%', height: '300px' }} />
+                          <div className="absolute left-[-2px] right-[-2px] bg-white pointer-events-none" style={{ bottom: 'calc(100% + 1px)', height: '300px' }} />
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <h4 className={`font-semibold transition-colors duration-300 ${isGroupComplete ? 'text-red-600' : 'text-gray-900'}`}>{group.name}</h4>
