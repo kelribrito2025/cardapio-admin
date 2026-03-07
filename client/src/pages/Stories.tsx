@@ -1,7 +1,7 @@
 import { trpc } from "@/lib/trpc";
 import { AdminLayout } from "@/components/AdminLayout";
 import { PageHeader } from "@/components/shared";
-import { Plus, Trash2, Clock, ImageIcon, AlertCircle, Eye } from "lucide-react";
+import { Plus, Trash2, Clock, ImageIcon, AlertCircle, Eye, Clapperboard } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -145,7 +145,7 @@ export default function Stories() {
           <PageHeader 
             title="Stories" 
             description="Divulgue promoções e novidades no cardápio público"
-            icon={<ImageIcon className="h-6 w-6 text-purple-600" />}
+            icon={<Clapperboard className="h-6 w-6 text-blue-600" />}
           />
         </div>
 

@@ -8290,3 +8290,4 @@
 - [x] Stories: Ao abrir StoryViewer no menu público, ir direto para o primeiro story não visto (em vez de começar do início)
 - [x] Stories: Corrigir header da página para ficar exatamente igual ao padrão do Dashboard (ícone + título bold + descrição cinza)
 - [x] Stories: Corrigir espaçamentos da página para ficar no padrão das demais páginas admin
+- [x] Substituir ícone de Stories de CircleDot para Clapperboard na sidebar e na página (ícone azul na página)
