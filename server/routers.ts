@@ -1011,6 +1011,7 @@ export const appRouter = router({
           endTime: z.string(),
         })).nullable().optional(),
         badgeText: z.string().nullable().optional(),
+        description: z.string().nullable().optional(),
         freeOnDelivery: z.boolean().optional(),
         freeOnPickup: z.boolean().optional(),
         freeOnDineIn: z.boolean().optional(),
@@ -1018,6 +1019,8 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const { establishmentId, complementName, groupIds, newName, ...data } = input;
         const updateData = { ...data, ...(newName ? { name: newName } : {}) };
+        // Evitar erro "No values to set" quando não há campos para atualizar
+        if (Object.keys(updateData).length === 0) return { success: true };
         await db.updateComplementItemsByName(establishmentId, complementName, updateData, groupIds);
         return { success: true };
       }),

@@ -1466,6 +1466,7 @@ function GroupCard({
                                 ...(data.price !== undefined ? { price: data.price } : {}),
                                 ...(data.priceMode !== undefined ? { priceMode: data.priceMode } : {}),
                                 ...(data.badgeText !== undefined ? { badgeText: data.badgeText } : {}),
+                                ...(data.description !== undefined ? { description: data.description } : {}),
                                 ...(data.availabilityType !== undefined ? { availabilityType: data.availabilityType } : {}),
                                 ...(data.availableDays !== undefined ? { availableDays: data.availableDays } : {}),
                                 ...(data.availableHours !== undefined ? { availableHours: data.availableHours } : {}),

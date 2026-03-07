@@ -1162,6 +1162,9 @@ export async function updateComplementItem(id: number, data: Partial<InsertCompl
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
+  // Evitar erro "No values to set" quando não há campos para atualizar
+  if (Object.keys(data).length === 0) return;
+  
   await db.update(complementItems).set(data).where(eq(complementItems.id, id));
 }
 
@@ -1258,6 +1261,7 @@ export async function updateComplementItemsByName(
     availableDays?: number[] | null;
     availableHours?: { day: number; startTime: string; endTime: string }[] | null;
     badgeText?: string | null;
+    description?: string | null;
     freeOnDelivery?: boolean;
     freeOnPickup?: boolean;
     freeOnDineIn?: boolean;
