@@ -8326,3 +8326,4 @@
 - [x] Stories: Preview realista mostrando como o story ficará no menu público (imagem, overlay, badge de preço, botão de ação)
 - [x] Stories: Botão "Pré-visualizar" no passo de detalhes leva ao preview, botão "Publicar" só no preview
 - [x] Stories: Testes para preview step (27 testes passando)
+- [x] Bug: Badges de tipo dos stories cortados (overflow hidden) nos círculos da página admin de Stories — corrigido overflow-hidden para overflow-visible no botão pai

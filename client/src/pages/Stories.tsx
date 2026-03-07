@@ -149,7 +149,7 @@ export default function Stories() {
                       setStoryViewerIndex(idx >= 0 ? idx : 0);
                       setShowStoryViewer(true);
                     }}
-                    className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden group"
+                    className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-visible group"
                   >
                     {/* Borda degradê Instagram */}
                     <div className="absolute inset-0 rounded-full p-[3px]" style={{
