@@ -8261,3 +8261,4 @@
 - [x] Catalogo + Complementos: Botão "Editar" só aparece no hover do card (desktop), escondido por padrão
 - [x] Catalogo + Complementos: Adicionar separador "|" antes do ícone FileText (ex: Nome | ícone)
 - [x] Bug: Card "Bem-vindo ao Mindi" aparece acima da Dashboard no mobile — corrigido: esconder mobile card quando renderizado pelo OnboardingFAB
+- [x] Sidebar desktop do WelcomeChecklist: Aplicar visual do card mobile Bem-vindo ao Mindi (header limpo, barra de progresso, ícones suaves) — apenas visual

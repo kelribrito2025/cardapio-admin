@@ -732,29 +732,43 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
               <SheetTitle className="sr-only">Configuração Inicial</SheetTitle>
               <SheetDescription className="sr-only">Passos para configurar seu restaurante</SheetDescription>
 
-              {/* Header com degradê suave e glow */}
-              <div className="relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-red-500/90 via-red-400/80 to-rose-400/70 dark:from-red-600/80 dark:via-red-500/70 dark:to-rose-500/60" />
-                <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/20 rounded-full blur-3xl" />
-                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-rose-300/20 rounded-full blur-3xl" />
-
-                <div className="relative px-6 pt-6 pb-5">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-3 flex-1 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-white/25 backdrop-blur-sm flex items-center justify-center shadow-sm flex-shrink-0 mt-0.5">
-                        <Rocket className="h-5 w-5 text-white" />
-                      </div>
-                      <div>
-                        <h2 className="text-2xl font-bold text-white tracking-tight">Primeiros Passos</h2>
-                        <p className="text-sm text-white/70 mt-1">Configuração rápida e simples · <span className="text-white/90 font-medium">{adjustedChecklist.completedCount} de {adjustedChecklist.totalSteps} passos</span></p>
-                      </div>
+              {/* Header estilo Bem-vindo ao Mindi */}
+              <div className="px-6 pt-6 pb-4 border-b border-border/40">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <PartyPopper className="h-5 w-5 text-primary" />
                     </div>
-                    <button
-                      onClick={handleMinimize}
-                      className="flex-shrink-0 p-2 -mt-1 -mr-1 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
+                    <div>
+                      <h2 className="text-xl font-bold text-foreground tracking-tight">Bem-vindo ao Mindi!</h2>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Seu restaurante <span className="font-medium text-foreground">{establishmentName || "foi criado"}</span> com sucesso.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleMinimize}
+                    className="flex-shrink-0 p-2 -mt-1 -mr-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="mt-4">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                      <Rocket className="h-3.5 w-3.5 text-primary" />
+                      Primeiros passos
+                    </span>
+                    <span className="text-xs font-semibold text-foreground">
+                      {adjustedChecklist.completedCount}/{adjustedChecklist.totalSteps}
+                    </span>
+                  </div>
+                  <div className="h-1.5 bg-muted/60 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-700 ease-out"
+                      style={{ width: `${progress}%` }}
+                    />
                   </div>
                 </div>
               </div>
