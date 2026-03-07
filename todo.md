@@ -8307,3 +8307,6 @@
 - [x] Stories Venda: Escrever testes para novos tipos de stories
 - [x] Bug: Coluna storyType no banco em vez de type — colunas faltantes adicionadas manualmente ao banco (migração não tinha sido aplicada)
 - [x] Bug: Seletor de produto no CreateStoryDialog não encontra nenhum produto ao buscar (trpc.products.list → trpc.product.list)
+- [x] Bug: Na segunda visualização dos stories, o segundo story (promoção) não carrega — corrigido com key dinâmica e pointer-events-none nos overlays
+- [x] Bug: No mobile, tocar na direita do story fecha em vez de avançar para o próximo (overlays bloqueavam toques — corrigido com pointer-events-none)
+- [ ] Bug: Seletor de produto no CreateStoryDialog voltou a mostrar "Nenhum produto encontrado" (mobile)

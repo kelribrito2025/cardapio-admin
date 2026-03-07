@@ -1878,7 +1878,8 @@ export default function PublicMenu() {
       {/* Story Viewer Fullscreen */}
       {showStoryViewer && activeStories && activeStories.length > 0 && establishment && (
         <StoryViewer
-          stories={activeStories.map(s => ({ ...s, createdAt: String(s.createdAt), expiresAt: String(s.expiresAt) }))}
+          key={`story-viewer-${Date.now()}`}
+          stories={activeStories.map(s => ({ ...s, createdAt: String(s.createdAt), expiresAt: String(s.expiresAt), promoExpiresAt: s.promoExpiresAt ? String(s.promoExpiresAt) : null }))}
           initialIndex={storyInitialIndex}
           onStoryViewed={(storyId) => {
             // Salvar cada story individualmente no localStorage

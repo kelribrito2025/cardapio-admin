@@ -257,7 +257,7 @@ export default function StoryViewer({
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
-      {/* Container do story */}
+      {/* Container do story — recebe TODOS os eventos de toque/mouse */}
       <div
         className="relative w-full h-full max-w-[480px] mx-auto flex flex-col select-none"
         onClick={handleClick}
@@ -273,7 +273,7 @@ export default function StoryViewer({
         }}
       >
         {/* Imagem de fundo */}
-        <div className="absolute inset-0 flex items-center justify-center bg-black">
+        <div className="absolute inset-0 flex items-center justify-center bg-black pointer-events-none">
           {!imageLoaded && (
             <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
           )}
@@ -286,8 +286,8 @@ export default function StoryViewer({
           />
         </div>
 
-        {/* Overlay superior com gradiente */}
-        <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/60 via-black/20 to-transparent pt-2 px-3 pb-12">
+        {/* Overlay superior com gradiente — pointer-events-none para não bloquear toques */}
+        <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/60 via-black/20 to-transparent pt-2 px-3 pb-12 pointer-events-none">
           {/* Barras de progresso */}
           <div className="flex gap-1 mb-3">
             {stories.map((_, idx) => (
@@ -337,7 +337,7 @@ export default function StoryViewer({
               </span>
             </div>
 
-            {/* Botão fechar */}
+            {/* Botão fechar — pointer-events-auto para ser clicável */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -345,7 +345,11 @@ export default function StoryViewer({
               }}
               onMouseDown={(e) => e.stopPropagation()}
               onTouchStart={(e) => e.stopPropagation()}
-              className="p-1.5 rounded-full hover:bg-white/10 transition-colors flex-shrink-0"
+              onTouchEnd={(e) => {
+                e.stopPropagation();
+                onClose();
+              }}
+              className="p-1.5 rounded-full hover:bg-white/10 transition-colors flex-shrink-0 pointer-events-auto"
             >
               <X className="h-5 w-5 text-white" />
             </button>
@@ -353,8 +357,9 @@ export default function StoryViewer({
         </div>
 
         {/* Overlay inferior — Promoção e/ou Botão de ação */}
+        {/* pointer-events-none no container, pointer-events-auto apenas nos botões */}
         {(currentStory.type === "promo" || hasAction) && (
-          <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent pb-6 pt-20 px-4">
+          <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent pb-6 pt-20 px-4 pointer-events-none">
             {/* Dados da promoção */}
             {currentStory.type === "promo" && (
               <div className="mb-4 text-center">
@@ -384,13 +389,20 @@ export default function StoryViewer({
               </div>
             )}
 
-            {/* Botão de ação */}
+            {/* Botão de ação — pointer-events-auto para ser clicável */}
             {hasAction && (
               <button
                 onClick={handleActionClick}
                 onMouseDown={(e) => e.stopPropagation()}
                 onTouchStart={(e) => e.stopPropagation()}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white text-black font-semibold text-sm shadow-lg active:scale-[0.98] transition-transform"
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  if (currentStory?.productId && onProductAction) {
+                    onProductAction(currentStory.productId);
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white text-black font-semibold text-sm shadow-lg active:scale-[0.98] transition-transform pointer-events-auto"
               >
                 <ChevronUp className="h-4 w-4" />
                 {actionButtonLabel}
