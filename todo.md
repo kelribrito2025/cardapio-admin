@@ -8237,3 +8237,5 @@
 - [x] Menu Público: Bloquear scroll para próximo grupo se grupo obrigatório actual não estiver completo
 - [x] Menu Público: Tarja vermelha no header do grupo informando "Falta(m) X complemento(s) obrigatório(s)"
 - [x] Menu Público: Mover tarja vermelha de complementos faltantes para fora do header — barra vermelha sólida entre o header e os itens do grupo (estilo iFood)
+- [x] Menu Público: Mover tarja vermelha para o footer do modal — acima da borda superior do botão Adicionar (não dentro dos grupos) [revertido]
+- [x] Menu Público: Remover tarja vermelha de complementos faltantes do modal (não é necessária)
