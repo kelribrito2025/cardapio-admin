@@ -139,7 +139,7 @@ export default function Stories() {
 
   return (
     <AdminLayout>
-      <div className="container max-w-4xl py-6 md:py-8">
+      <div className="space-y-5">
         {/* Header */}
         <div className="mb-6">
           <PageHeader 
@@ -232,7 +232,7 @@ export default function Stories() {
         </div>
 
         {/* Info do limite */}
-        <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <AlertCircle className="h-3.5 w-3.5" />
           <span>{activeStories.length}/{MAX_STORIES} stories ativos</span>
           {activeStories.length >= MAX_STORIES && (
@@ -242,7 +242,7 @@ export default function Stories() {
 
         {/* Lista detalhada dos stories */}
         {activeStories.length > 0 && (
-          <div className="mt-8">
+          <div>
             <h2 className="text-sm font-semibold text-foreground mb-4">Stories ativos</h2>
             <div className="space-y-3">
               {activeStories.map((story) => (
@@ -295,7 +295,7 @@ export default function Stories() {
 
         {/* Estado vazio */}
         {!isLoading && activeStories.length === 0 && (
-          <div className="mt-12 flex flex-col items-center text-center">
+          <div className="flex flex-col items-center text-center py-8">
             <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
               <ImageIcon className="h-8 w-8 text-muted-foreground/50" />
             </div>
