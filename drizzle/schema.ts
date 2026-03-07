@@ -1131,3 +1131,13 @@ export const stories = mysqlTable("stories", {
 });
 export type Story = typeof stories.$inferSelect;
 export type InsertStory = typeof stories.$inferInsert;
+
+// Story Views - Analytics de visualizações de stories
+export const storyViews = mysqlTable("storyViews", {
+  id: int("id").autoincrement().primaryKey(),
+  storyId: int("storyId").notNull(),
+  sessionId: varchar("sessionId", { length: 64 }).notNull(),
+  viewedAt: timestamp("viewedAt").defaultNow().notNull(),
+});
+export type StoryView = typeof storyViews.$inferSelect;
+export type InsertStoryView = typeof storyViews.$inferInsert;

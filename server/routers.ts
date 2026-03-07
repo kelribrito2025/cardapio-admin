@@ -6458,6 +6458,13 @@ export const appRouter = router({
         }
         return { success: true };
       }),
+
+    // Analytics: obter contagem de views por story do estabelecimento
+    viewsAnalytics: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.countViewsByEstablishment(input.establishmentId);
+      }),
   }),
 
   // ============ PUBLIC STORIES ============
@@ -6475,6 +6482,13 @@ export const appRouter = router({
       .query(async ({ input }) => {
         const count = await db.countActiveStories(input.establishmentId);
         return { hasStories: count > 0, count };
+      }),
+
+    // Registar view de story (público)
+    recordView: publicProcedure
+      .input(z.object({ storyId: z.number(), sessionId: z.string().min(1).max(64) }))
+      .mutation(async ({ input }) => {
+        return db.recordStoryView(input.storyId, input.sessionId);
       }),
   }),
 });

@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { X } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
 interface Story {
   id: number;
@@ -30,6 +31,17 @@ function timeAgo(date: Date | string): string {
 
 const STORY_DURATION = 5000; // 5 segundos
 
+// Gerar ou recuperar sessionId para analytics de views
+function getOrCreateSessionId(): string {
+  const key = "mindi_story_session";
+  let sid = sessionStorage.getItem(key);
+  if (!sid) {
+    sid = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36);
+    sessionStorage.setItem(key, sid);
+  }
+  return sid;
+}
+
 export default function StoryViewer({
   stories,
   restaurantName,
@@ -44,6 +56,19 @@ export default function StoryViewer({
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(0);
   const elapsedRef = useRef<number>(0);
+  const viewedStoriesRef = useRef<Set<number>>(new Set());
+
+  const sessionId = useMemo(() => getOrCreateSessionId(), []);
+  const recordViewMutation = trpc.publicStories.recordView.useMutation();
+
+  // Registar view quando o story muda
+  useEffect(() => {
+    const story = stories[currentIndex];
+    if (story && !viewedStoriesRef.current.has(story.id)) {
+      viewedStoriesRef.current.add(story.id);
+      recordViewMutation.mutate({ storyId: story.id, sessionId });
+    }
+  }, [currentIndex, stories, sessionId]);
 
   const currentStory = stories[currentIndex];
 

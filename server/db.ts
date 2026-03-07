@@ -52,7 +52,8 @@ import {
   printLogs, InsertPrintLog, PrintLog,
   botApiKeys, InsertBotApiKey, BotApiKey,
   feedbacks, InsertFeedback, Feedback,
-  stories, InsertStory, Story
+  stories, InsertStory, Story,
+  storyViews, InsertStoryView, StoryView
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 import crypto from 'crypto';
@@ -11714,4 +11715,69 @@ export async function cleanupExpiredStories() {
     await db.delete(stories).where(lte(stories.expiresAt, now));
   }
   return expired;
+}
+
+// ============ STORY VIEWS ANALYTICS ============
+
+/**
+ * Registar uma view de story (1 por sessão por story)
+ */
+export async function recordStoryView(storyId: number, sessionId: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Verificar se já existe view desta sessão para este story
+  const existing = await db.select({ id: storyViews.id }).from(storyViews)
+    .where(and(
+      eq(storyViews.storyId, storyId),
+      eq(storyViews.sessionId, sessionId)
+    ))
+    .limit(1);
+  
+  if (existing.length > 0) return { alreadyViewed: true };
+  
+  await db.insert(storyViews).values({ storyId, sessionId });
+  return { alreadyViewed: false };
+}
+
+/**
+ * Contar views de um story específico
+ */
+export async function countStoryViews(storyId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.select({ count: sql<number>`count(*)` }).from(storyViews)
+    .where(eq(storyViews.storyId, storyId));
+  return Number(result[0]?.count ?? 0);
+}
+
+/**
+ * Contar views de todos os stories de um estabelecimento (retorna map storyId -> count)
+ */
+export async function countViewsByEstablishment(establishmentId: number): Promise<Record<number, number>> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Buscar todos os stories do estabelecimento
+  const estStories = await db.select({ id: stories.id }).from(stories)
+    .where(eq(stories.establishmentId, establishmentId));
+  
+  if (estStories.length === 0) return {};
+  
+  const storyIds = estStories.map(s => s.id);
+  
+  // Contar views agrupadas por storyId
+  const result = await db.select({
+    storyId: storyViews.storyId,
+    count: sql<number>`count(*)`
+  }).from(storyViews)
+    .where(inArray(storyViews.storyId, storyIds))
+    .groupBy(storyViews.storyId);
+  
+  const viewsMap: Record<number, number> = {};
+  for (const row of result) {
+    viewsMap[row.storyId] = Number(row.count);
+  }
+  return viewsMap;
 }

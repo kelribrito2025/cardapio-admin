@@ -8277,3 +8277,9 @@
 - [x] Stories: Compressão de imagens (max 1080px largura) no upload
 - [x] Stories: Expiração automática 24h
 - [x] Bug: Tabela stories não existe no banco - executar migration db:push (criada via SQL direto)
+- [x] Story Analytics: Schema DB (tabela storyViews com storyId, sessionId, viewedAt)
+- [x] Story Analytics: Helpers DB (registar view, contar views por story, contar views totais por establishment)
+- [x] Story Analytics: Rota tRPC pública para registar view de story
+- [x] Story Analytics: Rota tRPC protegida para obter analytics de views por story
+- [x] Story Analytics: Registar view no StoryViewer do menu público (1 view por sessão por story)
+- [x] Story Analytics: Exibir contagem de views em cada story no painel admin

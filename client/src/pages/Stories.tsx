@@ -1,6 +1,6 @@
 import { trpc } from "@/lib/trpc";
 import { AdminLayout } from "@/components/AdminLayout";
-import { Plus, Trash2, Clock, ImageIcon, AlertCircle } from "lucide-react";
+import { Plus, Trash2, Clock, ImageIcon, AlertCircle, Eye } from "lucide-react";
 import { useState, useRef, useCallback } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -48,6 +48,12 @@ export default function Stories() {
   const { data: storiesList, isLoading, refetch } = trpc.stories.list.useQuery(
     { establishmentId: establishmentId! },
     { enabled: !!establishmentId }
+  );
+
+  // Analytics de views
+  const { data: viewsData } = trpc.stories.viewsAnalytics.useQuery(
+    { establishmentId: establishmentId! },
+    { enabled: !!establishmentId, refetchInterval: 30000 }
   );
 
   const createMutation = trpc.stories.create.useMutation({
@@ -204,7 +210,15 @@ export default function Stories() {
                     <ImageIcon className="h-5 w-5 text-white" />
                   </div>
                 </button>
-                <span className="text-[11px] text-muted-foreground">{timeAgo(story.createdAt)}</span>
+                <div className="flex flex-col items-center">
+                  <span className="text-[11px] text-muted-foreground">{timeAgo(story.createdAt)}</span>
+                  {viewsData && viewsData[story.id] !== undefined && (
+                    <span className="text-[10px] text-muted-foreground/70 flex items-center gap-0.5">
+                      <Eye className="h-2.5 w-2.5" />
+                      {viewsData[story.id]}
+                    </span>
+                  )}
+                </div>
               </div>
             ))
           )}
@@ -243,11 +257,19 @@ export default function Stories() {
                     <p className="text-sm font-medium text-foreground">
                       Publicado {timeAgo(story.createdAt)}
                     </p>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <Clock className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">
-                        {timeRemaining(story.expiresAt)}
-                      </span>
+                    <div className="flex items-center gap-3 mt-0.5">
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">
+                          {timeRemaining(story.expiresAt)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Eye className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">
+                          {viewsData?.[story.id] ?? 0} {(viewsData?.[story.id] ?? 0) === 1 ? "view" : "views"}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
