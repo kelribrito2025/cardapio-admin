@@ -8288,3 +8288,4 @@
 - [x] Stories Admin: Substituir modal de preview por StoryViewer fullscreen (mesmo do menu público)
 - [x] Stories: Ajustar header da página para ficar no padrão das demais páginas admin (descrição mais curta)
 - [x] Stories: Ao abrir StoryViewer no menu público, ir direto para o primeiro story não visto (em vez de começar do início)
+- [x] Stories: Corrigir header da página para ficar exatamente igual ao padrão do Dashboard (ícone + título bold + descrição cinza)
