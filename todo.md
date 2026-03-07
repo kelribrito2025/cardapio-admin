@@ -8231,3 +8231,5 @@
 - [x] Bug: Alterar nome do responsável no estabelecimento 210008 (user 1471505) não atualiza avatar — corrigido: causa raiz era que ownerDisplayName não era atualizado junto com responsibleName; agora updateAccountData atualiza users.name + establishments.ownerDisplayName + invalidate do establishment.get no frontend
 - [x] Menu Público: Descrição do produto com "Ver mais / Ver menos" — limitar a 3 linhas com line-clamp-3 e link clicável para expandir/recolher
 - [x] Permitir clicar no texto da descrição para expandir/recolher (além do botão Ver mais/Ver menos)
+- [x] Menu Público: Sticky header nos grupos de complementos — nome do grupo fica fixo no topo do modal enquanto o utilizador faz scroll pelos itens do grupo
+- [x] Menu Público: Header sticky do grupo de complementos deve ficar mais próximo da borda da foto, escondendo itens que aparecem entre a foto e o header

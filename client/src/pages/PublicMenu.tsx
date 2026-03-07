@@ -3114,7 +3114,7 @@ export default function PublicMenu() {
             {/* Body */}
             <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
               {/* Título e Preço */}
-              <div>
+              <div className="relative z-20">
                 <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
                 {Number(selectedProduct.price) > 0 && (
                   <p className="text-lg font-semibold text-red-500 mt-1">
@@ -3125,7 +3125,9 @@ export default function PublicMenu() {
 
               {/* Descrição */}
               {selectedProduct.description && (
-                <ExpandableDescription text={selectedProduct.description} />
+                <div className="relative z-20">
+                  <ExpandableDescription text={selectedProduct.description} />
+                </div>
               )}
 
               {/* Grupos de Complementos */}
@@ -3138,9 +3140,11 @@ export default function PublicMenu() {
                     const isGroupComplete = totalSelectedInGroup >= group.maxQuantity;
                     
                     return (
-                      <div key={group.id} id={`complement-group-${group.id}`} className={`rounded-xl overflow-hidden transition-all duration-300 ${isGroupComplete ? 'border-2 border-red-400' : 'border border-gray-200'}`}>
-                        {/* Header do Grupo */}
-                        <div className={`px-4 py-3 border-b transition-colors duration-300 ${isGroupComplete ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`} style={{paddingTop: '8px', height: '58px'}}>
+                      <div key={group.id} id={`complement-group-${group.id}`} className={`rounded-xl transition-all duration-300 ${isGroupComplete ? 'border-2 border-red-400' : 'border border-gray-200'}`}>
+                        {/* Header do Grupo - Sticky */}
+                        <div className={`relative px-4 py-3 border-b transition-colors duration-300 sticky z-10 rounded-t-xl ${isGroupComplete ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`} style={{paddingTop: '8px', height: '58px', top: 0}}>
+                          {/* Cobertura branca acima do header sticky para esconder itens que scrollaram */}
+                          <div className="absolute left-[-2px] right-[-2px] bg-white pointer-events-none" style={{ bottom: '100%', height: '300px' }} />
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <h4 className={`font-semibold transition-colors duration-300 ${isGroupComplete ? 'text-red-600' : 'text-gray-900'}`}>{group.name}</h4>
