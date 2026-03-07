@@ -391,47 +391,50 @@ export default function StoryViewer({
 
         {/* Overlay inferior — Promoção e/ou Botão de ação */}
         {(currentStory.type === "promo" || hasAction) && (
-          <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent pb-6 pt-20 px-4 pointer-events-none">
-            {/* Dados da promoção */}
-            {currentStory.type === "promo" && (
-              <div className="mb-4 text-center">
-                {currentStory.promoTitle && (
-                  <h3 className="text-white text-xl font-bold drop-shadow-lg mb-1">
-                    {currentStory.promoTitle}
-                  </h3>
-                )}
-                {currentStory.promoText && (
-                  <p className="text-white/90 text-sm drop-shadow-md mb-2">
-                    {currentStory.promoText}
-                  </p>
-                )}
-                {currentStory.promoPrice && (
-                  <div className="inline-block bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 mb-2">
-                    <span className="text-white text-lg font-bold">
-                      {currentStory.promoPrice}
-                    </span>
+          <div className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none">
+            {/* Fundo sólido escuro para garantir legibilidade */}
+            <div className="bg-black/85 backdrop-blur-md px-4 pt-5 pb-6 rounded-t-2xl">
+              {/* Dados da promoção */}
+              {currentStory.type === "promo" && (
+                <div className="mb-4 text-center">
+                  {currentStory.promoTitle && (
+                    <h3 className="text-white text-lg font-bold mb-1 line-clamp-2">
+                      {currentStory.promoTitle.slice(0, 60)}
+                    </h3>
+                  )}
+                  {currentStory.promoText && (
+                    <p className="text-white/80 text-sm mb-2 line-clamp-2">
+                      {currentStory.promoText.slice(0, 100)}
+                    </p>
+                  )}
+                  <div className="flex items-center justify-center gap-3">
+                    {currentStory.promoPrice && (
+                      <span className="text-white text-xl font-bold">
+                        {currentStory.promoPrice}
+                      </span>
+                    )}
+                    {promoCountdown && (
+                      <div className="flex items-center gap-1 text-white/60 text-xs">
+                        <Clock className="h-3 w-3" />
+                        <span>{promoCountdown}</span>
+                      </div>
+                    )}
                   </div>
-                )}
-                {promoCountdown && (
-                  <div className="flex items-center justify-center gap-1.5 text-white/70 text-xs mt-1">
-                    <Clock className="h-3 w-3" />
-                    <span>{promoCountdown}</span>
-                  </div>
-                )}
-              </div>
-            )}
+                </div>
+              )}
 
-            {/* Botão de ação — pointer-events-auto */}
-            {hasAction && (
-              <button
-                onClick={handleActionClick}
-                onPointerDown={(e) => e.stopPropagation()}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-red-600 text-white font-semibold text-sm shadow-lg shadow-red-600/40 active:scale-[0.98] transition-transform pointer-events-auto animate-pulse"
-              >
-                <ChevronUp className="h-4 w-4" />
-                {actionButtonLabel}
-              </button>
-            )}
+              {/* Botão de ação — pointer-events-auto */}
+              {hasAction && (
+                <button
+                  onClick={handleActionClick}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-red-600 text-white font-semibold text-sm shadow-lg shadow-red-600/40 active:scale-[0.98] transition-transform pointer-events-auto animate-pulse"
+                >
+                  <ChevronUp className="h-4 w-4" />
+                  {actionButtonLabel}
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>

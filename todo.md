@@ -8316,3 +8316,4 @@
 - [x] Bug: Ao navegar para o 2o story, barra de progresso 100% — corrigido com manualNavRef flag
 - [x] Reordenar menu sidebar: Stories acima de Cupons (Stories, Cupons, Campanhas)
 - [x] Stories: Botão de ação (Ver produto / Pedir agora) no menu público com cor vermelha e animação pulsante
+- [x] Stories: Melhorar overlay de promoção com fundo escuro sólido (bg-black/85 + backdrop-blur + rounded-t-2xl) para evitar conflito com texto da imagem
