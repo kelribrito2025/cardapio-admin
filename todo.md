@@ -8240,3 +8240,4 @@
 - [x] Menu Público: Mover tarja vermelha para o footer do modal — acima da borda superior do botão Adicionar (não dentro dos grupos) [revertido]
 - [x] Menu Público: Remover tarja vermelha de complementos faltantes do modal (não é necessária)
 - [x] Menu Público: Itens de complementos devem desaparecer por baixo do header sticky ao scroll (não aparecer por cima)
+- [x] Menu Público: Restaurar visual original dos grupos de complementos (borda arredondada, fundo cinza claro no header) mantendo sticky funcional

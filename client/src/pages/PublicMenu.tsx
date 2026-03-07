@@ -3133,7 +3133,7 @@ export default function PublicMenu() {
 
               {/* Grupos de Complementos */}
               {productComplements && productComplements.length > 0 && (
-                <div className="space-y-0">
+                <div className="space-y-4 px-4 sm:px-5 md:px-6">
                   {(() => {
                     // Encontrar o primeiro grupo obrigatório incompleto
                     let firstIncompleteRequiredIdx = -1;
@@ -3160,9 +3160,9 @@ export default function PublicMenu() {
                     if (isBlocked) return null;
                     
                     return (
-                      <div key={group.id} id={`complement-group-${group.id}`} className={`transition-all duration-300 border-t ${isGroupComplete ? 'border-red-200' : 'border-gray-200'}`}>
+                      <div key={group.id} id={`complement-group-${group.id}`} className={`transition-all duration-300 rounded-xl border ${isGroupComplete ? 'border-red-200' : 'border-gray-200'}`}>
                         {/* Header do Grupo - Sticky */}
-                        <div className={`px-4 py-3 border-b transition-colors duration-300 sticky z-20 shadow-sm ${isGroupComplete ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`} style={{paddingTop: '8px', top: 0}}>
+                        <div className={`px-4 py-3 border-b transition-colors duration-300 sticky z-20 shadow-sm rounded-t-xl ${isGroupComplete ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`} style={{paddingTop: '8px', top: 0}}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <h4 className={`font-semibold transition-colors duration-300 ${isGroupComplete ? 'text-red-600' : 'text-gray-900'}`}>{group.name}</h4>
