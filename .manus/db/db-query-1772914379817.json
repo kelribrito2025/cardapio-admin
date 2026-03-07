@@ -1,0 +1,35 @@
+{
+  "query": "SELECT * FROM __drizzle_migrations ORDER BY created_at DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT * FROM __drizzle_migrations ORDER BY created_at DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "1735309",
+      "hash": "0118_thin_wolf_cub",
+      "created_at": "20260305190239"
+    },
+    {
+      "id": "1735308",
+      "hash": "c2a49906a2dfa82d9a3cbd247419066c9162fe42b6b00738b804cd8d3a526c28",
+      "created_at": "1772543883918"
+    },
+    {
+      "id": "1705317",
+      "hash": "39c60a7eed83e24f6113e574aab0b2b01cdb1195ceb8ebff3f78d626210da92c",
+      "created_at": "1772378726992"
+    },
+    {
+      "id": "1705316",
+      "hash": "a2b901465fbec313a6822c729e3bda08bd75871ee42b18b71a4df4a48c6690f7",
+      "created_at": "1772375703605"
+    },
+    {
+      "id": "1705315",
+      "hash": "a34d1aefae0bf5c85710471e3e5c9cd065e5e175908a38b3ab82e02a3dca3199",
+      "created_at": "1772294924043"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\thash\tcreated_at\n1735309\t0118_thin_wolf_cub\t20260305190239\n1735308\tc2a49906a2dfa82d9a3cbd247419066c9162fe42b6b00738b804cd8d3a526c28\t1772543883918\n1705317\t39c60a7eed83e24f6113e574aab0b2b01cdb1195ceb8ebff3f78d626210da92c\t1772378726992\n1705316\ta2b901465fbec313a6822c729e3bda08bd75871ee42b18b71a4df4a48c6690f7\t1772375703605\n1705315\ta34d1aefae0bf5c85710471e3e5c9cd065e5e175908a38b3ab82e02a3dca3199\t1772294924043\n",
+  "stderr": "",
+  "execution_time_ms": 363
+}

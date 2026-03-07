@@ -8305,3 +8305,4 @@
 - [x] Stories Venda: Integrar botão do story com abertura do modal de produto no cardápio
 - [x] Stories Venda: Ocultar automaticamente stories de promoção expirados
 - [x] Stories Venda: Escrever testes para novos tipos de stories
+- [x] Bug: Coluna storyType no banco em vez de type — colunas faltantes adicionadas manualmente ao banco (migração não tinha sido aplicada)
