@@ -6476,12 +6476,12 @@ export const appRouter = router({
         return db.getActiveStoriesByEstablishment(input.establishmentId);
       }),
 
-    // Verificar se tem stories ativos (público, leve)
+    // Verificar se tem stories ativos (público, leve) - retorna IDs para comparação de cache
     hasActive: publicProcedure
       .input(z.object({ establishmentId: z.number() }))
       .query(async ({ input }) => {
-        const count = await db.countActiveStories(input.establishmentId);
-        return { hasStories: count > 0, count };
+        const ids = await db.getActiveStoryIds(input.establishmentId);
+        return { hasStories: ids.length > 0, count: ids.length, storyIds: ids };
       }),
 
     // Registar view de story (público)

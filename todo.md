@@ -8284,3 +8284,4 @@
 - [x] Story Analytics: Registar view no StoryViewer do menu público (1 view por sessão por story)
 - [x] Story Analytics: Exibir contagem de views em cada story no painel admin
 - [x] Stories: Borda cinza no logo do menu público quando usuário já visualizou todos os stories (igual Instagram)
+- [x] Stories: Resetar estado "visto" quando restaurante publicar novo story (comparação de IDs no sessionStorage)

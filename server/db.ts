@@ -11781,3 +11781,17 @@ export async function countViewsByEstablishment(establishmentId: number): Promis
   }
   return viewsMap;
 }
+
+// Retorna apenas os IDs dos stories ativos (leve, para comparação de cache)
+export async function getActiveStoryIds(establishmentId: number): Promise<number[]> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const now = new Date();
+  const result = await db.select({ id: stories.id }).from(stories)
+    .where(and(
+      eq(stories.establishmentId, establishmentId),
+      gt(stories.expiresAt, now)
+    ))
+    .orderBy(asc(stories.createdAt));
+  return result.map(r => r.id);
+}

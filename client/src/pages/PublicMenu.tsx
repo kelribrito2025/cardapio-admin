@@ -413,18 +413,21 @@ export default function PublicMenu() {
     { enabled: !!data?.establishment?.id }
   );
 
-  // Verificar se todos os stories já foram vistos (via sessionStorage)
+  // Verificar se todos os stories já foram vistos (via sessionStorage com comparação de IDs)
   useEffect(() => {
     if (!storiesStatus?.hasStories || !data?.establishment?.id) return;
     try {
       const key = `mindi_stories_viewed_${data.establishment.id}`;
       const viewedRaw = sessionStorage.getItem(key);
-      if (viewedRaw) {
+      if (viewedRaw && storiesStatus.storyIds) {
         const viewedIds: number[] = JSON.parse(viewedRaw);
-        // Se o count de stories ativos for igual ao número de IDs vistos, todos foram vistos
-        if (viewedIds.length >= (storiesStatus.count || 0)) {
+        const activeIds = storiesStatus.storyIds;
+        // Verificar se TODOS os IDs ativos estão nos IDs vistos
+        const allViewed = activeIds.every((id: number) => viewedIds.includes(id));
+        if (allViewed) {
           setAllStoriesViewed(true);
         } else {
+          // Novo story foi publicado ou algum expirou — resetar estado
           setAllStoriesViewed(false);
         }
       } else {
