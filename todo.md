@@ -8239,3 +8239,4 @@
 - [x] Menu Público: Mover tarja vermelha de complementos faltantes para fora do header — barra vermelha sólida entre o header e os itens do grupo (estilo iFood)
 - [x] Menu Público: Mover tarja vermelha para o footer do modal — acima da borda superior do botão Adicionar (não dentro dos grupos) [revertido]
 - [x] Menu Público: Remover tarja vermelha de complementos faltantes do modal (não é necessária)
+- [x] Menu Público: Itens de complementos devem desaparecer por baixo do header sticky ao scroll (não aparecer por cima)

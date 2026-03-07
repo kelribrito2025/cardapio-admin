@@ -3112,25 +3112,28 @@ export default function PublicMenu() {
             )}
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
-              {/* Título e Preço */}
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
-                {Number(selectedProduct.price) > 0 && (
-                  <p className="text-lg font-semibold text-red-500 mt-1">
-                    {formatPrice(selectedProduct.price)}
-                  </p>
+            <div className="flex-1 overflow-y-auto overscroll-contain space-y-0">
+              {/* Título, Preço e Descrição - dentro do scroll mas com z-index para ficar acima */}
+              <div className="p-4 sm:p-5 md:p-6 pb-2 space-y-3 sm:space-y-4 relative z-30 bg-white">
+                {/* Título e Preço */}
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">{selectedProduct.name}</h3>
+                  {Number(selectedProduct.price) > 0 && (
+                    <p className="text-lg font-semibold text-red-500 mt-1">
+                      {formatPrice(selectedProduct.price)}
+                    </p>
+                  )}
+                </div>
+
+                {/* Descrição */}
+                {selectedProduct.description && (
+                  <ExpandableDescription text={selectedProduct.description} />
                 )}
               </div>
 
-              {/* Descrição */}
-              {selectedProduct.description && (
-                <ExpandableDescription text={selectedProduct.description} />
-              )}
-
               {/* Grupos de Complementos */}
               {productComplements && productComplements.length > 0 && (
-                <div className="space-y-4">
+                <div className="space-y-0">
                   {(() => {
                     // Encontrar o primeiro grupo obrigatório incompleto
                     let firstIncompleteRequiredIdx = -1;
@@ -3157,9 +3160,9 @@ export default function PublicMenu() {
                     if (isBlocked) return null;
                     
                     return (
-                      <div key={group.id} id={`complement-group-${group.id}`} className={`rounded-xl transition-all duration-300 ${isGroupComplete ? 'border-2 border-red-400' : 'border border-gray-200'}`}>
+                      <div key={group.id} id={`complement-group-${group.id}`} className={`transition-all duration-300 border-t ${isGroupComplete ? 'border-red-200' : 'border-gray-200'}`}>
                         {/* Header do Grupo - Sticky */}
-                        <div className={`px-4 py-3 border-b transition-colors duration-300 sticky z-10 rounded-t-xl ${isGroupComplete ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`} style={{paddingTop: '8px', top: 0}}>
+                        <div className={`px-4 py-3 border-b transition-colors duration-300 sticky z-20 shadow-sm ${isGroupComplete ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`} style={{paddingTop: '8px', top: 0}}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <h4 className={`font-semibold transition-colors duration-300 ${isGroupComplete ? 'text-red-600' : 'text-gray-900'}`}>{group.name}</h4>
@@ -3427,7 +3430,7 @@ export default function PublicMenu() {
                 const total = Array.from(sel.values()).reduce((a, b) => a + b, 0);
                 return g.minQuantity >= 1 && total < g.minQuantity;
               })) && (
-              <div data-observation-field>
+              <div data-observation-field className="p-4 sm:p-5 md:p-6 pt-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Observações
                 </label>
