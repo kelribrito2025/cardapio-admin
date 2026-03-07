@@ -6391,5 +6391,91 @@ export const appRouter = router({
         return db.getFeedbackStats();
       }),
   }),
+
+  // ============ STORIES ============
+  stories: router({
+    // Listar stories do estabelecimento (admin)
+    list: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getStoriesByEstablishment(input.establishmentId);
+      }),
+
+    // Criar story (admin) — upload com compressão
+    create: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        base64: z.string(),
+        mimeType: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        // Verificar limite de 5 stories ativos
+        const activeCount = await db.countActiveStories(input.establishmentId);
+        if (activeCount >= 5) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Limite de 5 stories atingido. Exclua um story antes de adicionar outro.",
+          });
+        }
+
+        // Processar imagem (max 1080px, WebP)
+        const buffer = Buffer.from(input.base64, "base64");
+        const processed = await processSingleImage(buffer, 1080, 80);
+        const id = nanoid();
+        const fileKey = `stories/${input.establishmentId}/${id}.webp`;
+
+        // Upload para S3
+        const { url } = await mindiStoragePut(fileKey, processed.buffer, "image/webp");
+
+        // Expiração em 24h
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+        // Salvar no banco
+        const result = await db.createStory({
+          establishmentId: input.establishmentId,
+          imageUrl: url,
+          fileKey,
+          expiresAt,
+        });
+
+        return { id: result.id, imageUrl: url, expiresAt };
+      }),
+
+    // Deletar story (admin)
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        const deleted = await db.deleteStory(input.id);
+        if (!deleted) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Story não encontrado" });
+        }
+        // Deletar do S3
+        try {
+          const { mindiStorageDelete } = await import("./mindiStorage");
+          await mindiStorageDelete(deleted.fileKey);
+        } catch (e) {
+          console.error("[Stories] Erro ao deletar imagem do S3:", e);
+        }
+        return { success: true };
+      }),
+  }),
+
+  // ============ PUBLIC STORIES ============
+  publicStories: router({
+    // Listar stories ativos de um estabelecimento (público)
+    getActive: publicProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getActiveStoriesByEstablishment(input.establishmentId);
+      }),
+
+    // Verificar se tem stories ativos (público, leve)
+    hasActive: publicProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        const count = await db.countActiveStories(input.establishmentId);
+        return { hasStories: count > 0, count };
+      }),
+  }),
 });
 export type AppRouter = typeof appRouter;

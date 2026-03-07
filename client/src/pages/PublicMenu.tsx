@@ -9,6 +9,7 @@ import { Search, Home, ClipboardList, User, MapPin, ChevronRight, ChevronDown, C
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { MenuSpotlight } from "@/components/MenuSpotlight";
+import StoryViewer from "@/components/StoryViewer";
 
 // Tipo do item do carrinho
 type CartItem = {
@@ -369,6 +370,7 @@ export default function PublicMenu() {
   const [cashbackAmountToUse, setCashbackAmountToUse] = useState('0');
   const [showCashbackCheckoutSheet, setShowCashbackCheckoutSheet] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
+  const [showStoryViewer, setShowStoryViewer] = useState(false);
   
   const userOrdersRef = useRef<typeof userOrders>([]);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
@@ -402,6 +404,18 @@ export default function PublicMenu() {
   const { data: schedulingBusinessHours } = trpc.scheduling.getPublicBusinessHours.useQuery(
     { slug: slug || "" },
     { enabled: !!slug && !!schedulingConfig?.schedulingEnabled }
+  );
+
+  // Query para verificar se há stories ativos
+  const { data: storiesStatus } = trpc.publicStories.hasActive.useQuery(
+    { establishmentId: data?.establishment?.id || 0 },
+    { enabled: !!data?.establishment?.id }
+  );
+
+  // Query para buscar stories ativos (lazy - só quando abrir o viewer)
+  const { data: activeStories, refetch: refetchStories } = trpc.publicStories.getActive.useQuery(
+    { establishmentId: data?.establishment?.id || 0 },
+    { enabled: false }
   );
 
   // Query para buscar complementos do produto selecionado
@@ -1818,6 +1832,24 @@ export default function PublicMenu() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Story Viewer Fullscreen */}
+      {showStoryViewer && activeStories && activeStories.length > 0 && establishment && (
+        <StoryViewer
+          stories={activeStories.map(s => ({ ...s, createdAt: String(s.createdAt), expiresAt: String(s.expiresAt) }))}
+          restaurantName={establishment.name}
+          restaurantLogo={establishment.logo}
+          onClose={() => setShowStoryViewer(false)}
+        />
+      )}
+
+      {/* CSS para animação pulsante do story */}
+      <style>{`
+        @keyframes storyPulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.03); }
+        }
+      `}</style>
+
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 pr-0">
@@ -2102,18 +2134,50 @@ export default function PublicMenu() {
               </div>
             )}
             
-            {establishment.logo ? (
-              <BlurImage
-                src={establishment.logo}
-                blurDataUrl={establishment.logoBlur}
-                alt={establishment.name}
-                containerClassName="h-28 w-28 md:h-36 md:w-36 rounded-full border-4 border-white shadow-lg bg-white overflow-hidden"
-                className="w-full h-full object-cover"
-              />
+            {/* Logo com borda degradê Instagram quando há stories */}
+            {storiesStatus?.hasStories ? (
+              <button
+                onClick={async () => {
+                  await refetchStories();
+                  setShowStoryViewer(true);
+                }}
+                className="relative cursor-pointer group"
+                style={{ animation: 'storyPulse 2s ease-in-out infinite' }}
+              >
+                <div className="h-28 w-28 md:h-36 md:w-36 rounded-full p-[3.5px]" style={{
+                  background: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)'
+                }}>
+                  <div className="w-full h-full rounded-full overflow-hidden border-[3px] border-white bg-white">
+                    {establishment.logo ? (
+                      <BlurImage
+                        src={establishment.logo}
+                        blurDataUrl={establishment.logoBlur}
+                        alt={establishment.name}
+                        containerClassName="w-full h-full"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                        <UtensilsCrossed className="h-12 w-12 md:h-16 md:w-16 text-white" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </button>
             ) : (
-              <div className="h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center border-4 border-white shadow-lg">
-                <UtensilsCrossed className="h-12 w-12 md:h-16 md:w-16 text-white" />
-              </div>
+              establishment.logo ? (
+                <BlurImage
+                  src={establishment.logo}
+                  blurDataUrl={establishment.logoBlur}
+                  alt={establishment.name}
+                  containerClassName="h-28 w-28 md:h-36 md:w-36 rounded-full border-4 border-white shadow-lg bg-white overflow-hidden"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center border-4 border-white shadow-lg">
+                  <UtensilsCrossed className="h-12 w-12 md:h-16 md:w-16 text-white" />
+                </div>
+              )
             )}
           </div>
 

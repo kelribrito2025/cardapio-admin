@@ -51,7 +51,8 @@ import {
   cashbackBalances, InsertCashbackBalance, CashbackBalance,
   printLogs, InsertPrintLog, PrintLog,
   botApiKeys, InsertBotApiKey, BotApiKey,
-  feedbacks, InsertFeedback, Feedback
+  feedbacks, InsertFeedback, Feedback,
+  stories, InsertStory, Story
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 import crypto from 'crypto';
@@ -11644,4 +11645,73 @@ export async function updatePrepGoal(establishmentId: number, goalMinutes: numbe
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(establishments).set({ prepGoalMinutes: goalMinutes }).where(eq(establishments.id, establishmentId));
+}
+
+
+// ============ STORIES ============
+
+export async function createStory(data: { establishmentId: number; imageUrl: string; fileKey: string; expiresAt: Date }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(stories).values(data);
+  return { id: Number(result[0].insertId) };
+}
+
+export async function getStoriesByEstablishment(establishmentId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.select().from(stories)
+    .where(eq(stories.establishmentId, establishmentId))
+    .orderBy(asc(stories.createdAt));
+}
+
+export async function getActiveStoriesByEstablishment(establishmentId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const now = new Date();
+  return db.select().from(stories)
+    .where(and(
+      eq(stories.establishmentId, establishmentId),
+      gt(stories.expiresAt, now)
+    ))
+    .orderBy(asc(stories.createdAt));
+}
+
+export async function deleteStory(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const story = await db.select().from(stories).where(eq(stories.id, id)).limit(1);
+  if (story.length === 0) return null;
+  await db.delete(stories).where(eq(stories.id, id));
+  return story[0];
+}
+
+export async function getStoryById(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.select().from(stories).where(eq(stories.id, id)).limit(1);
+  return result[0] || null;
+}
+
+export async function countActiveStories(establishmentId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const now = new Date();
+  const result = await db.select({ count: sql<number>`count(*)` }).from(stories)
+    .where(and(
+      eq(stories.establishmentId, establishmentId),
+      gt(stories.expiresAt, now)
+    ));
+  return Number(result[0]?.count ?? 0);
+}
+
+export async function cleanupExpiredStories() {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const now = new Date();
+  const expired = await db.select().from(stories).where(lte(stories.expiresAt, now));
+  if (expired.length > 0) {
+    await db.delete(stories).where(lte(stories.expiresAt, now));
+  }
+  return expired;
 }

@@ -8268,3 +8268,11 @@
 - [x] Celebration: Substituir barra de progresso verde por texto "Setup completo — 7 de 7 etapas concluídas"
 - [x] Celebration: Adicionar botão "Compartilhar Cardápio" com ícone de compartilhar abaixo do botão Dashboard
 - [x] Celebration: Criar modal de compartilhamento overlay com link do cardápio, botão Copiar link e botão Compartilhar no WhatsApp
+- [x] Stories: Schema DB (tabela stories com establishmentId, imageUrl, fileKey, createdAt, expiresAt)
+- [x] Stories: Helpers DB (create, list, delete, listActive, cleanup expirados)
+- [x] Stories: Rotas tRPC protegidas (upload com compressão, listar, deletar) e rota pública (listar ativos)
+- [x] Stories: Painel admin — card "Stories do Menu" com cards redondos estilo Instagram, botão +, upload, preview, excluir, limite 5
+- [x] Stories: Visualizador fullscreen no menu público estilo Instagram (barras progresso, auto-avanço 5s, toque lateral, botão fechar)
+- [x] Stories: Borda degradê estilo Instagram e animação pulsante no logo do menu público quando há stories ativos
+- [x] Stories: Compressão de imagens (max 1080px largura) no upload
+- [x] Stories: Expiração automática 24h

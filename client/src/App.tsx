@@ -23,6 +23,7 @@ import TesteImpressao from "./pages/TesteImpressao";
 import Impressoras from "./pages/Impressoras";
 import Complementos from "./pages/Complementos";
 import Campanhas from "./pages/Campanhas";
+import Stories from "./pages/Stories";
 import PDV from "./pages/PDV";
 import AccountSecurity from "./pages/AccountSecurity";
 import Ajuda from "./pages/Ajuda";
@@ -83,6 +84,7 @@ function AdminRoutes() {
         <Route path="/teste-impressao" component={TesteImpressao} />
         <Route path="/impressoras" component={Impressoras} />
         <Route path="/campanhas" component={Campanhas} />
+        <Route path="/stories" component={Stories} />
         <Route path="/pdv" component={PDV} />
         <Route path="/mesas" component={MesasComandas} />
         <Route path="/avaliacoes" component={Avaliacoes} />

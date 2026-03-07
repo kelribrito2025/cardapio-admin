@@ -49,6 +49,7 @@ import {
   TrendingUp,
   Save,
   X,
+  CircleDot,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -136,6 +137,7 @@ const menuSections = [
     items: [
       { icon: Ticket, label: "Cupons", href: "/cupons", disabled: false },
       { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: false },
+      { icon: CircleDot, label: "Stories", href: "/stories", disabled: false },
     ]
   },
   {

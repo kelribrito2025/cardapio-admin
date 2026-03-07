@@ -1119,3 +1119,15 @@ export const feedbacks = mysqlTable("feedbacks", {
 
 export type Feedback = typeof feedbacks.$inferSelect;
 export type InsertFeedback = typeof feedbacks.$inferInsert;
+
+// Stories do Menu (estilo Instagram)
+export const stories = mysqlTable("stories", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  imageUrl: text("imageUrl").notNull(),
+  fileKey: text("fileKey").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+});
+export type Story = typeof stories.$inferSelect;
+export type InsertStory = typeof stories.$inferInsert;

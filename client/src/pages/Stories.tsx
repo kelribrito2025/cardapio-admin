@@ -1,0 +1,349 @@
+import { trpc } from "@/lib/trpc";
+import { AdminLayout } from "@/components/AdminLayout";
+import { Plus, Trash2, Clock, ImageIcon, AlertCircle } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+
+const MAX_STORIES = 5;
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+function timeAgo(date: Date | string): string {
+  const now = new Date();
+  const d = new Date(date);
+  const diffMs = now.getTime() - d.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return "agora";
+  if (diffMin < 60) return `${diffMin}min`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `${diffH}h`;
+  return `${Math.floor(diffH / 24)}d`;
+}
+
+function timeRemaining(expiresAt: Date | string): string {
+  const now = new Date();
+  const exp = new Date(expiresAt);
+  const diffMs = exp.getTime() - now.getTime();
+  if (diffMs <= 0) return "Expirado";
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 60) return `${diffMin}min restantes`;
+  const diffH = Math.floor(diffMin / 60);
+  return `${diffH}h restantes`;
+}
+
+export default function Stories() {
+  const { data: establishment } = trpc.establishment.get.useQuery();
+  const establishmentId = establishment?.id;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [previewStory, setPreviewStory] = useState<{ id: number; imageUrl: string; createdAt: string; expiresAt: string } | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+
+  const { data: storiesList, isLoading, refetch } = trpc.stories.list.useQuery(
+    { establishmentId: establishmentId! },
+    { enabled: !!establishmentId }
+  );
+
+  const createMutation = trpc.stories.create.useMutation({
+    onSuccess: () => {
+      toast.success("Story publicado com sucesso!");
+      refetch();
+    },
+    onError: (err) => {
+      toast.error(err.message || "Erro ao publicar story");
+    },
+  });
+
+  const deleteMutation = trpc.stories.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Story excluído");
+      refetch();
+      setDeleteConfirm(null);
+      setPreviewStory(null);
+    },
+    onError: (err) => {
+      toast.error(err.message || "Erro ao excluir story");
+    },
+  });
+
+  // Filtrar apenas stories ativos (não expirados)
+  const activeStories = (storiesList || []).filter(
+    (s) => new Date(s.expiresAt).getTime() > Date.now()
+  );
+
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !establishmentId) return;
+
+    // Validar tipo
+    if (!["image/jpeg", "image/png", "image/jpg"].includes(file.type)) {
+      toast.error("Apenas imagens JPG e PNG são permitidas");
+      return;
+    }
+
+    // Validar tamanho
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("Imagem muito grande. Máximo 10MB.");
+      return;
+    }
+
+    // Verificar limite
+    if (activeStories.length >= MAX_STORIES) {
+      toast.error("Limite de 5 stories atingido. Exclua um antes de adicionar outro.");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = (reader.result as string).split(",")[1];
+        await createMutation.mutateAsync({
+          establishmentId,
+          base64,
+          mimeType: file.type,
+        });
+        setUploading(false);
+      };
+      reader.onerror = () => {
+        toast.error("Erro ao ler arquivo");
+        setUploading(false);
+      };
+      reader.readAsDataURL(file);
+    } catch {
+      setUploading(false);
+    }
+
+    // Reset input
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, [establishmentId, activeStories.length, createMutation]);
+
+  const handleDelete = (id: number) => {
+    deleteMutation.mutate({ id });
+  };
+
+  return (
+    <AdminLayout>
+      <div className="container max-w-4xl py-6 md:py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-foreground">Stories do Menu</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Publique stories com imagens para divulgar promoções, combos e novidades no seu cardápio público.
+            Stories expiram automaticamente após 24 horas.
+          </p>
+        </div>
+
+        {/* Stories Grid - Estilo Instagram */}
+        <div className="flex items-start gap-5 overflow-x-auto pb-4">
+          {/* Botão Adicionar Story */}
+          <div className="flex flex-col items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading || activeStories.length >= MAX_STORIES}
+              className={cn(
+                "relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center transition-all",
+                activeStories.length >= MAX_STORIES
+                  ? "bg-muted/50 cursor-not-allowed"
+                  : "bg-muted/30 border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 hover:bg-muted/50 cursor-pointer"
+              )}
+            >
+              {uploading ? (
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Plus className={cn(
+                  "h-7 w-7",
+                  activeStories.length >= MAX_STORIES ? "text-muted-foreground/30" : "text-muted-foreground/60"
+                )} />
+              )}
+              {/* Badge + azul estilo Instagram */}
+              {activeStories.length < MAX_STORIES && !uploading && (
+                <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center border-2 border-background">
+                  <Plus className="h-3.5 w-3.5 text-white" />
+                </div>
+              )}
+            </button>
+            <span className="text-xs text-muted-foreground font-medium">Novo story</span>
+          </div>
+
+          {/* Stories existentes */}
+          {isLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex flex-col items-center gap-2 flex-shrink-0">
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-muted animate-pulse" />
+                <div className="w-12 h-3 bg-muted rounded animate-pulse" />
+              </div>
+            ))
+          ) : (
+            activeStories.map((story) => (
+              <div key={story.id} className="flex flex-col items-center gap-2 flex-shrink-0">
+                <button
+                  onClick={() => setPreviewStory(story as any)}
+                  className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden group"
+                >
+                  {/* Borda degradê Instagram */}
+                  <div className="absolute inset-0 rounded-full p-[3px]" style={{
+                    background: "linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)"
+                  }}>
+                    <div className="w-full h-full rounded-full overflow-hidden border-2 border-background">
+                      <img
+                        src={story.imageUrl}
+                        alt="Story"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  {/* Overlay hover */}
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-full flex items-center justify-center">
+                    <ImageIcon className="h-5 w-5 text-white" />
+                  </div>
+                </button>
+                <span className="text-[11px] text-muted-foreground">{timeAgo(story.createdAt)}</span>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Info do limite */}
+        <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+          <AlertCircle className="h-3.5 w-3.5" />
+          <span>{activeStories.length}/{MAX_STORIES} stories ativos</span>
+          {activeStories.length >= MAX_STORIES && (
+            <span className="text-amber-500 font-medium">— Limite atingido</span>
+          )}
+        </div>
+
+        {/* Lista detalhada dos stories */}
+        {activeStories.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-sm font-semibold text-foreground mb-4">Stories ativos</h2>
+            <div className="space-y-3">
+              {activeStories.map((story) => (
+                <div
+                  key={story.id}
+                  className="flex items-center gap-4 p-3 rounded-xl border border-border/60 bg-card hover:bg-muted/30 transition-colors"
+                >
+                  {/* Thumbnail */}
+                  <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
+                    <img
+                      src={story.imageUrl}
+                      alt="Story"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground">
+                      Publicado {timeAgo(story.createdAt)}
+                    </p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <Clock className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground">
+                        {timeRemaining(story.expiresAt)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Ações */}
+                  <button
+                    onClick={() => setDeleteConfirm(story.id)}
+                    className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-muted-foreground hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Estado vazio */}
+        {!isLoading && activeStories.length === 0 && (
+          <div className="mt-12 flex flex-col items-center text-center">
+            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+              <ImageIcon className="h-8 w-8 text-muted-foreground/50" />
+            </div>
+            <h3 className="text-base font-semibold text-foreground mb-1">Nenhum story ativo</h3>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              Publique stories para divulgar promoções, combos e novidades diretamente no seu cardápio público.
+            </p>
+          </div>
+        )}
+
+        {/* Input file oculto */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/jpg"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+
+        {/* Modal de preview do story */}
+        <Dialog open={!!previewStory} onOpenChange={() => setPreviewStory(null)}>
+          <DialogContent className="sm:max-w-[400px] p-0 gap-0 rounded-2xl overflow-hidden bg-black">
+            <DialogTitle className="sr-only">Preview do Story</DialogTitle>
+            <DialogDescription className="sr-only">Visualização do story</DialogDescription>
+            {previewStory && (
+              <div className="relative">
+                <img
+                  src={previewStory.imageUrl}
+                  alt="Story preview"
+                  className="w-full max-h-[70vh] object-contain"
+                />
+                {/* Info overlay */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-3.5 w-3.5 text-white/70" />
+                      <span className="text-xs text-white/70">{timeRemaining(previewStory.expiresAt)}</span>
+                    </div>
+                    <button
+                      onClick={() => setDeleteConfirm(previewStory.id)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/80 hover:bg-red-500 text-white text-xs font-medium transition-colors"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      Excluir
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal de confirmação de exclusão */}
+        <Dialog open={deleteConfirm !== null} onOpenChange={() => setDeleteConfirm(null)}>
+          <DialogContent className="sm:max-w-[340px] rounded-2xl">
+            <DialogTitle className="text-base font-bold text-foreground">Excluir story?</DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
+              Esta ação não pode ser desfeita. O story será removido do seu cardápio público.
+            </DialogDescription>
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="flex-1 h-10 rounded-xl border border-border/60 text-sm font-medium hover:bg-muted/50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
+                disabled={deleteMutation.isPending}
+                className="flex-1 h-10 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors disabled:opacity-50"
+              >
+                {deleteMutation.isPending ? "Excluindo..." : "Excluir"}
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </AdminLayout>
+  );
+}
