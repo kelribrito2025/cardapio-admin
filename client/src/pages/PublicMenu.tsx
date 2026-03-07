@@ -3351,7 +3351,7 @@ export default function PublicMenu() {
                                   isSelected ? 'bg-red-50' : 'hover:bg-gray-50'
                                 }`}
                               >
-                                {/* Linha 1: Checkbox + Nome + Badge + Preço */}
+                                {/* Linha 1: Checkbox + Nome + Badge + (Botões +/- se sem descrição) + Preço */}
                                 <div className="flex items-center justify-between w-full">
                                   <div className="flex items-center gap-3 flex-1 min-w-0">
                                     <div className={`w-5 h-5 rounded-${isRadio ? 'full' : 'md'} border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
@@ -3372,6 +3372,26 @@ export default function PublicMenu() {
                                   </div>
                                   
                                   <div className="flex items-center gap-3 flex-shrink-0 ml-2">
+                                    {/* Botões +/- na linha 1 APENAS quando NÃO tem descrição */}
+                                    {isSelected && !isRadio && !(item as any).description && (
+                                      <div data-qty-controls className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1">
+                                        <button
+                                          type="button"
+                                          onClick={handleDecrement}
+                                          className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
+                                        >
+                                          <Minus className="w-4 h-4" />
+                                        </button>
+                                        <span className="w-6 text-center text-sm font-medium text-gray-900">{itemQuantity}</span>
+                                        <button
+                                          type="button"
+                                          onClick={handleIncrement}
+                                          className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
+                                        >
+                                          <Plus className="w-4 h-4" />
+                                        </button>
+                                      </div>
+                                    )}
                                     {/* Preço */}
                                     {(() => {
                                       if (displayPrice > 0) {
@@ -3399,13 +3419,11 @@ export default function PublicMenu() {
                                   </div>
                                 </div>
                                 
-                                {/* Linha 2: Descrição + Botões +/- à direita */}
-                                {((item as any).description || (isSelected && !isRadio)) && (
+                                {/* Linha 2: Descrição + Botões +/- à direita (SÓ quando tem descrição) */}
+                                {(item as any).description && (
                                   <div className="flex items-end justify-between ml-8 mt-1">
                                     <div className="flex-1 min-w-0">
-                                      {(item as any).description && (
-                                        <span className="text-xs text-gray-500 leading-tight">{(item as any).description}</span>
-                                      )}
+                                      <span className="text-xs text-gray-500 leading-tight">{(item as any).description}</span>
                                     </div>
                                     {isSelected && !isRadio && (
                                       <div data-qty-controls className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1 flex-shrink-0 ml-2">
