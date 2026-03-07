@@ -3347,82 +3347,87 @@ export default function PublicMenu() {
                                   if ((e.target as HTMLElement).closest('[data-qty-controls]')) return;
                                   handleToggle();
                                 }}
-                                className={`flex items-center justify-between px-4 py-3 transition-colors cursor-pointer ${
+                                className={`flex flex-col px-4 py-3 transition-colors cursor-pointer ${
                                   isSelected ? 'bg-red-50' : 'hover:bg-gray-50'
                                 }`}
                               >
-                                <div className="flex items-center gap-3 flex-1">
-                                  <div className={`w-5 h-5 rounded-${isRadio ? 'full' : 'md'} border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                                    isSelected ? 'border-red-500 bg-red-500' : 'border-gray-300 bg-white'
-                                  }`}>
-                                    {isSelected && (
-                                      <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
-                                        <path d="M2.5 6L5 8.5L9.5 3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                      </svg>
-                                    )}
-                                  </div>
-                                  <div className="flex flex-col">
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-sm text-gray-900">{item.name}</span>
-                                      {(item as any).badgeText && (
-                                        <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold bg-red-500 text-white animate-pulse leading-none" style={{width: '69px', height: '19px', borderRadius: '8px'}}>
-                                          {(item as any).badgeText}
-                                        </span>
+                                {/* Linha 1: Checkbox + Nome + Badge + Preço */}
+                                <div className="flex items-center justify-between w-full">
+                                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <div className={`w-5 h-5 rounded-${isRadio ? 'full' : 'md'} border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                                      isSelected ? 'border-red-500 bg-red-500' : 'border-gray-300 bg-white'
+                                    }`}>
+                                      {isSelected && (
+                                        <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                                          <path d="M2.5 6L5 8.5L9.5 3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
                                       )}
                                     </div>
-                                    {(item as any).description && (
-                                      <span className="text-xs text-gray-500 mt-0.5 leading-tight">{(item as any).description}</span>
+                                    <span className="text-sm text-gray-900 flex-1 min-w-0">{item.name}</span>
+                                    {(item as any).badgeText && (
+                                      <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold bg-red-500 text-white animate-pulse leading-none flex-shrink-0" style={{width: '69px', height: '19px', borderRadius: '8px'}}>
+                                        {(item as any).badgeText}
+                                      </span>
                                     )}
+                                  </div>
+                                  
+                                  <div className="flex items-center gap-3 flex-shrink-0 ml-2">
+                                    {/* Preço */}
+                                    {(() => {
+                                      if (displayPrice > 0) {
+                                        const totalItemPrice = displayPrice * (itemQuantity || 1);
+                                        return (
+                                          <span className="text-sm text-gray-600 min-w-[70px] text-right">
+                                            {isSelected && itemQuantity > 1 
+                                              ? `+ ${formatPrice(totalItemPrice)}` 
+                                              : `+ ${formatPrice(displayPrice)}`
+                                            }
+                                          </span>
+                                        );
+                                      } else if (displayPrice === 0 && item.priceMode === 'free') {
+                                        return (
+                                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full border border-green-200">
+                                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                            </svg>
+                                            Grátis
+                                          </span>
+                                        );
+                                      }
+                                      return null;
+                                    })()}
                                   </div>
                                 </div>
                                 
-                                <div className="flex items-center gap-3">
-                                  {/* Controles de quantidade - aparecem quando selecionado */}
-                                  {isSelected && !isRadio && (
-                                    <div data-qty-controls className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1">
-                                      <button
-                                        type="button"
-                                        onClick={handleDecrement}
-                                        className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
-                                      >
-                                        <Minus className="w-4 h-4" />
-                                      </button>
-                                      <span className="w-6 text-center text-sm font-medium text-gray-900">{itemQuantity}</span>
-                                      <button
-                                        type="button"
-                                        onClick={handleIncrement}
-                                        className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
-                                      >
-                                        <Plus className="w-4 h-4" />
-                                      </button>
+                                {/* Linha 2: Descrição + Botões +/- à direita */}
+                                {((item as any).description || (isSelected && !isRadio)) && (
+                                  <div className="flex items-end justify-between ml-8 mt-1">
+                                    <div className="flex-1 min-w-0">
+                                      {(item as any).description && (
+                                        <span className="text-xs text-gray-500 leading-tight">{(item as any).description}</span>
+                                      )}
                                     </div>
-                                  )}
-                                  
-                                  {/* Preço */}
-                                  {(() => {
-                                    if (displayPrice > 0) {
-                                      const totalItemPrice = displayPrice * (itemQuantity || 1);
-                                      return (
-                                        <span className="text-sm text-gray-600 min-w-[70px] text-right">
-                                          {isSelected && itemQuantity > 1 
-                                            ? `+ ${formatPrice(totalItemPrice)}` 
-                                            : `+ ${formatPrice(displayPrice)}`
-                                          }
-                                        </span>
-                                      );
-                                    } else if (displayPrice === 0 && item.priceMode === 'free') {
-                                      return (
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full border border-green-200">
-                                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                          </svg>
-                                          Grátis
-                                        </span>
-                                      );
-                                    }
-                                    return null;
-                                  })()}
-                                </div>
+                                    {isSelected && !isRadio && (
+                                      <div data-qty-controls className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1 flex-shrink-0 ml-2">
+                                        <button
+                                          type="button"
+                                          onClick={handleDecrement}
+                                          className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
+                                        >
+                                          <Minus className="w-4 h-4" />
+                                        </button>
+                                        <span className="w-6 text-center text-sm font-medium text-gray-900">{itemQuantity}</span>
+                                        <button
+                                          type="button"
+                                          onClick={handleIncrement}
+                                          className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
+                                        >
+                                          <Plus className="w-4 h-4" />
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             );
                           })}

@@ -8250,3 +8250,5 @@
 - [x] Menu Público: Exibir descrição do complemento abaixo do nome (texto menor, cinza, opcional)
 - [x] Bug: Query na tabela complementItems falha nas páginas /catalogo e /complementos — coluna description não existia no banco remoto; migração aplicada manualmente via ALTER TABLE
 - [x] Bug: Erro "No values to set" na página /complementos — corrigido: adicionado description ao updateGlobal + proteção contra update vazio
+- [x] Menu Público: Reorganizar layout do complemento — botões +/- e preço na linha do título, descrição abaixo em linha separada para evitar layout quebrado com nomes longos
+- [x] Menu Público: Mover botões +/- para a linha da descrição do complemento, ao lado direito
