@@ -3191,16 +3191,19 @@ export default function PublicMenu() {
                             </div>
                           </div>
                           <p className={`text-xs mt-0.5 transition-colors duration-300 ${isGroupComplete ? 'text-red-500' : 'text-gray-500'}`}>
-                            {isGroupComplete
-                              ? `${totalSelectedInGroup}/${group.maxQuantity} selecionado${group.maxQuantity > 1 ? 's' : ''}`
-                              : <>
-                                  {group.minQuantity > 0 ? `Mín: ${group.minQuantity}` : ''}
-                                  {group.minQuantity > 0 && group.maxQuantity > 1 ? ' | ' : ''}
-                                  {group.maxQuantity > 1 ? `Máx: ${group.maxQuantity}` : ''}
-                                  {group.maxQuantity === 1 && group.minQuantity === 0 ? 'Escolha até 1' : ''}
-                                </>
-                            }
+                            {(() => {
+                              const min = group.minQuantity;
+                              const max = group.maxQuantity;
+                              if (min === 1 && max === 1) return 'Escolha 1 opção';
+                              if (min === 1 && max > 1) return `Escolha até ${max} opções`;
+                              if (min === max) return `Escolha ${min} opções`;
+                              if (min > 1 && max > min) return `Escolha de ${min} a ${max} opções`;
+                              if (min === 0 && max === 1) return 'Escolha até 1 opção';
+                              if (min === 0 && max > 1) return `Escolha até ${max} opções`;
+                              return '';
+                            })()}
                           </p>
+
                         </div>
                         
                         {/* Itens do Grupo */}

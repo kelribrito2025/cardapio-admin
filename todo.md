@@ -8241,3 +8241,6 @@
 - [x] Menu Público: Remover tarja vermelha de complementos faltantes do modal (não é necessária)
 - [x] Menu Público: Itens de complementos devem desaparecer por baixo do header sticky ao scroll (não aparecer por cima)
 - [x] Menu Público: Restaurar visual original dos grupos de complementos (borda arredondada, fundo cinza claro no header) mantendo sticky funcional
+- [x] Menu Público: Substituir texto técnico "Mín: X | Máx: X" por texto dinâmico humano (Escolha X opções, Escolha até X opções, etc.)
+- [x] Menu Público: Adicionar contador visual de seleção em tempo real (ex: "1 / 2 selecionados")
+- [x] Menu Público: Remover contador visual de seleção (não é necessário)
