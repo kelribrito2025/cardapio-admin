@@ -121,6 +121,44 @@ const saveOrdersToStorage = (establishmentId: number, orders: UserOrder[]) => {
   }
 };
 
+// Componente para descrição expansível com "Ver mais / Ver menos"
+function ExpandableDescription({ text }: { text: string }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [needsClamp, setNeedsClamp] = useState(false);
+  const textRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    const el = textRef.current;
+    if (el) {
+      // Verifica se o texto excede 3 linhas (~60px com line-height 1.625 e text-sm)
+      const lineHeight = parseFloat(getComputedStyle(el).lineHeight) || 20;
+      const maxHeight = lineHeight * 3;
+      setNeedsClamp(el.scrollHeight > maxHeight + 2);
+    }
+  }, [text]);
+
+  return (
+    <div>
+      <p
+        ref={textRef}
+        className={`text-sm text-gray-600 leading-relaxed transition-all duration-300 ${
+          !isExpanded && needsClamp ? 'line-clamp-3' : ''
+        }`}
+      >
+        {text}
+      </p>
+      {needsClamp && (
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-xs font-medium text-red-500 hover:text-red-600 mt-1 transition-colors"
+        >
+          {isExpanded ? 'Ver menos \u2191' : 'Ver mais \u2192'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function PublicMenu() {
   const { slug } = useParams<{ slug: string }>();
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
@@ -3020,9 +3058,7 @@ export default function PublicMenu() {
 
               {/* Descrição */}
               {selectedProduct.description && (
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  {selectedProduct.description}
-                </p>
+                <ExpandableDescription text={selectedProduct.description} />
               )}
 
               {/* Grupos de Complementos */}
