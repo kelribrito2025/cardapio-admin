@@ -15,6 +15,7 @@ interface StoryViewerProps {
   restaurantLogo?: string | null;
   initialIndex?: number;
   onClose: () => void;
+  onAllViewed?: () => void;
 }
 
 function timeAgo(date: Date | string): string {
@@ -48,6 +49,7 @@ export default function StoryViewer({
   restaurantLogo,
   initialIndex = 0,
   onClose,
+  onAllViewed,
 }: StoryViewerProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [progress, setProgress] = useState(0);
@@ -67,8 +69,13 @@ export default function StoryViewer({
     if (story && !viewedStoriesRef.current.has(story.id)) {
       viewedStoriesRef.current.add(story.id);
       recordViewMutation.mutate({ storyId: story.id, sessionId });
+      
+      // Verificar se todos os stories foram vistos
+      if (viewedStoriesRef.current.size === stories.length && onAllViewed) {
+        onAllViewed();
+      }
     }
-  }, [currentIndex, stories, sessionId]);
+  }, [currentIndex, stories, sessionId, onAllViewed]);
 
   const currentStory = stories[currentIndex];
 

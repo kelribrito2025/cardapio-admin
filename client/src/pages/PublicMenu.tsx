@@ -371,6 +371,7 @@ export default function PublicMenu() {
   const [showCashbackCheckoutSheet, setShowCashbackCheckoutSheet] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
   const [showStoryViewer, setShowStoryViewer] = useState(false);
+  const [allStoriesViewed, setAllStoriesViewed] = useState(false);
   
   const userOrdersRef = useRef<typeof userOrders>([]);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
@@ -411,6 +412,28 @@ export default function PublicMenu() {
     { establishmentId: data?.establishment?.id || 0 },
     { enabled: !!data?.establishment?.id }
   );
+
+  // Verificar se todos os stories já foram vistos (via sessionStorage)
+  useEffect(() => {
+    if (!storiesStatus?.hasStories || !data?.establishment?.id) return;
+    try {
+      const key = `mindi_stories_viewed_${data.establishment.id}`;
+      const viewedRaw = sessionStorage.getItem(key);
+      if (viewedRaw) {
+        const viewedIds: number[] = JSON.parse(viewedRaw);
+        // Se o count de stories ativos for igual ao número de IDs vistos, todos foram vistos
+        if (viewedIds.length >= (storiesStatus.count || 0)) {
+          setAllStoriesViewed(true);
+        } else {
+          setAllStoriesViewed(false);
+        }
+      } else {
+        setAllStoriesViewed(false);
+      }
+    } catch {
+      setAllStoriesViewed(false);
+    }
+  }, [storiesStatus, data?.establishment?.id, showStoryViewer]);
 
   // Query para buscar stories ativos (lazy - só quando abrir o viewer)
   const { data: activeStories, refetch: refetchStories } = trpc.publicStories.getActive.useQuery(
@@ -1836,6 +1859,15 @@ export default function PublicMenu() {
       {showStoryViewer && activeStories && activeStories.length > 0 && establishment && (
         <StoryViewer
           stories={activeStories.map(s => ({ ...s, createdAt: String(s.createdAt), expiresAt: String(s.expiresAt) }))}
+          onAllViewed={() => {
+            // Salvar todos os IDs dos stories ativos como vistos no sessionStorage
+            try {
+              const key = `mindi_stories_viewed_${establishment.id}`;
+              const allIds = activeStories.map(s => s.id);
+              sessionStorage.setItem(key, JSON.stringify(allIds));
+              setAllStoriesViewed(true);
+            } catch {}
+          }}
           restaurantName={establishment.name}
           restaurantLogo={establishment.logo}
           onClose={() => setShowStoryViewer(false)}
@@ -2142,10 +2174,12 @@ export default function PublicMenu() {
                   setShowStoryViewer(true);
                 }}
                 className="relative cursor-pointer group"
-                style={{ animation: 'storyPulse 2s ease-in-out infinite' }}
+                style={allStoriesViewed ? undefined : { animation: 'storyPulse 2s ease-in-out infinite' }}
               >
                 <div className="h-28 w-28 md:h-36 md:w-36 rounded-full p-[3.5px]" style={{
-                  background: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)'
+                  background: allStoriesViewed
+                    ? 'linear-gradient(45deg, #d1d5db, #9ca3af, #d1d5db)'
+                    : 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)'
                 }}>
                   <div className="w-full h-full rounded-full overflow-hidden border-[3px] border-white bg-white">
                     {establishment.logo ? (
