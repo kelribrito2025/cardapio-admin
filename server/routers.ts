@@ -6401,12 +6401,19 @@ export const appRouter = router({
         return db.getStoriesByEstablishment(input.establishmentId);
       }),
 
-    // Criar story (admin) — upload com compressão
+    // Criar story (admin) — upload com compressão + tipos de venda
     create: protectedProcedure
       .input(z.object({
         establishmentId: z.number(),
         base64: z.string(),
         mimeType: z.string(),
+        type: z.enum(["simple", "product", "promo"]).default("simple"),
+        productId: z.number().optional(),
+        promoTitle: z.string().max(120).optional(),
+        promoText: z.string().max(255).optional(),
+        promoPrice: z.string().max(20).optional(),
+        promoExpiresAt: z.date().optional(),
+        actionLabel: z.string().max(40).optional(),
       }))
       .mutation(async ({ input }) => {
         // Verificar limite de 5 stories ativos
@@ -6415,6 +6422,20 @@ export const appRouter = router({
           throw new TRPCError({
             code: "BAD_REQUEST",
             message: "Limite de 5 stories atingido. Exclua um story antes de adicionar outro.",
+          });
+        }
+
+        // Validar campos obrigatórios por tipo
+        if (input.type === "product" && !input.productId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Selecione um produto para o story do tipo 'Destacar produto'.",
+          });
+        }
+        if (input.type === "promo" && !input.promoTitle) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Informe o título da promoção.",
           });
         }
 
@@ -6436,9 +6457,16 @@ export const appRouter = router({
           imageUrl: url,
           fileKey,
           expiresAt,
+          type: input.type,
+          productId: input.productId ?? null,
+          promoTitle: input.promoTitle ?? null,
+          promoText: input.promoText ?? null,
+          promoPrice: input.promoPrice ?? null,
+          promoExpiresAt: input.promoExpiresAt ?? null,
+          actionLabel: input.actionLabel ?? null,
         });
 
-        return { id: result.id, imageUrl: url, expiresAt };
+        return { id: result.id, imageUrl: url, expiresAt, type: input.type };
       }),
 
     // Deletar story (admin)

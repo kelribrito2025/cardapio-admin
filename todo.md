@@ -8293,3 +8293,15 @@
 - [x] Substituir ícone de Stories de CircleDot para Clapperboard na sidebar e na página (ícone azul na página)
 - [x] Bug: Borda dos stories no menu público não muda para cinza após visualizar todos (deve persistir com localStorage)
 - [x] Stories: Melhorar long press para pausar (distinguir tap rápido de press longo, igual Instagram)
+- [x] Stories Venda: Adicionar campo type (simple, product, promo) ao schema de stories
+- [x] Stories Venda: Adicionar campos productId, promoTitle, promoText, promoPrice, promoExpiresAt ao schema
+- [x] Stories Venda: Atualizar db.ts com helpers para criar/buscar stories com novos campos
+- [x] Stories Venda: Atualizar routers.ts para aceitar novos campos na criação de stories
+- [x] Stories Venda: Atualizar painel admin com seletor de tipo de story
+- [x] Stories Venda: Adicionar seletor de produto do cardápio para tipo "Destacar produto"
+- [x] Stories Venda: Adicionar campos de promoção (título, texto, preço, validade) para tipo "Promoção"
+- [x] Stories Venda: Atualizar StoryViewer com botão "Ver produto" / "Pedir agora"
+- [x] Stories Venda: Implementar overlay de promoção no StoryViewer (título, texto, preço, countdown)
+- [x] Stories Venda: Integrar botão do story com abertura do modal de produto no cardápio
+- [x] Stories Venda: Ocultar automaticamente stories de promoção expirados
+- [x] Stories Venda: Escrever testes para novos tipos de stories

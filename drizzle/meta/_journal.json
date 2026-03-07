@@ -862,6 +862,13 @@
       "when": 1772901385367,
       "tag": "0122_small_rogue",
       "breakpoints": true
+    },
+    {
+      "idx": 123,
+      "version": "5",
+      "when": 1772913542281,
+      "tag": "0123_grey_shadow_king",
+      "breakpoints": true
     }
   ]
 }

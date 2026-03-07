@@ -1893,6 +1893,27 @@ export default function PublicMenu() {
           restaurantName={establishment.name}
           restaurantLogo={establishment.logo}
           onClose={() => setShowStoryViewer(false)}
+          onProductAction={(productId) => {
+            // Fechar o story viewer
+            setShowStoryViewer(false);
+            // Encontrar o produto no cardápio e abrir o modal
+            const product = products.find(p => p.id === productId);
+            if (product) {
+              setModalImageIndex(0);
+              setSelectedProduct({
+                id: product.id,
+                name: product.name,
+                description: product.description,
+                price: product.price,
+                images: product.images,
+                hasStock: product.hasStock,
+                availableStock: (product as any).availableStock ?? null,
+                outOfStock: product.outOfStock ?? false,
+              });
+              setProductQuantity(1);
+              setProductObservation("");
+            }
+          }}
         />
       )}
 

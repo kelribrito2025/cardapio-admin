@@ -1120,12 +1120,25 @@ export const feedbacks = mysqlTable("feedbacks", {
 export type Feedback = typeof feedbacks.$inferSelect;
 export type InsertFeedback = typeof feedbacks.$inferInsert;
 
-// Stories do Menu (estilo Instagram)
+// Stories do Menu (estilo Instagram) — com tipos de venda
+export const storyTypeEnum = mysqlEnum("storyType", ["simple", "product", "promo"]);
 export const stories = mysqlTable("stories", {
   id: int("id").autoincrement().primaryKey(),
   establishmentId: int("establishmentId").notNull(),
   imageUrl: text("imageUrl").notNull(),
   fileKey: text("fileKey").notNull(),
+  // Tipo do story: simple (imagem), product (destacar produto), promo (promoção)
+  type: storyTypeEnum.default("simple").notNull(),
+  // Para tipo "product": ID do produto vinculado
+  productId: int("productId"),
+  // Para tipo "promo": dados da promoção
+  promoTitle: varchar("promoTitle", { length: 120 }),
+  promoText: varchar("promoText", { length: 255 }),
+  promoPrice: varchar("promoPrice", { length: 20 }),
+  // Para tipo "promo": validade da promoção (null = sem limite)
+  promoExpiresAt: timestamp("promoExpiresAt"),
+  // Para tipos "product" e "promo": texto do botão de ação
+  actionLabel: varchar("actionLabel", { length: 40 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   expiresAt: timestamp("expiresAt").notNull(),
 });

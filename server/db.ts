@@ -11651,10 +11651,34 @@ export async function updatePrepGoal(establishmentId: number, goalMinutes: numbe
 
 // ============ STORIES ============
 
-export async function createStory(data: { establishmentId: number; imageUrl: string; fileKey: string; expiresAt: Date }) {
+export async function createStory(data: {
+  establishmentId: number;
+  imageUrl: string;
+  fileKey: string;
+  expiresAt: Date;
+  type?: "simple" | "product" | "promo";
+  productId?: number | null;
+  promoTitle?: string | null;
+  promoText?: string | null;
+  promoPrice?: string | null;
+  promoExpiresAt?: Date | null;
+  actionLabel?: string | null;
+}) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const result = await db.insert(stories).values(data);
+  const result = await db.insert(stories).values({
+    establishmentId: data.establishmentId,
+    imageUrl: data.imageUrl,
+    fileKey: data.fileKey,
+    expiresAt: data.expiresAt,
+    type: data.type || "simple",
+    productId: data.productId ?? null,
+    promoTitle: data.promoTitle ?? null,
+    promoText: data.promoText ?? null,
+    promoPrice: data.promoPrice ?? null,
+    promoExpiresAt: data.promoExpiresAt ?? null,
+    actionLabel: data.actionLabel ?? null,
+  });
   return { id: Number(result[0].insertId) };
 }
 
@@ -11670,12 +11694,20 @@ export async function getActiveStoriesByEstablishment(establishmentId: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const now = new Date();
-  return db.select().from(stories)
+  const result = await db.select().from(stories)
     .where(and(
       eq(stories.establishmentId, establishmentId),
       gt(stories.expiresAt, now)
     ))
     .orderBy(asc(stories.createdAt));
+  
+  // Filtrar promos cuja validade de promoção já expirou
+  return result.filter(s => {
+    if (s.type === "promo" && s.promoExpiresAt) {
+      return new Date(s.promoExpiresAt).getTime() > now.getTime();
+    }
+    return true;
+  });
 }
 
 export async function deleteStory(id: number) {
@@ -11787,11 +11819,19 @@ export async function getActiveStoryIds(establishmentId: number): Promise<number
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const now = new Date();
-  const result = await db.select({ id: stories.id }).from(stories)
+  const result = await db.select({ id: stories.id, type: stories.type, promoExpiresAt: stories.promoExpiresAt }).from(stories)
     .where(and(
       eq(stories.establishmentId, establishmentId),
       gt(stories.expiresAt, now)
     ))
     .orderBy(asc(stories.createdAt));
-  return result.map(r => r.id);
+  // Filtrar promos expiradas
+  return result
+    .filter(s => {
+      if (s.type === "promo" && s.promoExpiresAt) {
+        return new Date(s.promoExpiresAt).getTime() > now.getTime();
+      }
+      return true;
+    })
+    .map(r => r.id);
 }

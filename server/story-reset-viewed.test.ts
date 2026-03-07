@@ -21,7 +21,8 @@ describe("Story Reset Viewed State (comparação de IDs)", () => {
     const fnEnd = content.indexOf("export async function", fnStart + 1);
     const fnBody = content.substring(fnStart, fnEnd > -1 ? fnEnd : content.length);
     
-    expect(fnBody).toContain("{ id: stories.id }");
+    // Agora seleciona id, type e promoExpiresAt para filtrar promos expiradas
+    expect(fnBody).toContain("id: stories.id");
     expect(fnBody).toContain(".map(r => r.id)");
   });
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { X } from "lucide-react";
+import { X, ChevronUp, Clock } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 interface Story {
@@ -7,6 +7,13 @@ interface Story {
   imageUrl: string;
   createdAt: string | Date;
   expiresAt: string | Date;
+  type?: "simple" | "product" | "promo";
+  productId?: number | null;
+  promoTitle?: string | null;
+  promoText?: string | null;
+  promoPrice?: string | null;
+  promoExpiresAt?: string | Date | null;
+  actionLabel?: string | null;
 }
 
 interface StoryViewerProps {
@@ -18,6 +25,8 @@ interface StoryViewerProps {
   onAllViewed?: () => void;
   /** Chamado cada vez que um story individual é visto, com o ID do story */
   onStoryViewed?: (storyId: number) => void;
+  /** Chamado quando o utilizador clica no botão de ação (ver produto / pedir agora) */
+  onProductAction?: (productId: number) => void;
 }
 
 function timeAgo(date: Date | string): string {
@@ -32,8 +41,20 @@ function timeAgo(date: Date | string): string {
   return `${Math.floor(diffH / 24)}d`;
 }
 
+function promoTimeRemaining(expiresAt: Date | string): string | null {
+  const now = new Date();
+  const exp = new Date(expiresAt);
+  const diffMs = exp.getTime() - now.getTime();
+  if (diffMs <= 0) return "Expirada";
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 60) return `Termina em ${diffMin}min`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `Termina em ${diffH}h`;
+  return `Válida até ${exp.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}`;
+}
+
 const STORY_DURATION = 5000; // 5 segundos
-const LONG_PRESS_THRESHOLD = 200; // ms — acima disso é long press (pausa), abaixo é tap (navegar)
+const LONG_PRESS_THRESHOLD = 200; // ms
 
 // Gerar ou recuperar sessionId para analytics de views
 function getOrCreateSessionId(): string {
@@ -54,6 +75,7 @@ export default function StoryViewer({
   onClose,
   onAllViewed,
   onStoryViewed,
+  onProductAction,
 }: StoryViewerProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [progress, setProgress] = useState(0);
@@ -171,10 +193,6 @@ export default function StoryViewer({
   }, []);
 
   // --- Lógica de interação: Long Press = Pausar, Tap Rápido = Navegar ---
-  // Funciona igual ao Instagram:
-  // - Toque rápido (<200ms): navega (esquerda = anterior, direita = próximo)
-  // - Toque longo (>200ms): pausa o story, ao soltar retoma sem navegar
-
   const getClientX = (e: React.MouseEvent | React.TouchEvent): number => {
     if ("touches" in e) {
       return e.touches[0]?.clientX ?? e.changedTouches[0]?.clientX ?? 0;
@@ -214,10 +232,25 @@ export default function StoryViewer({
 
   // Prevenir onClick nativo para evitar dupla navegação
   const handleClick = (e: React.MouseEvent) => {
-    // Se foi long press, o handlePressEnd já tratou — ignorar o click
-    // Se foi tap rápido, o handlePressEnd já navegou — ignorar o click também
     e.preventDefault();
     e.stopPropagation();
+  };
+
+  // Determinar se o story tem ação
+  const hasAction = currentStory && (currentStory.type === "product" || currentStory.type === "promo") && currentStory.productId;
+  const actionButtonLabel = currentStory?.actionLabel || (currentStory?.type === "product" ? "Ver produto" : "Pedir agora");
+
+  // Promo countdown
+  const promoCountdown = currentStory?.type === "promo" && currentStory.promoExpiresAt
+    ? promoTimeRemaining(currentStory.promoExpiresAt)
+    : null;
+
+  const handleActionClick = (e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (currentStory?.productId && onProductAction) {
+      onProductAction(currentStory.productId);
+    }
   };
 
   if (!currentStory) return null;
@@ -231,13 +264,11 @@ export default function StoryViewer({
         onMouseDown={handlePressStart}
         onMouseUp={handlePressEnd}
         onMouseLeave={() => {
-          // Se o mouse sair da área enquanto pressionado, retomar
           if (paused) setPaused(false);
         }}
         onTouchStart={handlePressStart}
         onTouchEnd={handlePressEnd}
         onTouchCancel={() => {
-          // Se o touch for cancelado, retomar
           if (paused) setPaused(false);
         }}
       >
@@ -320,6 +351,53 @@ export default function StoryViewer({
             </button>
           </div>
         </div>
+
+        {/* Overlay inferior — Promoção e/ou Botão de ação */}
+        {(currentStory.type === "promo" || hasAction) && (
+          <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent pb-6 pt-20 px-4">
+            {/* Dados da promoção */}
+            {currentStory.type === "promo" && (
+              <div className="mb-4 text-center">
+                {currentStory.promoTitle && (
+                  <h3 className="text-white text-xl font-bold drop-shadow-lg mb-1">
+                    {currentStory.promoTitle}
+                  </h3>
+                )}
+                {currentStory.promoText && (
+                  <p className="text-white/90 text-sm drop-shadow-md mb-2">
+                    {currentStory.promoText}
+                  </p>
+                )}
+                {currentStory.promoPrice && (
+                  <div className="inline-block bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 mb-2">
+                    <span className="text-white text-lg font-bold">
+                      {currentStory.promoPrice}
+                    </span>
+                  </div>
+                )}
+                {promoCountdown && (
+                  <div className="flex items-center justify-center gap-1.5 text-white/70 text-xs mt-1">
+                    <Clock className="h-3 w-3" />
+                    <span>{promoCountdown}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Botão de ação */}
+            {hasAction && (
+              <button
+                onClick={handleActionClick}
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white text-black font-semibold text-sm shadow-lg active:scale-[0.98] transition-transform"
+              >
+                <ChevronUp className="h-4 w-4" />
+                {actionButtonLabel}
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
