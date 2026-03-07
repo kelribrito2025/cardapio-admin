@@ -373,6 +373,9 @@ export default function PublicMenu() {
   const [showStoryViewer, setShowStoryViewer] = useState(false);
   const [allStoriesViewed, setAllStoriesViewed] = useState(false);
   const [storyInitialIndex, setStoryInitialIndex] = useState(0);
+  // Rastreamento de analytics: qual story originou a ação atual
+  const [storySource, setStorySource] = useState<{ storyId: number; establishmentId: number } | null>(null);
+  const recordStoryEventMutation = trpc.publicStories.recordEvent.useMutation();
 
   // Helper para obter IDs vistos do localStorage
   const getViewedStoryIds = useCallback((estId: number): number[] => {
@@ -935,6 +938,28 @@ export default function PublicMenu() {
           }
         }
       });
+      
+      // Rastrear order_completed se veio de um story
+      try {
+        const storyCartSource = sessionStorage.getItem("mindi_story_cart_source");
+        if (storyCartSource) {
+          const source = JSON.parse(storyCartSource);
+          const orderTotal = cart.reduce((sum, item) => {
+            const itemTotal = parseFloat(item.price) * item.quantity;
+            const complementsTotal = item.complements.reduce((s, c) => s + parseFloat(c.price) * (c.quantity || 1), 0) * item.quantity;
+            return sum + itemTotal + complementsTotal;
+          }, 0);
+          recordStoryEventMutation.mutate({
+            storyId: source.storyId,
+            establishmentId: source.establishmentId,
+            eventType: "order_completed",
+            orderId: result.orderId,
+            orderValue: orderTotal.toFixed(2),
+            sessionId: sessionStorage.getItem("mindi_story_session") || undefined,
+          });
+          sessionStorage.removeItem("mindi_story_cart_source");
+        }
+      } catch {}
       
       setIsSendingOrder(false);
       setOrderSent(true);
@@ -1897,6 +1922,12 @@ export default function PublicMenu() {
           onProductAction={(productId) => {
             // Fechar o story viewer
             setShowStoryViewer(false);
+            // Guardar referência do story para analytics
+            const currentStoryIdx = storyInitialIndex;
+            const currentStory = activeStories?.[currentStoryIdx];
+            if (currentStory && establishment) {
+              setStorySource({ storyId: currentStory.id, establishmentId: establishment.id });
+            }
             // Encontrar o produto no cardápio e abrir o modal
             const product = products.find(p => p.id === productId);
             if (product) {
@@ -3804,12 +3835,28 @@ export default function PublicMenu() {
                         setShowMobileBag(true);
                       }
                       
+                      // Rastrear add_to_cart se veio de um story
+                      if (storySource) {
+                        recordStoryEventMutation.mutate({
+                          storyId: storySource.storyId,
+                          establishmentId: storySource.establishmentId,
+                          eventType: "add_to_cart",
+                          productId: selectedProduct.id,
+                          sessionId: sessionStorage.getItem("mindi_story_session") || undefined,
+                        });
+                        // Persistir no sessionStorage para rastrear order_completed
+                        try {
+                          sessionStorage.setItem("mindi_story_cart_source", JSON.stringify(storySource));
+                        } catch {}
+                      }
+                      
                       // Limpar seleções
                       setSelectedComplements(new Map());
                       setProductObservation("");
                       setProductQuantity(1);
                       setSelectedComplementImage(null);
                       setSelectedProduct(null);
+                      setStorySource(null);
                     }}
                     disabled={!canAddToCart}
                     className={`flex-1 font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 ${

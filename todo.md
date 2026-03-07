@@ -8327,3 +8327,13 @@
 - [x] Stories: Botão "Pré-visualizar" no passo de detalhes leva ao preview, botão "Publicar" só no preview
 - [x] Stories: Testes para preview step (27 testes passando)
 - [x] Bug: Badges de tipo dos stories cortados (overflow hidden) nos círculos da página admin de Stories — corrigido overflow-hidden para overflow-visible no botão pai
+- [x] Stories Analytics: Criar tabela storyEvents no schema (story_id, event_type, product_id, order_id, order_value, session_id, timestamp)
+- [x] Stories Analytics: Criar endpoints tRPC para registrar eventos (view, click, add_to_cart, order_completed)
+- [x] Stories Analytics: Criar endpoint tRPC para buscar métricas agregadas por story (views, clicks, orders, revenue)
+- [x] Stories Analytics: Implementar rastreamento no menu público — registrar clique no botão do story
+- [x] Stories Analytics: Vincular pedido concluído ao story de origem (atribuição de conversão)
+- [x] Stories Analytics: Painel de desempenho por story na página admin (views, clicks, orders, revenue)
+- [x] Stories Analytics: Gráfico de vendas geradas por stories nos últimos 7 dias
+- [x] Stories Analytics: Insight "Story mais performático da semana"
+- [x] Stories Analytics: Insight "Stories geraram X% das vendas hoje"
+- [x] Stories Analytics: Testes para analytics de stories (24 testes + 176 total passando)

@@ -53,7 +53,8 @@ import {
   botApiKeys, InsertBotApiKey, BotApiKey,
   feedbacks, InsertFeedback, Feedback,
   stories, InsertStory, Story,
-  storyViews, InsertStoryView, StoryView
+  storyViews, InsertStoryView, StoryView,
+  storyEvents, InsertStoryEvent, StoryEvent
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 import crypto from 'crypto';
@@ -11836,4 +11837,203 @@ export async function getActiveStoryIds(establishmentId: number): Promise<number
       return true;
     })
     .map(r => r.id);
+}
+
+// ============ STORY EVENTS (ANALYTICS DE CONVERSÃO) ============
+
+// Registrar evento de story (click, add_to_cart, order_completed)
+export async function recordStoryEvent(data: {
+  storyId: number;
+  establishmentId: number;
+  eventType: "click" | "add_to_cart" | "order_completed";
+  productId?: number | null;
+  orderId?: number | null;
+  orderValue?: string | null;
+  sessionId?: string | null;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(storyEvents).values({
+    storyId: data.storyId,
+    establishmentId: data.establishmentId,
+    eventType: data.eventType,
+    productId: data.productId ?? null,
+    orderId: data.orderId ?? null,
+    orderValue: data.orderValue ?? null,
+    sessionId: data.sessionId ?? null,
+  });
+  return { success: true };
+}
+
+// Buscar métricas agregadas por story de um estabelecimento
+export async function getStoryAnalytics(establishmentId: number): Promise<{
+  storyId: number;
+  clicks: number;
+  addToCarts: number;
+  ordersCompleted: number;
+  totalRevenue: number;
+}[]> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Buscar todos os stories do estabelecimento (ativos e expirados recentes)
+  const storyIds = await db.select({ id: stories.id }).from(stories)
+    .where(eq(stories.establishmentId, establishmentId));
+  
+  if (storyIds.length === 0) return [];
+  
+  const ids = storyIds.map(s => s.id);
+  
+  const result = await db.select({
+    storyId: storyEvents.storyId,
+    eventType: storyEvents.eventType,
+    count: sql<number>`count(*)`,
+    totalValue: sql<number>`COALESCE(SUM(${storyEvents.orderValue}), 0)`,
+  }).from(storyEvents)
+    .where(inArray(storyEvents.storyId, ids))
+    .groupBy(storyEvents.storyId, storyEvents.eventType);
+  
+  // Agregar por story
+  const metricsMap = new Map<number, { clicks: number; addToCarts: number; ordersCompleted: number; totalRevenue: number }>();
+  
+  for (const id of ids) {
+    metricsMap.set(id, { clicks: 0, addToCarts: 0, ordersCompleted: 0, totalRevenue: 0 });
+  }
+  
+  for (const row of result) {
+    const m = metricsMap.get(row.storyId);
+    if (!m) continue;
+    if (row.eventType === "click") m.clicks = Number(row.count);
+    else if (row.eventType === "add_to_cart") m.addToCarts = Number(row.count);
+    else if (row.eventType === "order_completed") {
+      m.ordersCompleted = Number(row.count);
+      m.totalRevenue = Number(row.totalValue);
+    }
+  }
+  
+  return Array.from(metricsMap.entries()).map(([storyId, m]) => ({
+    storyId,
+    ...m,
+  }));
+}
+
+// Buscar vendas geradas por stories nos últimos N dias (para gráfico)
+export async function getStorySalesChart(establishmentId: number, days: number = 7): Promise<{
+  date: string;
+  orders: number;
+  revenue: number;
+}[]> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+  startDate.setHours(0, 0, 0, 0);
+  
+  const result = await db.select({
+    date: sql<string>`DATE(${storyEvents.createdAt})`,
+    orders: sql<number>`count(*)`,
+    revenue: sql<number>`COALESCE(SUM(${storyEvents.orderValue}), 0)`,
+  }).from(storyEvents)
+    .where(and(
+      eq(storyEvents.establishmentId, establishmentId),
+      eq(storyEvents.eventType, "order_completed"),
+      gte(storyEvents.createdAt, startDate)
+    ))
+    .groupBy(sql`DATE(${storyEvents.createdAt})`)
+    .orderBy(sql`DATE(${storyEvents.createdAt})`);
+  
+  // Preencher dias sem dados
+  const chartData: { date: string; orders: number; revenue: number }[] = [];
+  const resultMap = new Map(result.map(r => [r.date, r]));
+  
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split("T")[0];
+    const existing = resultMap.get(dateStr);
+    chartData.push({
+      date: dateStr,
+      orders: existing ? Number(existing.orders) : 0,
+      revenue: existing ? Number(existing.revenue) : 0,
+    });
+  }
+  
+  return chartData;
+}
+
+// Buscar o story mais performático (mais pedidos) de um estabelecimento
+export async function getTopPerformingStory(establishmentId: number): Promise<{
+  storyId: number;
+  orders: number;
+  revenue: number;
+} | null> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Últimos 7 dias
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - 7);
+  
+  const result = await db.select({
+    storyId: storyEvents.storyId,
+    orders: sql<number>`count(*)`,
+    revenue: sql<number>`COALESCE(SUM(${storyEvents.orderValue}), 0)`,
+  }).from(storyEvents)
+    .where(and(
+      eq(storyEvents.establishmentId, establishmentId),
+      eq(storyEvents.eventType, "order_completed"),
+      gte(storyEvents.createdAt, startDate)
+    ))
+    .groupBy(storyEvents.storyId)
+    .orderBy(sql`count(*) DESC`)
+    .limit(1);
+  
+  if (result.length === 0) return null;
+  
+  return {
+    storyId: result[0].storyId,
+    orders: Number(result[0].orders),
+    revenue: Number(result[0].revenue),
+  };
+}
+
+// Calcular percentual de vendas geradas por stories hoje
+export async function getStoryRevenuePercentToday(establishmentId: number): Promise<{
+  storyRevenue: number;
+  totalRevenue: number;
+  percent: number;
+}> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  // Revenue de stories hoje
+  const storyResult = await db.select({
+    revenue: sql<number>`COALESCE(SUM(${storyEvents.orderValue}), 0)`,
+  }).from(storyEvents)
+    .where(and(
+      eq(storyEvents.establishmentId, establishmentId),
+      eq(storyEvents.eventType, "order_completed"),
+      gte(storyEvents.createdAt, today)
+    ));
+  
+  const storyRevenue = Number(storyResult[0]?.revenue || 0);
+  
+  // Revenue total de pedidos hoje (excluindo cancelados)
+  const totalResult = await db.select({
+    revenue: sql<number>`COALESCE(SUM(${orders.total}), 0)`,
+  }).from(orders)
+    .where(and(
+      eq(orders.establishmentId, establishmentId),
+      gte(orders.createdAt, today),
+      sql`${orders.status} != 'cancelled'`
+    ));
+  
+  const totalRevenue = Number(totalResult[0]?.revenue || 0);
+  const percent = totalRevenue > 0 ? Math.round((storyRevenue / totalRevenue) * 100) : 0;
+  
+  return { storyRevenue, totalRevenue, percent };
 }

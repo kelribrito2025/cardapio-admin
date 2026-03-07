@@ -6495,6 +6495,34 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.countViewsByEstablishment(input.establishmentId);
       }),
+
+    // Analytics: métricas de conversão por story (clicks, carrinho, pedidos, receita)
+    conversionAnalytics: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getStoryAnalytics(input.establishmentId);
+      }),
+
+    // Analytics: gráfico de vendas geradas por stories (últimos N dias)
+    salesChart: protectedProcedure
+      .input(z.object({ establishmentId: z.number(), days: z.number().min(1).max(90).default(7) }))
+      .query(async ({ input }) => {
+        return db.getStorySalesChart(input.establishmentId, input.days);
+      }),
+
+    // Analytics: story mais performático da semana
+    topPerforming: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getTopPerformingStory(input.establishmentId);
+      }),
+
+    // Analytics: percentual de vendas geradas por stories hoje
+    revenuePercent: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getStoryRevenuePercentToday(input.establishmentId);
+      }),
   }),
 
   // ============ PUBLIC STORIES ============
@@ -6519,6 +6547,29 @@ export const appRouter = router({
       .input(z.object({ storyId: z.number(), sessionId: z.string().min(1).max(64) }))
       .mutation(async ({ input }) => {
         return db.recordStoryView(input.storyId, input.sessionId);
+      }),
+
+    // Registar evento de story (público) - click, add_to_cart, order_completed
+    recordEvent: publicProcedure
+      .input(z.object({
+        storyId: z.number(),
+        establishmentId: z.number(),
+        eventType: z.enum(["click", "add_to_cart", "order_completed"]),
+        productId: z.number().optional(),
+        orderId: z.number().optional(),
+        orderValue: z.string().optional(),
+        sessionId: z.string().max(64).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return db.recordStoryEvent({
+          storyId: input.storyId,
+          establishmentId: input.establishmentId,
+          eventType: input.eventType,
+          productId: input.productId ?? null,
+          orderId: input.orderId ?? null,
+          orderValue: input.orderValue ?? null,
+          sessionId: input.sessionId ?? null,
+        });
       }),
   }),
 });

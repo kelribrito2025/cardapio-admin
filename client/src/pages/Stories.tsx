@@ -1,8 +1,8 @@
 import { trpc } from "@/lib/trpc";
 import { AdminLayout } from "@/components/AdminLayout";
 import { PageHeader } from "@/components/shared";
-import { Plus, Trash2, Clock, ImageIcon, AlertCircle, Eye, Clapperboard, ShoppingBag, Tag } from "lucide-react";
-import { useState } from "react";
+import { Plus, Trash2, Clock, ImageIcon, AlertCircle, Eye, Clapperboard, ShoppingBag, Tag, MousePointerClick, ShoppingCart, DollarSign, TrendingUp, BarChart3, Trophy, Sparkles } from "lucide-react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -50,6 +50,15 @@ function storyTypeLabel(type: string): { label: string; icon: typeof ImageIcon; 
   }
 }
 
+function formatCurrency(value: number): string {
+  return `R$ ${value.toFixed(2).replace(".", ",")}`;
+}
+
+function formatWeekday(dateStr: string): string {
+  const d = new Date(dateStr + "T12:00:00");
+  return d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "");
+}
+
 export default function Stories() {
   const { data: establishment } = trpc.establishment.get.useQuery();
   const establishmentId = establishment?.id;
@@ -57,6 +66,7 @@ export default function Stories() {
   const [storyViewerIndex, setStoryViewerIndex] = useState(0);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(true);
 
   const { data: storiesList, isLoading, refetch } = trpc.stories.list.useQuery(
     { establishmentId: establishmentId! },
@@ -67,6 +77,31 @@ export default function Stories() {
   const { data: viewsData } = trpc.stories.viewsAnalytics.useQuery(
     { establishmentId: establishmentId! },
     { enabled: !!establishmentId, refetchInterval: 30000 }
+  );
+
+  // Analytics de conversão
+  const { data: conversionData } = trpc.stories.conversionAnalytics.useQuery(
+    { establishmentId: establishmentId! },
+    { enabled: !!establishmentId, refetchInterval: 30000 }
+  );
+
+  // Gráfico de vendas (últimos 7 dias)
+  const [chartDays] = useState(7);
+  const { data: salesChartData } = trpc.stories.salesChart.useQuery(
+    { establishmentId: establishmentId!, days: chartDays },
+    { enabled: !!establishmentId, refetchInterval: 60000 }
+  );
+
+  // Story mais performático
+  const { data: topStory } = trpc.stories.topPerforming.useQuery(
+    { establishmentId: establishmentId! },
+    { enabled: !!establishmentId, refetchInterval: 60000 }
+  );
+
+  // Percentual de vendas hoje
+  const { data: revenuePercent } = trpc.stories.revenuePercent.useQuery(
+    { establishmentId: establishmentId! },
+    { enabled: !!establishmentId, refetchInterval: 60000 }
   );
 
   const deleteMutation = trpc.stories.delete.useMutation({
@@ -85,6 +120,42 @@ export default function Stories() {
   const activeStories = (storiesList || []).filter(
     (s) => new Date(s.expiresAt).getTime() > Date.now()
   );
+
+  // Mapa de métricas por story
+  const metricsMap = useMemo(() => {
+    const map = new Map<number, { clicks: number; addToCarts: number; ordersCompleted: number; totalRevenue: number }>();
+    if (conversionData) {
+      for (const item of conversionData) {
+        map.set(item.storyId, item);
+      }
+    }
+    return map;
+  }, [conversionData]);
+
+  // Calcular max revenue para o gráfico de barras
+  const chartMaxRevenue = useMemo(() => {
+    if (!salesChartData) return 0;
+    return Math.max(...salesChartData.map(d => d.revenue), 1);
+  }, [salesChartData]);
+
+  // Totais gerais
+  const totals = useMemo(() => {
+    if (!conversionData) return { clicks: 0, addToCarts: 0, orders: 0, revenue: 0 };
+    return conversionData.reduce((acc, item) => ({
+      clicks: acc.clicks + item.clicks,
+      addToCarts: acc.addToCarts + item.addToCarts,
+      orders: acc.orders + item.ordersCompleted,
+      revenue: acc.revenue + item.totalRevenue,
+    }), { clicks: 0, addToCarts: 0, orders: 0, revenue: 0 });
+  }, [conversionData]);
+
+  // Nome do story mais performático
+  const topStoryName = useMemo(() => {
+    if (!topStory || !storiesList) return null;
+    const story = storiesList.find(s => s.id === topStory.storyId);
+    if (!story) return null;
+    return story.type === "promo" && story.promoTitle ? story.promoTitle : `Story #${story.id}`;
+  }, [topStory, storiesList]);
 
   const handleDelete = (id: number) => {
     deleteMutation.mutate({ id });
@@ -205,7 +276,167 @@ export default function Stories() {
           )}
         </div>
 
-        {/* Lista detalhada dos stories */}
+        {/* ===== PAINEL DE ANALYTICS ===== */}
+        {activeStories.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-blue-600" />
+                Performance dos Stories
+              </h2>
+              <button
+                onClick={() => setShowAnalytics(!showAnalytics)}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showAnalytics ? "Ocultar" : "Mostrar"}
+              </button>
+            </div>
+
+            {showAnalytics && (
+              <div className="space-y-4">
+                {/* Insight de destaque */}
+                {revenuePercent && revenuePercent.percent > 0 && (
+                  <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-200/50 dark:border-blue-800/50">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm font-semibold text-foreground">
+                        Stories geraram <span className="text-blue-600">{revenuePercent.percent}%</span> das vendas hoje
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1 ml-6">
+                      {formatCurrency(revenuePercent.storyRevenue)} de {formatCurrency(revenuePercent.totalRevenue)} total
+                    </p>
+                  </div>
+                )}
+
+                {/* Cards de métricas totais */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="p-3 rounded-xl border border-border/60 bg-card">
+                    <div className="flex items-center gap-2 mb-1">
+                      <MousePointerClick className="h-3.5 w-3.5 text-blue-500" />
+                      <span className="text-[11px] text-muted-foreground font-medium">Cliques</span>
+                    </div>
+                    <span className="text-xl font-bold text-foreground">{totals.clicks}</span>
+                  </div>
+                  <div className="p-3 rounded-xl border border-border/60 bg-card">
+                    <div className="flex items-center gap-2 mb-1">
+                      <ShoppingCart className="h-3.5 w-3.5 text-amber-500" />
+                      <span className="text-[11px] text-muted-foreground font-medium">Carrinho</span>
+                    </div>
+                    <span className="text-xl font-bold text-foreground">{totals.addToCarts}</span>
+                  </div>
+                  <div className="p-3 rounded-xl border border-border/60 bg-card">
+                    <div className="flex items-center gap-2 mb-1">
+                      <ShoppingBag className="h-3.5 w-3.5 text-emerald-500" />
+                      <span className="text-[11px] text-muted-foreground font-medium">Pedidos</span>
+                    </div>
+                    <span className="text-xl font-bold text-foreground">{totals.orders}</span>
+                  </div>
+                  <div className="p-3 rounded-xl border border-border/60 bg-card">
+                    <div className="flex items-center gap-2 mb-1">
+                      <DollarSign className="h-3.5 w-3.5 text-green-500" />
+                      <span className="text-[11px] text-muted-foreground font-medium">Faturamento</span>
+                    </div>
+                    <span className="text-xl font-bold text-foreground">{formatCurrency(totals.revenue)}</span>
+                  </div>
+                </div>
+
+                {/* Gráfico de vendas + Top Story */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Gráfico de barras */}
+                  <div className="md:col-span-2 p-4 rounded-xl border border-border/60 bg-card">
+                    <h3 className="text-xs font-semibold text-muted-foreground mb-3 flex items-center gap-1.5">
+                      <TrendingUp className="h-3.5 w-3.5" />
+                      Vendas por Stories (últimos {chartDays} dias)
+                    </h3>
+                    {salesChartData && salesChartData.length > 0 ? (
+                      <div className="flex items-end gap-1.5 h-32">
+                        {salesChartData.map((day, idx) => {
+                          const heightPct = chartMaxRevenue > 0 ? (day.revenue / chartMaxRevenue) * 100 : 0;
+                          const isToday = idx === salesChartData.length - 1;
+                          return (
+                            <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
+                              <div className="w-full flex flex-col items-center justify-end h-24 relative group">
+                                {/* Tooltip */}
+                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground text-background text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
+                                  {day.orders} pedido{day.orders !== 1 ? "s" : ""} · {formatCurrency(day.revenue)}
+                                </div>
+                                <div
+                                  className={cn(
+                                    "w-full rounded-t-md transition-all",
+                                    isToday ? "bg-blue-500" : "bg-blue-400/60",
+                                    day.revenue === 0 && "bg-muted"
+                                  )}
+                                  style={{ height: `${Math.max(heightPct, day.revenue > 0 ? 8 : 3)}%` }}
+                                />
+                              </div>
+                              <span className={cn(
+                                "text-[10px]",
+                                isToday ? "text-foreground font-semibold" : "text-muted-foreground"
+                              )}>
+                                {formatWeekday(day.date)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="h-32 flex items-center justify-center text-xs text-muted-foreground">
+                        Sem dados de vendas ainda
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Top Story da semana */}
+                  <div className="p-4 rounded-xl border border-border/60 bg-card">
+                    <h3 className="text-xs font-semibold text-muted-foreground mb-3 flex items-center gap-1.5">
+                      <Trophy className="h-3.5 w-3.5 text-amber-500" />
+                      Top Story da Semana
+                    </h3>
+                    {topStory && topStoryName ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-10 h-10 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                            {(() => {
+                              const story = storiesList?.find(s => s.id === topStory.storyId);
+                              return story ? (
+                                <img src={story.imageUrl} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <Trophy className="h-5 w-5 text-amber-500" />
+                                </div>
+                              );
+                            })()}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-foreground truncate">{topStoryName}</p>
+                            <p className="text-[11px] text-muted-foreground">Melhor performance</p>
+                          </div>
+                        </div>
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">Pedidos</span>
+                            <span className="text-sm font-bold text-foreground">{topStory.orders}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">Faturamento</span>
+                            <span className="text-sm font-bold text-emerald-600">{formatCurrency(topStory.revenue)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="h-20 flex items-center justify-center text-xs text-muted-foreground">
+                        Nenhum pedido via stories esta semana
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Lista detalhada dos stories com métricas */}
         {activeStories.length > 0 && (
           <div>
             <h2 className="text-sm font-semibold text-foreground mb-4">Stories ativos</h2>
@@ -213,59 +444,82 @@ export default function Stories() {
               {activeStories.map((story) => {
                 const typeInfo = storyTypeLabel(story.type);
                 const TypeIcon = typeInfo.icon;
+                const metrics = metricsMap.get(story.id);
+                const views = viewsData?.[story.id] ?? 0;
                 return (
                   <div
                     key={story.id}
-                    className="flex items-center gap-4 p-3 rounded-xl border border-border/60 bg-card hover:bg-muted/30 transition-colors"
+                    className="p-3 rounded-xl border border-border/60 bg-card hover:bg-muted/30 transition-colors"
                   >
-                    {/* Thumbnail */}
-                    <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
-                      <img
-                        src={story.imageUrl}
-                        alt="Story"
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="flex items-center gap-4">
+                      {/* Thumbnail */}
+                      <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
+                        <img
+                          src={story.imageUrl}
+                          alt="Story"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <TypeIcon className={cn("h-3.5 w-3.5", typeInfo.color)} />
+                          <span className={cn("text-xs font-medium", typeInfo.color)}>
+                            {typeInfo.label}
+                          </span>
+                          {story.type === "promo" && story.promoTitle && (
+                            <span className="text-xs text-foreground font-medium truncate">
+                              — {story.promoTitle}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Publicado {timeAgo(story.createdAt)}
+                        </p>
+                        <div className="flex items-center gap-3 mt-0.5">
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">
+                              {timeRemaining(story.expiresAt)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Ações */}
+                      <button
+                        onClick={() => setDeleteConfirm(story.id)}
+                        className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-400 hover:text-red-500 transition-colors flex-shrink-0"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
 
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <TypeIcon className={cn("h-3.5 w-3.5", typeInfo.color)} />
-                        <span className={cn("text-xs font-medium", typeInfo.color)}>
-                          {typeInfo.label}
+                    {/* Métricas inline do story */}
+                    <div className="mt-3 pt-3 border-t border-border/40 grid grid-cols-4 gap-2">
+                      <div className="flex items-center gap-1.5">
+                        <Eye className="h-3 w-3 text-blue-400" />
+                        <span className="text-xs text-muted-foreground">{views}</span>
+                        <span className="text-[10px] text-muted-foreground/60 hidden sm:inline">views</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <MousePointerClick className="h-3 w-3 text-blue-500" />
+                        <span className="text-xs text-muted-foreground">{metrics?.clicks ?? 0}</span>
+                        <span className="text-[10px] text-muted-foreground/60 hidden sm:inline">cliques</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <ShoppingBag className="h-3 w-3 text-emerald-500" />
+                        <span className="text-xs text-muted-foreground">{metrics?.ordersCompleted ?? 0}</span>
+                        <span className="text-[10px] text-muted-foreground/60 hidden sm:inline">pedidos</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <DollarSign className="h-3 w-3 text-green-500" />
+                        <span className="text-xs text-muted-foreground font-medium">
+                          {formatCurrency(metrics?.totalRevenue ?? 0)}
                         </span>
-                        {story.type === "promo" && story.promoTitle && (
-                          <span className="text-xs text-foreground font-medium truncate">
-                            — {story.promoTitle}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Publicado {timeAgo(story.createdAt)}
-                      </p>
-                      <div className="flex items-center gap-3 mt-0.5">
-                        <div className="flex items-center gap-1.5">
-                          <Clock className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">
-                            {timeRemaining(story.expiresAt)}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Eye className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">
-                            {viewsData?.[story.id] ?? 0} {(viewsData?.[story.id] ?? 0) === 1 ? "view" : "views"}
-                          </span>
-                        </div>
                       </div>
                     </div>
-
-                    {/* Ações */}
-                    <button
-                      onClick={() => setDeleteConfirm(story.id)}
-                      className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-400 hover:text-red-500 transition-colors flex-shrink-0"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
                   </div>
                 );
               })}

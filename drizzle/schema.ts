@@ -1156,3 +1156,18 @@ export const storyViews = mysqlTable("storyViews", {
 });
 export type StoryView = typeof storyViews.$inferSelect;
 export type InsertStoryView = typeof storyViews.$inferInsert;
+
+// Story Events - Analytics de conversão (cliques, carrinho, pedidos)
+export const storyEvents = mysqlTable("storyEvents", {
+  id: int("id").autoincrement().primaryKey(),
+  storyId: int("storyId").notNull(),
+  establishmentId: int("establishmentId").notNull(),
+  eventType: mysqlEnum("eventType", ["click", "add_to_cart", "order_completed"]).notNull(),
+  productId: int("productId"),
+  orderId: int("orderId"),
+  orderValue: decimal("orderValue", { precision: 10, scale: 2 }),
+  sessionId: varchar("sessionId", { length: 64 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type StoryEvent = typeof storyEvents.$inferSelect;
+export type InsertStoryEvent = typeof storyEvents.$inferInsert;

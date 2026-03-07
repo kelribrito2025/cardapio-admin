@@ -15,6 +15,7 @@ interface Story {
   promoExpiresAt?: string | Date | null;
   actionLabel?: string | null;
   priceBadgeStyle?: "circle" | "ribbon" | "top-center" | null;
+  establishmentId?: number;
 }
 
 interface StoryViewerProps {
@@ -99,6 +100,7 @@ export default function StoryViewer({
 
   const sessionId = useMemo(() => getOrCreateSessionId(), []);
   const recordViewMutation = trpc.publicStories.recordView.useMutation();
+  const recordEventMutation = trpc.publicStories.recordEvent.useMutation();
 
   // Registar view quando o story muda
   useEffect(() => {
@@ -291,9 +293,17 @@ export default function StoryViewer({
     activePointerIdRef.current = null;
     setPaused(false);
     if (currentStory?.productId && onProductAction) {
+      // Registar evento de clique no story
+      recordEventMutation.mutate({
+        storyId: currentStory.id,
+        establishmentId: currentStory.establishmentId || 0,
+        eventType: "click",
+        productId: currentStory.productId,
+        sessionId,
+      });
       onProductAction(currentStory.productId);
     }
-  }, [currentStory, onProductAction]);
+  }, [currentStory, onProductAction, sessionId]);
 
   const handleCloseClick = useCallback((e: React.PointerEvent | React.MouseEvent) => {
     e.stopPropagation();
