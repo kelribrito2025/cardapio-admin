@@ -73,16 +73,15 @@ export default function CreateStoryDialog({
   const [actionLabel, setActionLabel] = useState("");
 
   // Fetch products for selection
-  const { data: productsData } = trpc.products.list.useQuery(
-    { establishmentId },
-    { enabled: open && storyType === "product" }
+  const { data: productsData } = trpc.product.list.useQuery(
+    { establishmentId, status: "active" },
+    { enabled: open && (storyType === "product" || storyType === "promo") }
   );
 
   const products = productsData?.products || [];
   const filteredProducts = products.filter(
     (p: any) =>
-      p.name.toLowerCase().includes(productSearch.toLowerCase()) &&
-      p.status === "active"
+      p.name.toLowerCase().includes(productSearch.toLowerCase())
   );
 
   const createMutation = trpc.stories.create.useMutation({
