@@ -193,31 +193,32 @@ function ExpandableDescription({ text }: { text: string }) {
       </div>
 
       {/* Texto visível */}
-      <p className="text-sm text-gray-600 leading-relaxed">
+      <p
+        className={`text-sm text-gray-600 leading-relaxed ${needsClamp ? 'cursor-pointer' : ''}`}
+        onClick={() => needsClamp && setIsExpanded(prev => !prev)}
+      >
         {isExpanded || !needsClamp ? (
           <>
             {text}
             {needsClamp && (
               <>
                 {' '}
-                <button
-                  onClick={() => setIsExpanded(false)}
+                <span
                   className="text-xs font-medium text-red-500 hover:text-red-600 transition-colors inline whitespace-nowrap"
                 >
                   Ver menos
-                </button>
+                </span>
               </>
             )}
           </>
         ) : (
           <>
             {truncatedText}...{' '}
-            <button
-              onClick={() => setIsExpanded(true)}
+            <span
               className="text-xs font-medium text-red-500 hover:text-red-600 transition-colors inline whitespace-nowrap"
             >
               Ver mais
-            </button>
+            </span>
           </>
         )}
       </p>

@@ -8230,3 +8230,4 @@
 - [x] Bug: Ao alterar nome do responsável em Configurações, o avatar de perfil no header não atualiza (corrigido: adicionado refetch explícito do auth.me + invalidate do getAccountData)
 - [x] Bug: Alterar nome do responsável no estabelecimento 210008 (user 1471505) não atualiza avatar — corrigido: causa raiz era que ownerDisplayName não era atualizado junto com responsibleName; agora updateAccountData atualiza users.name + establishments.ownerDisplayName + invalidate do establishment.get no frontend
 - [x] Menu Público: Descrição do produto com "Ver mais / Ver menos" — limitar a 3 linhas com line-clamp-3 e link clicável para expandir/recolher
+- [x] Permitir clicar no texto da descrição para expandir/recolher (além do botão Ver mais/Ver menos)
