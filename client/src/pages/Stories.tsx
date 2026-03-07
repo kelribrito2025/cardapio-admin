@@ -1,6 +1,6 @@
 import { trpc } from "@/lib/trpc";
 import { AdminLayout } from "@/components/AdminLayout";
-import { PageHeader } from "@/components/shared";
+import { PageHeader, StatCard, SectionCard } from "@/components/shared";
 import { Plus, Trash2, Clock, ImageIcon, AlertCircle, Eye, Clapperboard, ShoppingBag, Tag, MousePointerClick, ShoppingCart, DollarSign, TrendingUp, BarChart3, Trophy, Sparkles } from "lucide-react";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
@@ -51,7 +51,10 @@ function storyTypeLabel(type: string): { label: string; icon: typeof ImageIcon; 
 }
 
 function formatCurrency(value: number): string {
-  return `R$ ${value.toFixed(2).replace(".", ",")}`;
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(value);
 }
 
 function formatWeekday(dateStr: string): string {
@@ -163,7 +166,7 @@ export default function Stories() {
 
   return (
     <AdminLayout>
-      <div className="space-y-5">
+      <div className="space-y-6">
         {/* Header */}
         <div className="mb-6">
           <PageHeader 
@@ -191,7 +194,6 @@ export default function Stories() {
                 "h-7 w-7",
                 activeStories.length >= MAX_STORIES ? "text-muted-foreground/30" : "text-muted-foreground/60"
               )} />
-              {/* Badge + azul estilo Instagram */}
               {activeStories.length < MAX_STORIES && (
                 <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center border-2 border-background">
                   <Plus className="h-3.5 w-3.5 text-white" />
@@ -222,7 +224,6 @@ export default function Stories() {
                     }}
                     className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-visible group"
                   >
-                    {/* Borda degradê Instagram */}
                     <div className="absolute inset-0 rounded-full p-[3px]" style={{
                       background: story.type === "promo" 
                         ? "linear-gradient(45deg, #f97316, #ef4444, #f97316)"
@@ -238,7 +239,6 @@ export default function Stories() {
                         />
                       </div>
                     </div>
-                    {/* Badge de tipo */}
                     {story.type !== "simple" && (
                       <div className={cn(
                         "absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full flex items-center justify-center border-2 border-background",
@@ -247,7 +247,6 @@ export default function Stories() {
                         <typeInfo.icon className="h-3 w-3 text-white" />
                       </div>
                     )}
-                    {/* Overlay hover */}
                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-full flex items-center justify-center">
                       <ImageIcon className="h-5 w-5 text-white" />
                     </div>
@@ -278,100 +277,110 @@ export default function Stories() {
 
         {/* ===== PAINEL DE ANALYTICS ===== */}
         {activeStories.length > 0 && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <BarChart3 className="h-4 w-4 text-blue-600" />
-                Performance dos Stories
-              </h2>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                  <BarChart3 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <h2 className="text-base font-semibold text-foreground">Performance dos Stories</h2>
+                  <p className="text-xs text-muted-foreground">Métricas de conversão e vendas</p>
+                </div>
+              </div>
               <button
                 onClick={() => setShowAnalytics(!showAnalytics)}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg hover:bg-muted/50"
               >
                 {showAnalytics ? "Ocultar" : "Mostrar"}
               </button>
             </div>
 
             {showAnalytics && (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {/* Insight de destaque */}
                 {revenuePercent && revenuePercent.percent > 0 && (
-                  <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-200/50 dark:border-blue-800/50">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-blue-600" />
-                      <span className="text-sm font-semibold text-foreground">
-                        Stories geraram <span className="text-blue-600">{revenuePercent.percent}%</span> das vendas hoje
-                      </span>
+                  <div className="p-4 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-200/50 dark:border-blue-800/50">
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-8 w-8 rounded-lg bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                        <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-semibold text-foreground">
+                          Stories geraram <span className="text-blue-600 dark:text-blue-400">{revenuePercent.percent}%</span> das vendas hoje
+                        </span>
+                        <p className="text-xs text-muted-foreground">
+                          {formatCurrency(revenuePercent.storyRevenue)} de {formatCurrency(revenuePercent.totalRevenue)} total
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1 ml-6">
-                      {formatCurrency(revenuePercent.storyRevenue)} de {formatCurrency(revenuePercent.totalRevenue)} total
-                    </p>
                   </div>
                 )}
 
-                {/* Cards de métricas totais */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <div className="p-3 rounded-xl border border-border/60 bg-card">
-                    <div className="flex items-center gap-2 mb-1">
-                      <MousePointerClick className="h-3.5 w-3.5 text-blue-500" />
-                      <span className="text-[11px] text-muted-foreground font-medium">Cliques</span>
-                    </div>
-                    <span className="text-xl font-bold text-foreground">{totals.clicks}</span>
-                  </div>
-                  <div className="p-3 rounded-xl border border-border/60 bg-card">
-                    <div className="flex items-center gap-2 mb-1">
-                      <ShoppingCart className="h-3.5 w-3.5 text-amber-500" />
-                      <span className="text-[11px] text-muted-foreground font-medium">Carrinho</span>
-                    </div>
-                    <span className="text-xl font-bold text-foreground">{totals.addToCarts}</span>
-                  </div>
-                  <div className="p-3 rounded-xl border border-border/60 bg-card">
-                    <div className="flex items-center gap-2 mb-1">
-                      <ShoppingBag className="h-3.5 w-3.5 text-emerald-500" />
-                      <span className="text-[11px] text-muted-foreground font-medium">Pedidos</span>
-                    </div>
-                    <span className="text-xl font-bold text-foreground">{totals.orders}</span>
-                  </div>
-                  <div className="p-3 rounded-xl border border-border/60 bg-card">
-                    <div className="flex items-center gap-2 mb-1">
-                      <DollarSign className="h-3.5 w-3.5 text-green-500" />
-                      <span className="text-[11px] text-muted-foreground font-medium">Faturamento</span>
-                    </div>
-                    <span className="text-xl font-bold text-foreground">{formatCurrency(totals.revenue)}</span>
-                  </div>
+                {/* KPI Cards - Mesmo padrão StatCard da Dashboard */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+                  <StatCard
+                    title="Cliques"
+                    value={totals.clicks}
+                    icon={MousePointerClick}
+                    variant="blue"
+                  />
+                  <StatCard
+                    title="Carrinho"
+                    value={totals.addToCarts}
+                    icon={ShoppingCart}
+                    variant="amber"
+                  />
+                  <StatCard
+                    title="Pedidos"
+                    value={totals.orders}
+                    icon={ShoppingBag}
+                    variant="emerald"
+                  />
+                  <StatCard
+                    title="Faturamento"
+                    value={formatCurrency(totals.revenue)}
+                    icon={DollarSign}
+                    variant="emerald"
+                  />
                 </div>
 
                 {/* Gráfico de vendas + Top Story */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                   {/* Gráfico de barras */}
-                  <div className="md:col-span-2 p-4 rounded-xl border border-border/60 bg-card">
-                    <h3 className="text-xs font-semibold text-muted-foreground mb-3 flex items-center gap-1.5">
-                      <TrendingUp className="h-3.5 w-3.5" />
-                      Vendas por Stories (últimos {chartDays} dias)
-                    </h3>
+                  <div className="lg:col-span-3 bg-card rounded-xl border border-border/50 p-5 flex flex-col">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                        <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-base font-semibold text-foreground">Vendas por Stories</h3>
+                        <p className="text-xs text-muted-foreground">Últimos {chartDays} dias</p>
+                      </div>
+                    </div>
                     {salesChartData && salesChartData.length > 0 ? (
-                      <div className="flex items-end gap-1.5 h-32">
+                      <div className="flex items-end gap-1.5 h-36 mt-auto">
                         {salesChartData.map((day, idx) => {
                           const heightPct = chartMaxRevenue > 0 ? (day.revenue / chartMaxRevenue) * 100 : 0;
                           const isToday = idx === salesChartData.length - 1;
                           return (
-                            <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
-                              <div className="w-full flex flex-col items-center justify-end h-24 relative group">
-                                {/* Tooltip */}
-                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground text-background text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
+                            <div key={day.date} className="flex-1 flex flex-col items-center gap-1.5">
+                              <div className="w-full flex flex-col items-center justify-end h-28 relative group">
+                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none shadow-lg">
                                   {day.orders} pedido{day.orders !== 1 ? "s" : ""} · {formatCurrency(day.revenue)}
+                                  <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900" />
                                 </div>
                                 <div
                                   className={cn(
-                                    "w-full rounded-t-md transition-all",
-                                    isToday ? "bg-blue-500" : "bg-blue-400/60",
+                                    "w-full rounded-md transition-all duration-500",
+                                    isToday ? "bg-emerald-500" : "bg-emerald-400/60",
                                     day.revenue === 0 && "bg-muted"
                                   )}
                                   style={{ height: `${Math.max(heightPct, day.revenue > 0 ? 8 : 3)}%` }}
                                 />
                               </div>
                               <span className={cn(
-                                "text-[10px]",
+                                "text-[11px]",
                                 isToday ? "text-foreground font-semibold" : "text-muted-foreground"
                               )}>
                                 {formatWeekday(day.date)}
@@ -381,51 +390,62 @@ export default function Stories() {
                         })}
                       </div>
                     ) : (
-                      <div className="h-32 flex items-center justify-center text-xs text-muted-foreground">
+                      <div className="h-36 flex items-center justify-center text-sm text-muted-foreground">
                         Sem dados de vendas ainda
                       </div>
                     )}
                   </div>
 
                   {/* Top Story da semana */}
-                  <div className="p-4 rounded-xl border border-border/60 bg-card">
-                    <h3 className="text-xs font-semibold text-muted-foreground mb-3 flex items-center gap-1.5">
-                      <Trophy className="h-3.5 w-3.5 text-amber-500" />
-                      Top Story da Semana
-                    </h3>
+                  <div className="lg:col-span-2 bg-card rounded-xl border border-border/50 p-5 flex flex-col">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                        <Trophy className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-base font-semibold text-foreground">Top Story da Semana</h3>
+                        <p className="text-xs text-muted-foreground">Melhor performance nos últimos 7 dias</p>
+                      </div>
+                    </div>
                     {topStory && topStoryName ? (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-10 h-10 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                      <div className="flex-1 flex flex-col justify-center space-y-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-14 h-14 rounded-xl overflow-hidden bg-muted flex-shrink-0">
                             {(() => {
                               const story = storiesList?.find(s => s.id === topStory.storyId);
                               return story ? (
                                 <img src={story.imageUrl} alt="" className="w-full h-full object-cover" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                  <Trophy className="h-5 w-5 text-amber-500" />
+                                  <Trophy className="h-6 w-6 text-amber-500" />
                                 </div>
                               );
                             })()}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-semibold text-foreground truncate">{topStoryName}</p>
-                            <p className="text-[11px] text-muted-foreground">Melhor performance</p>
+                            <p className="text-base font-semibold text-foreground truncate">{topStoryName}</p>
+                            <p className="text-xs text-muted-foreground">Melhor performance</p>
                           </div>
                         </div>
-                        <div className="space-y-1.5">
+                        <div className="space-y-3 pt-2 border-t border-border/50">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">Pedidos</span>
-                            <span className="text-sm font-bold text-foreground">{topStory.orders}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                              <span className="text-sm text-muted-foreground">Pedidos</span>
+                            </div>
+                            <span className="text-lg font-bold text-foreground">{topStory.orders}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">Faturamento</span>
-                            <span className="text-sm font-bold text-emerald-600">{formatCurrency(topStory.revenue)}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                              <span className="text-sm text-muted-foreground">Faturamento</span>
+                            </div>
+                            <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(topStory.revenue)}</span>
                           </div>
                         </div>
                       </div>
                     ) : (
-                      <div className="h-20 flex items-center justify-center text-xs text-muted-foreground">
+                      <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
                         Nenhum pedido via stories esta semana
                       </div>
                     )}
@@ -438,8 +458,7 @@ export default function Stories() {
 
         {/* Lista detalhada dos stories com métricas */}
         {activeStories.length > 0 && (
-          <div>
-            <h2 className="text-sm font-semibold text-foreground mb-4">Stories ativos</h2>
+          <SectionCard title="Stories ativos" description={`${activeStories.length} stories publicados`}>
             <div className="space-y-3">
               {activeStories.map((story) => {
                 const typeInfo = storyTypeLabel(story.type);
@@ -449,11 +468,11 @@ export default function Stories() {
                 return (
                   <div
                     key={story.id}
-                    className="p-3 rounded-xl border border-border/60 bg-card hover:bg-muted/30 transition-colors"
+                    className="p-4 rounded-xl border border-border/50 bg-background hover:bg-muted/30 transition-all duration-200 hover:shadow-sm"
                   >
                     <div className="flex items-center gap-4">
                       {/* Thumbnail */}
-                      <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
+                      <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-muted">
                         <img
                           src={story.imageUrl}
                           alt="Story"
@@ -469,7 +488,7 @@ export default function Stories() {
                             {typeInfo.label}
                           </span>
                           {story.type === "promo" && story.promoTitle && (
-                            <span className="text-xs text-foreground font-medium truncate">
+                            <span className="text-sm font-semibold text-foreground truncate">
                               — {story.promoTitle}
                             </span>
                           )}
@@ -497,34 +516,50 @@ export default function Stories() {
                     </div>
 
                     {/* Métricas inline do story */}
-                    <div className="mt-3 pt-3 border-t border-border/40 grid grid-cols-4 gap-2">
-                      <div className="flex items-center gap-1.5">
-                        <Eye className="h-3 w-3 text-blue-400" />
-                        <span className="text-xs text-muted-foreground">{views}</span>
-                        <span className="text-[10px] text-muted-foreground/60 hidden sm:inline">views</span>
+                    <div className="mt-3 pt-3 border-t border-border/40 grid grid-cols-4 gap-3">
+                      <div className="flex items-center gap-2">
+                        <div className="h-6 w-6 rounded-md bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0">
+                          <Eye className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-sm font-semibold text-foreground">{views}</span>
+                          <span className="text-[10px] text-muted-foreground ml-1 hidden sm:inline">views</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <MousePointerClick className="h-3 w-3 text-blue-500" />
-                        <span className="text-xs text-muted-foreground">{metrics?.clicks ?? 0}</span>
-                        <span className="text-[10px] text-muted-foreground/60 hidden sm:inline">cliques</span>
+                      <div className="flex items-center gap-2">
+                        <div className="h-6 w-6 rounded-md bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0">
+                          <MousePointerClick className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-sm font-semibold text-foreground">{metrics?.clicks ?? 0}</span>
+                          <span className="text-[10px] text-muted-foreground ml-1 hidden sm:inline">cliques</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <ShoppingBag className="h-3 w-3 text-emerald-500" />
-                        <span className="text-xs text-muted-foreground">{metrics?.ordersCompleted ?? 0}</span>
-                        <span className="text-[10px] text-muted-foreground/60 hidden sm:inline">pedidos</span>
+                      <div className="flex items-center gap-2">
+                        <div className="h-6 w-6 rounded-md bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
+                          <ShoppingBag className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-sm font-semibold text-foreground">{metrics?.ordersCompleted ?? 0}</span>
+                          <span className="text-[10px] text-muted-foreground ml-1 hidden sm:inline">pedidos</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <DollarSign className="h-3 w-3 text-green-500" />
-                        <span className="text-xs text-muted-foreground font-medium">
-                          {formatCurrency(metrics?.totalRevenue ?? 0)}
-                        </span>
+                      <div className="flex items-center gap-2">
+                        <div className="h-6 w-6 rounded-md bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
+                          <DollarSign className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-sm font-semibold text-foreground">
+                            {formatCurrency(metrics?.totalRevenue ?? 0)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 );
               })}
             </div>
-          </div>
+          </SectionCard>
         )}
 
         {/* Estado vazio */}
