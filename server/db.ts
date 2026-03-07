@@ -11884,37 +11884,39 @@ export async function getStoryAnalytics(establishmentId: number): Promise<{
   
   const ids = storyIds.map(s => s.id);
   
-  const result = await db.select({
-    storyId: storyEvents.storyId,
-    eventType: storyEvents.eventType,
-    count: sql<number>`count(*)`,
-    totalValue: sql<number>`COALESCE(SUM(${storyEvents.orderValue}), 0)`,
-  }).from(storyEvents)
-    .where(inArray(storyEvents.storyId, ids))
-    .groupBy(storyEvents.storyId, storyEvents.eventType);
-  
-  // Agregar por story
-  const metricsMap = new Map<number, { clicks: number; addToCarts: number; ordersCompleted: number; totalRevenue: number }>();
-  
-  for (const id of ids) {
-    metricsMap.set(id, { clicks: 0, addToCarts: 0, ordersCompleted: 0, totalRevenue: 0 });
-  }
-  
-  for (const row of result) {
-    const m = metricsMap.get(row.storyId);
-    if (!m) continue;
-    if (row.eventType === "click") m.clicks = Number(row.count);
-    else if (row.eventType === "add_to_cart") m.addToCarts = Number(row.count);
-    else if (row.eventType === "order_completed") {
-      m.ordersCompleted = Number(row.count);
-      m.totalRevenue = Number(row.totalValue);
+  try {
+    // Usar db.execute com SQL raw para evitar problemas com only_full_group_by no TiDB
+    const idList = ids.join(',');
+    const rawResult: any[] = await db.execute(
+      sql`SELECT storyId, eventType, COUNT(*) as cnt, COALESCE(SUM(orderValue), 0) as totalValue FROM storyEvents WHERE storyId IN (${sql.raw(idList)}) GROUP BY storyId, eventType`
+    ).then((rows: any) => Array.isArray(rows) && Array.isArray(rows[0]) ? rows[0] : rows);
+    
+    // Agregar por story
+    const metricsMap = new Map<number, { clicks: number; addToCarts: number; ordersCompleted: number; totalRevenue: number }>();
+    
+    for (const id of ids) {
+      metricsMap.set(id, { clicks: 0, addToCarts: 0, ordersCompleted: 0, totalRevenue: 0 });
     }
+    
+    for (const row of rawResult) {
+      const m = metricsMap.get(Number(row.storyId));
+      if (!m) continue;
+      if (row.eventType === "click") m.clicks = Number(row.cnt);
+      else if (row.eventType === "add_to_cart") m.addToCarts = Number(row.cnt);
+      else if (row.eventType === "order_completed") {
+        m.ordersCompleted = Number(row.cnt);
+        m.totalRevenue = Number(row.totalValue);
+      }
+    }
+    
+    return Array.from(metricsMap.entries()).map(([storyId, m]) => ({
+      storyId,
+      ...m,
+    }));
+  } catch (err) {
+    console.error("[StoryAnalytics] getStoryAnalytics error:", err);
+    return ids.map(id => ({ storyId: id, clicks: 0, addToCarts: 0, ordersCompleted: 0, totalRevenue: 0 }));
   }
-  
-  return Array.from(metricsMap.entries()).map(([storyId, m]) => ({
-    storyId,
-    ...m,
-  }));
 }
 
 // Buscar vendas geradas por stories nos últimos N dias (para gráfico)
@@ -11929,34 +11931,38 @@ export async function getStorySalesChart(establishmentId: number, days: number =
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
   startDate.setHours(0, 0, 0, 0);
+  const startDateStr = startDate.toISOString().slice(0, 19).replace('T', ' ');
   
-  const result = await db.select({
-    date: sql<string>`DATE(${storyEvents.createdAt})`,
-    orders: sql<number>`count(*)`,
-    revenue: sql<number>`COALESCE(SUM(${storyEvents.orderValue}), 0)`,
-  }).from(storyEvents)
-    .where(and(
-      eq(storyEvents.establishmentId, establishmentId),
-      eq(storyEvents.eventType, "order_completed"),
-      gte(storyEvents.createdAt, startDate)
-    ))
-    .groupBy(sql`DATE(${storyEvents.createdAt})`)
-    .orderBy(sql`DATE(${storyEvents.createdAt})`);
-  
-  // Preencher dias sem dados
+  // Preencher dias sem dados (sempre retorna array completo)
   const chartData: { date: string; orders: number; revenue: number }[] = [];
-  const resultMap = new Map(result.map(r => [r.date, r]));
-  
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().split("T")[0];
-    const existing = resultMap.get(dateStr);
     chartData.push({
-      date: dateStr,
-      orders: existing ? Number(existing.orders) : 0,
-      revenue: existing ? Number(existing.revenue) : 0,
+      date: d.toISOString().split("T")[0],
+      orders: 0,
+      revenue: 0,
     });
+  }
+  
+  try {
+    // Usar db.execute com SQL raw para evitar problemas com GROUP BY DATE() no TiDB
+    const rawResult: any[] = await db.execute(
+      sql`SELECT DATE(createdAt) as \`date\`, COUNT(*) as orders, COALESCE(SUM(orderValue), 0) as revenue FROM storyEvents WHERE establishmentId = ${establishmentId} AND eventType = 'order_completed' AND createdAt >= ${startDateStr} GROUP BY \`date\` ORDER BY \`date\``
+    ).then((rows: any) => Array.isArray(rows) && Array.isArray(rows[0]) ? rows[0] : rows);
+    
+    const resultMap = new Map(rawResult.map((r: any) => [String(r.date), r]));
+    
+    for (const day of chartData) {
+      const existing = resultMap.get(day.date);
+      if (existing) {
+        day.orders = Number(existing.orders);
+        day.revenue = Number(existing.revenue);
+      }
+    }
+  } catch (err) {
+    console.error("[StoryAnalytics] getStorySalesChart error:", err);
+    // Retorna array com zeros em caso de erro
   }
   
   return chartData;
@@ -11974,28 +11980,24 @@ export async function getTopPerformingStory(establishmentId: number): Promise<{
   // Últimos 7 dias
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7);
+  const startDateStr = startDate.toISOString().slice(0, 19).replace('T', ' ');
   
-  const result = await db.select({
-    storyId: storyEvents.storyId,
-    orders: sql<number>`count(*)`,
-    revenue: sql<number>`COALESCE(SUM(${storyEvents.orderValue}), 0)`,
-  }).from(storyEvents)
-    .where(and(
-      eq(storyEvents.establishmentId, establishmentId),
-      eq(storyEvents.eventType, "order_completed"),
-      gte(storyEvents.createdAt, startDate)
-    ))
-    .groupBy(storyEvents.storyId)
-    .orderBy(sql`count(*) DESC`)
-    .limit(1);
-  
-  if (result.length === 0) return null;
-  
-  return {
-    storyId: result[0].storyId,
-    orders: Number(result[0].orders),
-    revenue: Number(result[0].revenue),
-  };
+  try {
+    const rawResult: any[] = await db.execute(
+      sql`SELECT storyId, COUNT(*) as orders, COALESCE(SUM(orderValue), 0) as revenue FROM storyEvents WHERE establishmentId = ${establishmentId} AND eventType = 'order_completed' AND createdAt >= ${startDateStr} GROUP BY storyId ORDER BY orders DESC LIMIT 1`
+    ).then((rows: any) => Array.isArray(rows) && Array.isArray(rows[0]) ? rows[0] : rows);
+    
+    if (!rawResult || rawResult.length === 0) return null;
+    
+    return {
+      storyId: Number(rawResult[0].storyId),
+      orders: Number(rawResult[0].orders),
+      revenue: Number(rawResult[0].revenue),
+    };
+  } catch (err) {
+    console.error("[StoryAnalytics] getTopPerformingStory error:", err);
+    return null;
+  }
 }
 
 // Calcular percentual de vendas geradas por stories hoje
@@ -12009,31 +12011,27 @@ export async function getStoryRevenuePercentToday(establishmentId: number): Prom
   
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const todayStr = today.toISOString().slice(0, 19).replace('T', ' ');
   
-  // Revenue de stories hoje
-  const storyResult = await db.select({
-    revenue: sql<number>`COALESCE(SUM(${storyEvents.orderValue}), 0)`,
-  }).from(storyEvents)
-    .where(and(
-      eq(storyEvents.establishmentId, establishmentId),
-      eq(storyEvents.eventType, "order_completed"),
-      gte(storyEvents.createdAt, today)
-    ));
-  
-  const storyRevenue = Number(storyResult[0]?.revenue || 0);
-  
-  // Revenue total de pedidos hoje (excluindo cancelados)
-  const totalResult = await db.select({
-    revenue: sql<number>`COALESCE(SUM(${orders.total}), 0)`,
-  }).from(orders)
-    .where(and(
-      eq(orders.establishmentId, establishmentId),
-      gte(orders.createdAt, today),
-      sql`${orders.status} != 'cancelled'`
-    ));
-  
-  const totalRevenue = Number(totalResult[0]?.revenue || 0);
-  const percent = totalRevenue > 0 ? Math.round((storyRevenue / totalRevenue) * 100) : 0;
-  
-  return { storyRevenue, totalRevenue, percent };
+  try {
+    // Revenue de stories hoje
+    const storyRaw: any[] = await db.execute(
+      sql`SELECT COALESCE(SUM(orderValue), 0) as revenue FROM storyEvents WHERE establishmentId = ${establishmentId} AND eventType = 'order_completed' AND createdAt >= ${todayStr}`
+    ).then((rows: any) => Array.isArray(rows) && Array.isArray(rows[0]) ? rows[0] : rows);
+    
+    const storyRevenue = Number(storyRaw[0]?.revenue || 0);
+    
+    // Revenue total de pedidos hoje (excluindo cancelados)
+    const totalRaw: any[] = await db.execute(
+      sql`SELECT COALESCE(SUM(total), 0) as revenue FROM orders WHERE establishmentId = ${establishmentId} AND createdAt >= ${todayStr} AND status != 'cancelled'`
+    ).then((rows: any) => Array.isArray(rows) && Array.isArray(rows[0]) ? rows[0] : rows);
+    
+    const totalRevenue = Number(totalRaw[0]?.revenue || 0);
+    const percent = totalRevenue > 0 ? Math.round((storyRevenue / totalRevenue) * 100) : 0;
+    
+    return { storyRevenue, totalRevenue, percent };
+  } catch (err) {
+    console.error("[StoryAnalytics] getStoryRevenuePercentToday error:", err);
+    return { storyRevenue: 0, totalRevenue: 0, percent: 0 };
+  }
 }

@@ -1,0 +1,26 @@
+{
+  "query": "SHOW CREATE TABLE storyEvents;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SHOW CREATE TABLE storyEvents;",
+  "rows": [
+    {
+      "Table": "storyEvents",
+      "Create Table": "CREATE TABLE `storyEvents` ("
+    }
+  ],
+  "messages": [
+    "  `id` int NOT NULL AUTO_INCREMENT,",
+    "  `storyId` int NOT NULL,",
+    "  `establishmentId` int NOT NULL,",
+    "  `eventType` enum('click','add_to_cart','order_completed') COLLATE utf8mb4_unicode_ci NOT NULL,",
+    "  `productId` int DEFAULT NULL,",
+    "  `orderId` int DEFAULT NULL,",
+    "  `orderValue` decimal(10,2) DEFAULT NULL,",
+    "  `sessionId` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,",
+    "  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,",
+    "  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */",
+    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+  ],
+  "stdout": "Table\tCreate Table\nstoryEvents\tCREATE TABLE `storyEvents` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `storyId` int NOT NULL,\n  `establishmentId` int NOT NULL,\n  `eventType` enum('click','add_to_cart','order_completed') COLLATE utf8mb4_unicode_ci NOT NULL,\n  `productId` int DEFAULT NULL,\n  `orderId` int DEFAULT NULL,\n  `orderValue` decimal(10,2) DEFAULT NULL,\n  `sessionId` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`) /*T![clustered_index] CLUSTERED */\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n",
+  "stderr": "",
+  "execution_time_ms": 348
+}

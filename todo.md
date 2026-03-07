@@ -8338,3 +8338,4 @@
 - [x] Stories Analytics: Insight "Stories geraram X% das vendas hoje"
 - [x] Stories Analytics: Testes para analytics de stories (24 testes + 176 total passando)
 - [x] Bug: Queries SQL de analytics de stories falhando — tabela storyEvents não existia no banco remoto, criada manualmente via SQL
+- [x] Bug: Query salesChart falha com DATE() no Drizzle/TiDB — convertido todas as queries analytics para db.execute() com SQL raw + try/catch
