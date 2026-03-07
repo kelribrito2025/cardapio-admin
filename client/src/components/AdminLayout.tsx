@@ -135,9 +135,9 @@ const menuSections = [
   {
     title: "MARKETING",
     items: [
+      { icon: Clapperboard, label: "Stories", href: "/stories", disabled: false },
       { icon: Ticket, label: "Cupons", href: "/cupons", disabled: false },
       { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: false },
-      { icon: Clapperboard, label: "Stories", href: "/stories", disabled: false },
     ]
   },
   {

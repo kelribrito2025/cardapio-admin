@@ -8312,3 +8312,6 @@
 - [ ] Bug: Seletor de produto no CreateStoryDialog voltou a mostrar "Nenhum produto encontrado" (mobile)
 - [x] Bug: Segundo story não carrega no menu público — corrigido com handlers separados para touch/mouse, threshold 500ms, touch-none e pointer-events-none
 - [x] Bug PERSISTENTE: No mobile, ao avançar do 1o story para o 2o, viewer fechava — corrigido com Pointer Events unificados + debounce + updater function no goNext
+- [x] Bug: Ao navegar para o 2o story, barra de progresso 100% — corrigido com manualNavRef flag para evitar que cleanup do timer acumule elapsed ao navegar
+- [x] Bug: Ao navegar para o 2o story, barra de progresso 100% — corrigido com manualNavRef flag
+- [x] Reordenar menu sidebar: Stories acima de Cupons (Stories, Cupons, Campanhas)

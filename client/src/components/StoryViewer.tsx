@@ -89,6 +89,9 @@ export default function StoryViewer({
   const pointerStartXRef = useRef<number>(0);
   const activePointerIdRef = useRef<number | null>(null);
 
+  // Flag para indicar que houve navegação manual (tap) e o cleanup do timer não deve acumular elapsed
+  const manualNavRef = useRef(false);
+
   // Debounce para prevenir dupla navegação
   const lastNavTimeRef = useRef<number>(0);
   const NAV_DEBOUNCE = 300; // ms mínimo entre navegações
@@ -120,11 +123,15 @@ export default function StoryViewer({
     if (now - lastNavTimeRef.current < NAV_DEBOUNCE) return;
     lastNavTimeRef.current = now;
 
+    // Sinalizar navegação manual ANTES de mudar o state
+    // para que o cleanup do timer anterior não acumule elapsed
+    manualNavRef.current = true;
+    elapsedRef.current = 0;
+
     setCurrentIndex((prev) => {
       if (prev < stories.length - 1) {
         setProgress(0);
         setImageLoaded(false);
-        elapsedRef.current = 0;
         return prev + 1;
       } else {
         // Último story — marcar como visto e fechar
@@ -152,11 +159,13 @@ export default function StoryViewer({
     if (now - lastNavTimeRef.current < NAV_DEBOUNCE) return;
     lastNavTimeRef.current = now;
 
+    manualNavRef.current = true;
+    elapsedRef.current = 0;
+
     setCurrentIndex((prev) => {
       if (prev > 0) {
         setProgress(0);
         setImageLoaded(false);
-        elapsedRef.current = 0;
         return prev - 1;
       }
       return prev;
@@ -182,7 +191,12 @@ export default function StoryViewer({
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      elapsedRef.current += Date.now() - startTimeRef.current;
+      // Só acumular elapsed se NÃO houve navegação manual
+      // (navegação manual já resetou elapsedRef para 0)
+      if (!manualNavRef.current) {
+        elapsedRef.current += Date.now() - startTimeRef.current;
+      }
+      manualNavRef.current = false;
     };
   }, [imageLoaded, paused, currentIndex, goNext]);
 
