@@ -485,35 +485,51 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
           onComplete={() => setShowConfetti(false)}
         />
         {/* Mobile celebration */}
-        <div className="md:hidden mb-6 rounded-2xl border border-amber-200/60 dark:border-amber-800/30 bg-gradient-to-br from-amber-50 via-card to-rose-50 dark:from-amber-950/20 dark:via-card dark:to-rose-950/20 shadow-lg overflow-hidden text-center p-8">
-          <div className="relative mx-auto mb-4 w-16 h-16">
-            <div className="absolute inset-0 animate-ping rounded-full bg-amber-400/20" style={{ animationDuration: '2s' }} />
-            <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/40 dark:to-amber-800/30 flex items-center justify-center shadow-md shadow-amber-500/20">
-              <Trophy className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+        <div className="md:hidden mb-6 rounded-2xl border border-border/60 bg-gradient-to-br from-card via-card to-primary/[0.03] shadow-sm overflow-hidden">
+          <div className="px-5 pt-5 pb-3">
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                <Trophy className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-lg font-bold text-foreground tracking-tight">Parabéns! Tudo configurado!</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Seu restaurante <span className="font-medium text-foreground">{establishmentName || ""}</span> está pronto para receber pedidos.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs font-medium text-green-700 dark:text-green-400 flex items-center gap-1.5">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Todos os passos concluídos
+                </span>
+                <span className="text-xs font-semibold text-foreground">
+                  {adjustedChecklist.totalSteps}/{adjustedChecklist.totalSteps}
+                </span>
+              </div>
+              <div className="h-1.5 bg-muted/60 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full w-full" />
+              </div>
             </div>
           </div>
-          <h2 className="text-xl font-bold text-foreground mb-2">Parabéns! Tudo configurado!</h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Seu restaurante está pronto para receber pedidos.
-          </p>
-          <div className="flex items-center justify-center gap-2 text-sm text-green-700 dark:text-green-400 font-semibold mb-4">
-            <CheckCircle2 className="h-4 w-4" />
-            <span>{adjustedChecklist.totalSteps}/{adjustedChecklist.totalSteps} passos concluídos</span>
-          </div>
-          <button
-            onClick={() => {
-              setShowCelebration(false);
-              setShowConfetti(false);
-              localStorage.setItem(dismissedKey, "true");
-              setDismissed(true);
-              navigate("/");
-            }}
-            className="w-full h-10 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-md shadow-red-500/20"
-          >
-            <Rocket className="h-3.5 w-3.5" />
-            Ir para o Dashboard
-          </button>
 
+          <div className="px-5 pb-4 pt-2">
+            <button
+              onClick={() => {
+                setShowCelebration(false);
+                setShowConfetti(false);
+                localStorage.setItem(dismissedKey, "true");
+                setDismissed(true);
+                navigate("/");
+              }}
+              className="w-full h-10 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-700 hover:to-rose-600 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 shadow-md shadow-red-500/20"
+            >
+              <Rocket className="h-3.5 w-3.5" />
+              Ir para o Dashboard
+            </button>
+          </div>
         </div>
         {/* Desktop celebration sheet */}
         <div className="hidden md:block">
@@ -521,60 +537,52 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
             <SheetContent
               side="right"
               hideCloseButton
-              className="!w-[440px] !max-w-[440px] p-0 gap-0 border-l border-border/40 overflow-hidden"
+              className="!w-[440px] !max-w-[440px] p-0 gap-0 border-l border-border/40 bg-background overflow-hidden"
             >
               <SheetTitle className="sr-only">Configuração Concluída</SheetTitle>
               <SheetDescription className="sr-only">Todas as etapas foram concluídas</SheetDescription>
 
-              <div className="relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/90 via-red-500/80 to-rose-500/90 dark:from-amber-600/80 dark:via-red-600/70 dark:to-rose-600/80" />
-                <div className="absolute -top-20 -right-20 w-60 h-60 bg-yellow-300/30 rounded-full blur-3xl" />
-                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-rose-300/30 rounded-full blur-3xl" />
-                <div className="absolute top-4 right-12 animate-bounce" style={{ animationDelay: '0.2s', animationDuration: '2s' }}>
-                  <Star className="h-4 w-4 text-yellow-200/60 fill-yellow-200/60" />
-                </div>
-                <div className="absolute top-8 right-24 animate-bounce" style={{ animationDelay: '0.8s', animationDuration: '2.5s' }}>
-                  <Star className="h-3 w-3 text-white/40 fill-white/40" />
-                </div>
-                <div className="absolute bottom-6 left-16 animate-bounce" style={{ animationDelay: '1.2s', animationDuration: '3s' }}>
-                  <Star className="h-3.5 w-3.5 text-yellow-200/50 fill-yellow-200/50" />
+              {/* Header estilo Bem-vindo ao Mindi */}
+              <div className="px-6 pt-6 pb-4 border-b border-border/40">
+                <div className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                    <Trophy className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground tracking-tight">Parabéns!</h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Configuração concluída com sucesso
+                    </p>
+                  </div>
                 </div>
 
-                <div className="relative px-6 pt-10 pb-8 flex flex-col items-center text-center">
-                  <div className="relative mb-4">
-                    <div className="absolute inset-0 animate-ping rounded-full bg-yellow-300/20" style={{ animationDuration: '2s' }} />
-                    <div className="relative w-20 h-20 rounded-full bg-white/25 backdrop-blur-sm flex items-center justify-center shadow-lg shadow-amber-500/20">
-                      <Trophy className="h-10 w-10 text-yellow-100 drop-shadow-md" />
-                    </div>
+                <div className="mt-4">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs font-medium text-green-700 dark:text-green-400 flex items-center gap-1.5">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Todos os passos concluídos
+                    </span>
+                    <span className="text-xs font-semibold text-foreground">
+                      {adjustedChecklist.totalSteps}/{adjustedChecklist.totalSteps}
+                    </span>
                   </div>
-                  <h2 className="text-2xl font-bold text-white tracking-tight">Parabéns!</h2>
-                  <p className="text-sm text-white/80 mt-1">Configuração concluída com sucesso</p>
+                  <div className="h-1.5 bg-muted/60 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full w-full" />
+                  </div>
                 </div>
               </div>
 
-              <div className="flex-1 flex flex-col items-center justify-center px-8 py-8 text-center">
+              {/* Content */}
+              <div className="flex-1 flex flex-col items-center justify-center px-8 py-10 text-center">
                 <div className="relative mb-5">
-                  <div className="absolute inset-0 animate-ping rounded-full bg-green-400/20" style={{ animationDuration: '2s' }} />
-                  <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-green-100 to-emerald-200 dark:from-green-900/40 dark:to-emerald-800/30 flex items-center justify-center shadow-md shadow-green-500/20">
+                  <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                     <PartyPopper className="h-8 w-8 text-green-600 dark:text-green-400" />
                   </div>
                 </div>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
+                <p className="text-muted-foreground mb-8 leading-relaxed">
                   Seu restaurante <span className="font-semibold text-foreground">{establishmentName}</span> está pronto para receber pedidos.
                   Todas as configurações iniciais foram concluídas!
                 </p>
-
-                <div className="w-full bg-green-50 dark:bg-green-950/20 border border-green-200/60 dark:border-green-800/30 rounded-xl p-4 mb-6">
-                  <div className="flex items-center justify-center gap-2 text-sm text-green-700 dark:text-green-400 font-semibold">
-                    <CheckCircle2 className="h-5 w-5" />
-                    <span>{adjustedChecklist.totalSteps}/{adjustedChecklist.totalSteps} passos concluídos</span>
-                  </div>
-                  <div className="flex gap-1 mt-3">
-                    {adjustedChecklist.steps.map((step) => (
-                      <div key={step.id} className="flex-1 h-2 rounded-full bg-green-500 dark:bg-green-400 shadow-sm shadow-green-500/20" />
-                    ))}
-                  </div>
-                </div>
 
                 <button
                   onClick={() => {
@@ -589,8 +597,6 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
                   <Rocket className="h-4 w-4" />
                   Ir para o Dashboard
                 </button>
-
-
               </div>
             </SheetContent>
           </Sheet>

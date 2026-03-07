@@ -8262,3 +8262,4 @@
 - [x] Catalogo + Complementos: Adicionar separador "|" antes do ícone FileText (ex: Nome | ícone)
 - [x] Bug: Card "Bem-vindo ao Mindi" aparece acima da Dashboard no mobile — corrigido: esconder mobile card quando renderizado pelo OnboardingFAB
 - [x] Sidebar desktop do WelcomeChecklist: Aplicar visual do card mobile Bem-vindo ao Mindi (header limpo, barra de progresso, ícones suaves) — apenas visual
+- [x] Redesenhar página de Parabéns (celebration) no estilo limpo do Bem-vindo ao Mindi — sem gradiente pesado, fundo claro, ícones suaves
