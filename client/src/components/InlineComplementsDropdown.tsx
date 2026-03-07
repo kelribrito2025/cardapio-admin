@@ -595,7 +595,15 @@ function SortableInlineItem({
         !item.isActive && "bg-muted/40"
       )}
     >
-      <div className="flex items-center gap-2 p-2">
+      <div
+        className="flex items-center gap-2 p-2 cursor-pointer"
+        onClick={(e) => {
+          // Não disparar toggle se clicou em botões, inputs, links ou elementos interativos
+          const target = e.target as HTMLElement;
+          if (target.closest('button, input, a, [role="menuitem"], [data-radix-collection-item], label, .cursor-grab')) return;
+          onToggleExpand();
+        }}
+      >
         <button
           type="button"
           {...attributes}

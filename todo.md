@@ -8253,3 +8253,4 @@
 - [x] Menu Público: Reorganizar layout do complemento — botões +/- e preço na linha do título, descrição abaixo em linha separada para evitar layout quebrado com nomes longos
 - [x] Menu Público: Mover botões +/- para a linha da descrição do complemento, ao lado direito
 - [x] Menu Público: Complementos sem descrição devem manter botões +/- na linha do nome (layout original); só com descrição usar segunda linha
+- [x] Grupos: Clicar no card do complemento deve abrir o dropdown de detalhes (igual à setinha)
