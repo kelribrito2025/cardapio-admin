@@ -8276,3 +8276,4 @@
 - [x] Stories: Borda degradê estilo Instagram e animação pulsante no logo do menu público quando há stories ativos
 - [x] Stories: Compressão de imagens (max 1080px largura) no upload
 - [x] Stories: Expiração automática 24h
+- [x] Bug: Tabela stories não existe no banco - executar migration db:push (criada via SQL direto)
