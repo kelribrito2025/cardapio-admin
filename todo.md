@@ -8310,3 +8310,4 @@
 - [x] Bug: Na segunda visualização dos stories, o segundo story (promoção) não carrega — corrigido com key dinâmica e pointer-events-none nos overlays
 - [x] Bug: No mobile, tocar na direita do story fecha em vez de avançar para o próximo (overlays bloqueavam toques — corrigido com pointer-events-none)
 - [ ] Bug: Seletor de produto no CreateStoryDialog voltou a mostrar "Nenhum produto encontrado" (mobile)
+- [x] Bug: Segundo story não carrega no menu público — corrigido com handlers separados para touch/mouse, threshold 500ms, touch-none e pointer-events-none

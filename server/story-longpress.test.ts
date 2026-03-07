@@ -8,8 +8,8 @@ describe("Story Long Press to Pause (igual Instagram)", () => {
 
   it("should define LONG_PRESS_THRESHOLD constant", () => {
     expect(content).toContain("LONG_PRESS_THRESHOLD");
-    // Should be around 200ms
-    expect(content).toMatch(/LONG_PRESS_THRESHOLD\s*=\s*200/);
+    // Should be 500ms for better mobile compatibility
+    expect(content).toMatch(/LONG_PRESS_THRESHOLD\s*=\s*500/);
   });
 
   it("should have pressStartTimeRef for tracking press duration", () => {
@@ -17,53 +17,49 @@ describe("Story Long Press to Pause (igual Instagram)", () => {
     expect(content).toContain("useRef<number>(0)");
   });
 
-  it("should have isLongPressRef to distinguish long press from tap", () => {
-    expect(content).toContain("isLongPressRef");
+  it("should have isPressActiveRef to track active press state", () => {
+    expect(content).toContain("isPressActiveRef");
   });
 
-  it("should have handlePressStart that records start time and pauses", () => {
-    expect(content).toContain("handlePressStart");
+  it("should have separate handleTouchStart for mobile", () => {
+    expect(content).toContain("handleTouchStart");
     expect(content).toContain("pressStartTimeRef.current = Date.now()");
     expect(content).toContain("setPaused(true)");
   });
 
-  it("should have handlePressEnd that checks press duration", () => {
-    expect(content).toContain("handlePressEnd");
-    expect(content).toContain("pressDuration");
+  it("should have separate handleTouchEnd for mobile", () => {
+    expect(content).toContain("handleTouchEnd");
     expect(content).toContain("LONG_PRESS_THRESHOLD");
     expect(content).toContain("setPaused(false)");
   });
 
   it("should not navigate on long press release (>= threshold)", () => {
-    // When pressDuration >= LONG_PRESS_THRESHOLD, should return early without navigating
-    const handlePressEndStart = content.indexOf("handlePressEnd");
-    const handlePressEndSection = content.substring(handlePressEndStart, handlePressEndStart + 500);
-    expect(handlePressEndSection).toContain(">= LONG_PRESS_THRESHOLD");
-    expect(handlePressEndSection).toContain("return");
+    const handleTouchEndStart = content.indexOf("handleTouchEnd");
+    const handleTouchEndSection = content.substring(handleTouchEndStart, handleTouchEndStart + 800);
+    expect(handleTouchEndSection).toContain(">= LONG_PRESS_THRESHOLD");
+    expect(handleTouchEndSection).toContain("return");
   });
 
-  it("should navigate on quick tap (< threshold) based on tap position", () => {
-    const handlePressEndStart = content.indexOf("handlePressEnd");
-    const handlePressEndSection = content.substring(handlePressEndStart, handlePressEndStart + 800);
-    expect(handlePressEndSection).toContain("halfWidth");
-    expect(handlePressEndSection).toContain("goPrev()");
-    expect(handlePressEndSection).toContain("goNext()");
+  it("should navigate on quick tap based on tap position", () => {
+    const handleTouchEndStart = content.indexOf("handleTouchEnd");
+    const handleTouchEndSection = content.substring(handleTouchEndStart, handleTouchEndStart + 800);
+    expect(handleTouchEndSection).toContain("halfWidth");
+    expect(handleTouchEndSection).toContain("goPrev()");
+    expect(handleTouchEndSection).toContain("goNext()");
   });
 
-  it("should use onMouseDown/onMouseUp for desktop press events", () => {
-    expect(content).toContain("onMouseDown={handlePressStart}");
-    expect(content).toContain("onMouseUp={handlePressEnd}");
+  it("should use separate handlers for mouse (desktop) events", () => {
+    expect(content).toContain("onMouseDown={handleMouseDown}");
+    expect(content).toContain("onMouseUp={handleMouseUp}");
   });
 
-  it("should use onTouchStart/onTouchEnd for mobile press events", () => {
-    expect(content).toContain("onTouchStart={handlePressStart}");
-    expect(content).toContain("onTouchEnd={handlePressEnd}");
+  it("should use separate handlers for touch (mobile) events", () => {
+    expect(content).toContain("onTouchStart={handleTouchStart}");
+    expect(content).toContain("onTouchEnd={handleTouchEnd}");
   });
 
-  it("should prevent default onClick to avoid double navigation", () => {
-    expect(content).toContain("handleClick");
-    expect(content).toContain("e.preventDefault()");
-    expect(content).toContain("e.stopPropagation()");
+  it("should have touch-none class to prevent browser default touch behaviors", () => {
+    expect(content).toContain("touch-none");
   });
 
   it("should handle mouse leave and touch cancel to resume", () => {
@@ -72,7 +68,6 @@ describe("Story Long Press to Pause (igual Instagram)", () => {
   });
 
   it("should stop propagation on close button to prevent pause/navigation", () => {
-    // The close button should stop propagation on mouseDown and touchStart
     expect(content).toContain('onMouseDown={(e) => e.stopPropagation()}');
     expect(content).toContain('onTouchStart={(e) => e.stopPropagation()}');
   });
