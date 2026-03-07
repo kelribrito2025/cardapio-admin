@@ -8260,3 +8260,4 @@
 - [x] Catalogo + Complementos: Adicionar tooltip ao ícone FileText que exibe a descrição completa ao passar o mouse
 - [x] Catalogo + Complementos: Botão "Editar" só aparece no hover do card (desktop), escondido por padrão
 - [x] Catalogo + Complementos: Adicionar separador "|" antes do ícone FileText (ex: Nome | ícone)
+- [x] Bug: Card "Bem-vindo ao Mindi" aparece acima da Dashboard no mobile — corrigido: esconder mobile card quando renderizado pelo OnboardingFAB

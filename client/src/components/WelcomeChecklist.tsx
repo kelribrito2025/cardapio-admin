@@ -602,6 +602,8 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
   return (
     <>
       {/* ==================== MOBILE: Card compacto ==================== */}
+      {/* Esconder no mobile quando renderizado pelo OnboardingFAB (hideMinimizedBar=true) */}
+      {!hideMinimizedBar && (
       <div className="md:hidden mb-6 rounded-2xl border border-border/60 bg-gradient-to-br from-card via-card to-primary/[0.03] shadow-sm overflow-hidden">
         <div className="px-5 pt-5 pb-3 relative">
           <div className="flex items-center gap-3">
@@ -712,6 +714,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
           </div>
         </div>
       </div>
+      )}
 
       {/* ==================== DESKTOP: Sheet sidebar ou barra minimizada ==================== */}
       <div className="hidden md:block">
