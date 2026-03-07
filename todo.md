@@ -8236,3 +8236,4 @@
 - [x] Bug: Borda superior do grupo de complementos não aparece — pseudo-elemento branco está a cobrir a borda de cima do rounded-xl
 - [x] Menu Público: Bloquear scroll para próximo grupo se grupo obrigatório actual não estiver completo
 - [x] Menu Público: Tarja vermelha no header do grupo informando "Falta(m) X complemento(s) obrigatório(s)"
+- [x] Menu Público: Mover tarja vermelha de complementos faltantes para fora do header — barra vermelha sólida entre o header e os itens do grupo (estilo iFood)

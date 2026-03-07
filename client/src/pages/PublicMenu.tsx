@@ -3198,13 +3198,14 @@ export default function PublicMenu() {
                                 </>
                             }
                           </p>
-                          {/* Tarja vermelha informando complementos faltantes */}
-                          {isRequired && !isGroupMinMet && remaining > 0 && (
-                            <div className="mt-1.5 bg-red-500 text-white text-xs font-medium px-3 py-1 rounded-md inline-block animate-in fade-in slide-in-from-top-1 duration-300">
-                              Falta{remaining > 1 ? 'm' : ''} {remaining} complemento{remaining > 1 ? 's' : ''} obrigatório{remaining > 1 ? 's' : ''}
-                            </div>
-                          )}
                         </div>
+                        
+                        {/* Tarja vermelha informando complementos faltantes - entre header e itens */}
+                        {isRequired && !isGroupMinMet && remaining > 0 && (
+                          <div className="bg-red-500 text-white text-xs font-semibold px-4 py-1.5 text-center animate-in fade-in slide-in-from-top-1 duration-300">
+                            Falta{remaining > 1 ? 'm' : ''} {remaining} complemento{remaining > 1 ? 's' : ''} obrigatório{remaining > 1 ? 's' : ''}
+                          </div>
+                        )}
                         
                         {/* Itens do Grupo */}
                         <div className="divide-y divide-gray-100">
