@@ -22,51 +22,26 @@ describe("Story Analytics Schema", () => {
 // ============ ROUTER TESTS ============
 
 describe("Story Analytics Router Endpoints", () => {
-  it("should have publicStories.recordEvent endpoint defined", async () => {
+  // Cache the router import to avoid repeated heavy imports
+  let procedures: Record<string, unknown>;
+  
+  it("should have all analytics endpoints defined", async () => {
     const routerModule = await import("./routers");
     const router = routerModule.appRouter;
     
-    // Verify the router has publicStories namespace
     expect(router).toBeDefined();
     expect(router._def).toBeDefined();
     expect(router._def.procedures).toBeDefined();
     
-    // Check publicStories.recordEvent exists
-    const procedures = router._def.procedures;
+    procedures = router._def.procedures as Record<string, unknown>;
+    
+    // Check all analytics endpoints exist
     expect(procedures["publicStories.recordEvent"]).toBeDefined();
-  });
-
-  it("should have stories.conversionAnalytics endpoint defined", async () => {
-    const routerModule = await import("./routers");
-    const router = routerModule.appRouter;
-    const procedures = router._def.procedures;
-    
     expect(procedures["stories.conversionAnalytics"]).toBeDefined();
-  });
-
-  it("should have stories.salesChart endpoint defined", async () => {
-    const routerModule = await import("./routers");
-    const router = routerModule.appRouter;
-    const procedures = router._def.procedures;
-    
     expect(procedures["stories.salesChart"]).toBeDefined();
-  });
-
-  it("should have stories.topPerforming endpoint defined", async () => {
-    const routerModule = await import("./routers");
-    const router = routerModule.appRouter;
-    const procedures = router._def.procedures;
-    
     expect(procedures["stories.topPerforming"]).toBeDefined();
-  });
-
-  it("should have stories.revenuePercent endpoint defined", async () => {
-    const routerModule = await import("./routers");
-    const router = routerModule.appRouter;
-    const procedures = router._def.procedures;
-    
     expect(procedures["stories.revenuePercent"]).toBeDefined();
-  });
+  }, 30000);
 });
 
 // ============ DB FUNCTION TESTS ============
@@ -118,7 +93,6 @@ describe("Story Event Types", () => {
 
 describe("Story Analytics Frontend Integration", () => {
   it("StoryViewer should have recordEvent mutation", async () => {
-    // Verify the StoryViewer component imports trpc and has event tracking
     const fs = await import("fs");
     const content = fs.readFileSync("client/src/components/StoryViewer.tsx", "utf-8");
     

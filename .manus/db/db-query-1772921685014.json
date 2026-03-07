@@ -1,0 +1,175 @@
+{
+  "query": "SHOW TABLES;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SHOW TABLES;",
+  "rows": [
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "__drizzle_migrations"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "botApiKeys"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "businessHours"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "cashbackBalances"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "cashbackTransactions"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "categories"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "comboGroupItems"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "comboGroups"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "complementGroups"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "complementItems"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "coupons"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "deliveries"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "drivers"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "establishments"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "expenseCategories"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "expenses"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "feedbacks"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "financialGoals"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "ifoodConfig"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "loyaltyCards"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "loyaltyStamps"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "menu_sessions"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "menu_views_daily"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "menu_views_hourly"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "monthlyGoals"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "neighborhoodFees"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "orderItems"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "orders"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "pdv_customers"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "pending_online_orders"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "printLogs"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "printQueue"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "printerSectors"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "printerSettings"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "printers"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "products"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "pushSubscriptions"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "recurringExpenseHistory"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "recurringExpenses"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "reviews"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "scheduled_campaigns"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "sms_balance"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "sms_transactions"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "stockCategories"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "stockItems"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "stockMovements"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "stories"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "storyViews"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "tabItems"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "tableSpaces"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "table_spaces"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "tables"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "tabs"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "users"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2": "whatsappConfig"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_enmWmXpAt34diouyKU4TE2\n__drizzle_migrations\nbotApiKeys\nbusinessHours\ncashbackBalances\ncashbackTransactions\ncategories\ncomboGroupItems\ncomboGroups\ncomplementGroups\ncomplementItems\ncoupons\ndeliveries\ndrivers\nestablishments\nexpenseCategories\nexpenses\nfeedbacks\nfinancialGoals\nifoodConfig\nloyaltyCards\nloyaltyStamps\nmenu_sessions\nmenu_views_daily\nmenu_views_hourly\nmonthlyGoals\nneighborhoodFees\norderItems\norders\npdv_customers\npending_online_orders\nprintLogs\nprintQueue\nprinterSectors\nprinterSettings\nprinters\nproducts\npushSubscriptions\nrecurringExpenseHistory\nrecurringExpenses\nreviews\nscheduled_campaigns\nsms_balance\nsms_transactions\nstockCategories\nstockItems\nstockMovements\nstories\nstoryViews\ntabItems\ntableSpaces\ntable_spaces\ntables\ntabs\nusers\nwhatsappConfig\n",
+  "stderr": "",
+  "execution_time_ms": 359
+}

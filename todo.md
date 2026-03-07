@@ -8337,3 +8337,4 @@
 - [x] Stories Analytics: Insight "Story mais performático da semana"
 - [x] Stories Analytics: Insight "Stories geraram X% das vendas hoje"
 - [x] Stories Analytics: Testes para analytics de stories (24 testes + 176 total passando)
+- [x] Bug: Queries SQL de analytics de stories falhando — tabela storyEvents não existia no banco remoto, criada manualmente via SQL
