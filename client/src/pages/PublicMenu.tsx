@@ -372,6 +372,7 @@ export default function PublicMenu() {
   const [categorySearch, setCategorySearch] = useState("");
   const [showStoryViewer, setShowStoryViewer] = useState(false);
   const [allStoriesViewed, setAllStoriesViewed] = useState(false);
+  const [storyInitialIndex, setStoryInitialIndex] = useState(0);
   
   const userOrdersRef = useRef<typeof userOrders>([]);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
@@ -1862,6 +1863,7 @@ export default function PublicMenu() {
       {showStoryViewer && activeStories && activeStories.length > 0 && establishment && (
         <StoryViewer
           stories={activeStories.map(s => ({ ...s, createdAt: String(s.createdAt), expiresAt: String(s.expiresAt) }))}
+          initialIndex={storyInitialIndex}
           onAllViewed={() => {
             // Salvar todos os IDs dos stories ativos como vistos no sessionStorage
             try {
@@ -2173,7 +2175,23 @@ export default function PublicMenu() {
             {storiesStatus?.hasStories ? (
               <button
                 onClick={async () => {
-                  await refetchStories();
+                  const result = await refetchStories();
+                  // Calcular o primeiro story não visto
+                  let startIndex = 0;
+                  if (result.data && data?.establishment?.id) {
+                    try {
+                      const key = `mindi_stories_viewed_${data.establishment.id}`;
+                      const viewedRaw = sessionStorage.getItem(key);
+                      if (viewedRaw) {
+                        const viewedIds: number[] = JSON.parse(viewedRaw);
+                        const firstUnviewedIdx = result.data.findIndex(s => !viewedIds.includes(s.id));
+                        if (firstUnviewedIdx >= 0) {
+                          startIndex = firstUnviewedIdx;
+                        }
+                      }
+                    } catch {}
+                  }
+                  setStoryInitialIndex(startIndex);
                   setShowStoryViewer(true);
                 }}
                 className="relative cursor-pointer group"

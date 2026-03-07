@@ -8287,3 +8287,4 @@
 - [x] Stories: Resetar estado "visto" quando restaurante publicar novo story (comparação de IDs no sessionStorage)
 - [x] Stories Admin: Substituir modal de preview por StoryViewer fullscreen (mesmo do menu público)
 - [x] Stories: Ajustar header da página para ficar no padrão das demais páginas admin (descrição mais curta)
+- [x] Stories: Ao abrir StoryViewer no menu público, ir direto para o primeiro story não visto (em vez de começar do início)
