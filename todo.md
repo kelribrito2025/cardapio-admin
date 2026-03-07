@@ -8245,3 +8245,6 @@
 - [x] Menu Público: Adicionar contador visual de seleção em tempo real (ex: "1 / 2 selecionados")
 - [x] Menu Público: Remover contador visual de seleção (não é necessário)
 - [x] Menu Público: Aumentar tamanho do ícone de estrela e texto de quantidade de avaliações
+- [x] DB: Adicionar campo description (texto opcional) na tabela de complementos
+- [x] Admin: Adicionar campo de descrição no formulário de cadastro/edição de complementos
+- [x] Menu Público: Exibir descrição do complemento abaixo do nome (texto menor, cinza, opcional)

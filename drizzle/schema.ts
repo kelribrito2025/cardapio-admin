@@ -213,6 +213,7 @@ export const complementItems = mysqlTable("complementItems", {
   freeOnPickup: boolean("freeOnPickup").default(false).notNull(),
   freeOnDineIn: boolean("freeOnDineIn").default(false).notNull(),
   // Item exclusivo por produto: quando preenchido, o item só aparece neste produto
+  description: text("description"), // Descrição opcional do complemento (exibida no menu público)
   exclusiveProductId: int("exclusiveProductId"), // null = global (aparece em todos), preenchido = só neste produto
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

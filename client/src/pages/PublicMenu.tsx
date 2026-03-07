@@ -3361,12 +3361,19 @@ export default function PublicMenu() {
                                       </svg>
                                     )}
                                   </div>
-                                  <span className="text-sm text-gray-900">{item.name}</span>
-                                  {(item as any).badgeText && (
-                                    <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold bg-red-500 text-white animate-pulse leading-none" style={{width: '69px', height: '19px', borderRadius: '8px'}}>
-                                      {(item as any).badgeText}
-                                    </span>
-                                  )}
+                                  <div className="flex flex-col">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-sm text-gray-900">{item.name}</span>
+                                      {(item as any).badgeText && (
+                                        <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold bg-red-500 text-white animate-pulse leading-none" style={{width: '69px', height: '19px', borderRadius: '8px'}}>
+                                          {(item as any).badgeText}
+                                        </span>
+                                      )}
+                                    </div>
+                                    {(item as any).description && (
+                                      <span className="text-xs text-gray-500 mt-0.5 leading-tight">{(item as any).description}</span>
+                                    )}
+                                  </div>
                                 </div>
                                 
                                 <div className="flex items-center gap-3">

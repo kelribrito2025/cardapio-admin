@@ -1,6 +1,7 @@
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   GripVertical,
@@ -215,6 +216,7 @@ function ItemExpandedDetails({
   onUpdateItem: (id: number, data: any) => void;
   isUpdating: boolean;
 }) {
+  const [description, setDescription] = useState(item.description || "");
   const [badgeText, setBadgeText] = useState(item.badgeText || "");
   const [availabilityType, setAvailabilityType] = useState<"always" | "scheduled">(
     item.availabilityType || "always"
@@ -225,11 +227,17 @@ function ItemExpandedDetails({
   );
 
   useEffect(() => {
+    setDescription(item.description || "");
     setBadgeText(item.badgeText || "");
     setAvailabilityType(item.availabilityType || "always");
     setSelectedDays(item.availableDays || []);
     setHoursConfig(item.availableHours || []);
-  }, [item.badgeText, item.availabilityType, item.availableDays, item.availableHours]);
+  }, [item.description, item.badgeText, item.availabilityType, item.availableDays, item.availableHours]);
+
+  const handleSaveDescription = () => {
+    onUpdateItem(item.id, { description: description.trim() || null });
+    toast.success(description.trim() ? "Descrição salva" : "Descrição removida");
+  };
 
   const toggleDay = (day: number) => {
     setSelectedDays((prev) =>
@@ -260,6 +268,49 @@ function ItemExpandedDetails({
 
   return (
     <div className="mt-2 border-t border-border/30 pt-3 space-y-4 animate-in slide-in-from-top-1 duration-150">
+      {/* Description Section */}
+      <div className="bg-muted/30 rounded-lg p-3 space-y-2">
+        <h6 className="font-medium text-xs flex items-center gap-1.5">
+          <Pencil className="h-3.5 w-3.5" />
+          Descrição do complemento
+        </h6>
+        <p className="text-xs text-muted-foreground">
+          Texto descritivo exibido abaixo do nome do complemento no menu público (opcional).
+        </p>
+        <Textarea
+          placeholder="Ex: Molho artesanal feito com tomates frescos e manjericão..."
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="text-xs min-h-[60px] resize-none"
+          rows={2}
+        />
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            className="h-8 text-xs bg-red-700 hover:bg-red-800 text-white"
+            onClick={handleSaveDescription}
+            disabled={isUpdating}
+          >
+            {isUpdating ? "Salvando..." : "Salvar descrição"}
+          </Button>
+          {item.description && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-xs text-red-600 hover:text-red-700"
+              onClick={() => {
+                setDescription("");
+                onUpdateItem(item.id, { description: null });
+                toast.success("Descrição removida");
+              }}
+              disabled={isUpdating}
+            >
+              Remover
+            </Button>
+          )}
+        </div>
+      </div>
+
       {/* Badge Section */}
       <div className="bg-muted/30 rounded-lg p-3 space-y-2">
         <h6 className="font-medium text-xs flex items-center gap-1.5">

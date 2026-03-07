@@ -940,6 +940,7 @@ export const appRouter = router({
         isActive: z.boolean().optional(),
         priceMode: z.enum(["normal", "free"]).optional(),
         sortOrder: z.number().optional(),
+        description: z.string().nullable().optional(),
         badgeText: z.string().nullable().optional(),
         availabilityType: z.enum(["always", "scheduled"]).optional(),
         availableDays: z.array(z.number()).nullable().optional(),
