@@ -8254,3 +8254,4 @@
 - [x] Menu Público: Mover botões +/- para a linha da descrição do complemento, ao lado direito
 - [x] Menu Público: Complementos sem descrição devem manter botões +/- na linha do nome (layout original); só com descrição usar segunda linha
 - [x] Grupos: Clicar no card do complemento deve abrir o dropdown de detalhes (igual à setinha)
+- [x] Complementos: Clicar no card do complemento na página /complementos deve abrir o dropdown de detalhes (igual à setinha)
