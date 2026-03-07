@@ -3131,16 +3131,35 @@ export default function PublicMenu() {
               {/* Grupos de Complementos */}
               {productComplements && productComplements.length > 0 && (
                 <div className="space-y-4">
-                  {productComplements.map((group) => {
+                  {(() => {
+                    // Encontrar o primeiro grupo obrigatório incompleto
+                    let firstIncompleteRequiredIdx = -1;
+                    for (let i = 0; i < productComplements.length; i++) {
+                      const g = productComplements[i];
+                      const sel = selectedComplements.get(g.id) || new Map<number, number>();
+                      const total = Array.from(sel.values()).reduce((a, b) => a + b, 0);
+                      if (g.minQuantity >= 1 && total < g.minQuantity) {
+                        firstIncompleteRequiredIdx = i;
+                        break;
+                      }
+                    }
+                    return productComplements.map((group, groupIndex) => {
                     const selectedInGroup = selectedComplements.get(group.id) || new Map<number, number>();
                     const isRadio = group.maxQuantity === 1;
                     const totalSelectedInGroup = Array.from(selectedInGroup.values()).reduce((a, b) => a + b, 0);
                     const isGroupComplete = totalSelectedInGroup >= group.maxQuantity;
+                    const isGroupMinMet = totalSelectedInGroup >= group.minQuantity;
+                    const isRequired = group.minQuantity >= 1;
+                    const remaining = Math.max(0, group.minQuantity - totalSelectedInGroup);
+                    // Esconder grupos que vêm depois do primeiro grupo obrigatório incompleto
+                    const isBlocked = firstIncompleteRequiredIdx !== -1 && groupIndex > firstIncompleteRequiredIdx;
+                    
+                    if (isBlocked) return null;
                     
                     return (
                       <div key={group.id} id={`complement-group-${group.id}`} className={`rounded-xl transition-all duration-300 ${isGroupComplete ? 'border-2 border-red-400' : 'border border-gray-200'}`}>
                         {/* Header do Grupo - Sticky */}
-                        <div className={`px-4 py-3 border-b transition-colors duration-300 sticky z-10 rounded-t-xl ${isGroupComplete ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`} style={{paddingTop: '8px', height: '58px', top: 0}}>
+                        <div className={`px-4 py-3 border-b transition-colors duration-300 sticky z-10 rounded-t-xl ${isGroupComplete ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`} style={{paddingTop: '8px', top: 0}}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <h4 className={`font-semibold transition-colors duration-300 ${isGroupComplete ? 'text-red-600' : 'text-gray-900'}`}>{group.name}</h4>
@@ -3179,6 +3198,12 @@ export default function PublicMenu() {
                                 </>
                             }
                           </p>
+                          {/* Tarja vermelha informando complementos faltantes */}
+                          {isRequired && !isGroupMinMet && remaining > 0 && (
+                            <div className="mt-1.5 bg-red-500 text-white text-xs font-medium px-3 py-1 rounded-md inline-block animate-in fade-in slide-in-from-top-1 duration-300">
+                              Falta{remaining > 1 ? 'm' : ''} {remaining} complemento{remaining > 1 ? 's' : ''} obrigatório{remaining > 1 ? 's' : ''}
+                            </div>
+                          )}
                         </div>
                         
                         {/* Itens do Grupo */}
@@ -3397,11 +3422,17 @@ export default function PublicMenu() {
                         </div>
                       </div>
                     );
-                  })}
+                  });
+                  })()}
                 </div>
               )}
 
-              {/* Campo de Observação */}
+              {/* Campo de Observação - só aparece quando todos os grupos obrigatórios estão completos */}
+              {(!productComplements || productComplements.length === 0 || !productComplements.some((g) => {
+                const sel = selectedComplements.get(g.id) || new Map<number, number>();
+                const total = Array.from(sel.values()).reduce((a, b) => a + b, 0);
+                return g.minQuantity >= 1 && total < g.minQuantity;
+              })) && (
               <div data-observation-field>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Observações
@@ -3414,6 +3445,7 @@ export default function PublicMenu() {
                   className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 resize-none"
                 />
               </div>
+              )}
             </div>
 
             {/* Footer - Quantidade e Adicionar */}

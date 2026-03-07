@@ -8234,3 +8234,5 @@
 - [x] Menu Público: Sticky header nos grupos de complementos — nome do grupo fica fixo no topo do modal enquanto o utilizador faz scroll pelos itens do grupo
 - [x] Menu Público: Header sticky do grupo de complementos deve ficar mais próximo da borda da foto, escondendo itens que aparecem entre a foto e o header
 - [x] Bug: Borda superior do grupo de complementos não aparece — pseudo-elemento branco está a cobrir a borda de cima do rounded-xl
+- [x] Menu Público: Bloquear scroll para próximo grupo se grupo obrigatório actual não estiver completo
+- [x] Menu Público: Tarja vermelha no header do grupo informando "Falta(m) X complemento(s) obrigatório(s)"
