@@ -8291,3 +8291,4 @@
 - [x] Stories: Corrigir header da página para ficar exatamente igual ao padrão do Dashboard (ícone + título bold + descrição cinza)
 - [x] Stories: Corrigir espaçamentos da página para ficar no padrão das demais páginas admin
 - [x] Substituir ícone de Stories de CircleDot para Clapperboard na sidebar e na página (ícone azul na página)
+- [x] Bug: Borda dos stories no menu público não muda para cinza após visualizar todos (deve persistir com localStorage)

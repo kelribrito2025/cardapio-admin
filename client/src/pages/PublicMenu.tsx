@@ -373,6 +373,29 @@ export default function PublicMenu() {
   const [showStoryViewer, setShowStoryViewer] = useState(false);
   const [allStoriesViewed, setAllStoriesViewed] = useState(false);
   const [storyInitialIndex, setStoryInitialIndex] = useState(0);
+
+  // Helper para obter IDs vistos do localStorage
+  const getViewedStoryIds = useCallback((estId: number): number[] => {
+    try {
+      const key = `mindi_stories_viewed_${estId}`;
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }, []);
+
+  // Helper para salvar um story como visto no localStorage
+  const markStoryAsViewed = useCallback((estId: number, storyId: number) => {
+    try {
+      const key = `mindi_stories_viewed_${estId}`;
+      const viewed = getViewedStoryIds(estId);
+      if (!viewed.includes(storyId)) {
+        viewed.push(storyId);
+        localStorage.setItem(key, JSON.stringify(viewed));
+      }
+    } catch {}
+  }, [getViewedStoryIds]);
   
   const userOrdersRef = useRef<typeof userOrders>([]);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
@@ -414,30 +437,23 @@ export default function PublicMenu() {
     { enabled: !!data?.establishment?.id }
   );
 
-  // Verificar se todos os stories já foram vistos (via sessionStorage com comparação de IDs)
+  // Verificar se todos os stories já foram vistos (via localStorage com comparação de IDs)
   useEffect(() => {
     if (!storiesStatus?.hasStories || !data?.establishment?.id) return;
     try {
-      const key = `mindi_stories_viewed_${data.establishment.id}`;
-      const viewedRaw = sessionStorage.getItem(key);
-      if (viewedRaw && storiesStatus.storyIds) {
-        const viewedIds: number[] = JSON.parse(viewedRaw);
+      const viewedIds = getViewedStoryIds(data.establishment.id);
+      if (viewedIds.length > 0 && storiesStatus.storyIds) {
         const activeIds = storiesStatus.storyIds;
         // Verificar se TODOS os IDs ativos estão nos IDs vistos
         const allViewed = activeIds.every((id: number) => viewedIds.includes(id));
-        if (allViewed) {
-          setAllStoriesViewed(true);
-        } else {
-          // Novo story foi publicado ou algum expirou — resetar estado
-          setAllStoriesViewed(false);
-        }
+        setAllStoriesViewed(allViewed);
       } else {
         setAllStoriesViewed(false);
       }
     } catch {
       setAllStoriesViewed(false);
     }
-  }, [storiesStatus, data?.establishment?.id, showStoryViewer]);
+  }, [storiesStatus, data?.establishment?.id, showStoryViewer, getViewedStoryIds]);
 
   // Query para buscar stories ativos (lazy - só quando abrir o viewer)
   const { data: activeStories, refetch: refetchStories } = trpc.publicStories.getActive.useQuery(
@@ -1864,14 +1880,15 @@ export default function PublicMenu() {
         <StoryViewer
           stories={activeStories.map(s => ({ ...s, createdAt: String(s.createdAt), expiresAt: String(s.expiresAt) }))}
           initialIndex={storyInitialIndex}
+          onStoryViewed={(storyId) => {
+            // Salvar cada story individualmente no localStorage
+            if (establishment?.id) {
+              markStoryAsViewed(establishment.id, storyId);
+            }
+          }}
           onAllViewed={() => {
-            // Salvar todos os IDs dos stories ativos como vistos no sessionStorage
-            try {
-              const key = `mindi_stories_viewed_${establishment.id}`;
-              const allIds = activeStories.map(s => s.id);
-              sessionStorage.setItem(key, JSON.stringify(allIds));
-              setAllStoriesViewed(true);
-            } catch {}
+            // Quando todos foram vistos, atualizar estado da borda
+            setAllStoriesViewed(true);
           }}
           restaurantName={establishment.name}
           restaurantLogo={establishment.logo}
@@ -2180,10 +2197,8 @@ export default function PublicMenu() {
                   let startIndex = 0;
                   if (result.data && data?.establishment?.id) {
                     try {
-                      const key = `mindi_stories_viewed_${data.establishment.id}`;
-                      const viewedRaw = sessionStorage.getItem(key);
-                      if (viewedRaw) {
-                        const viewedIds: number[] = JSON.parse(viewedRaw);
+                      const viewedIds = getViewedStoryIds(data.establishment.id);
+                      if (viewedIds.length > 0) {
                         const firstUnviewedIdx = result.data.findIndex(s => !viewedIds.includes(s.id));
                         if (firstUnviewedIdx >= 0) {
                           startIndex = firstUnviewedIdx;

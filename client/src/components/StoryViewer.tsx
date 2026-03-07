@@ -16,6 +16,8 @@ interface StoryViewerProps {
   initialIndex?: number;
   onClose: () => void;
   onAllViewed?: () => void;
+  /** Chamado cada vez que um story individual é visto, com o ID do story */
+  onStoryViewed?: (storyId: number) => void;
 }
 
 function timeAgo(date: Date | string): string {
@@ -50,6 +52,7 @@ export default function StoryViewer({
   initialIndex = 0,
   onClose,
   onAllViewed,
+  onStoryViewed,
 }: StoryViewerProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [progress, setProgress] = useState(0);
@@ -59,6 +62,7 @@ export default function StoryViewer({
   const startTimeRef = useRef<number>(0);
   const elapsedRef = useRef<number>(0);
   const viewedStoriesRef = useRef<Set<number>>(new Set());
+  const allViewedCalledRef = useRef(false);
 
   const sessionId = useMemo(() => getOrCreateSessionId(), []);
   const recordViewMutation = trpc.publicStories.recordView.useMutation();
@@ -70,12 +74,18 @@ export default function StoryViewer({
       viewedStoriesRef.current.add(story.id);
       recordViewMutation.mutate({ storyId: story.id, sessionId });
       
+      // Notificar que este story individual foi visto
+      if (onStoryViewed) {
+        onStoryViewed(story.id);
+      }
+      
       // Verificar se todos os stories foram vistos
-      if (viewedStoriesRef.current.size === stories.length && onAllViewed) {
+      if (viewedStoriesRef.current.size === stories.length && onAllViewed && !allViewedCalledRef.current) {
+        allViewedCalledRef.current = true;
         onAllViewed();
       }
     }
-  }, [currentIndex, stories, sessionId, onAllViewed]);
+  }, [currentIndex, stories, sessionId, onAllViewed, onStoryViewed]);
 
   const currentStory = stories[currentIndex];
 
@@ -86,9 +96,22 @@ export default function StoryViewer({
       setImageLoaded(false);
       elapsedRef.current = 0;
     } else {
+      // Último story — garantir que onAllViewed é chamado antes de fechar
+      const story = stories[currentIndex];
+      if (story && !viewedStoriesRef.current.has(story.id)) {
+        viewedStoriesRef.current.add(story.id);
+        recordViewMutation.mutate({ storyId: story.id, sessionId });
+        if (onStoryViewed) {
+          onStoryViewed(story.id);
+        }
+      }
+      if (viewedStoriesRef.current.size === stories.length && onAllViewed && !allViewedCalledRef.current) {
+        allViewedCalledRef.current = true;
+        onAllViewed();
+      }
       onClose();
     }
-  }, [currentIndex, stories.length, onClose]);
+  }, [currentIndex, stories.length, stories, onClose, onAllViewed, onStoryViewed, sessionId]);
 
   const goPrev = useCallback(() => {
     if (currentIndex > 0) {

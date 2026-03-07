@@ -15,14 +15,14 @@ describe("Stories - Abrir no primeiro story não visto", () => {
     expect(content).toContain("initialIndex={storyInitialIndex}");
   });
 
-  it("should read viewedIds from sessionStorage when opening stories", () => {
-    // The onClick handler should read sessionStorage to find viewed IDs
+  it("should read viewedIds from localStorage via getViewedStoryIds when opening stories", () => {
+    // The onClick handler should use getViewedStoryIds helper (which reads from localStorage)
     const onClickSection = content.substring(
       content.indexOf("onClick={async () => {"),
       content.indexOf("setShowStoryViewer(true);") + 30
     );
-    expect(onClickSection).toContain("sessionStorage.getItem(key)");
-    expect(onClickSection).toContain("JSON.parse(viewedRaw)");
+    expect(onClickSection).toContain("getViewedStoryIds(data.establishment.id)");
+    expect(onClickSection).toContain("viewedIds.length > 0");
   });
 
   it("should find the first unviewed story index", () => {

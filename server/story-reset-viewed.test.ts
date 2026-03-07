@@ -52,7 +52,7 @@ describe("Story Reset Viewed State (comparação de IDs)", () => {
   });
 
   // Test 5: PublicMenu uses storyIds for comparison
-  it("should compare storyIds with sessionStorage viewedIds in PublicMenu", () => {
+  it("should compare storyIds with localStorage viewedIds in PublicMenu", () => {
     const menuPath = path.resolve(__dirname, "../client/src/pages/PublicMenu.tsx");
     const content = fs.readFileSync(menuPath, "utf-8");
     
@@ -61,8 +61,8 @@ describe("Story Reset Viewed State (comparação de IDs)", () => {
     expect(content).toContain("viewedIds.includes(id)");
   });
 
-  // Test 6: PublicMenu resets allStoriesViewed when new story detected
-  it("should reset allStoriesViewed to false when new story is detected", () => {
+  // Test 6: PublicMenu resets allStoriesViewed when not all viewed
+  it("should set allStoriesViewed based on comparison result", () => {
     const menuPath = path.resolve(__dirname, "../client/src/pages/PublicMenu.tsx");
     const content = fs.readFileSync(menuPath, "utf-8");
     
@@ -71,10 +71,10 @@ describe("Story Reset Viewed State (comparação de IDs)", () => {
     const effectEnd = content.indexOf("}, [storiesStatus", effectStart);
     const effectBody = content.substring(effectStart, effectEnd);
     
-    // Should set false when not all viewed (new story published)
+    // Should set false when not all viewed
     expect(effectBody).toContain("setAllStoriesViewed(false)");
-    // Should mention new story scenario
-    expect(effectBody).toContain("Novo story foi publicado");
+    // Should set based on allViewed result
+    expect(effectBody).toContain("setAllStoriesViewed(allViewed)");
   });
 
   // Test 7: Comparison is ID-based, not count-based
@@ -92,13 +92,13 @@ describe("Story Reset Viewed State (comparação de IDs)", () => {
     expect(effectBody).not.toContain("viewedIds.length >= (storiesStatus.count");
   });
 
-  // Test 8: onAllViewed saves actual IDs to sessionStorage
-  it("should save actual story IDs to sessionStorage on onAllViewed", () => {
+  // Test 8: Stories are saved individually via onStoryViewed callback
+  it("should save stories individually via onStoryViewed and markStoryAsViewed", () => {
     const menuPath = path.resolve(__dirname, "../client/src/pages/PublicMenu.tsx");
     const content = fs.readFileSync(menuPath, "utf-8");
     
-    // The onAllViewed callback should save the IDs
-    expect(content).toContain("activeStories.map(s => s.id)");
-    expect(content).toContain("JSON.stringify(allIds)");
+    // The onStoryViewed callback should save individual IDs
+    expect(content).toContain("onStoryViewed={(storyId) =>");
+    expect(content).toContain("markStoryAsViewed(establishment.id, storyId)");
   });
 });
