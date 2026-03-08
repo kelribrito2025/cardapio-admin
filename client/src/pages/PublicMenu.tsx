@@ -2130,7 +2130,7 @@ export default function PublicMenu() {
             <BlurImage
               src={establishment.coverImage}
               blurDataUrl={establishment.coverBlur}
-              alt="Capa do restaurante"
+              alt={`Cardápio ${establishment.name}${establishment.city ? ` em ${establishment.city}` : ''} - Delivery e Pedidos Online`}
               containerClassName="w-full h-full"
               className="w-full h-full object-cover"
             />
@@ -3006,6 +3006,36 @@ export default function PublicMenu() {
           </div>
         </div>
       </main>
+
+      {/* SEO Text Section - visível para crawlers, discreto para usuários */}
+      {establishment && (
+        <section className="bg-gray-50 border-t border-gray-200 py-6 px-4">
+          <div className="container mx-auto max-w-3xl">
+            <h2 className="text-lg font-semibold text-gray-700 mb-2">
+              {establishment.name} — Cardápio Digital e Delivery
+            </h2>
+            <p className="text-sm text-gray-500 leading-relaxed mb-2">
+              Confira o cardápio completo de <strong>{establishment.name}</strong>
+              {establishment.city ? ` em ${establishment.city}` : ''}
+              {establishment.state ? `/${establishment.state}` : ''}.
+              {' '}Faça seu pedido online com entrega rápida e prática.
+              {establishment.street ? ` Localizado em ${establishment.street}${establishment.number ? `, ${establishment.number}` : ''}${establishment.neighborhood ? ` — ${establishment.neighborhood}` : ''}.` : ''}
+            </p>
+            {categories && categories.length > 0 && (
+              <p className="text-xs text-gray-400 leading-relaxed">
+                <strong>Categorias disponíveis:</strong>{' '}
+                {categories.map(c => c.name).join(' • ')}
+              </p>
+            )}
+            <p className="text-xs text-gray-400 mt-2">
+              Cardápio digital com pedidos online, delivery e retirada.
+              {establishment.deliveryEnabled ? ' Entrega disponível.' : ''}
+              {establishment.pickupEnabled ? ' Retirada no local.' : ''}
+              {establishment.dineInEnabled ? ' Consumo no local.' : ''}
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-red-200 bg-gradient-to-r from-red-500 to-red-600 py-4 mt-8" style={{paddingTop: '10px', paddingBottom: '10px'}}>

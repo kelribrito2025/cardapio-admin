@@ -8342,3 +8342,15 @@
 - [x] Stories Analytics: Padronizar cards de métricas para o mesmo visual da Dashboard (usando StatCard e SectionCard)
 - [x] Stories Analytics: Padronizar gráfico e insights para o mesmo estilo da Dashboard (ícones 10x10, text-base font-semibold, gap-6)
 - [x] Stories: Padronizar card de Stories ativos para tabela com header icónico (padrão Dashboard) e colunas Views/Cliques/Pedidos/Vendas
+- [x] SEO: Campo slug (menuSlug) já existe na tabela establishments
+- [x] SEO: Endpoint getBySlug já existe no publicMenu router
+- [x] SEO: Rota /menu/:slug já funciona no frontend
+- [x] SEO: Implementar meta tags dinâmicas (title, description) via servidor SSR — middleware injecta no HTML
+- [x] SEO: Implementar Schema.org Restaurant com menu no JSON-LD — com MenuSection e MenuItem
+- [x] SEO: Implementar OpenGraph tags para compartilhamento no WhatsApp — og:type, og:title, og:image, etc.
+- [x] SEO: Criar sitemap.xml automático com páginas de restaurantes e produtos
+- [x] SEO: Criar robots.txt permitindo indexação das páginas públicas e bloqueando admin
+- [x] SEO: Adicionar H1 com nome do restaurante e texto SEO automático na página
+- [x] SEO: Otimizar carregamento de imagens (BlurImage já tem lazy loading, srcset, decoding async)
+- [ ] SEO: Configurar gestão de slug na página de configurações do admin
+- [x] SEO: Testes para endpoints de SEO (11 testes passando)

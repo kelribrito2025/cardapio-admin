@@ -3261,6 +3261,29 @@ async function startServer() {
       createContext,
     })
   );
+  // ─── SEO: Dynamic meta tags, sitemap.xml, robots.txt ───────────────
+  const { createSEOMiddleware, generateSitemap, generateRobotsTxt } = await import("../seo");
+
+  // Robots.txt
+  app.get("/robots.txt", (req, res) => {
+    const protocol = req.headers["x-forwarded-proto"] || req.protocol || "https";
+    const host = req.headers["x-forwarded-host"] || req.headers.host || "";
+    const baseUrl = `${protocol}://${host}`;
+    res.type("text/plain").send(generateRobotsTxt(baseUrl));
+  });
+
+  // Sitemap.xml
+  app.get("/sitemap.xml", async (req, res) => {
+    const protocol = req.headers["x-forwarded-proto"] || req.protocol || "https";
+    const host = req.headers["x-forwarded-host"] || req.headers.host || "";
+    const baseUrl = `${protocol}://${host}`;
+    const sitemap = await generateSitemap(baseUrl);
+    res.type("application/xml").send(sitemap);
+  });
+
+  // SEO middleware for /menu/:slug (injects meta tags into HTML)
+  app.use(createSEOMiddleware());
+
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);
