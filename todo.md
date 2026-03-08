@@ -8478,3 +8478,6 @@
 
 ## Bug: Keys duplicadas na página de Stories
 - [x] Corrigir erro de keys duplicadas na página /stories (múltiplos stories do mesmo dia geram key `2026-03-08` duplicada)
+
+## Header do card Desempenho (estado sem programa)
+- [x] Corrigir header do card "Desempenho da Fidelização" quando nenhum programa está ativo (estado 'none') para usar modelo com ícone colorido
