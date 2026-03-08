@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Heart, Save, Coins, CreditCard, AlertTriangle, Check, Loader2, Users, Stamp, Gift, Wallet, TrendingUp, Ban, Settings2, X, ChevronRight, ChevronLeft, Clock, ArrowUpRight, ArrowDownRight, Trophy, Filter } from "lucide-react";
+import { Heart, Save, Coins, CreditCard, AlertTriangle, Check, Loader2, Users, Stamp, Gift, Wallet, TrendingUp, Ban, Settings2, X, ChevronRight, ChevronLeft, Clock, ArrowUpRight, ArrowDownRight, Trophy, Filter, Search } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -62,9 +62,31 @@ export default function Fidelizacao() {
   const [cashbackEventsPage, setCashbackEventsPage] = useState(0);
   const [cashbackEventsPeriod, setCashbackEventsPeriod] = useState<'today' | 'week' | 'month' | undefined>(undefined);
 
+  // Search state
+  const [loyaltySearch, setLoyaltySearch] = useState("");
+  const [loyaltySearchDebounced, setLoyaltySearchDebounced] = useState("");
+  const [cashbackSearch, setCashbackSearch] = useState("");
+  const [cashbackSearchDebounced, setCashbackSearchDebounced] = useState("");
+
+  // Debounce search inputs
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoyaltySearchDebounced(loyaltySearch);
+      setLoyaltyClientsPage(0);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [loyaltySearch]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCashbackSearchDebounced(cashbackSearch);
+      setCashbackClientsPage(0);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [cashbackSearch]);
+
   // History queries with pagination
   const { data: loyaltyClientsData, isLoading: loyaltyClientsLoading } = trpc.loyalty.getClients.useQuery(
-    { establishmentId, limit: PAGE_SIZE, offset: loyaltyClientsPage * PAGE_SIZE },
+    { establishmentId, limit: PAGE_SIZE, offset: loyaltyClientsPage * PAGE_SIZE, search: loyaltySearchDebounced || undefined },
     { enabled: !!establishmentId && (cashbackConfig?.rewardProgramType === 'loyalty' || cashbackConfig?.loyaltyEnabled) }
   );
   const { data: loyaltyEventsData, isLoading: loyaltyEventsLoading } = trpc.loyalty.getEventHistory.useQuery(
@@ -72,7 +94,7 @@ export default function Fidelizacao() {
     { enabled: !!establishmentId && (cashbackConfig?.rewardProgramType === 'loyalty' || cashbackConfig?.loyaltyEnabled) }
   );
   const { data: cashbackClientsData, isLoading: cashbackClientsLoading } = trpc.cashback.getClients.useQuery(
-    { establishmentId, limit: PAGE_SIZE, offset: cashbackClientsPage * PAGE_SIZE },
+    { establishmentId, limit: PAGE_SIZE, offset: cashbackClientsPage * PAGE_SIZE, search: cashbackSearchDebounced || undefined },
     { enabled: !!establishmentId && cashbackConfig?.rewardProgramType === 'cashback' }
   );
   const { data: cashbackEventsData, isLoading: cashbackEventsLoading } = trpc.cashback.getEventHistory.useQuery(
@@ -675,6 +697,16 @@ export default function Fidelizacao() {
                 </div>
               </div>
 
+              <div className="relative mb-3">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nome ou telefone..."
+                  value={loyaltySearch}
+                  onChange={(e) => setLoyaltySearch(e.target.value)}
+                  className="pl-9 h-9 text-sm bg-muted/30 border-border/50"
+                />
+              </div>
+
               {loyaltyClientsLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -827,6 +859,16 @@ export default function Fidelizacao() {
                   <h3 className="text-base font-semibold text-foreground">Clientes com Cashback</h3>
                   <p className="text-xs text-muted-foreground">Saldo e atividade de cashback dos clientes</p>
                 </div>
+              </div>
+
+              <div className="relative mb-3">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nome ou telefone..."
+                  value={cashbackSearch}
+                  onChange={(e) => setCashbackSearch(e.target.value)}
+                  className="pl-9 h-9 text-sm bg-muted/30 border-border/50"
+                />
               </div>
 
               {cashbackClientsLoading ? (

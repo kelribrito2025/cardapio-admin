@@ -8415,3 +8415,10 @@
 ## Visual de Stamps com Quadradinhos
 - [x] Trocar barra de progresso linear por grid de quadradinhos (stamps) no card Clientes Fidelizados
 - [x] Aplicar mesmo estilo nos cards de Clientes Perto da Recompensa
+
+## Busca por Nome/Telefone nas Listas de Clientes
+- [x] Atualizar db helper getLoyaltyCardClients com parâmetro de busca (nome/telefone)
+- [x] Atualizar db helper getCashbackClients com parâmetro de busca (nome/telefone)
+- [x] Atualizar procedures tRPC com parâmetro de busca
+- [x] Adicionar campo de busca no card Clientes Fidelizados
+- [x] Adicionar campo de busca no card Clientes com Cashback

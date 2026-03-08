@@ -2810,9 +2810,9 @@ export const appRouter = router({
 
     // Lista de clientes com cartão fidelidade
     getClients: protectedProcedure
-      .input(z.object({ establishmentId: z.number(), limit: z.number().optional(), offset: z.number().optional() }))
+      .input(z.object({ establishmentId: z.number(), limit: z.number().optional(), offset: z.number().optional(), search: z.string().optional() }))
       .query(async ({ input }) => {
-        return db.getLoyaltyCardClients(input.establishmentId, input.limit ?? 10, input.offset ?? 0);
+        return db.getLoyaltyCardClients(input.establishmentId, input.limit ?? 10, input.offset ?? 0, input.search);
       }),
 
     // Histórico de eventos (carimbos ganhos, cartões completados)
@@ -6285,9 +6285,9 @@ export const appRouter = router({
 
     // Lista de clientes com cashback
     getClients: protectedProcedure
-      .input(z.object({ establishmentId: z.number(), limit: z.number().optional(), offset: z.number().optional() }))
+      .input(z.object({ establishmentId: z.number(), limit: z.number().optional(), offset: z.number().optional(), search: z.string().optional() }))
       .query(async ({ input }) => {
-        return db.getCashbackClients(input.establishmentId, input.limit ?? 10, input.offset ?? 0);
+        return db.getCashbackClients(input.establishmentId, input.limit ?? 10, input.offset ?? 0, input.search);
       }),
 
     // Histórico de eventos de cashback (créditos e débitos)

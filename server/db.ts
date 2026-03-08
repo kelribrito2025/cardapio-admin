@@ -12191,14 +12191,25 @@ export async function getLoyaltyEvolution(establishmentId: number, programType: 
  * Lista clientes com cartão fidelidade de um estabelecimento
  * Retorna nome, carimbos atuais, total de carimbos, cupons ganhos, data do último carimbo
  */
-export async function getLoyaltyCardClients(establishmentId: number, limit = 10, offset = 0) {
+export async function getLoyaltyCardClients(establishmentId: number, limit = 10, offset = 0, search?: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+
+  // Build where conditions
+  const conditions = [eq(loyaltyCards.establishmentId, establishmentId)];
+  if (search && search.trim()) {
+    const term = `%${search.trim()}%`;
+    conditions.push(or(
+      sql`${loyaltyCards.customerName} LIKE ${term}`,
+      sql`${loyaltyCards.customerPhone} LIKE ${term}`
+    )!);
+  }
+  const whereClause = and(...conditions);
 
   // Count total
   const countResult = await db.select({ count: sql<number>`COUNT(*)` })
     .from(loyaltyCards)
-    .where(eq(loyaltyCards.establishmentId, establishmentId));
+    .where(whereClause);
   const total = Number(countResult[0]?.count ?? 0);
 
   // Buscar cartões com último carimbo via subquery
@@ -12212,7 +12223,7 @@ export async function getLoyaltyCardClients(establishmentId: number, limit = 10,
     updatedAt: loyaltyCards.updatedAt,
     createdAt: loyaltyCards.createdAt,
   }).from(loyaltyCards)
-    .where(eq(loyaltyCards.establishmentId, establishmentId))
+    .where(whereClause)
     .orderBy(desc(loyaltyCards.updatedAt))
     .limit(limit)
     .offset(offset);
@@ -12293,14 +12304,22 @@ export async function getLoyaltyEventHistory(establishmentId: number, limit = 10
 /**
  * Lista clientes com cashback de um estabelecimento
  */
-export async function getCashbackClients(establishmentId: number, limit = 10, offset = 0) {
+export async function getCashbackClients(establishmentId: number, limit = 10, offset = 0, search?: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+
+  // Build where conditions
+  const conditions = [eq(cashbackBalances.establishmentId, establishmentId)];
+  if (search && search.trim()) {
+    const term = `%${search.trim()}%`;
+    conditions.push(sql`${cashbackBalances.customerPhone} LIKE ${term}`);
+  }
+  const whereClause = and(...conditions);
 
   // Count total
   const countResult = await db.select({ count: sql<number>`COUNT(*)` })
     .from(cashbackBalances)
-    .where(eq(cashbackBalances.establishmentId, establishmentId));
+    .where(whereClause);
   const total = Number(countResult[0]?.count ?? 0);
 
   const balances = await db.select({
@@ -12311,7 +12330,7 @@ export async function getCashbackClients(establishmentId: number, limit = 10, of
     totalUsed: cashbackBalances.totalUsed,
     updatedAt: cashbackBalances.updatedAt,
   }).from(cashbackBalances)
-    .where(eq(cashbackBalances.establishmentId, establishmentId))
+    .where(whereClause)
     .orderBy(desc(cashbackBalances.updatedAt))
     .limit(limit)
     .offset(offset);
