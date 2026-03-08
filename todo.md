@@ -8383,3 +8383,16 @@
 - [x] Dentro da sidebar: opções Cartão Fidelidade e Cashback com configurações abaixo
 - [x] Manter toda a lógica e backend inalterados
 - [x] Corrigir header do card Evolução da Fidelização para seguir padrão visual do card Acumulado da semana da Dashboard
+
+## Histórico de Fidelização
+- [x] Criar db helper para listar clientes com cartão fidelidade (nome, carimbos, progresso, data último carimbo)
+- [x] Criar db helper para listar histórico de eventos de fidelidade (carimbo ganho, cartão completado)
+- [x] Criar db helper para listar clientes com cashback (nome, saldo, cashback ganho, utilizado)
+- [x] Criar db helper para listar histórico de eventos de cashback (ganhou, usou)
+- [x] Criar procedures tRPC para histórico de fidelização (loyalty e cashback)
+- [x] Adicionar seção Histórico de Fidelização na página (abaixo do gráfico de evolução)
+- [x] Cartão Fidelidade: lista de clientes com barra de progresso visual e data do último carimbo
+- [x] Cartão Fidelidade: histórico de eventos (carimbo ganho, cartão completado)
+- [x] Cashback: lista de clientes com saldo, cashback ganho e utilizado
+- [x] Cashback: histórico de eventos (ganhou cashback, usou cashback)
+- [x] Destaque para clientes próximos de completar o cartão

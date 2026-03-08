@@ -2807,6 +2807,20 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return db.getLoyaltyEvolution(input.establishmentId, 'loyalty');
       }),
+
+    // Lista de clientes com cartão fidelidade
+    getClients: protectedProcedure
+      .input(z.object({ establishmentId: z.number(), limit: z.number().optional() }))
+      .query(async ({ input }) => {
+        return db.getLoyaltyCardClients(input.establishmentId, input.limit ?? 50);
+      }),
+
+    // Histórico de eventos (carimbos ganhos, cartões completados)
+    getEventHistory: protectedProcedure
+      .input(z.object({ establishmentId: z.number(), limit: z.number().optional() }))
+      .query(async ({ input }) => {
+        return db.getLoyaltyEventHistory(input.establishmentId, input.limit ?? 30);
+      }),
   }),
 
   // ============ UPLOAD ============
@@ -6267,6 +6281,20 @@ export const appRouter = router({
       .input(z.object({ establishmentId: z.number() }))
       .query(async ({ input }) => {
         return db.getLoyaltyEvolution(input.establishmentId, 'cashback');
+      }),
+
+    // Lista de clientes com cashback
+    getClients: protectedProcedure
+      .input(z.object({ establishmentId: z.number(), limit: z.number().optional() }))
+      .query(async ({ input }) => {
+        return db.getCashbackClients(input.establishmentId, input.limit ?? 50);
+      }),
+
+    // Histórico de eventos de cashback (créditos e débitos)
+    getEventHistory: protectedProcedure
+      .input(z.object({ establishmentId: z.number(), limit: z.number().optional() }))
+      .query(async ({ input }) => {
+        return db.getCashbackEventHistory(input.establishmentId, input.limit ?? 30);
       }),
   }),
 

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Heart, Save, Coins, CreditCard, AlertTriangle, Check, Loader2, Users, Stamp, Gift, Wallet, TrendingUp, Ban, Settings2, X, ChevronRight } from "lucide-react";
+import { Heart, Save, Coins, CreditCard, AlertTriangle, Check, Loader2, Users, Stamp, Gift, Wallet, TrendingUp, Ban, Settings2, X, ChevronRight, Clock, ArrowUpRight, ArrowDownRight, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -50,6 +50,24 @@ export default function Fidelizacao() {
   );
   const { data: cashbackEvolution } = trpc.cashback.getEvolution.useQuery(
     { establishmentId },
+    { enabled: !!establishmentId && cashbackConfig?.rewardProgramType === 'cashback' }
+  );
+
+  // History queries
+  const { data: loyaltyClients, isLoading: loyaltyClientsLoading } = trpc.loyalty.getClients.useQuery(
+    { establishmentId, limit: 20 },
+    { enabled: !!establishmentId && (cashbackConfig?.rewardProgramType === 'loyalty' || cashbackConfig?.loyaltyEnabled) }
+  );
+  const { data: loyaltyEvents, isLoading: loyaltyEventsLoading } = trpc.loyalty.getEventHistory.useQuery(
+    { establishmentId, limit: 20 },
+    { enabled: !!establishmentId && (cashbackConfig?.rewardProgramType === 'loyalty' || cashbackConfig?.loyaltyEnabled) }
+  );
+  const { data: cashbackClients, isLoading: cashbackClientsLoading } = trpc.cashback.getClients.useQuery(
+    { establishmentId, limit: 20 },
+    { enabled: !!establishmentId && cashbackConfig?.rewardProgramType === 'cashback' }
+  );
+  const { data: cashbackEvents, isLoading: cashbackEventsLoading } = trpc.cashback.getEventHistory.useQuery(
+    { establishmentId, limit: 20 },
     { enabled: !!establishmentId && cashbackConfig?.rewardProgramType === 'cashback' }
   );
 
@@ -194,6 +212,34 @@ export default function Fidelizacao() {
   };
 
   const programInfo = getProgramInfo();
+
+  // Stamps required from settings
+  const stampsRequiredConfig = loyaltySettings?.loyaltyStampsRequired || 6;
+
+  // Helper to format relative time
+  const formatRelativeTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMin = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    if (diffMin < 1) return 'agora';
+    if (diffMin < 60) return `há ${diffMin}min`;
+    if (diffHours < 24) return `há ${diffHours}h`;
+    if (diffDays === 1) return 'ontem';
+    if (diffDays < 7) return `há ${diffDays} dias`;
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  };
+
+  // Separate near-reward clients (>= 70% stamps)
+  const nearRewardClients = useMemo(() => {
+    if (!loyaltyClients || activeProgram !== 'loyalty') return [];
+    return loyaltyClients.filter((c: any) => {
+      const progress = c.stamps / stampsRequiredConfig;
+      return progress >= 0.7 && c.stamps < stampsRequiredConfig;
+    });
+  }, [loyaltyClients, activeProgram, stampsRequiredConfig]);
 
   return (
     <AdminLayout>
@@ -477,6 +523,307 @@ export default function Fidelizacao() {
               </div>
             )}
           </>
+        )}
+
+        {/* ==================== HISTÓRICO DE FIDELIZAÇÃO ==================== */}
+        {activeProgram === "loyalty" && (
+          <div className="space-y-5">
+            {/* Clientes perto da recompensa */}
+            {nearRewardClients.length > 0 && (
+              <div className="bg-card rounded-xl border border-border/50 p-5">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                    <Trophy className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-base font-semibold text-foreground">Clientes Perto da Recompensa</h3>
+                    <p className="text-xs text-muted-foreground">Clientes com 70% ou mais dos carimbos necessários</p>
+                  </div>
+                  <span className="ml-auto text-sm font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2.5 py-1 rounded-full">
+                    {nearRewardClients.length}
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  {nearRewardClients.map((client: any) => (
+                    <div key={client.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-border/30">
+                      <div className="flex-shrink-0 w-9 h-9 rounded-full bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center">
+                        <span className="text-sm font-bold text-amber-700 dark:text-amber-300">
+                          {(client.customerName || 'C')[0].toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">{client.customerName || client.customerPhone}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-amber-500 transition-all"
+                              style={{ width: `${Math.min((client.stamps / stampsRequiredConfig) * 100, 100)}%` }}
+                            />
+                          </div>
+                          <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 whitespace-nowrap">
+                            {client.stamps} / {stampsRequiredConfig}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Lista de clientes com cartão fidelidade */}
+            <div className="bg-card rounded-xl border border-border/50 p-5">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                  <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-base font-semibold text-foreground">Clientes Fidelizados</h3>
+                  <p className="text-xs text-muted-foreground">Progresso dos clientes no cartão fidelidade</p>
+                </div>
+              </div>
+
+              {loyaltyClientsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+              ) : !loyaltyClients || loyaltyClients.length === 0 ? (
+                <div className="text-center py-8">
+                  <Users className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">Nenhum cliente com cartão fidelidade ainda.</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {loyaltyClients.map((client: any) => {
+                    const isComplete = client.stamps >= stampsRequiredConfig;
+                    const progressPct = Math.min((client.stamps / stampsRequiredConfig) * 100, 100);
+                    return (
+                      <div key={client.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors border border-transparent hover:border-border/30">
+                        <div className={cn(
+                          "flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center",
+                          isComplete ? "bg-emerald-100 dark:bg-emerald-500/15" : "bg-muted/60"
+                        )}>
+                          <span className={cn(
+                            "text-sm font-bold",
+                            isComplete ? "text-emerald-700 dark:text-emerald-300" : "text-muted-foreground"
+                          )}>
+                            {(client.customerName || 'C')[0].toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium text-foreground truncate">{client.customerName || client.customerPhone}</p>
+                            <span className="text-xs text-muted-foreground ml-2 whitespace-nowrap">
+                              {formatRelativeTime(client.lastStampDate)}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 mt-1">
+                            <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                              <div
+                                className={cn(
+                                  "h-full rounded-full transition-all",
+                                  isComplete ? "bg-emerald-500" : "bg-emerald-400/70"
+                                )}
+                                style={{ width: `${progressPct}%` }}
+                              />
+                            </div>
+                            <span className={cn(
+                              "text-xs font-medium whitespace-nowrap",
+                              isComplete ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
+                            )}>
+                              {client.stamps} / {stampsRequiredConfig}
+                            </span>
+                          </div>
+                          {isComplete && (
+                            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-0.5 flex items-center gap-1">
+                              <Gift className="h-3 w-3" /> Recompensa liberada ({client.couponsEarned}x resgatada)
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Histórico de eventos - Loyalty */}
+            <div className="bg-card rounded-xl border border-border/50 p-5">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                  <Clock className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-base font-semibold text-foreground">Histórico de Fidelização</h3>
+                  <p className="text-xs text-muted-foreground">Atividade recente dos clientes no programa</p>
+                </div>
+              </div>
+
+              {loyaltyEventsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+              ) : !loyaltyEvents || loyaltyEvents.length === 0 ? (
+                <div className="text-center py-8">
+                  <Clock className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">Nenhuma atividade registrada ainda.</p>
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {loyaltyEvents.map((event: any) => {
+                    const isCompletion = event.currentStamps >= stampsRequiredConfig;
+                    return (
+                      <div key={event.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted/30 transition-colors">
+                        <div className={cn(
+                          "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center",
+                          isCompletion ? "bg-emerald-100 dark:bg-emerald-500/15" : "bg-blue-100 dark:bg-blue-500/15"
+                        )}>
+                          {isCompletion ? (
+                            <Gift className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                          ) : (
+                            <Stamp className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-foreground">
+                            <span className="font-medium">{event.customerName}</span>
+                            {isCompletion
+                              ? " completou o cartão fidelidade 🎉"
+                              : " ganhou 1 carimbo"
+                            }
+                          </p>
+                          {event.orderNumber && (
+                            <p className="text-xs text-muted-foreground">Pedido #{event.orderNumber}</p>
+                          )}
+                        </div>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                          {formatRelativeTime(event.createdAt)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Histórico de Cashback */}
+        {activeProgram === "cashback" && (
+          <div className="space-y-5">
+            {/* Lista de clientes com cashback */}
+            <div className="bg-card rounded-xl border border-border/50 p-5">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                  <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-base font-semibold text-foreground">Clientes com Cashback</h3>
+                  <p className="text-xs text-muted-foreground">Saldo e atividade de cashback dos clientes</p>
+                </div>
+              </div>
+
+              {cashbackClientsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+              ) : !cashbackClients || cashbackClients.length === 0 ? (
+                <div className="text-center py-8">
+                  <Users className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">Nenhum cliente com cashback ainda.</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {cashbackClients.map((client: any) => (
+                    <div key={client.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors border border-transparent hover:border-border/30">
+                      <div className="flex-shrink-0 w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center">
+                        <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
+                          {(client.customerName || 'C')[0].toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">{client.customerName || client.customerPhone}</p>
+                        <div className="flex items-center gap-3 mt-0.5">
+                          <span className="text-xs text-muted-foreground">
+                            Saldo: <span className="font-semibold text-blue-600 dark:text-blue-400">{formatCurrency(client.balance)}</span>
+                          </span>
+                          {Number(client.cashbackToday) > 0 && (
+                            <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5">
+                              <ArrowUpRight className="h-3 w-3" />
+                              +{formatCurrency(client.cashbackToday)} hoje
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">Total ganho</p>
+                        <p className="text-sm font-semibold text-foreground">{formatCurrency(client.totalEarned)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Histórico de eventos - Cashback */}
+            <div className="bg-card rounded-xl border border-border/50 p-5">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                  <Clock className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-base font-semibold text-foreground">Histórico de Cashback</h3>
+                  <p className="text-xs text-muted-foreground">Transações recentes de cashback dos clientes</p>
+                </div>
+              </div>
+
+              {cashbackEventsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+              ) : !cashbackEvents || cashbackEvents.length === 0 ? (
+                <div className="text-center py-8">
+                  <Clock className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">Nenhuma transação de cashback registrada ainda.</p>
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {cashbackEvents.map((event: any) => {
+                    const isCredit = event.type === 'credit';
+                    return (
+                      <div key={event.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted/30 transition-colors">
+                        <div className={cn(
+                          "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center",
+                          isCredit ? "bg-emerald-100 dark:bg-emerald-500/15" : "bg-orange-100 dark:bg-orange-500/15"
+                        )}>
+                          {isCredit ? (
+                            <ArrowUpRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                          ) : (
+                            <ArrowDownRight className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-foreground">
+                            <span className="font-medium">{event.customerName}</span>
+                            {isCredit
+                              ? ` ganhou ${formatCurrency(event.amount)} de cashback`
+                              : ` usou ${formatCurrency(event.amount)} de cashback`
+                            }
+                          </p>
+                          {event.orderNumber && (
+                            <p className="text-xs text-muted-foreground">Pedido #{event.orderNumber}</p>
+                          )}
+                        </div>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                          {formatRelativeTime(event.createdAt instanceof Date ? event.createdAt.toISOString() : String(event.createdAt))}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
         )}
 
         {/* ==================== SIDEBAR DE CONFIGURAÇÃO ==================== */}

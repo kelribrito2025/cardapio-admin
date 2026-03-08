@@ -12183,3 +12183,184 @@ export async function getLoyaltyEvolution(establishmentId: number, programType: 
 
   return chartData;
 }
+
+
+// ============ HISTÓRICO DE FIDELIZAÇÃO ============
+
+/**
+ * Lista clientes com cartão fidelidade de um estabelecimento
+ * Retorna nome, carimbos atuais, total de carimbos, cupons ganhos, data do último carimbo
+ */
+export async function getLoyaltyCardClients(establishmentId: number, limit = 50) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Buscar cartões com último carimbo via subquery
+  const cards = await db.select({
+    id: loyaltyCards.id,
+    customerName: loyaltyCards.customerName,
+    customerPhone: loyaltyCards.customerPhone,
+    stamps: loyaltyCards.stamps,
+    totalStampsEarned: loyaltyCards.totalStampsEarned,
+    couponsEarned: loyaltyCards.couponsEarned,
+    updatedAt: loyaltyCards.updatedAt,
+    createdAt: loyaltyCards.createdAt,
+  }).from(loyaltyCards)
+    .where(eq(loyaltyCards.establishmentId, establishmentId))
+    .orderBy(desc(loyaltyCards.updatedAt))
+    .limit(limit);
+
+  // Para cada cartão, buscar a data do último carimbo
+  const result = await Promise.all(cards.map(async (card) => {
+    const lastStamp = await db.select({
+      createdAt: loyaltyStamps.createdAt,
+    }).from(loyaltyStamps)
+      .where(eq(loyaltyStamps.loyaltyCardId, card.id))
+      .orderBy(desc(loyaltyStamps.createdAt))
+      .limit(1);
+
+    return {
+      ...card,
+      lastStampDate: lastStamp[0]?.createdAt ?? card.updatedAt,
+    };
+  }));
+
+  return result;
+}
+
+/**
+ * Histórico de eventos de fidelidade (carimbos ganhos e cartões completados)
+ */
+export async function getLoyaltyEventHistory(establishmentId: number, limit = 30) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Buscar últimos carimbos com nome do cliente
+  const stamps: any[] = await db.execute(
+    sql`SELECT 
+      ls.id, ls.createdAt, ls.orderNumber,
+      lc.customerName, lc.customerPhone, lc.stamps, lc.totalStampsEarned, lc.couponsEarned
+    FROM ${loyaltyStamps} ls
+    INNER JOIN ${loyaltyCards} lc ON ls.loyaltyCardId = lc.id
+    WHERE lc.establishmentId = ${establishmentId}
+    ORDER BY ls.createdAt DESC
+    LIMIT ${limit}`
+  );
+
+  const rows = Array.isArray(stamps) ? (Array.isArray(stamps[0]) ? stamps[0] : stamps) : [];
+  return rows.map((row: any) => ({
+    id: Number(row.id),
+    customerName: row.customerName || row.customerPhone || 'Cliente',
+    customerPhone: row.customerPhone || '',
+    orderNumber: row.orderNumber || '',
+    currentStamps: Number(row.stamps),
+    totalStampsEarned: Number(row.totalStampsEarned),
+    couponsEarned: Number(row.couponsEarned),
+    createdAt: row.createdAt instanceof Date ? row.createdAt.toISOString() : String(row.createdAt),
+  }));
+}
+
+/**
+ * Lista clientes com cashback de um estabelecimento
+ */
+export async function getCashbackClients(establishmentId: number, limit = 50) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const balances = await db.select({
+    id: cashbackBalances.id,
+    customerPhone: cashbackBalances.customerPhone,
+    balance: cashbackBalances.balance,
+    totalEarned: cashbackBalances.totalEarned,
+    totalUsed: cashbackBalances.totalUsed,
+    updatedAt: cashbackBalances.updatedAt,
+  }).from(cashbackBalances)
+    .where(eq(cashbackBalances.establishmentId, establishmentId))
+    .orderBy(desc(cashbackBalances.updatedAt))
+    .limit(limit);
+
+  // Buscar nomes dos clientes via pedidos mais recentes
+  const result = await Promise.all(balances.map(async (bal) => {
+    const normalizedPhone = bal.customerPhone.replace(/\D/g, '');
+    const order = await db.select({ customerName: orders.customerName })
+      .from(orders)
+      .where(and(
+        eq(orders.establishmentId, establishmentId),
+        or(
+          eq(orders.customerPhone, bal.customerPhone),
+          eq(orders.customerPhone, normalizedPhone)
+        )
+      ))
+      .orderBy(desc(orders.createdAt))
+      .limit(1);
+
+    // Cashback ganho hoje
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayCredits = await db.select({
+      total: sql<string>`COALESCE(SUM(${cashbackTransactions.amount}), 0)`,
+    }).from(cashbackTransactions)
+      .where(and(
+        eq(cashbackTransactions.establishmentId, establishmentId),
+        or(
+          eq(cashbackTransactions.customerPhone, bal.customerPhone),
+          eq(cashbackTransactions.customerPhone, normalizedPhone)
+        ),
+        eq(cashbackTransactions.type, 'credit'),
+        sql`${cashbackTransactions.createdAt} >= ${today}`
+      ));
+
+    return {
+      ...bal,
+      customerName: order[0]?.customerName || bal.customerPhone,
+      cashbackToday: todayCredits[0]?.total || '0.00',
+    };
+  }));
+
+  return result;
+}
+
+/**
+ * Histórico de eventos de cashback (créditos e débitos)
+ */
+export async function getCashbackEventHistory(establishmentId: number, limit = 30) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const transactions = await db.select({
+    id: cashbackTransactions.id,
+    customerPhone: cashbackTransactions.customerPhone,
+    type: cashbackTransactions.type,
+    amount: cashbackTransactions.amount,
+    orderNumber: cashbackTransactions.orderNumber,
+    description: cashbackTransactions.description,
+    balanceAfter: cashbackTransactions.balanceAfter,
+    createdAt: cashbackTransactions.createdAt,
+  }).from(cashbackTransactions)
+    .where(eq(cashbackTransactions.establishmentId, establishmentId))
+    .orderBy(desc(cashbackTransactions.createdAt))
+    .limit(limit);
+
+  // Buscar nomes dos clientes
+  const result = await Promise.all(transactions.map(async (tx) => {
+    const normalizedPhone = tx.customerPhone.replace(/\D/g, '');
+    const order = await db.select({ customerName: orders.customerName })
+      .from(orders)
+      .where(and(
+        eq(orders.establishmentId, establishmentId),
+        or(
+          eq(orders.customerPhone, tx.customerPhone),
+          eq(orders.customerPhone, normalizedPhone)
+        )
+      ))
+      .orderBy(desc(orders.createdAt))
+      .limit(1);
+
+    return {
+      ...tx,
+      customerName: order[0]?.customerName || tx.customerPhone,
+    };
+  }));
+
+  return result;
+}
