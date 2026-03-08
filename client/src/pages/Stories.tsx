@@ -276,7 +276,6 @@ export default function Stories() {
         </div>
 
         {/* ===== PAINEL DE ANALYTICS ===== */}
-        {activeStories.length > 0 && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -454,7 +453,6 @@ export default function Stories() {
               </div>
             )}
           </div>
-        )}
 
         {/* Lista detalhada dos stories com métricas */}
         {activeStories.length > 0 && (

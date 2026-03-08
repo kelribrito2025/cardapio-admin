@@ -8354,3 +8354,4 @@
 - [x] SEO: Otimizar carregamento de imagens (BlurImage já tem lazy loading, srcset, decoding async)
 - [ ] SEO: Configurar gestão de slug na página de configurações do admin
 - [x] SEO: Testes para endpoints de SEO (11 testes passando)
+- [x] Bug: Cards de analytics de Stories (Cliques, Carrinho, Pedidos, Faturamento, Vendas, Top Story) desaparecem quando todos os stories são apagados — removida condição activeStories.length > 0 do painel de analytics
