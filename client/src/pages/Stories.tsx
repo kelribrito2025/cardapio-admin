@@ -458,8 +458,33 @@ export default function Stories() {
 
         {/* Lista detalhada dos stories com métricas */}
         {activeStories.length > 0 && (
-          <SectionCard title="Stories ativos" description={`${activeStories.length} stories publicados`}>
-            <div className="space-y-3">
+          <div className="bg-card rounded-xl border border-border/50 flex flex-col">
+            {/* Header padronizado - mesmo estilo dos cards da Dashboard */}
+            <div className="px-5 pt-5 pb-3 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                  <Clapperboard className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-base font-semibold text-foreground">Stories ativos</h3>
+                  <p className="text-xs text-muted-foreground">{activeStories.length} stories publicados</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="px-5 pb-5">
+              {/* Cabeçalho da tabela */}
+              <div className="grid grid-cols-[48px_1fr_60px_60px_60px_70px_36px] sm:grid-cols-[48px_1fr_70px_70px_70px_80px_36px] gap-2 px-2 pb-2 border-b border-border/50">
+                <span></span>
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Story</span>
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Views</span>
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Cliques</span>
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Pedidos</span>
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Vendas</span>
+                <span></span>
+              </div>
+
+              {/* Linhas da tabela */}
               {activeStories.map((story) => {
                 const typeInfo = storyTypeLabel(story.type);
                 const TypeIcon = typeInfo.icon;
@@ -468,98 +493,66 @@ export default function Stories() {
                 return (
                   <div
                     key={story.id}
-                    className="p-4 rounded-xl border border-border/50 bg-background hover:bg-muted/30 transition-all duration-200 hover:shadow-sm"
+                    className="grid grid-cols-[48px_1fr_60px_60px_60px_70px_36px] sm:grid-cols-[48px_1fr_70px_70px_70px_80px_36px] gap-2 items-center px-2 py-3 border-b border-border/30 last:border-0 hover:bg-muted/30 transition-colors"
                   >
-                    <div className="flex items-center gap-4">
-                      {/* Thumbnail */}
-                      <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-muted">
-                        <img
-                          src={story.imageUrl}
-                          alt="Story"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-
-                      {/* Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <TypeIcon className={cn("h-3.5 w-3.5", typeInfo.color)} />
-                          <span className={cn("text-xs font-medium", typeInfo.color)}>
-                            {typeInfo.label}
-                          </span>
-                          {story.type === "promo" && story.promoTitle && (
-                            <span className="text-sm font-semibold text-foreground truncate">
-                              — {story.promoTitle}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Publicado {timeAgo(story.createdAt)}
-                        </p>
-                        <div className="flex items-center gap-3 mt-0.5">
-                          <div className="flex items-center gap-1.5">
-                            <Clock className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground">
-                              {timeRemaining(story.expiresAt)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Ações */}
-                      <button
-                        onClick={() => setDeleteConfirm(story.id)}
-                        className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-400 hover:text-red-500 transition-colors flex-shrink-0"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                    {/* Thumbnail */}
+                    <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
+                      <img
+                        src={story.imageUrl}
+                        alt="Story"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
 
-                    {/* Métricas inline do story */}
-                    <div className="mt-3 pt-3 border-t border-border/40 grid grid-cols-4 gap-3">
-                      <div className="flex items-center gap-2">
-                        <div className="h-6 w-6 rounded-md bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0">
-                          <Eye className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <div className="min-w-0">
-                          <span className="text-sm font-semibold text-foreground">{views}</span>
-                          <span className="text-[10px] text-muted-foreground ml-1 hidden sm:inline">views</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="h-6 w-6 rounded-md bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0">
-                          <MousePointerClick className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <div className="min-w-0">
-                          <span className="text-sm font-semibold text-foreground">{metrics?.clicks ?? 0}</span>
-                          <span className="text-[10px] text-muted-foreground ml-1 hidden sm:inline">cliques</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="h-6 w-6 rounded-md bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
-                          <ShoppingBag className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                        </div>
-                        <div className="min-w-0">
-                          <span className="text-sm font-semibold text-foreground">{metrics?.ordersCompleted ?? 0}</span>
-                          <span className="text-[10px] text-muted-foreground ml-1 hidden sm:inline">pedidos</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="h-6 w-6 rounded-md bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
-                          <DollarSign className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                        </div>
-                        <div className="min-w-0">
-                          <span className="text-sm font-semibold text-foreground">
-                            {formatCurrency(metrics?.totalRevenue ?? 0)}
+                    {/* Info */}
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <TypeIcon className={cn("h-3 w-3 flex-shrink-0", typeInfo.color)} />
+                        <span className={cn("text-xs font-medium", typeInfo.color)}>
+                          {typeInfo.label}
+                        </span>
+                        {story.type === "promo" && story.promoTitle && (
+                          <span className="text-xs font-semibold text-foreground truncate">
+                            — {story.promoTitle}
                           </span>
-                        </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[11px] text-muted-foreground">{timeAgo(story.createdAt)}</span>
+                        <span className="text-[11px] text-muted-foreground/60">·</span>
+                        <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
+                          <Clock className="h-2.5 w-2.5" />
+                          {timeRemaining(story.expiresAt)}
+                        </span>
                       </div>
                     </div>
+
+                    {/* Views */}
+                    <span className="text-sm font-semibold text-foreground text-right">{views}</span>
+
+                    {/* Cliques */}
+                    <span className="text-sm font-semibold text-foreground text-right">{metrics?.clicks ?? 0}</span>
+
+                    {/* Pedidos */}
+                    <span className="text-sm font-semibold text-foreground text-right">{metrics?.ordersCompleted ?? 0}</span>
+
+                    {/* Vendas */}
+                    <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 text-right">
+                      {formatCurrency(metrics?.totalRevenue ?? 0)}
+                    </span>
+
+                    {/* Ações */}
+                    <button
+                      onClick={() => setDeleteConfirm(story.id)}
+                      className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-400 hover:text-red-500 transition-colors flex-shrink-0"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
                   </div>
                 );
               })}
             </div>
-          </SectionCard>
+          </div>
         )}
 
         {/* Estado vazio */}

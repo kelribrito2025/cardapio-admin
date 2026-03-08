@@ -1,0 +1,19 @@
+{
+  "query": "SELECT p.id as produto_id, p.name as produto_nome, cg.id as grupo_id, cg.name as grupo_nome, cg.minQuantity, cg.maxQuantity, cg.sortOrder FROM products p JOIN complementGroups cg ON cg.productId = p.id WHERE p.establishmentId = 210008 AND p.name = 'PIZZA TREM (3 Partes Salgadas e 1 Doce)' ORDER BY cg.sortOrder, cg.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id as produto_id, p.name as produto_nome, cg.id as grupo_id, cg.name as grupo_nome, cg.minQuantity, cg.maxQuantity, cg.sortOrder FROM products p JOIN complementGroups cg ON cg.productId = p.id WHERE p.establishmentId = 210008 AND p.name = 'PIZZA TREM (3 Partes Salgadas e 1 Doce)' ORDER BY cg.sortOrder, cg.id;",
+  "rows": [
+    {
+      "produto_id": "710012",
+      "produto_nome": "PIZZA TREM (3 Partes Salgadas e 1 Doce)",
+      "grupo_id": "570069",
+      "grupo_nome": "Escolha os 3 sabores salgados:",
+      "minQuantity": "3",
+      "maxQuantity": "3",
+      "sortOrder": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "produto_id\tproduto_nome\tgrupo_id\tgrupo_nome\tminQuantity\tmaxQuantity\tsortOrder\n710012\tPIZZA TREM (3 Partes Salgadas e 1 Doce)\t570069\tEscolha os 3 sabores salgados:\t3\t3\t0\n",
+  "stderr": "",
+  "execution_time_ms": 390
+}

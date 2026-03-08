@@ -1,0 +1,30 @@
+{
+  "query": "SELECT p.id, p.name, COUNT(DISTINCT cg.id) as total_grupos FROM products p LEFT JOIN complementGroups cg ON cg.productId = p.id WHERE p.establishmentId = 210008 AND p.name LIKE '%PIZZA TREM%' GROUP BY p.id, p.name;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, COUNT(DISTINCT cg.id) as total_grupos FROM products p LEFT JOIN complementGroups cg ON cg.productId = p.id WHERE p.establishmentId = 210008 AND p.name LIKE '%PIZZA TREM%' GROUP BY p.id, p.name;",
+  "rows": [
+    {
+      "id": "710012",
+      "name": "PIZZA TREM (3 Partes Salgadas e 1 Doce)",
+      "total_grupos": "1"
+    },
+    {
+      "id": "710013",
+      "name": "PIZZA TREM (TODA SALGADA)",
+      "total_grupos": "2"
+    },
+    {
+      "id": "710011",
+      "name": "PIZZA TREM PROMOCIONAL - 70cm - 24 Fatias",
+      "total_grupos": "1"
+    },
+    {
+      "id": "710022",
+      "name": "PIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)",
+      "total_grupos": "6"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ttotal_grupos\n710012\tPIZZA TREM (3 Partes Salgadas e 1 Doce)\t1\n710013\tPIZZA TREM (TODA SALGADA)\t2\n710011\tPIZZA TREM PROMOCIONAL - 70cm - 24 Fatias\t1\n710022\tPIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)\t6\n",
+  "stderr": "",
+  "execution_time_ms": 424
+}

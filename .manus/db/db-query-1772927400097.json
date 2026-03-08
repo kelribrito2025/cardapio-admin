@@ -1,0 +1,66 @@
+{
+  "query": "SELECT p.id as produto_id, p.name as produto_nome, cg.id as grupo_id, cg.name as grupo_nome, cg.minQuantity, cg.maxQuantity FROM products p LEFT JOIN complementGroups cg ON cg.productId = p.id WHERE p.establishmentId = 210008 AND p.name LIKE '%PIZZA TREM%3 Partes Salgadas%' ORDER BY p.id, cg.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id as produto_id, p.name as produto_nome, cg.id as grupo_id, cg.name as grupo_nome, cg.minQuantity, cg.maxQuantity FROM products p LEFT JOIN complementGroups cg ON cg.productId = p.id WHERE p.establishmentId = 210008 AND p.name LIKE '%PIZZA TREM%3 Partes Salgadas%' ORDER BY p.id, cg.id;",
+  "rows": [
+    {
+      "produto_id": "710012",
+      "produto_nome": "PIZZA TREM (3 Partes Salgadas e 1 Doce)",
+      "grupo_id": "570069",
+      "grupo_nome": "Escolha os 3 sabores salgados:",
+      "minQuantity": "3",
+      "maxQuantity": "3"
+    },
+    {
+      "produto_id": "710022",
+      "produto_nome": "PIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)",
+      "grupo_id": "570125",
+      "grupo_nome": "Escolha os 3 sabores salgados:",
+      "minQuantity": "3",
+      "maxQuantity": "3"
+    },
+    {
+      "produto_id": "710022",
+      "produto_nome": "PIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)",
+      "grupo_id": "570126",
+      "grupo_nome": "Escolha o sabor Doce:",
+      "minQuantity": "1",
+      "maxQuantity": "1"
+    },
+    {
+      "produto_id": "710022",
+      "produto_nome": "PIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)",
+      "grupo_id": "570127",
+      "grupo_nome": "Escolha sua Borda:",
+      "minQuantity": "1",
+      "maxQuantity": "1"
+    },
+    {
+      "produto_id": "710022",
+      "produto_nome": "PIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)",
+      "grupo_id": "570128",
+      "grupo_nome": "Deseja alguma ADICIONAL em sua Pizza TREM?",
+      "minQuantity": "0",
+      "maxQuantity": "5"
+    },
+    {
+      "produto_id": "710022",
+      "produto_nome": "PIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)",
+      "grupo_id": "570129",
+      "grupo_nome": "Deseja adicionar ESFIHAS DOCES?",
+      "minQuantity": "0",
+      "maxQuantity": "5"
+    },
+    {
+      "produto_id": "710022",
+      "produto_nome": "PIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)",
+      "grupo_id": "570130",
+      "grupo_nome": "Deseja Adicionar Refrigerante ?",
+      "minQuantity": "0",
+      "maxQuantity": "5"
+    }
+  ],
+  "messages": [],
+  "stdout": "produto_id\tproduto_nome\tgrupo_id\tgrupo_nome\tminQuantity\tmaxQuantity\n710012\tPIZZA TREM (3 Partes Salgadas e 1 Doce)\t570069\tEscolha os 3 sabores salgados:\t3\t3\n710022\tPIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)\t570125\tEscolha os 3 sabores salgados:\t3\t3\n710022\tPIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)\t570126\tEscolha o sabor Doce:\t1\t1\n710022\tPIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)\t570127\tEscolha sua Borda:\t1\t1\n710022\tPIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)\t570128\tDeseja alguma ADICIONAL em sua Pizza TREM?\t0\t5\n710022\tPIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)\t570129\tDeseja adicionar ESFIHAS DOCES?\t0\t5\n710022\tPIZZA TREM (3 Partes Salgadas e 1 Doce)  (cópia)\t570130\tDeseja Adicionar Refrigerante ?\t0\t5\n",
+  "stderr": "",
+  "execution_time_ms": 359
+}
