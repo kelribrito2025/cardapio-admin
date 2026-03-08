@@ -8461,3 +8461,6 @@
 - [x] Criar hook useMenuSSE(establishmentId) no frontend
 - [x] Integrar hook no PublicMenu.tsx para invalidar query de stories
 - [x] Preparar endpoint para eventos futuros (produto atualizado, estabelecimento fechou, etc.)
+
+## Efeito Wave Ring nos Stories
+- [x] Substituir efeito Scale Pulse pelo Wave Ring nos stories do menu público

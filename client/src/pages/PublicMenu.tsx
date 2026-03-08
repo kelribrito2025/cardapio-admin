@@ -1957,11 +1957,40 @@ export default function PublicMenu() {
         />
       )}
 
-      {/* CSS para animação pulsante do story */}
+      {/* CSS para animação Wave Ring do story */}
       <style>{`
-        @keyframes storyPulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.03); }
+        @keyframes waveAnim {
+          0% { stroke-dashoffset: 0; opacity: 1; }
+          100% { stroke-dashoffset: -420; opacity: 0.3; }
+        }
+        .story-wave-ring {
+          position: absolute;
+          top: -6px;
+          left: -6px;
+          width: calc(100% + 12px);
+          height: calc(100% + 12px);
+          border-radius: 50%;
+          pointer-events: none;
+        }
+        .story-wave-ring circle {
+          fill: none;
+          stroke-width: 3;
+          stroke-linecap: round;
+        }
+        .story-wave-ring .wave1 {
+          stroke: #f09433;
+          stroke-dasharray: 40 380;
+          animation: waveAnim 2.5s ease-in-out infinite;
+        }
+        .story-wave-ring .wave2 {
+          stroke: #dc2743;
+          stroke-dasharray: 40 380;
+          animation: waveAnim 2.5s ease-in-out infinite 0.4s;
+        }
+        .story-wave-ring .wave3 {
+          stroke: #bc1888;
+          stroke-dasharray: 40 380;
+          animation: waveAnim 2.5s ease-in-out infinite 0.8s;
         }
       `}</style>
 
@@ -2271,8 +2300,14 @@ export default function PublicMenu() {
                   setShowStoryViewer(true);
                 }}
                 className="relative cursor-pointer group"
-                style={allStoriesViewed ? undefined : { animation: 'storyPulse 2s ease-in-out infinite' }}
               >
+                {!allStoriesViewed && (
+                  <svg className="story-wave-ring" viewBox="0 0 144 144">
+                    <circle className="wave1" cx="72" cy="72" r="69"/>
+                    <circle className="wave2" cx="72" cy="72" r="69"/>
+                    <circle className="wave3" cx="72" cy="72" r="69"/>
+                  </svg>
+                )}
                 <div className="h-28 w-28 md:h-36 md:w-36 rounded-full p-[3.5px]" style={{
                   background: allStoriesViewed
                     ? 'linear-gradient(45deg, #d1d5db, #9ca3af, #d1d5db)'
