@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Heart, Save, Coins, CreditCard, AlertTriangle, Check, Loader2, Users, Stamp, Gift, Wallet, TrendingUp, Ban, Settings2, X, ChevronRight, Clock, ArrowUpRight, ArrowDownRight, Trophy } from "lucide-react";
+import { Heart, Save, Coins, CreditCard, AlertTriangle, Check, Loader2, Users, Stamp, Gift, Wallet, TrendingUp, Ban, Settings2, X, ChevronRight, ChevronLeft, Clock, ArrowUpRight, ArrowDownRight, Trophy, Filter } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -53,23 +53,42 @@ export default function Fidelizacao() {
     { enabled: !!establishmentId && cashbackConfig?.rewardProgramType === 'cashback' }
   );
 
-  // History queries
-  const { data: loyaltyClients, isLoading: loyaltyClientsLoading } = trpc.loyalty.getClients.useQuery(
-    { establishmentId, limit: 20 },
+  // Pagination & filter state
+  const PAGE_SIZE = 10;
+  const [loyaltyClientsPage, setLoyaltyClientsPage] = useState(0);
+  const [loyaltyEventsPage, setLoyaltyEventsPage] = useState(0);
+  const [loyaltyEventsPeriod, setLoyaltyEventsPeriod] = useState<'today' | 'week' | 'month' | undefined>(undefined);
+  const [cashbackClientsPage, setCashbackClientsPage] = useState(0);
+  const [cashbackEventsPage, setCashbackEventsPage] = useState(0);
+  const [cashbackEventsPeriod, setCashbackEventsPeriod] = useState<'today' | 'week' | 'month' | undefined>(undefined);
+
+  // History queries with pagination
+  const { data: loyaltyClientsData, isLoading: loyaltyClientsLoading } = trpc.loyalty.getClients.useQuery(
+    { establishmentId, limit: PAGE_SIZE, offset: loyaltyClientsPage * PAGE_SIZE },
     { enabled: !!establishmentId && (cashbackConfig?.rewardProgramType === 'loyalty' || cashbackConfig?.loyaltyEnabled) }
   );
-  const { data: loyaltyEvents, isLoading: loyaltyEventsLoading } = trpc.loyalty.getEventHistory.useQuery(
-    { establishmentId, limit: 20 },
+  const { data: loyaltyEventsData, isLoading: loyaltyEventsLoading } = trpc.loyalty.getEventHistory.useQuery(
+    { establishmentId, limit: PAGE_SIZE, offset: loyaltyEventsPage * PAGE_SIZE, period: loyaltyEventsPeriod },
     { enabled: !!establishmentId && (cashbackConfig?.rewardProgramType === 'loyalty' || cashbackConfig?.loyaltyEnabled) }
   );
-  const { data: cashbackClients, isLoading: cashbackClientsLoading } = trpc.cashback.getClients.useQuery(
-    { establishmentId, limit: 20 },
+  const { data: cashbackClientsData, isLoading: cashbackClientsLoading } = trpc.cashback.getClients.useQuery(
+    { establishmentId, limit: PAGE_SIZE, offset: cashbackClientsPage * PAGE_SIZE },
     { enabled: !!establishmentId && cashbackConfig?.rewardProgramType === 'cashback' }
   );
-  const { data: cashbackEvents, isLoading: cashbackEventsLoading } = trpc.cashback.getEventHistory.useQuery(
-    { establishmentId, limit: 20 },
+  const { data: cashbackEventsData, isLoading: cashbackEventsLoading } = trpc.cashback.getEventHistory.useQuery(
+    { establishmentId, limit: PAGE_SIZE, offset: cashbackEventsPage * PAGE_SIZE, period: cashbackEventsPeriod },
     { enabled: !!establishmentId && cashbackConfig?.rewardProgramType === 'cashback' }
   );
+
+  // Extract items from paginated responses
+  const loyaltyClients = loyaltyClientsData?.items ?? [];
+  const loyaltyEvents = loyaltyEventsData?.items ?? [];
+  const cashbackClients = cashbackClientsData?.items ?? [];
+  const cashbackEvents = cashbackEventsData?.items ?? [];
+
+  // Reset pages when period changes
+  useEffect(() => { setLoyaltyEventsPage(0); }, [loyaltyEventsPeriod]);
+  useEffect(() => { setCashbackEventsPage(0); }, [cashbackEventsPeriod]);
 
   // Sheet state
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -234,12 +253,78 @@ export default function Fidelizacao() {
 
   // Separate near-reward clients (>= 70% stamps)
   const nearRewardClients = useMemo(() => {
-    if (!loyaltyClients || activeProgram !== 'loyalty') return [];
+    if (!loyaltyClients || loyaltyClients.length === 0 || activeProgram !== 'loyalty') return [];
     return loyaltyClients.filter((c: any) => {
       const progress = c.stamps / stampsRequiredConfig;
       return progress >= 0.7 && c.stamps < stampsRequiredConfig;
     });
   }, [loyaltyClients, activeProgram, stampsRequiredConfig]);
+
+  // Pagination helper component
+  const PaginationControls = ({ page, setPage, total, pageSize, label }: { page: number; setPage: (p: number) => void; total: number; pageSize: number; label: string }) => {
+    const totalPages = Math.ceil(total / pageSize);
+    if (totalPages <= 1) return null;
+    return (
+      <div className="flex items-center justify-between pt-3 border-t border-border/30 mt-3">
+        <span className="text-xs text-muted-foreground">
+          {page * pageSize + 1}-{Math.min((page + 1) * pageSize, total)} de {total} {label}
+        </span>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setPage(Math.max(0, page - 1))}
+            disabled={page === 0}
+            className={cn(
+              "p-1.5 rounded-lg transition-colors",
+              page === 0 ? "text-muted-foreground/30 cursor-not-allowed" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <span className="text-xs font-medium text-muted-foreground px-2">
+            {page + 1} / {totalPages}
+          </span>
+          <button
+            onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
+            disabled={page >= totalPages - 1}
+            className={cn(
+              "p-1.5 rounded-lg transition-colors",
+              page >= totalPages - 1 ? "text-muted-foreground/30 cursor-not-allowed" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Period filter component
+  const PeriodFilter = ({ value, onChange }: { value: 'today' | 'week' | 'month' | undefined; onChange: (v: 'today' | 'week' | 'month' | undefined) => void }) => {
+    const options: { label: string; value: 'today' | 'week' | 'month' | undefined }[] = [
+      { label: 'Todos', value: undefined },
+      { label: 'Hoje', value: 'today' },
+      { label: 'Semana', value: 'week' },
+      { label: 'M\u00eas', value: 'month' },
+    ];
+    return (
+      <div className="flex items-center gap-1 ml-auto">
+        {options.map((opt) => (
+          <button
+            key={opt.label}
+            onClick={() => onChange(opt.value)}
+            className={cn(
+              "px-2.5 py-1 rounded-lg text-xs font-medium transition-all",
+              value === opt.value
+                ? "bg-violet-100 dark:bg-violet-500/15 text-violet-700 dark:text-violet-300"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <AdminLayout>
@@ -587,12 +672,13 @@ export default function Fidelizacao() {
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                 </div>
-              ) : !loyaltyClients || loyaltyClients.length === 0 ? (
+              ) : loyaltyClients.length === 0 ? (
                 <div className="text-center py-8">
                   <Users className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">Nenhum cliente com cartão fidelidade ainda.</p>
                 </div>
               ) : (
+                <>
                 <div className="space-y-2">
                   {loyaltyClients.map((client: any) => {
                     const isComplete = client.stamps >= stampsRequiredConfig;
@@ -644,6 +730,8 @@ export default function Fidelizacao() {
                     );
                   })}
                 </div>
+                <PaginationControls page={loyaltyClientsPage} setPage={setLoyaltyClientsPage} total={loyaltyClientsData?.total ?? 0} pageSize={PAGE_SIZE} label="clientes" />
+                </>
               )}
             </div>
 
@@ -657,18 +745,20 @@ export default function Fidelizacao() {
                   <h3 className="text-base font-semibold text-foreground">Histórico de Fidelização</h3>
                   <p className="text-xs text-muted-foreground">Atividade recente dos clientes no programa</p>
                 </div>
+                <PeriodFilter value={loyaltyEventsPeriod} onChange={setLoyaltyEventsPeriod} />
               </div>
 
               {loyaltyEventsLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                 </div>
-              ) : !loyaltyEvents || loyaltyEvents.length === 0 ? (
+              ) : loyaltyEvents.length === 0 ? (
                 <div className="text-center py-8">
                   <Clock className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">Nenhuma atividade registrada ainda.</p>
+                  <p className="text-sm text-muted-foreground">{loyaltyEventsPeriod ? 'Nenhuma atividade neste período.' : 'Nenhuma atividade registrada ainda.'}</p>
                 </div>
               ) : (
+                <>
                 <div className="space-y-1">
                   {loyaltyEvents.map((event: any) => {
                     const isCompletion = event.currentStamps >= stampsRequiredConfig;
@@ -703,6 +793,8 @@ export default function Fidelizacao() {
                     );
                   })}
                 </div>
+                <PaginationControls page={loyaltyEventsPage} setPage={setLoyaltyEventsPage} total={loyaltyEventsData?.total ?? 0} pageSize={PAGE_SIZE} label="eventos" />
+                </>
               )}
             </div>
           </div>
@@ -727,12 +819,13 @@ export default function Fidelizacao() {
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                 </div>
-              ) : !cashbackClients || cashbackClients.length === 0 ? (
+              ) : cashbackClients.length === 0 ? (
                 <div className="text-center py-8">
                   <Users className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
                   <p className="text-sm text-muted-foreground">Nenhum cliente com cashback ainda.</p>
                 </div>
               ) : (
+                <>
                 <div className="space-y-2">
                   {cashbackClients.map((client: any) => (
                     <div key={client.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors border border-transparent hover:border-border/30">
@@ -762,6 +855,8 @@ export default function Fidelizacao() {
                     </div>
                   ))}
                 </div>
+                <PaginationControls page={cashbackClientsPage} setPage={setCashbackClientsPage} total={cashbackClientsData?.total ?? 0} pageSize={PAGE_SIZE} label="clientes" />
+                </>
               )}
             </div>
 
@@ -775,18 +870,20 @@ export default function Fidelizacao() {
                   <h3 className="text-base font-semibold text-foreground">Histórico de Cashback</h3>
                   <p className="text-xs text-muted-foreground">Transações recentes de cashback dos clientes</p>
                 </div>
+                <PeriodFilter value={cashbackEventsPeriod} onChange={setCashbackEventsPeriod} />
               </div>
 
               {cashbackEventsLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                 </div>
-              ) : !cashbackEvents || cashbackEvents.length === 0 ? (
+              ) : cashbackEvents.length === 0 ? (
                 <div className="text-center py-8">
                   <Clock className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">Nenhuma transação de cashback registrada ainda.</p>
+                  <p className="text-sm text-muted-foreground">{cashbackEventsPeriod ? 'Nenhuma transação neste período.' : 'Nenhuma transação de cashback registrada ainda.'}</p>
                 </div>
               ) : (
+                <>
                 <div className="space-y-1">
                   {cashbackEvents.map((event: any) => {
                     const isCredit = event.type === 'credit';
@@ -821,6 +918,8 @@ export default function Fidelizacao() {
                     );
                   })}
                 </div>
+                <PaginationControls page={cashbackEventsPage} setPage={setCashbackEventsPage} total={cashbackEventsData?.total ?? 0} pageSize={PAGE_SIZE} label="transações" />
+                </>
               )}
             </div>
           </div>

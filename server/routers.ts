@@ -2810,16 +2810,16 @@ export const appRouter = router({
 
     // Lista de clientes com cartão fidelidade
     getClients: protectedProcedure
-      .input(z.object({ establishmentId: z.number(), limit: z.number().optional() }))
+      .input(z.object({ establishmentId: z.number(), limit: z.number().optional(), offset: z.number().optional() }))
       .query(async ({ input }) => {
-        return db.getLoyaltyCardClients(input.establishmentId, input.limit ?? 50);
+        return db.getLoyaltyCardClients(input.establishmentId, input.limit ?? 10, input.offset ?? 0);
       }),
 
     // Histórico de eventos (carimbos ganhos, cartões completados)
     getEventHistory: protectedProcedure
-      .input(z.object({ establishmentId: z.number(), limit: z.number().optional() }))
+      .input(z.object({ establishmentId: z.number(), limit: z.number().optional(), offset: z.number().optional(), period: z.enum(['today', 'week', 'month']).optional() }))
       .query(async ({ input }) => {
-        return db.getLoyaltyEventHistory(input.establishmentId, input.limit ?? 30);
+        return db.getLoyaltyEventHistory(input.establishmentId, input.limit ?? 10, input.offset ?? 0, input.period);
       }),
   }),
 
@@ -6285,16 +6285,16 @@ export const appRouter = router({
 
     // Lista de clientes com cashback
     getClients: protectedProcedure
-      .input(z.object({ establishmentId: z.number(), limit: z.number().optional() }))
+      .input(z.object({ establishmentId: z.number(), limit: z.number().optional(), offset: z.number().optional() }))
       .query(async ({ input }) => {
-        return db.getCashbackClients(input.establishmentId, input.limit ?? 50);
+        return db.getCashbackClients(input.establishmentId, input.limit ?? 10, input.offset ?? 0);
       }),
 
     // Histórico de eventos de cashback (créditos e débitos)
     getEventHistory: protectedProcedure
-      .input(z.object({ establishmentId: z.number(), limit: z.number().optional() }))
+      .input(z.object({ establishmentId: z.number(), limit: z.number().optional(), offset: z.number().optional(), period: z.enum(['today', 'week', 'month']).optional() }))
       .query(async ({ input }) => {
-        return db.getCashbackEventHistory(input.establishmentId, input.limit ?? 30);
+        return db.getCashbackEventHistory(input.establishmentId, input.limit ?? 10, input.offset ?? 0, input.period);
       }),
   }),
 

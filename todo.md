@@ -8396,3 +8396,14 @@
 - [x] Cashback: lista de clientes com saldo, cashback ganho e utilizado
 - [x] Cashback: histórico de eventos (ganhou cashback, usou cashback)
 - [x] Destaque para clientes próximos de completar o cartão
+
+## Paginação e Filtro por Período na Fidelização
+- [x] Atualizar db helpers com suporte a paginação (offset/limit) para clientes e eventos
+- [x] Atualizar db helpers com filtro de período (hoje, esta semana, este mês) para eventos
+- [x] Atualizar procedures tRPC com parâmetros de paginação e filtro
+- [x] Adicionar paginação na lista de Clientes Fidelizados (Cartão Fidelidade)
+- [x] Adicionar paginação na lista de Clientes com Cashback
+- [x] Adicionar paginação no Histórico de Fidelização (eventos loyalty)
+- [x] Adicionar paginação no Histórico de Cashback (eventos cashback)
+- [x] Adicionar filtro por período (hoje, esta semana, este mês) no Histórico de Fidelização
+- [x] Adicionar filtro por período no Histórico de Cashback

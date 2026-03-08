@@ -12191,9 +12191,15 @@ export async function getLoyaltyEvolution(establishmentId: number, programType: 
  * Lista clientes com cartão fidelidade de um estabelecimento
  * Retorna nome, carimbos atuais, total de carimbos, cupons ganhos, data do último carimbo
  */
-export async function getLoyaltyCardClients(establishmentId: number, limit = 50) {
+export async function getLoyaltyCardClients(establishmentId: number, limit = 10, offset = 0) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+
+  // Count total
+  const countResult = await db.select({ count: sql<number>`COUNT(*)` })
+    .from(loyaltyCards)
+    .where(eq(loyaltyCards.establishmentId, establishmentId));
+  const total = Number(countResult[0]?.count ?? 0);
 
   // Buscar cartões com último carimbo via subquery
   const cards = await db.select({
@@ -12208,7 +12214,8 @@ export async function getLoyaltyCardClients(establishmentId: number, limit = 50)
   }).from(loyaltyCards)
     .where(eq(loyaltyCards.establishmentId, establishmentId))
     .orderBy(desc(loyaltyCards.updatedAt))
-    .limit(limit);
+    .limit(limit)
+    .offset(offset);
 
   // Para cada cartão, buscar a data do último carimbo
   const result = await Promise.all(cards.map(async (card) => {
@@ -12225,15 +12232,37 @@ export async function getLoyaltyCardClients(establishmentId: number, limit = 50)
     };
   }));
 
-  return result;
+  return { items: result, total, hasMore: offset + limit < total };
 }
 
 /**
  * Histórico de eventos de fidelidade (carimbos ganhos e cartões completados)
  */
-export async function getLoyaltyEventHistory(establishmentId: number, limit = 30) {
+export async function getLoyaltyEventHistory(establishmentId: number, limit = 10, offset = 0, period?: 'today' | 'week' | 'month') {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+
+  // Build period filter
+  let periodFilter = sql`1=1`;
+  if (period === 'today') {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    periodFilter = sql`ls.createdAt >= ${today}`;
+  } else if (period === 'week') {
+    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7); weekAgo.setHours(0, 0, 0, 0);
+    periodFilter = sql`ls.createdAt >= ${weekAgo}`;
+  } else if (period === 'month') {
+    const monthAgo = new Date(); monthAgo.setDate(monthAgo.getDate() - 30); monthAgo.setHours(0, 0, 0, 0);
+    periodFilter = sql`ls.createdAt >= ${monthAgo}`;
+  }
+
+  // Count total
+  const countRes: any[] = await db.execute(
+    sql`SELECT COUNT(*) as cnt FROM ${loyaltyStamps} ls
+    INNER JOIN ${loyaltyCards} lc ON ls.loyaltyCardId = lc.id
+    WHERE lc.establishmentId = ${establishmentId} AND ${periodFilter}`
+  );
+  const countRows = Array.isArray(countRes) ? (Array.isArray(countRes[0]) ? countRes[0] : countRes) : [];
+  const total = Number(countRows[0]?.cnt ?? 0);
 
   // Buscar últimos carimbos com nome do cliente
   const stamps: any[] = await db.execute(
@@ -12242,13 +12271,13 @@ export async function getLoyaltyEventHistory(establishmentId: number, limit = 30
       lc.customerName, lc.customerPhone, lc.stamps, lc.totalStampsEarned, lc.couponsEarned
     FROM ${loyaltyStamps} ls
     INNER JOIN ${loyaltyCards} lc ON ls.loyaltyCardId = lc.id
-    WHERE lc.establishmentId = ${establishmentId}
+    WHERE lc.establishmentId = ${establishmentId} AND ${periodFilter}
     ORDER BY ls.createdAt DESC
-    LIMIT ${limit}`
+    LIMIT ${limit} OFFSET ${offset}`
   );
 
   const rows = Array.isArray(stamps) ? (Array.isArray(stamps[0]) ? stamps[0] : stamps) : [];
-  return rows.map((row: any) => ({
+  const items = rows.map((row: any) => ({
     id: Number(row.id),
     customerName: row.customerName || row.customerPhone || 'Cliente',
     customerPhone: row.customerPhone || '',
@@ -12258,14 +12287,21 @@ export async function getLoyaltyEventHistory(establishmentId: number, limit = 30
     couponsEarned: Number(row.couponsEarned),
     createdAt: row.createdAt instanceof Date ? row.createdAt.toISOString() : String(row.createdAt),
   }));
+  return { items, total, hasMore: offset + limit < total };
 }
 
 /**
  * Lista clientes com cashback de um estabelecimento
  */
-export async function getCashbackClients(establishmentId: number, limit = 50) {
+export async function getCashbackClients(establishmentId: number, limit = 10, offset = 0) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+
+  // Count total
+  const countResult = await db.select({ count: sql<number>`COUNT(*)` })
+    .from(cashbackBalances)
+    .where(eq(cashbackBalances.establishmentId, establishmentId));
+  const total = Number(countResult[0]?.count ?? 0);
 
   const balances = await db.select({
     id: cashbackBalances.id,
@@ -12277,7 +12313,8 @@ export async function getCashbackClients(establishmentId: number, limit = 50) {
   }).from(cashbackBalances)
     .where(eq(cashbackBalances.establishmentId, establishmentId))
     .orderBy(desc(cashbackBalances.updatedAt))
-    .limit(limit);
+    .limit(limit)
+    .offset(offset);
 
   // Buscar nomes dos clientes via pedidos mais recentes
   const result = await Promise.all(balances.map(async (bal) => {
@@ -12317,15 +12354,34 @@ export async function getCashbackClients(establishmentId: number, limit = 50) {
     };
   }));
 
-  return result;
+  return { items: result, total, hasMore: offset + limit < total };
 }
 
 /**
  * Histórico de eventos de cashback (créditos e débitos)
  */
-export async function getCashbackEventHistory(establishmentId: number, limit = 30) {
+export async function getCashbackEventHistory(establishmentId: number, limit = 10, offset = 0, period?: 'today' | 'week' | 'month') {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+
+  // Build period filter conditions
+  const conditions: any[] = [eq(cashbackTransactions.establishmentId, establishmentId)];
+  if (period === 'today') {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    conditions.push(sql`${cashbackTransactions.createdAt} >= ${today}`);
+  } else if (period === 'week') {
+    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7); weekAgo.setHours(0, 0, 0, 0);
+    conditions.push(sql`${cashbackTransactions.createdAt} >= ${weekAgo}`);
+  } else if (period === 'month') {
+    const monthAgo = new Date(); monthAgo.setDate(monthAgo.getDate() - 30); monthAgo.setHours(0, 0, 0, 0);
+    conditions.push(sql`${cashbackTransactions.createdAt} >= ${monthAgo}`);
+  }
+
+  // Count total
+  const countResult = await db.select({ count: sql<number>`COUNT(*)` })
+    .from(cashbackTransactions)
+    .where(and(...conditions));
+  const total = Number(countResult[0]?.count ?? 0);
 
   const transactions = await db.select({
     id: cashbackTransactions.id,
@@ -12337,12 +12393,13 @@ export async function getCashbackEventHistory(establishmentId: number, limit = 3
     balanceAfter: cashbackTransactions.balanceAfter,
     createdAt: cashbackTransactions.createdAt,
   }).from(cashbackTransactions)
-    .where(eq(cashbackTransactions.establishmentId, establishmentId))
+    .where(and(...conditions))
     .orderBy(desc(cashbackTransactions.createdAt))
-    .limit(limit);
+    .limit(limit)
+    .offset(offset);
 
   // Buscar nomes dos clientes
-  const result = await Promise.all(transactions.map(async (tx) => {
+  const items = await Promise.all(transactions.map(async (tx) => {
     const normalizedPhone = tx.customerPhone.replace(/\D/g, '');
     const order = await db.select({ customerName: orders.customerName })
       .from(orders)
@@ -12362,5 +12419,5 @@ export async function getCashbackEventHistory(establishmentId: number, limit = 3
     };
   }));
 
-  return result;
+  return { items, total, hasMore: offset + limit < total };
 }
