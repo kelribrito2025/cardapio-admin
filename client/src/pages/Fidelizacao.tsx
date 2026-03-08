@@ -371,32 +371,23 @@ export default function Fidelizacao() {
           description="Configure estratégias para incentivar seus clientes a voltar e comprar novamente."
           icon={<Heart className="h-6 w-6 text-rose-600" />}
           actions={
-            <div className="flex items-center gap-3">
-              {/* Program status badge */}
-              {programInfo ? (
-                <div className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium",
-                  programInfo.badgeBg, programInfo.badgeBorder, programInfo.badgeText
-                )}>
-                  <span className={cn("w-2 h-2 rounded-full animate-pulse", programInfo.dotColor)} />
-                  {programInfo.label}
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/50 bg-muted/30 text-sm font-medium text-muted-foreground">
-                  <span className="w-2 h-2 rounded-full bg-gray-400" />
-                  Nenhum programa ativo
-                </div>
+            <button
+              onClick={() => setSheetOpen(true)}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all hover:shadow-md cursor-pointer",
+                programInfo
+                  ? cn(programInfo.badgeBg, programInfo.badgeBorder, programInfo.badgeText, "hover:opacity-90")
+                  : "border-border/50 bg-muted/30 text-muted-foreground hover:bg-muted/50"
               )}
-              {/* Configure button */}
-              <Button
-                onClick={() => setSheetOpen(true)}
-                variant="outline"
-                className="rounded-xl gap-2"
-              >
-                <Settings2 className="h-4 w-4" />
-                {activeProgram === "none" ? "Ativar programa" : "Configurar"}
-              </Button>
-            </div>
+            >
+              {programInfo ? (
+                <span className={cn("w-2 h-2 rounded-full animate-pulse", programInfo.dotColor)} />
+              ) : (
+                <span className="w-2 h-2 rounded-full bg-gray-400" />
+              )}
+              {programInfo ? programInfo.label : "Nenhum programa ativo"}
+              <Settings2 className="h-3.5 w-3.5 ml-1 opacity-60" />
+            </button>
           }
         />
 

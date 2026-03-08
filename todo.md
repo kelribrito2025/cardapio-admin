@@ -8439,3 +8439,6 @@
 ## Filtro por período como Select/dropdown
 - [x] Substituir botões de filtro (Todos, Hoje, Semana, Mês) por um Select/dropdown no card Histórico de Fidelização
 - [x] Substituir botões de filtro (Todos, Hoje, Semana, Mês) por um Select/dropdown no card Histórico de Cashback
+
+## Mesclar badge + botão Configurar
+- [x] Mesclar badge de status do programa (Cartão Fidelidade / Cashback) e botão Configurar em um único botão
