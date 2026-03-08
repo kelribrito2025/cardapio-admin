@@ -8435,3 +8435,7 @@
 - [x] Atualizar procedures tRPC de histórico com parâmetro search
 - [x] Adicionar campo de busca no card Histórico de Fidelização (loyalty)
 - [x] Adicionar campo de busca no card Histórico de Cashback
+
+## Filtro por período como Select/dropdown
+- [x] Substituir botões de filtro (Todos, Hoje, Semana, Mês) por um Select/dropdown no card Histórico de Fidelização
+- [x] Substituir botões de filtro (Todos, Hoje, Semana, Mês) por um Select/dropdown no card Histórico de Cashback

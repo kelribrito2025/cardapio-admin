@@ -341,28 +341,23 @@ export default function Fidelizacao() {
 
   // Period filter component
   const PeriodFilter = ({ value, onChange }: { value: 'today' | 'week' | 'month' | undefined; onChange: (v: 'today' | 'week' | 'month' | undefined) => void }) => {
-    const options: { label: string; value: 'today' | 'week' | 'month' | undefined }[] = [
-      { label: 'Todos', value: undefined },
-      { label: 'Hoje', value: 'today' },
-      { label: 'Semana', value: 'week' },
-      { label: 'M\u00eas', value: 'month' },
-    ];
     return (
-      <div className="flex items-center gap-1 ml-auto">
-        {options.map((opt) => (
-          <button
-            key={opt.label}
-            onClick={() => onChange(opt.value)}
-            className={cn(
-              "px-2.5 py-1 rounded-lg text-xs font-medium transition-all",
-              value === opt.value
-                ? "bg-violet-100 dark:bg-violet-500/15 text-violet-700 dark:text-violet-300"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-            )}
-          >
-            {opt.label}
-          </button>
-        ))}
+      <div className="ml-auto">
+        <Select
+          value={value ?? 'all'}
+          onValueChange={(v) => onChange(v === 'all' ? undefined : v as 'today' | 'week' | 'month')}
+        >
+          <SelectTrigger className="h-8 w-[120px] text-xs border-border/50">
+            <Filter className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="today">Hoje</SelectItem>
+            <SelectItem value="week">Semana</SelectItem>
+            <SelectItem value="month">Mês</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     );
   };
