@@ -12035,3 +12035,151 @@ export async function getStoryRevenuePercentToday(establishmentId: number): Prom
     return { storyRevenue: 0, totalRevenue: 0, percent: 0 };
   }
 }
+
+
+// ============ LOYALTY & CASHBACK METRICS ============
+
+/**
+ * Métricas do Cartão Fidelidade para o painel de fidelização
+ */
+export async function getLoyaltyMetrics(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return { activeCards: 0, totalStamps: 0, rewardsRedeemed: 0, loyalCustomers: 0 };
+
+  try {
+    // Clientes com cartão ativo (stamps > 0)
+    const activeCardsResult = await db.select({
+      count: sql<number>`COUNT(*)`,
+    }).from(loyaltyCards).where(and(
+      eq(loyaltyCards.establishmentId, establishmentId),
+      gt(loyaltyCards.stamps, 0)
+    ));
+
+    // Total de carimbos distribuídos
+    const totalStampsResult = await db.select({
+      total: sql<number>`COALESCE(SUM(${loyaltyCards.totalStampsEarned}), 0)`,
+    }).from(loyaltyCards).where(eq(loyaltyCards.establishmentId, establishmentId));
+
+    // Recompensas resgatadas (total de cupons ganhos)
+    const rewardsResult = await db.select({
+      total: sql<number>`COALESCE(SUM(${loyaltyCards.couponsEarned}), 0)`,
+    }).from(loyaltyCards).where(eq(loyaltyCards.establishmentId, establishmentId));
+
+    // Clientes fidelizados (que já completaram pelo menos um cartão)
+    const loyalResult = await db.select({
+      count: sql<number>`COUNT(*)`,
+    }).from(loyaltyCards).where(and(
+      eq(loyaltyCards.establishmentId, establishmentId),
+      gt(loyaltyCards.couponsEarned, 0)
+    ));
+
+    return {
+      activeCards: Number(activeCardsResult[0]?.count ?? 0),
+      totalStamps: Number(totalStampsResult[0]?.total ?? 0),
+      rewardsRedeemed: Number(rewardsResult[0]?.total ?? 0),
+      loyalCustomers: Number(loyalResult[0]?.count ?? 0),
+    };
+  } catch (err) {
+    console.error("[LoyaltyMetrics] Error:", err);
+    return { activeCards: 0, totalStamps: 0, rewardsRedeemed: 0, loyalCustomers: 0 };
+  }
+}
+
+/**
+ * Métricas do Cashback para o painel de fidelização
+ */
+export async function getCashbackMetrics(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return { customersWithBalance: 0, totalDistributed: '0.00', totalUsed: '0.00', totalBalance: '0.00' };
+
+  try {
+    // Clientes com saldo de cashback > 0
+    const customersResult = await db.select({
+      count: sql<number>`COUNT(*)`,
+    }).from(cashbackBalances).where(and(
+      eq(cashbackBalances.establishmentId, establishmentId),
+      gt(cashbackBalances.balance, '0')
+    ));
+
+    // Total distribuído (totalEarned de todos os clientes)
+    const distributedResult = await db.select({
+      total: sql<string>`COALESCE(SUM(${cashbackBalances.totalEarned}), 0)`,
+    }).from(cashbackBalances).where(eq(cashbackBalances.establishmentId, establishmentId));
+
+    // Saldo total em aberto
+    const balanceResult = await db.select({
+      total: sql<string>`COALESCE(SUM(${cashbackBalances.balance}), 0)`,
+    }).from(cashbackBalances).where(eq(cashbackBalances.establishmentId, establishmentId));
+
+    const totalDistributed = Number(distributedResult[0]?.total ?? 0);
+    const totalBalance = Number(balanceResult[0]?.total ?? 0);
+    const totalUsed = totalDistributed - totalBalance;
+
+    return {
+      customersWithBalance: Number(customersResult[0]?.count ?? 0),
+      totalDistributed: totalDistributed.toFixed(2),
+      totalUsed: totalUsed.toFixed(2),
+      totalBalance: totalBalance.toFixed(2),
+    };
+  } catch (err) {
+    console.error("[CashbackMetrics] Error:", err);
+    return { customersWithBalance: 0, totalDistributed: '0.00', totalUsed: '0.00', totalBalance: '0.00' };
+  }
+}
+
+/**
+ * Evolução da fidelização nos últimos 30 dias
+ * Para loyalty: novos cartões criados por dia
+ * Para cashback: novas transações de crédito por dia
+ */
+export async function getLoyaltyEvolution(establishmentId: number, programType: 'loyalty' | 'cashback') {
+  const db = await getDb();
+  if (!db) return [];
+
+  const tz = await getEstablishmentTimezone(establishmentId);
+  const localNow = getLocalDate(tz);
+  const thirtyDaysAgo = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - 30);
+  const startDateStr = fmtLocalDateTime(thirtyDaysAgo);
+
+  // Preencher todos os 30 dias
+  const chartData: { date: string; count: number }[] = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(localNow.getFullYear(), localNow.getMonth(), localNow.getDate() - i);
+    chartData.push({ date: fmtLocalDate(d), count: 0 });
+  }
+
+  try {
+    let rawResult: any[];
+
+    if (programType === 'loyalty') {
+      // Novos cartões de fidelidade criados por dia
+      rawResult = await db.execute(
+        sql`SELECT DATE(CONVERT_TZ(${loyaltyCards.createdAt}, '+00:00', ${tz})) as \`date\`, COUNT(*) as cnt
+            FROM ${loyaltyCards}
+            WHERE ${loyaltyCards.establishmentId} = ${establishmentId}
+              AND CONVERT_TZ(${loyaltyCards.createdAt}, '+00:00', ${tz}) >= ${startDateStr}
+            GROUP BY \`date\` ORDER BY \`date\``
+      ).then((rows: any) => Array.isArray(rows) && Array.isArray(rows[0]) ? rows[0] : rows);
+    } else {
+      // Transações de crédito de cashback por dia
+      rawResult = await db.execute(
+        sql`SELECT DATE(CONVERT_TZ(${cashbackTransactions.createdAt}, '+00:00', ${tz})) as \`date\`, COUNT(*) as cnt
+            FROM ${cashbackTransactions}
+            WHERE ${cashbackTransactions.establishmentId} = ${establishmentId}
+              AND ${cashbackTransactions.type} = 'credit'
+              AND CONVERT_TZ(${cashbackTransactions.createdAt}, '+00:00', ${tz}) >= ${startDateStr}
+            GROUP BY \`date\` ORDER BY \`date\``
+      ).then((rows: any) => Array.isArray(rows) && Array.isArray(rows[0]) ? rows[0] : rows);
+    }
+
+    const resultMap = new Map(rawResult.map((r: any) => [String(r.date), Number(r.cnt)]));
+    for (const day of chartData) {
+      const val = resultMap.get(day.date);
+      if (val) day.count = val;
+    }
+  } catch (err) {
+    console.error("[LoyaltyEvolution] Error:", err);
+  }
+
+  return chartData;
+}

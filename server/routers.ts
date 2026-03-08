@@ -2793,6 +2793,20 @@ export const appRouter = router({
         
         return { success: true, message: 'Carimbos resetados com sucesso' };
       }),
+
+    // Métricas do programa de fidelidade (admin)
+    getMetrics: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getLoyaltyMetrics(input.establishmentId);
+      }),
+
+    // Evolução da fidelização nos últimos 30 dias
+    getEvolution: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getLoyaltyEvolution(input.establishmentId, 'loyalty');
+      }),
   }),
 
   // ============ UPLOAD ============
@@ -6239,6 +6253,20 @@ export const appRouter = router({
           cashbackAmount: result.cashbackAmount.toFixed(2),
           eligibleTotal: result.eligibleTotal.toFixed(2),
         };
+      }),
+
+    // Métricas do programa de cashback (admin)
+    getMetrics: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getCashbackMetrics(input.establishmentId);
+      }),
+
+    // Evolução do cashback nos últimos 30 dias
+    getEvolution: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getLoyaltyEvolution(input.establishmentId, 'cashback');
       }),
   }),
 

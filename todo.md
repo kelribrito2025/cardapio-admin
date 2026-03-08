@@ -8366,3 +8366,12 @@
 - [x] Botão "Salvar Configurações" com mesmo comportamento
 - [x] Remover seção Programa de Recompensas da página Configurações
 - [x] Padronizar visual da página Fidelização com o mesmo padrão de header e cards da Dashboard
+
+## Métricas de Desempenho na Página Fidelização
+- [x] Criar procedure tRPC para métricas do Cartão Fidelidade (clientes com cartão, carimbos distribuídos, recompensas resgatadas, clientes fidelizados)
+- [x] Criar procedure tRPC para métricas do Cashback (clientes com saldo, cashback distribuído, utilizado, saldo total)
+- [x] Criar procedure tRPC para evolução da fidelização (últimos 30 dias)
+- [x] Adicionar seção "Desempenho da Fidelização" com StatCards dinâmicos na página
+- [x] Mostrar métricas diferentes conforme programa ativo (Cartão Fidelidade vs Cashback)
+- [x] Mostrar mensagem quando nenhum programa estiver ativo
+- [x] Adicionar gráfico de evolução da fidelização (últimos 30 dias)

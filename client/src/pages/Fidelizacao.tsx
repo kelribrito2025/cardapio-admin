@@ -1,14 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { AdminLayout } from "@/components/AdminLayout";
-import { PageHeader, SectionCard } from "@/components/shared";
+import { PageHeader, SectionCard, StatCard } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Heart, Save, Coins, CreditCard, AlertTriangle, Check, Loader2 } from "lucide-react";
+import { Heart, Save, Coins, CreditCard, AlertTriangle, Check, Loader2, Users, Stamp, Gift, Wallet, TrendingUp, Ban } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 export default function Fidelizacao() {
   // Get establishment
@@ -23,6 +32,24 @@ export default function Fidelizacao() {
   const { data: categoriesData } = trpc.category.list.useQuery(
     { establishmentId },
     { enabled: !!establishmentId }
+  );
+
+  // Metrics queries
+  const { data: loyaltyMetrics, isLoading: loyaltyMetricsLoading } = trpc.loyalty.getMetrics.useQuery(
+    { establishmentId },
+    { enabled: !!establishmentId && (cashbackConfig?.rewardProgramType === 'loyalty' || cashbackConfig?.loyaltyEnabled) }
+  );
+  const { data: cashbackMetrics, isLoading: cashbackMetricsLoading } = trpc.cashback.getMetrics.useQuery(
+    { establishmentId },
+    { enabled: !!establishmentId && cashbackConfig?.rewardProgramType === 'cashback' }
+  );
+  const { data: loyaltyEvolution } = trpc.loyalty.getEvolution.useQuery(
+    { establishmentId },
+    { enabled: !!establishmentId && (cashbackConfig?.rewardProgramType === 'loyalty' || cashbackConfig?.loyaltyEnabled) }
+  );
+  const { data: cashbackEvolution } = trpc.cashback.getEvolution.useQuery(
+    { establishmentId },
+    { enabled: !!establishmentId && cashbackConfig?.rewardProgramType === 'cashback' }
   );
 
   // Reward program type state
@@ -112,15 +139,242 @@ export default function Fidelizacao() {
     );
   };
 
+  // Active program from server (not local state which may not be saved yet)
+  const activeProgram = cashbackConfig?.rewardProgramType || "none";
+
+  // Chart data
+  const chartData = useMemo(() => {
+    const evolution = activeProgram === 'loyalty' ? loyaltyEvolution : cashbackEvolution;
+    if (!evolution || evolution.length === 0) return [];
+    return evolution.map((d: { date: string; count: number }) => ({
+      date: d.date,
+      label: new Date(d.date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+      count: d.count,
+    }));
+  }, [activeProgram, loyaltyEvolution, cashbackEvolution]);
+
+  const chartTotal = useMemo(() => chartData.reduce((sum: number, d: { count: number }) => sum + d.count, 0), [chartData]);
+
+  const formatCurrency = (val: string) => {
+    return `R$ ${Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Page Header - padrão do projeto */}
+        {/* Page Header */}
         <PageHeader
           title="Fidelização de Clientes"
           description="Configure estratégias para incentivar seus clientes a voltar e comprar novamente."
           icon={<Heart className="h-6 w-6 text-rose-600" />}
         />
+
+        {/* Seção de Métricas - Desempenho da Fidelização */}
+        {activeProgram === "none" ? (
+          <SectionCard title="Desempenho da Fidelização" description="Métricas do seu programa de recompensas">
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="p-4 rounded-full bg-muted/50 mb-4">
+                <Ban className="h-10 w-10 text-muted-foreground/50" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                Nenhum programa de fidelização ativo no momento.
+              </h3>
+              <p className="text-sm text-muted-foreground max-w-md">
+                Ative um programa para começar a fidelizar seus clientes e acompanhar as métricas de desempenho.
+              </p>
+            </div>
+          </SectionCard>
+        ) : activeProgram === "loyalty" ? (
+          <>
+            {/* Métricas do Cartão Fidelidade */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground px-1">
+                Desempenho da Fidelização
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <StatCard
+                  title="Clientes com Cartão Ativo"
+                  value={loyaltyMetrics?.activeCards ?? 0}
+                  tooltip="Clientes que já começaram a acumular carimbos"
+                  icon={Users}
+                  loading={loyaltyMetricsLoading}
+                  variant="emerald"
+                />
+                <StatCard
+                  title="Carimbos Distribuídos"
+                  value={loyaltyMetrics?.totalStamps ?? 0}
+                  tooltip="Total de carimbos já concedidos aos clientes"
+                  icon={Stamp}
+                  loading={loyaltyMetricsLoading}
+                  variant="blue"
+                />
+                <StatCard
+                  title="Recompensas Resgatadas"
+                  value={loyaltyMetrics?.rewardsRedeemed ?? 0}
+                  tooltip="Vezes que clientes completaram o cartão e usaram a recompensa"
+                  icon={Gift}
+                  loading={loyaltyMetricsLoading}
+                  variant="amber"
+                />
+                <StatCard
+                  title="Clientes Fidelizados"
+                  value={loyaltyMetrics?.loyalCustomers ?? 0}
+                  tooltip="Clientes que já completaram pelo menos um cartão"
+                  icon={Heart}
+                  loading={loyaltyMetricsLoading}
+                  variant="red"
+                />
+              </div>
+            </div>
+
+            {/* Gráfico de Evolução - Loyalty */}
+            {chartData.length > 0 && (
+              <SectionCard
+                title="Evolução da Fidelização"
+                description={`Novos clientes com cartão fidelidade nos últimos 30 dias (total: ${chartTotal})`}
+              >
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData} margin={{ top: 5, right: 10, bottom: 0, left: -20 }}>
+                      <defs>
+                        <linearGradient id="loyaltyGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
+                      <XAxis
+                        dataKey="label"
+                        tick={{ fontSize: 11 }}
+                        className="text-muted-foreground"
+                        interval="preserveStartEnd"
+                        tickLine={false}
+                      />
+                      <YAxis
+                        tick={{ fontSize: 11 }}
+                        className="text-muted-foreground"
+                        allowDecimals={false}
+                        tickLine={false}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--card))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                        }}
+                        formatter={(value: number) => [`${value} clientes`, 'Novos cartões']}
+                        labelFormatter={(label: string) => `Data: ${label}`}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="count"
+                        stroke="#10b981"
+                        strokeWidth={2}
+                        fill="url(#loyaltyGradient)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </SectionCard>
+            )}
+          </>
+        ) : (
+          <>
+            {/* Métricas do Cashback */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground px-1">
+                Desempenho da Fidelização
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <StatCard
+                  title="Clientes com Cashback"
+                  value={cashbackMetrics?.customersWithBalance ?? 0}
+                  tooltip="Clientes que possuem saldo de cashback"
+                  icon={Users}
+                  loading={cashbackMetricsLoading}
+                  variant="blue"
+                />
+                <StatCard
+                  title="Cashback Distribuído"
+                  value={formatCurrency(cashbackMetrics?.totalDistributed ?? '0.00')}
+                  tooltip="Valor total já distribuído em cashback"
+                  icon={Coins}
+                  loading={cashbackMetricsLoading}
+                  variant="emerald"
+                />
+                <StatCard
+                  title="Cashback Utilizado"
+                  value={formatCurrency(cashbackMetrics?.totalUsed ?? '0.00')}
+                  tooltip="Valor total já usado pelos clientes em pedidos"
+                  icon={Wallet}
+                  loading={cashbackMetricsLoading}
+                  variant="amber"
+                />
+                <StatCard
+                  title="Saldo em Aberto"
+                  value={formatCurrency(cashbackMetrics?.totalBalance ?? '0.00')}
+                  tooltip="Saldo que ainda está disponível para os clientes utilizarem"
+                  icon={TrendingUp}
+                  loading={cashbackMetricsLoading}
+                  variant="red"
+                />
+              </div>
+            </div>
+
+            {/* Gráfico de Evolução - Cashback */}
+            {chartData.length > 0 && (
+              <SectionCard
+                title="Evolução do Cashback"
+                description={`Transações de cashback nos últimos 30 dias (total: ${chartTotal})`}
+              >
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData} margin={{ top: 5, right: 10, bottom: 0, left: -20 }}>
+                      <defs>
+                        <linearGradient id="cashbackGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
+                      <XAxis
+                        dataKey="label"
+                        tick={{ fontSize: 11 }}
+                        className="text-muted-foreground"
+                        interval="preserveStartEnd"
+                        tickLine={false}
+                      />
+                      <YAxis
+                        tick={{ fontSize: 11 }}
+                        className="text-muted-foreground"
+                        allowDecimals={false}
+                        tickLine={false}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--card))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                        }}
+                        formatter={(value: number) => [`${value} transações`, 'Cashback gerado']}
+                        labelFormatter={(label: string) => `Data: ${label}`}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="count"
+                        stroke="#3b82f6"
+                        strokeWidth={2}
+                        fill="url(#cashbackGradient)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </SectionCard>
+            )}
+          </>
+        )}
 
         {/* Programa de Recompensas - SectionCard padrão */}
         <SectionCard title="Programa de Recompensas" description="Escolha e configure o programa de recompensas do seu restaurante">
