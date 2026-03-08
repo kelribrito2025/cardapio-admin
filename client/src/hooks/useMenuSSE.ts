@@ -81,7 +81,7 @@ export function useMenuSSE({ slug, establishmentId, enabled = true }: UseMenuSSE
         case "establishment_updated":
         case "establishment_closed":
         case "establishment_opened":
-          // Futuro: invalidar query do estabelecimento
+          // Invalidar query do menu para refletir status aberto/fechado em tempo real
           if (slug) {
             utils.publicMenu.getBySlug.invalidate({ slug });
           }

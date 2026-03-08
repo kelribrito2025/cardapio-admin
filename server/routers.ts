@@ -350,6 +350,11 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         await db.toggleEstablishmentOpen(input.id, input.isOpen);
+        sendMenuPublicEvent(
+          input.id,
+          input.isOpen ? 'establishment_opened' : 'establishment_closed',
+          { establishmentId: input.id, isOpen: input.isOpen }
+        );
         return { success: true };
       }),
     
@@ -361,6 +366,11 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         await db.setManualClose(input.id, input.close);
+        sendMenuPublicEvent(
+          input.id,
+          input.close ? 'establishment_closed' : 'establishment_opened',
+          { establishmentId: input.id, isOpen: !input.close }
+        );
         return { success: true };
       }),
     

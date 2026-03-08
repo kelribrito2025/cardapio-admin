@@ -8464,3 +8464,8 @@
 
 ## Efeito Wave Ring nos Stories
 - [x] Substituir efeito Scale Pulse pelo Wave Ring nos stories do menu público
+
+## SSE Status Estabelecimento (Aberto/Fechado) em Tempo Real
+- [x] Emitir evento SSE establishment_opened/establishment_closed no mutation de toggle do estabelecimento
+- [x] Tratar eventos no hook useMenuSSE para invalidar query do menu público
+- [x] Clientes no menu público veem mudança de status em tempo real sem refresh
