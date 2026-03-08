@@ -8469,3 +8469,6 @@
 - [x] Emitir evento SSE establishment_opened/establishment_closed no mutation de toggle do estabelecimento
 - [x] Tratar eventos no hook useMenuSSE para invalidar query do menu público
 - [x] Clientes no menu público veem mudança de status em tempo real sem refresh
+
+## Cor do ícone da Fidelização
+- [x] Alterar cor do ícone da página de Fidelização para azul (mesma cor do ícone do Dashboard)

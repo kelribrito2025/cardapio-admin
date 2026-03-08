@@ -369,7 +369,7 @@ export default function Fidelizacao() {
         <PageHeader
           title="Fidelização de Clientes"
           description="Configure estratégias para incentivar seus clientes a voltar e comprar novamente."
-          icon={<Heart className="h-6 w-6 text-rose-600" />}
+          icon={<Heart className="h-6 w-6 text-blue-600" />}
           actions={
             <button
               onClick={() => setSheetOpen(true)}
