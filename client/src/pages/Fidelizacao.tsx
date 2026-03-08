@@ -656,6 +656,8 @@ export default function Fidelizacao() {
               </div>
             )}
 
+            {/* Grid 50/50: Clientes Fidelizados + Histórico */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {/* Lista de clientes com cartão fidelidade */}
             <div className="bg-card rounded-xl border border-border/50 p-5">
               <div className="flex items-center gap-3 mb-4">
@@ -797,12 +799,15 @@ export default function Fidelizacao() {
                 </>
               )}
             </div>
+            </div>{/* Fecha grid 50/50 loyalty */}
           </div>
         )}
 
         {/* Histórico de Cashback */}
         {activeProgram === "cashback" && (
           <div className="space-y-5">
+            {/* Grid 50/50: Clientes com Cashback + Histórico */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {/* Lista de clientes com cashback */}
             <div className="bg-card rounded-xl border border-border/50 p-5">
               <div className="flex items-center gap-3 mb-4">
@@ -922,6 +927,7 @@ export default function Fidelizacao() {
                 </>
               )}
             </div>
+            </div>{/* Fecha grid 50/50 cashback */}
           </div>
         )}
 

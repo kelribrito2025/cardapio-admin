@@ -8407,3 +8407,7 @@
 - [x] Adicionar paginação no Histórico de Cashback (eventos cashback)
 - [x] Adicionar filtro por período (hoje, esta semana, este mês) no Histórico de Fidelização
 - [x] Adicionar filtro por período no Histórico de Cashback
+
+## Layout 50/50 dos Cards de Histórico
+- [x] Colocar cards "Clientes Fidelizados" e "Histórico de Fidelização" lado a lado (50%/50%) para Cartão Fidelidade
+- [x] Colocar cards "Clientes com Cashback" e "Histórico de Cashback" lado a lado (50%/50%) para Cashback
