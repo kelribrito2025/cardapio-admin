@@ -363,7 +363,7 @@ export default function Stories() {
                           const heightPct = chartMaxRevenue > 0 ? (day.revenue / chartMaxRevenue) * 100 : 0;
                           const isToday = idx === salesChartData.length - 1;
                           return (
-                            <div key={day.date} className="flex-1 flex flex-col items-center gap-1.5">
+                            <div key={`${day.date}-${idx}`} className="flex-1 flex flex-col items-center gap-1.5">
                               <div className="w-full flex flex-col items-center justify-end h-28 relative group">
                                 <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none shadow-lg">
                                   {day.orders} pedido{day.orders !== 1 ? "s" : ""} · {formatCurrency(day.revenue)}

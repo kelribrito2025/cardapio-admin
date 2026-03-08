@@ -11934,12 +11934,17 @@ export async function getStorySalesChart(establishmentId: number, days: number =
   const startDateStr = startDate.toISOString().slice(0, 19).replace('T', ' ');
   
   // Preencher dias sem dados (sempre retorna array completo)
+  // Usar UTC para evitar duplicatas por timezone
   const chartData: { date: string; orders: number; revenue: number }[] = [];
+  const seenDates = new Set<string>();
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date();
-    d.setDate(d.getDate() - i);
+    d.setUTCDate(d.getUTCDate() - i);
+    const dateStr = d.toISOString().split("T")[0];
+    if (seenDates.has(dateStr)) continue;
+    seenDates.add(dateStr);
     chartData.push({
-      date: d.toISOString().split("T")[0],
+      date: dateStr,
       orders: 0,
       revenue: 0,
     });

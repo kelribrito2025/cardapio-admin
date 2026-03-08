@@ -8475,3 +8475,6 @@
 
 ## Header do card Desempenho da Fidelização
 - [x] Padronizar header do card "Desempenho da Fidelização" para seguir o mesmo modelo visual do card "Acumulado da semana" (com ícone colorido à esquerda)
+
+## Bug: Keys duplicadas na página de Stories
+- [x] Corrigir erro de keys duplicadas na página /stories (múltiplos stories do mesmo dia geram key `2026-03-08` duplicada)
