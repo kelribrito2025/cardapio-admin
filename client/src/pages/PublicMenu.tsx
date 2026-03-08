@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { MenuSpotlight } from "@/components/MenuSpotlight";
 import StoryViewer from "@/components/StoryViewer";
+import { useMenuSSE } from "@/hooks/useMenuSSE";
 
 // Tipo do item do carrinho
 type CartItem = {
@@ -433,6 +434,13 @@ export default function PublicMenu() {
     { slug: slug || "" },
     { enabled: !!slug && !!schedulingConfig?.schedulingEnabled }
   );
+
+  // SSE para receber atualizações em tempo real do menu (stories, produtos, etc.)
+  useMenuSSE({
+    slug,
+    establishmentId: data?.establishment?.id,
+    enabled: !!slug && !!data?.establishment?.id,
+  });
 
   // Query para verificar se há stories ativos
   const { data: storiesStatus } = trpc.publicStories.hasActive.useQuery(

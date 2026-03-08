@@ -8453,3 +8453,11 @@
 
 ## Visualização padrão de pedidos
 - [x] Alterar visualização padrão da página de pedidos de Kanban para Lista
+
+## SSE para Menu Público (Stories em tempo real)
+- [x] Criar gerenciador de conexões SSE do menu público (MenuSSEManager) no backend
+- [x] Criar endpoint SSE /api/menu/:slug/stream no servidor
+- [x] Integrar emissão de eventos story_created, story_updated, story_deleted nos mutations de stories
+- [x] Criar hook useMenuSSE(establishmentId) no frontend
+- [x] Integrar hook no PublicMenu.tsx para invalidar query de stories
+- [x] Preparar endpoint para eventos futuros (produto atualizado, estabelecimento fechou, etc.)

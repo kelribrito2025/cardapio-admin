@@ -419,6 +419,118 @@ export function getTotalOrderConnections(): number {
   return total;
 }
 
+// ==================== MENU PÚBLICO SSE ====================
+// Conexões SSE para clientes do menu público (por establishmentId)
+// Usado para stories, atualizações de produtos, status do estabelecimento, etc.
+const menuPublicConnections = new Map<number, Set<Response>>();
+
+/**
+ * Tipos de eventos suportados pelo SSE do menu público.
+ * Extensível para futuros eventos (product_updated, establishment_closed, etc.)
+ */
+export type MenuSSEEventType =
+  | 'story_created'
+  | 'story_updated'
+  | 'story_deleted'
+  | 'product_updated'
+  | 'product_deleted'
+  | 'category_updated'
+  | 'establishment_updated'
+  | 'establishment_closed'
+  | 'establishment_opened'
+  | 'menu_refresh';
+
+/**
+ * Adiciona uma conexão SSE do menu público para um estabelecimento
+ */
+export function addMenuPublicConnection(establishmentId: number, res: Response): void {
+  if (!menuPublicConnections.has(establishmentId)) {
+    menuPublicConnections.set(establishmentId, new Set());
+  }
+  menuPublicConnections.get(establishmentId)!.add(res);
+  
+  console.log(`[SSE-Menu] Nova conexão para estabelecimento ${establishmentId}. Total: ${menuPublicConnections.get(establishmentId)!.size}`);
+}
+
+/**
+ * Remove uma conexão SSE do menu público
+ */
+export function removeMenuPublicConnection(establishmentId: number, res: Response): void {
+  const conns = menuPublicConnections.get(establishmentId);
+  if (conns) {
+    conns.delete(res);
+    console.log(`[SSE-Menu] Conexão removida do estabelecimento ${establishmentId}. Restantes: ${conns.size}`);
+    
+    if (conns.size === 0) {
+      menuPublicConnections.delete(establishmentId);
+    }
+  }
+}
+
+/**
+ * Envia um evento SSE para todas as conexões do menu público de um estabelecimento
+ */
+export function sendMenuPublicEvent(establishmentId: number, eventType: MenuSSEEventType, data: unknown): void {
+  const conns = menuPublicConnections.get(establishmentId);
+  if (!conns || conns.size === 0) {
+    return;
+  }
+  
+  const eventData = JSON.stringify(data);
+  const message = `event: ${eventType}\ndata: ${eventData}\n\n`;
+  
+  console.log(`[SSE-Menu] Enviando evento '${eventType}' para ${conns.size} conexão(ões) do estabelecimento ${establishmentId}`);
+  
+  conns.forEach((res) => {
+    try {
+      res.write(message);
+      if (typeof (res as any).flush === 'function') {
+        (res as any).flush();
+      }
+    } catch (error) {
+      console.error(`[SSE-Menu] Erro ao enviar evento:`, error);
+      removeMenuPublicConnection(establishmentId, res);
+    }
+  });
+}
+
+/**
+ * Envia heartbeat para manter as conexões do menu público ativas
+ */
+export function sendMenuPublicHeartbeat(establishmentId: number): void {
+  const conns = menuPublicConnections.get(establishmentId);
+  if (!conns || conns.size === 0) return;
+  
+  const message = `event: heartbeat\ndata: ${JSON.stringify({ timestamp: Date.now() })}\n\n`;
+  
+  conns.forEach((res) => {
+    try {
+      res.write(message);
+      if (typeof (res as any).flush === 'function') {
+        (res as any).flush();
+      }
+    } catch (error) {
+      removeMenuPublicConnection(establishmentId, res);
+    }
+  });
+}
+
+/**
+ * Retorna o número de conexões do menu público ativas para um estabelecimento
+ */
+export function getMenuPublicConnectionCount(establishmentId: number): number {
+  return menuPublicConnections.get(establishmentId)?.size || 0;
+}
+
+/**
+ * Envia heartbeat para TODAS as conexões do menu público
+ */
+export function sendAllMenuPublicHeartbeats(): void {
+  menuPublicConnections.forEach((_, establishmentId) => {
+    sendMenuPublicHeartbeat(establishmentId);
+  });
+}
+
 // ==================== FUNÇÕES LEGADAS (mantidas para compatibilidade) ====================
 // Estas funções são mantidas para não quebrar código existente, mas devem ser migradas
 

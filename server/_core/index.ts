@@ -9,8 +9,8 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
-import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, addOrderIdConnectionForMultiple, removeOrderIdConnectionFromMultiple, sendAllOrdersHeartbeat, sendEvent, getConnectionCount, addPrinterConnection, removePrinterConnection, getPrinterConnectionCount } from "./sse";
-import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrdersByIds, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getPrinterSettings, getActivePrinters, getTabById, getTabItems, getTableById } from "../db";
+import { addConnection, removeConnection, sendHeartbeat, addOrderConnectionForMultiple, removeOrderConnectionFromMultiple, addOrderIdConnectionForMultiple, removeOrderIdConnectionFromMultiple, sendAllOrdersHeartbeat, sendEvent, getConnectionCount, addPrinterConnection, removePrinterConnection, getPrinterConnectionCount, addMenuPublicConnection, removeMenuPublicConnection, sendMenuPublicHeartbeat, sendAllMenuPublicHeartbeats } from "./sse";
+import { getUserByOpenId, getEstablishmentByUserId, getOrdersByOrderNumbers, getOrdersByIds, getOrderById, getOrderItems, getOrderItemsWithPrinter, getEstablishmentById, getPrinterSettings, getActivePrinters, getTabById, getTabItems, getTableById, getEstablishmentBySlug } from "../db";
 import { sdk } from "./sdk";
 import { startScheduledCampaignJob } from "../scheduledCampaignJob";
 import { startScheduledOrdersJob } from "../scheduledOrdersJob";
@@ -1930,6 +1930,54 @@ async function startServer() {
     }
   });
   
+  // SSE endpoint para menu público (stories, produtos, status do estabelecimento)
+  app.get("/api/menu/:slug/stream", async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      if (!slug) {
+        res.status(400).json({ error: "Slug is required" });
+        return;
+      }
+
+      // Buscar estabelecimento pelo slug
+      const establishment = await getEstablishmentBySlug(slug);
+      if (!establishment) {
+        res.status(404).json({ error: "Establishment not found" });
+        return;
+      }
+
+      // Configurar headers SSE
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache, no-transform");
+      res.setHeader("Connection", "keep-alive");
+      res.setHeader("Transfer-Encoding", "chunked");
+      res.setHeader("X-Accel-Buffering", "no");
+      res.flushHeaders();
+
+      // Enviar evento de conexão estabelecida
+      res.write(`event: connected\ndata: ${JSON.stringify({ establishmentId: establishment.id })}\n\n`);
+
+      // Adicionar conexão ao pool do menu público
+      addMenuPublicConnection(establishment.id, res);
+
+      // Heartbeat a cada 30 segundos
+      const heartbeatInterval = setInterval(() => {
+        sendMenuPublicHeartbeat(establishment.id);
+      }, 30000);
+
+      // Cleanup quando conexão fechar
+      req.on("close", () => {
+        clearInterval(heartbeatInterval);
+        removeMenuPublicConnection(establishment.id, res);
+        console.log(`[SSE-Menu] Conexão fechada para estabelecimento ${establishment.id} (slug: ${slug})`);
+      });
+
+    } catch (error) {
+      console.error("[SSE-Menu] Erro ao estabelecer conexão:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // Rota pública para gerar HTML do recibo de impressão (para app ESC POS)
   app.get("/api/print/receipt/:orderId", async (req, res) => {
     try {

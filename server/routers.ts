@@ -15,6 +15,7 @@ import { eq, asc, and } from "drizzle-orm";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
 import { ifoodRouter } from "./ifoodRouter";
 import { adminRouter } from "./adminRouter";
+import { sendMenuPublicEvent } from "./_core/sse";
 
 import { buildDriverDeliveryMessage } from './driverMessage';
 import { botApiKeys } from '../drizzle/schema';
@@ -6524,6 +6525,15 @@ export const appRouter = router({
           priceBadgeStyle: input.priceBadgeStyle ?? null,
         });
 
+        // Emitir evento SSE para menu público
+        sendMenuPublicEvent(input.establishmentId, 'story_created', {
+          id: result.id,
+          establishmentId: input.establishmentId,
+          type: input.type,
+          imageUrl: url,
+          expiresAt: expiresAt.toISOString(),
+        });
+
         return { id: result.id, imageUrl: url, expiresAt, type: input.type };
       }),
 
@@ -6542,6 +6552,12 @@ export const appRouter = router({
         } catch (e) {
           console.error("[Stories] Erro ao deletar imagem do S3:", e);
         }
+        // Emitir evento SSE para menu público
+        sendMenuPublicEvent(deleted.establishmentId, 'story_deleted', {
+          id: deleted.id,
+          establishmentId: deleted.establishmentId,
+        });
+
         return { success: true };
       }),
 
