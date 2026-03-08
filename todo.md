@@ -8450,3 +8450,6 @@
 ## Ajustar espaçamento da barra de busca
 - [x] Ajustar espaçamento entre título e barra de busca no card Histórico de Fidelização para ficar igual ao card Clientes Fidelizados
 - [x] Ajustar espaçamento entre título e barra de busca no card Histórico de Cashback para ficar igual ao card Clientes com Cashback
+
+## Visualização padrão de pedidos
+- [x] Alterar visualização padrão da página de pedidos de Kanban para Lista

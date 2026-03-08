@@ -264,8 +264,8 @@ export default function Pedidos() {
   // Estado para alternar entre visualização kanban e lista compacta
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>(() => {
     try {
-      return (localStorage.getItem('pedidos_viewMode') as 'kanban' | 'list') || 'kanban';
-    } catch { return 'kanban'; }
+      return (localStorage.getItem('pedidos_viewMode') as 'kanban' | 'list') || 'list';
+    } catch { return 'list'; }
   });
   // Estado para filtro de status na lista compacta
   const [listStatusFilter, setListStatusFilter] = useState<OrderStatus | 'all'>('all');
