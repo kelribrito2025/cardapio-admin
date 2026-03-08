@@ -8365,3 +8365,4 @@
 - [x] Configurações condicionais abaixo dos cards (mesmo comportamento atual)
 - [x] Botão "Salvar Configurações" com mesmo comportamento
 - [x] Remover seção Programa de Recompensas da página Configurações
+- [x] Padronizar visual da página Fidelização com o mesmo padrão de header e cards da Dashboard
