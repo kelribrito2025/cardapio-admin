@@ -8375,3 +8375,10 @@
 - [x] Mostrar métricas diferentes conforme programa ativo (Cartão Fidelidade vs Cashback)
 - [x] Mostrar mensagem quando nenhum programa estiver ativo
 - [x] Adicionar gráfico de evolução da fidelização (últimos 30 dias)
+
+## Reorganização Visual do Programa de Recompensas
+- [x] Remover card grande com 3 opções de programa
+- [x] Colocar status do programa ativo na mesma linha do título com botão Ativar/Configurar
+- [x] Criar sidebar (Sheet) no estilo Primeiros Passos para escolha e configuração do programa
+- [x] Dentro da sidebar: opções Cartão Fidelidade e Cashback com configurações abaixo
+- [x] Manter toda a lógica e backend inalterados

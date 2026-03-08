@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Heart, Save, Coins, CreditCard, AlertTriangle, Check, Loader2, Users, Stamp, Gift, Wallet, TrendingUp, Ban } from "lucide-react";
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Heart, Save, Coins, CreditCard, AlertTriangle, Check, Loader2, Users, Stamp, Gift, Wallet, TrendingUp, Ban, Settings2, X, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -51,6 +52,9 @@ export default function Fidelizacao() {
     { establishmentId },
     { enabled: !!establishmentId && cashbackConfig?.rewardProgramType === 'cashback' }
   );
+
+  // Sheet state
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   // Reward program type state
   const [rewardType, setRewardType] = useState<"none" | "loyalty" | "cashback">("none");
@@ -129,6 +133,7 @@ export default function Fidelizacao() {
     });
 
     toast.success("Configurações do programa de recompensas salvas!");
+    setSheetOpen(false);
   };
 
   const isSaving = saveLoyaltyMutation.isPending || saveCashbackMutation.isPending;
@@ -159,14 +164,73 @@ export default function Fidelizacao() {
     return `R$ ${Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
+  // Helper to get program label and badge
+  const getProgramInfo = () => {
+    if (activeProgram === "loyalty") {
+      return {
+        label: "Cartão Fidelidade",
+        icon: CreditCard,
+        color: "text-emerald-600 dark:text-emerald-400",
+        bg: "bg-emerald-100 dark:bg-emerald-500/15",
+        badgeBg: "bg-emerald-50 dark:bg-emerald-900/30",
+        badgeBorder: "border-emerald-200 dark:border-emerald-800/50",
+        badgeText: "text-emerald-700 dark:text-emerald-300",
+        dotColor: "bg-emerald-500",
+      };
+    }
+    if (activeProgram === "cashback") {
+      return {
+        label: "Cashback",
+        icon: Coins,
+        color: "text-blue-600 dark:text-blue-400",
+        bg: "bg-blue-100 dark:bg-blue-500/15",
+        badgeBg: "bg-blue-50 dark:bg-blue-900/30",
+        badgeBorder: "border-blue-200 dark:border-blue-800/50",
+        badgeText: "text-blue-700 dark:text-blue-300",
+        dotColor: "bg-blue-500",
+      };
+    }
+    return null;
+  };
+
+  const programInfo = getProgramInfo();
+
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Page Header */}
+        {/* Page Header with program status inline */}
         <PageHeader
           title="Fidelização de Clientes"
           description="Configure estratégias para incentivar seus clientes a voltar e comprar novamente."
           icon={<Heart className="h-6 w-6 text-rose-600" />}
+          actions={
+            <div className="flex items-center gap-3">
+              {/* Program status badge */}
+              {programInfo ? (
+                <div className={cn(
+                  "flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium",
+                  programInfo.badgeBg, programInfo.badgeBorder, programInfo.badgeText
+                )}>
+                  <span className={cn("w-2 h-2 rounded-full animate-pulse", programInfo.dotColor)} />
+                  {programInfo.label}
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border/50 bg-muted/30 text-sm font-medium text-muted-foreground">
+                  <span className="w-2 h-2 rounded-full bg-gray-400" />
+                  Nenhum programa ativo
+                </div>
+              )}
+              {/* Configure button */}
+              <Button
+                onClick={() => setSheetOpen(true)}
+                variant="outline"
+                className="rounded-xl gap-2"
+              >
+                <Settings2 className="h-4 w-4" />
+                {activeProgram === "none" ? "Ativar programa" : "Configurar"}
+              </Button>
+            </div>
+          }
         />
 
         {/* Seção de Métricas - Desempenho da Fidelização */}
@@ -179,9 +243,16 @@ export default function Fidelizacao() {
               <h3 className="text-lg font-semibold text-foreground mb-2">
                 Nenhum programa de fidelização ativo no momento.
               </h3>
-              <p className="text-sm text-muted-foreground max-w-md">
+              <p className="text-sm text-muted-foreground max-w-md mb-4">
                 Ative um programa para começar a fidelizar seus clientes e acompanhar as métricas de desempenho.
               </p>
+              <Button
+                onClick={() => setSheetOpen(true)}
+                className="rounded-xl bg-emerald-600 hover:bg-emerald-700 gap-2"
+              >
+                <Heart className="h-4 w-4" />
+                Ativar programa de fidelização
+              </Button>
             </div>
           </SectionCard>
         ) : activeProgram === "loyalty" ? (
@@ -376,47 +447,79 @@ export default function Fidelizacao() {
           </>
         )}
 
-        {/* Programa de Recompensas - SectionCard padrão */}
-        <SectionCard title="Programa de Recompensas" description="Escolha e configure o programa de recompensas do seu restaurante">
-          <div className="space-y-6">
-            {/* Aviso de exclusividade */}
-            <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
-              <p className="text-sm text-amber-700 dark:text-amber-300">
-                Você pode utilizar apenas um programa de recompensa por vez.
-              </p>
+        {/* ==================== SIDEBAR DE CONFIGURAÇÃO ==================== */}
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          <SheetContent
+            side="right"
+            hideCloseButton
+            className="!w-[440px] !max-w-[440px] p-0 gap-0 border-l border-border/40 bg-background overflow-hidden flex flex-col"
+          >
+            <SheetTitle className="sr-only">Configurar Programa de Recompensas</SheetTitle>
+            <SheetDescription className="sr-only">Escolha e configure o programa de fidelização</SheetDescription>
+
+            {/* Header */}
+            <div className="px-6 pt-6 pb-4 border-b border-border/40">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-11 h-11 rounded-xl bg-rose-100 dark:bg-rose-500/15 flex items-center justify-center">
+                    <Heart className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-foreground tracking-tight">Programa de Recompensas</h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Escolha e configure o programa de fidelização
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSheetOpen(false)}
+                  className="flex-shrink-0 p-2 -mt-1 -mr-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
             </div>
 
-            {/* Seleção do programa ativo */}
-            <div className="space-y-3">
-              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Programa ativo
-              </Label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Content - scrollable */}
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+              {/* Aviso */}
+              <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <p className="text-xs text-amber-700 dark:text-amber-300">
+                  Apenas um programa pode estar ativo por vez.
+                </p>
+              </div>
+
+              {/* Program options */}
+              <div className="space-y-2">
+                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Escolha o programa
+                </Label>
+
                 {/* Nenhum */}
                 <button
                   type="button"
                   onClick={() => setRewardType("none")}
                   className={cn(
-                    "relative flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
+                    "w-full flex items-center gap-3 p-3.5 rounded-xl border transition-all duration-200",
                     rewardType === "none"
-                      ? "border-gray-500 bg-gray-50 dark:bg-gray-800/50 shadow-sm"
-                      : "border-border/50 hover:border-gray-300 dark:hover:border-gray-600"
+                      ? "border-gray-400 bg-gray-50 dark:bg-gray-800/50 shadow-sm"
+                      : "border-border/50 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-muted/30"
                   )}
                 >
-                  {rewardType === "none" && (
-                    <div className="absolute top-3 right-3">
-                      <Check className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                    </div>
-                  )}
                   <div className={cn(
-                    "p-3 rounded-xl",
+                    "p-2 rounded-lg shrink-0",
                     rewardType === "none" ? "bg-gray-200 dark:bg-gray-700" : "bg-muted/50"
                   )}>
-                    <AlertTriangle className="h-6 w-6 text-gray-500" />
+                    <Ban className="h-4 w-4 text-gray-500" />
                   </div>
-                  <span className="font-semibold text-sm">Nenhum</span>
-                  <span className="text-xs text-muted-foreground text-center">Sem recompensas</span>
+                  <div className="flex-1 text-left">
+                    <span className="font-semibold text-sm block">Nenhum</span>
+                    <span className="text-xs text-muted-foreground">Desativar programa de recompensas</span>
+                  </div>
+                  {rewardType === "none" && (
+                    <Check className="h-4 w-4 text-gray-600 dark:text-gray-400 shrink-0" />
+                  )}
                 </button>
 
                 {/* Cartão Fidelidade */}
@@ -424,25 +527,27 @@ export default function Fidelizacao() {
                   type="button"
                   onClick={() => setRewardType("loyalty")}
                   className={cn(
-                    "relative flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
+                    "w-full flex items-center gap-3 p-3.5 rounded-xl border transition-all duration-200",
                     rewardType === "loyalty"
                       ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 shadow-sm"
-                      : "border-border/50 hover:border-emerald-300 dark:hover:border-emerald-700"
+                      : "border-border/50 hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-muted/30"
                   )}
                 >
-                  {rewardType === "loyalty" && (
-                    <div className="absolute top-3 right-3">
-                      <Check className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                  )}
                   <div className={cn(
-                    "p-3 rounded-xl",
+                    "p-2 rounded-lg shrink-0",
                     rewardType === "loyalty" ? "bg-emerald-200 dark:bg-emerald-800" : "bg-muted/50"
                   )}>
-                    <CreditCard className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                    <CreditCard className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                   </div>
-                  <span className="font-semibold text-sm">Cartão Fidelidade</span>
-                  <span className="text-xs text-muted-foreground text-center">Ganhe carimbos por pedido</span>
+                  <div className="flex-1 text-left">
+                    <span className="font-semibold text-sm block">Cartão Fidelidade</span>
+                    <span className="text-xs text-muted-foreground">Ganhe carimbos a cada pedido</span>
+                  </div>
+                  {rewardType === "loyalty" ? (
+                    <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+                  )}
                 </button>
 
                 {/* Cashback */}
@@ -450,228 +555,233 @@ export default function Fidelizacao() {
                   type="button"
                   onClick={() => setRewardType("cashback")}
                   className={cn(
-                    "relative flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
+                    "w-full flex items-center gap-3 p-3.5 rounded-xl border transition-all duration-200",
                     rewardType === "cashback"
                       ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-sm"
-                      : "border-border/50 hover:border-blue-300 dark:hover:border-blue-700"
+                      : "border-border/50 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-muted/30"
                   )}
                 >
-                  {rewardType === "cashback" && (
-                    <div className="absolute top-3 right-3">
-                      <Check className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                  )}
                   <div className={cn(
-                    "p-3 rounded-xl",
+                    "p-2 rounded-lg shrink-0",
                     rewardType === "cashback" ? "bg-blue-200 dark:bg-blue-800" : "bg-muted/50"
                   )}>
-                    <Coins className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                    <Coins className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <span className="font-semibold text-sm">Cashback</span>
-                  <span className="text-xs text-muted-foreground text-center">% de volta por pedido</span>
+                  <div className="flex-1 text-left">
+                    <span className="font-semibold text-sm block">Cashback</span>
+                    <span className="text-xs text-muted-foreground">Percentual de volta por pedido</span>
+                  </div>
+                  {rewardType === "cashback" ? (
+                    <Check className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+                  )}
                 </button>
               </div>
-            </div>
 
-            {/* Configurações do Cartão Fidelidade */}
-            {rewardType === "loyalty" && (
-              <div className="p-5 bg-emerald-50/50 dark:bg-emerald-900/10 rounded-xl border border-emerald-200/50 dark:border-emerald-800/30 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                <h4 className="font-semibold text-sm text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
-                  <CreditCard className="h-4 w-4" />
-                  Configurações do Cartão Fidelidade
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {/* Carimbos necessários */}
-                  <div>
-                    <Label htmlFor="stampsRequired" className="text-xs font-semibold text-muted-foreground">
-                      Carimbos necessários
-                    </Label>
-                    <Input
-                      id="stampsRequired"
-                      type="number"
-                      min={1}
-                      max={20}
-                      value={stampsRequired}
-                      onChange={(e) => setStampsRequired(parseInt(e.target.value) || 6)}
-                      className="mt-1 h-9 rounded-lg border-border/50 text-sm"
-                    />
-                  </div>
+              {/* Configurações do Cartão Fidelidade */}
+              {rewardType === "loyalty" && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="h-px bg-border/40" />
+                  <h4 className="font-semibold text-sm text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
+                    <CreditCard className="h-4 w-4" />
+                    Configurações do Cartão Fidelidade
+                  </h4>
 
-                  {/* Tipo de cupom */}
-                  <div>
-                    <Label htmlFor="couponType" className="text-xs font-semibold text-muted-foreground">
-                      Tipo de cupom
-                    </Label>
-                    <Select value={couponType} onValueChange={(v) => setCouponType(v as typeof couponType)}>
-                      <SelectTrigger className="mt-1 h-9 rounded-lg border-border/50 text-sm">
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="fixed">Valor fixo (R$)</SelectItem>
-                        <SelectItem value="percentage">Porcentagem (%)</SelectItem>
-                        <SelectItem value="free_delivery">Frete grátis</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Valor do desconto */}
-                  {couponType !== "free_delivery" && (
+                  <div className="space-y-4">
+                    {/* Carimbos necessários */}
                     <div>
-                      <Label htmlFor="couponValue" className="text-xs font-semibold text-muted-foreground">
-                        {couponType === "percentage" ? "Desconto (%)" : "Desconto (R$)"}
+                      <Label htmlFor="stampsRequired" className="text-xs font-semibold text-muted-foreground">
+                        Carimbos necessários
                       </Label>
                       <Input
-                        id="couponValue"
+                        id="stampsRequired"
                         type="number"
                         min={1}
-                        max={couponType === "percentage" ? 100 : 1000}
-                        value={couponValue}
-                        onChange={(e) => setCouponValue(e.target.value)}
+                        max={20}
+                        value={stampsRequired}
+                        onChange={(e) => setStampsRequired(parseInt(e.target.value) || 6)}
                         className="mt-1 h-9 rounded-lg border-border/50 text-sm"
                       />
                     </div>
-                  )}
 
-                  {/* Valor mínimo */}
-                  <div>
-                    <Label htmlFor="minOrderValue" className="text-xs font-semibold text-muted-foreground">
-                      Valor mínimo (R$)
-                    </Label>
-                    <Input
-                      id="minOrderValue"
-                      type="number"
-                      min={0}
-                      value={minOrderValue}
-                      onChange={(e) => setMinOrderValue(e.target.value)}
-                      className="mt-1 h-9 rounded-lg border-border/50 text-sm"
-                      placeholder="0"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
+                    {/* Tipo de cupom */}
+                    <div>
+                      <Label htmlFor="couponType" className="text-xs font-semibold text-muted-foreground">
+                        Tipo de cupom
+                      </Label>
+                      <Select value={couponType} onValueChange={(v) => setCouponType(v as typeof couponType)}>
+                        <SelectTrigger className="mt-1 h-9 rounded-lg border-border/50 text-sm">
+                          <SelectValue placeholder="Selecione" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="fixed">Valor fixo (R$)</SelectItem>
+                          <SelectItem value="percentage">Porcentagem (%)</SelectItem>
+                          <SelectItem value="free_delivery">Frete grátis</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-            {/* Configurações do Cashback */}
-            {rewardType === "cashback" && (
-              <div className="p-5 bg-blue-50/50 dark:bg-blue-900/10 rounded-xl border border-blue-200/50 dark:border-blue-800/30 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                <h4 className="font-semibold text-sm text-blue-700 dark:text-blue-400 flex items-center gap-2">
-                  <Coins className="h-4 w-4" />
-                  Configurações do Cashback
-                </h4>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Percentual de cashback */}
-                  <div>
-                    <Label htmlFor="cashbackPercent" className="text-xs font-semibold text-muted-foreground">
-                      Percentual de cashback (%)
-                    </Label>
-                    <Input
-                      id="cashbackPercent"
-                      type="number"
-                      min={1}
-                      max={50}
-                      step={1}
-                      value={cashbackPercent}
-                      onChange={(e) => setCashbackPercent(e.target.value)}
-                      className="mt-1 h-9 rounded-lg border-border/50 text-sm"
-                      placeholder="5"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Ex: 5% = R$ 5,00 de cashback em um pedido de R$ 100,00
-                    </p>
-                  </div>
-
-                  {/* Uso do saldo */}
-                  <div className="rounded-lg bg-muted/50 p-3">
-                    <p className="text-xs text-muted-foreground">
-                      <strong>Uso do saldo:</strong> O cliente deve usar todo o saldo disponível ou nenhum.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Aplicar cashback em */}
-                <div>
-                  <Label className="text-xs font-semibold text-muted-foreground">
-                    Aplicar cashback em
-                  </Label>
-                  <div className="flex gap-3 mt-2">
-                    <button
-                      type="button"
-                      onClick={() => setCashbackApplyMode("all")}
-                      className={cn(
-                        "flex-1 px-4 py-2 rounded-lg border text-sm font-medium transition-all",
-                        cashbackApplyMode === "all"
-                          ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                          : "border-border/50 text-muted-foreground hover:border-blue-300"
-                      )}
-                    >
-                      Todos os produtos
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setCashbackApplyMode("categories")}
-                      className={cn(
-                        "flex-1 px-4 py-2 rounded-lg border text-sm font-medium transition-all",
-                        cashbackApplyMode === "categories"
-                          ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                          : "border-border/50 text-muted-foreground hover:border-blue-300"
-                      )}
-                    >
-                      Categorias específicas
-                    </button>
-                  </div>
-                </div>
-
-                {/* Lista de categorias */}
-                {cashbackApplyMode === "categories" && (
-                  <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <Label className="text-xs font-semibold text-muted-foreground">
-                      Selecione as categorias elegíveis
-                    </Label>
-                    {categoriesData && categoriesData.length > 0 ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-1">
-                        {categoriesData.map((cat: any) => (
-                          <button
-                            key={cat.id}
-                            type="button"
-                            onClick={() => toggleCategory(cat.id)}
-                            className={cn(
-                              "flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-all",
-                              cashbackCategoryIds.includes(cat.id)
-                                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                                : "border-border/50 text-muted-foreground hover:border-blue-300"
-                            )}
-                          >
-                            <div className={cn(
-                              "w-4 h-4 rounded border flex items-center justify-center shrink-0",
-                              cashbackCategoryIds.includes(cat.id)
-                                ? "bg-blue-500 border-blue-500"
-                                : "border-gray-300 dark:border-gray-600"
-                            )}>
-                              {cashbackCategoryIds.includes(cat.id) && (
-                                <Check className="h-3 w-3 text-white" />
-                              )}
-                            </div>
-                            <span className="truncate">{cat.name}</span>
-                          </button>
-                        ))}
+                    {/* Valor do desconto */}
+                    {couponType !== "free_delivery" && (
+                      <div>
+                        <Label htmlFor="couponValue" className="text-xs font-semibold text-muted-foreground">
+                          {couponType === "percentage" ? "Desconto (%)" : "Desconto (R$)"}
+                        </Label>
+                        <Input
+                          id="couponValue"
+                          type="number"
+                          min={1}
+                          max={couponType === "percentage" ? 100 : 1000}
+                          value={couponValue}
+                          onChange={(e) => setCouponValue(e.target.value)}
+                          className="mt-1 h-9 rounded-lg border-border/50 text-sm"
+                        />
                       </div>
-                    ) : (
-                      <p className="text-sm text-muted-foreground italic">
-                        Nenhuma categoria encontrada. Adicione categorias ao seu cardápio primeiro.
+                    )}
+
+                    {/* Valor mínimo */}
+                    <div>
+                      <Label htmlFor="minOrderValue" className="text-xs font-semibold text-muted-foreground">
+                        Valor mínimo (R$)
+                      </Label>
+                      <Input
+                        id="minOrderValue"
+                        type="number"
+                        min={0}
+                        value={minOrderValue}
+                        onChange={(e) => setMinOrderValue(e.target.value)}
+                        className="mt-1 h-9 rounded-lg border-border/50 text-sm"
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Configurações do Cashback */}
+              {rewardType === "cashback" && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="h-px bg-border/40" />
+                  <h4 className="font-semibold text-sm text-blue-700 dark:text-blue-400 flex items-center gap-2">
+                    <Coins className="h-4 w-4" />
+                    Configurações do Cashback
+                  </h4>
+
+                  <div className="space-y-4">
+                    {/* Percentual de cashback */}
+                    <div>
+                      <Label htmlFor="cashbackPercent" className="text-xs font-semibold text-muted-foreground">
+                        Percentual de cashback (%)
+                      </Label>
+                      <Input
+                        id="cashbackPercent"
+                        type="number"
+                        min={1}
+                        max={50}
+                        step={1}
+                        value={cashbackPercent}
+                        onChange={(e) => setCashbackPercent(e.target.value)}
+                        className="mt-1 h-9 rounded-lg border-border/50 text-sm"
+                        placeholder="5"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Ex: 5% = R$ 5,00 de cashback em um pedido de R$ 100,00
                       </p>
+                    </div>
+
+                    {/* Uso do saldo */}
+                    <div className="rounded-lg bg-muted/50 p-3">
+                      <p className="text-xs text-muted-foreground">
+                        <strong>Uso do saldo:</strong> O cliente deve usar todo o saldo disponível ou nenhum.
+                      </p>
+                    </div>
+
+                    {/* Aplicar cashback em */}
+                    <div>
+                      <Label className="text-xs font-semibold text-muted-foreground">
+                        Aplicar cashback em
+                      </Label>
+                      <div className="flex gap-2 mt-2">
+                        <button
+                          type="button"
+                          onClick={() => setCashbackApplyMode("all")}
+                          className={cn(
+                            "flex-1 px-3 py-2 rounded-lg border text-xs font-medium transition-all",
+                            cashbackApplyMode === "all"
+                              ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                              : "border-border/50 text-muted-foreground hover:border-blue-300"
+                          )}
+                        >
+                          Todos os produtos
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCashbackApplyMode("categories")}
+                          className={cn(
+                            "flex-1 px-3 py-2 rounded-lg border text-xs font-medium transition-all",
+                            cashbackApplyMode === "categories"
+                              ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                              : "border-border/50 text-muted-foreground hover:border-blue-300"
+                          )}
+                        >
+                          Categorias específicas
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Lista de categorias */}
+                    {cashbackApplyMode === "categories" && (
+                      <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                        <Label className="text-xs font-semibold text-muted-foreground">
+                          Selecione as categorias elegíveis
+                        </Label>
+                        {categoriesData && categoriesData.length > 0 ? (
+                          <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-1">
+                            {categoriesData.map((cat: any) => (
+                              <button
+                                key={cat.id}
+                                type="button"
+                                onClick={() => toggleCategory(cat.id)}
+                                className={cn(
+                                  "flex items-center gap-2 px-3 py-2 rounded-lg border text-xs transition-all",
+                                  cashbackCategoryIds.includes(cat.id)
+                                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                                    : "border-border/50 text-muted-foreground hover:border-blue-300"
+                                )}
+                              >
+                                <div className={cn(
+                                  "w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0",
+                                  cashbackCategoryIds.includes(cat.id)
+                                    ? "bg-blue-500 border-blue-500"
+                                    : "border-gray-300 dark:border-gray-600"
+                                )}>
+                                  {cashbackCategoryIds.includes(cat.id) && (
+                                    <Check className="h-2.5 w-2.5 text-white" />
+                                  )}
+                                </div>
+                                <span className="truncate">{cat.name}</span>
+                              </button>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-muted-foreground italic">
+                            Nenhuma categoria encontrada. Adicione categorias ao seu cardápio primeiro.
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
-            )}
+                </div>
+              )}
+            </div>
 
-            {/* Save button */}
-            <div className="flex justify-end">
+            {/* Footer with save button */}
+            <div className="px-6 py-4 border-t border-border/40 bg-background">
               <Button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="rounded-xl shadow-sm bg-emerald-600 hover:bg-emerald-700"
+                className="w-full rounded-xl shadow-sm bg-emerald-600 hover:bg-emerald-700 h-10"
               >
                 {isSaving ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -681,8 +791,8 @@ export default function Fidelizacao() {
                 {isSaving ? "Salvando..." : "Salvar Configurações"}
               </Button>
             </div>
-          </div>
-        </SectionCard>
+          </SheetContent>
+        </Sheet>
       </div>
     </AdminLayout>
   );
