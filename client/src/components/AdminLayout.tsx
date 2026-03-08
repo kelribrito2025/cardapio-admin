@@ -50,6 +50,7 @@ import {
   Save,
   X,
   Clapperboard,
+  Heart,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
@@ -138,6 +139,7 @@ const menuSections = [
       { icon: Clapperboard, label: "Stories", href: "/stories", disabled: false },
       { icon: Ticket, label: "Cupons", href: "/cupons", disabled: false },
       { icon: Megaphone, label: "Campanhas", href: "/campanhas", disabled: false },
+      { icon: Heart, label: "Fidelização", href: "/fidelizacao", disabled: false },
     ]
   },
   {

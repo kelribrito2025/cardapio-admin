@@ -75,7 +75,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { ImageCropModal } from "@/components/ImageCropModal";
 import { AddressMapPicker } from "@/components/AddressMapPicker";
-import { LoyaltySettingsCard } from "@/components/LoyaltySettingsCard";
+
 import { WhatsAppTab } from "@/components/WhatsAppTab";
 import { PrintTestTab } from "@/components/PrintTestTab";
 import { IntegrationsTab } from "@/components/IntegrationsTab";
@@ -1615,10 +1615,7 @@ export default function Configuracoes() {
             </div>
           </SectionCard>
 
-          {/* Programa de Recompensas */}
-          <SectionCard title="Programa de Recompensas">
-            <LoyaltySettingsCard establishmentId={establishment?.id || 0} />
-          </SectionCard>
+
 
           {/* Avaliações do Restaurante */}
           <SectionCard title="Avaliações do Restaurante">

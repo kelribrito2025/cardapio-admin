@@ -8355,3 +8355,13 @@
 - [ ] SEO: Configurar gestão de slug na página de configurações do admin
 - [x] SEO: Testes para endpoints de SEO (11 testes passando)
 - [x] Bug: Cards de analytics de Stories (Cliques, Carrinho, Pedidos, Faturamento, Vendas, Top Story) desaparecem quando todos os stories são apagados — removida condição activeStories.length > 0 do painel de analytics
+
+## Página Fidelização (Reorganização)
+- [x] Criar nova página Fidelização com layout dedicado
+- [x] Mover Programa de Recompensas da página Configurações para Fidelização
+- [x] Adicionar item "Fidelização" no menu lateral sob Marketing (após Campanhas)
+- [x] Adicionar rota /fidelizacao no App.tsx
+- [x] Cards maiores e mais destacados para seleção do programa (Nenhum, Cartão Fidelidade, Cashback)
+- [x] Configurações condicionais abaixo dos cards (mesmo comportamento atual)
+- [x] Botão "Salvar Configurações" com mesmo comportamento
+- [x] Remover seção Programa de Recompensas da página Configurações
