@@ -416,10 +416,16 @@ export default function Fidelizacao() {
         ) : activeProgram === "loyalty" ? (
           <>
             {/* Métricas do Cartão Fidelidade */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground px-1">
-                Desempenho da Fidelização
-              </h3>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                  <Heart className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-base font-semibold text-foreground">Desempenho da Fidelização</h3>
+                  <p className="text-xs text-muted-foreground">Métricas do seu programa de cartão fidelidade</p>
+                </div>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 <StatCard
                   title="Clientes com Cartão Ativo"
@@ -527,10 +533,16 @@ export default function Fidelizacao() {
         ) : (
           <>
             {/* Métricas do Cashback */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground px-1">
-                Desempenho da Fidelização
-              </h3>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                  <Heart className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-base font-semibold text-foreground">Desempenho da Fidelização</h3>
+                  <p className="text-xs text-muted-foreground">Métricas do seu programa de cashback</p>
+                </div>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 <StatCard
                   title="Clientes com Cashback"

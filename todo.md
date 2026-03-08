@@ -8472,3 +8472,6 @@
 
 ## Cor do ícone da Fidelização
 - [x] Alterar cor do ícone da página de Fidelização para azul (mesma cor do ícone do Dashboard)
+
+## Header do card Desempenho da Fidelização
+- [x] Padronizar header do card "Desempenho da Fidelização" para seguir o mesmo modelo visual do card "Acumulado da semana" (com ícone colorido à esquerda)
