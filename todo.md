@@ -8382,3 +8382,4 @@
 - [x] Criar sidebar (Sheet) no estilo Primeiros Passos para escolha e configuração do programa
 - [x] Dentro da sidebar: opções Cartão Fidelidade e Cashback com configurações abaixo
 - [x] Manter toda a lógica e backend inalterados
+- [x] Corrigir header do card Evolução da Fidelização para seguir padrão visual do card Acumulado da semana da Dashboard

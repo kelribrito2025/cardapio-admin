@@ -300,11 +300,27 @@ export default function Fidelizacao() {
 
             {/* Gráfico de Evolução - Loyalty */}
             {chartData.length > 0 && (
-              <SectionCard
-                title="Evolução da Fidelização"
-                description={`Novos clientes com cartão fidelidade nos últimos 30 dias (total: ${chartTotal})`}
-              >
-                <div className="h-64">
+              <div className="bg-card rounded-xl border border-border/50 p-5">
+                {/* Header estilo Acumulado da semana */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                      <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="text-base font-semibold text-foreground">Evolução da Fidelização</h3>
+                      <p className="text-xs text-muted-foreground">Novos clientes com cartão fidelidade nos últimos 30 dias</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Total */}
+                <div className="flex items-center gap-2 mb-5">
+                  <span className="text-2xl font-bold text-foreground">{chartTotal}</span>
+                  <span className="text-xs text-muted-foreground">novos cartões</span>
+                </div>
+
+                <div className="h-52">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData} margin={{ top: 5, right: 10, bottom: 0, left: -20 }}>
                       <defs>
@@ -347,7 +363,7 @@ export default function Fidelizacao() {
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
-              </SectionCard>
+              </div>
             )}
           </>
         ) : (
@@ -395,11 +411,27 @@ export default function Fidelizacao() {
 
             {/* Gráfico de Evolução - Cashback */}
             {chartData.length > 0 && (
-              <SectionCard
-                title="Evolução do Cashback"
-                description={`Transações de cashback nos últimos 30 dias (total: ${chartTotal})`}
-              >
-                <div className="h-64">
+              <div className="bg-card rounded-xl border border-border/50 p-5">
+                {/* Header estilo Acumulado da semana */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
+                      <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="text-base font-semibold text-foreground">Evolução do Cashback</h3>
+                      <p className="text-xs text-muted-foreground">Transações de cashback nos últimos 30 dias</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Total */}
+                <div className="flex items-center gap-2 mb-5">
+                  <span className="text-2xl font-bold text-foreground">{chartTotal}</span>
+                  <span className="text-xs text-muted-foreground">transações</span>
+                </div>
+
+                <div className="h-52">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData} margin={{ top: 5, right: 10, bottom: 0, left: -20 }}>
                       <defs>
@@ -442,7 +474,7 @@ export default function Fidelizacao() {
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
-              </SectionCard>
+              </div>
             )}
           </>
         )}
