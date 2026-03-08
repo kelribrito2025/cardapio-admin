@@ -821,7 +821,7 @@ export default function Fidelizacao() {
                   placeholder="Buscar por nome ou telefone..."
                   value={loyaltyEventsSearch}
                   onChange={(e) => setLoyaltyEventsSearch(e.target.value)}
-                  className="pl-9 h-9 text-sm"
+                  className="pl-9 h-9 text-sm bg-muted/30 border-border/50"
                 />
               </div>
 
@@ -968,7 +968,7 @@ export default function Fidelizacao() {
                   placeholder="Buscar por nome ou telefone..."
                   value={cashbackEventsSearch}
                   onChange={(e) => setCashbackEventsSearch(e.target.value)}
-                  className="pl-9 h-9 text-sm"
+                  className="pl-9 h-9 text-sm bg-muted/30 border-border/50"
                 />
               </div>
 

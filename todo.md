@@ -8442,3 +8442,7 @@
 
 ## Mesclar badge + botão Configurar
 - [x] Mesclar badge de status do programa (Cartão Fidelidade / Cashback) e botão Configurar em um único botão
+
+## Padronizar barras de busca nos cards de Fidelização
+- [x] Igualar altura da barra de busca do card Histórico de Fidelização à do card Clientes Fidelizados
+- [x] Igualar altura da barra de busca do card Histórico de Cashback à do card Clientes com Cashback
