@@ -854,7 +854,7 @@ export default function Fidelizacao() {
                   {loyaltyEvents.map((event: any) => {
                     const isCompletion = event.currentStamps >= stampsRequiredConfig;
                     return (
-                      <div key={event.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted/30 transition-colors">
+                      <div key={event.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted/30 transition-colors" style={{height: '71px'}}>
                         <div className={cn(
                           "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center",
                           isCompletion ? "bg-emerald-100 dark:bg-emerald-500/15" : "bg-blue-100 dark:bg-blue-500/15"
