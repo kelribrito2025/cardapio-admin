@@ -805,7 +805,7 @@ export default function Fidelizacao() {
 
             {/* Histórico de eventos - Loyalty */}
             <div className="bg-card rounded-xl border border-border/50 p-5">
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
                   <Clock className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                 </div>
@@ -815,7 +815,7 @@ export default function Fidelizacao() {
                 </div>
                 <PeriodFilter value={loyaltyEventsPeriod} onChange={setLoyaltyEventsPeriod} />
               </div>
-              <div className="relative mb-4">
+              <div className="relative mb-3">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Buscar por nome ou telefone..."
@@ -840,7 +840,7 @@ export default function Fidelizacao() {
                   {loyaltyEvents.map((event: any) => {
                     const isCompletion = event.currentStamps >= stampsRequiredConfig;
                     return (
-                      <div key={event.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted/30 transition-colors" style={{height: '71px'}}>
+                      <div key={event.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted/30 transition-colors" style={{height: '71px', paddingTop: '12px', paddingBottom: '12px', marginBottom: '8px'}}>
                         <div className={cn(
                           "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center",
                           isCompletion ? "bg-emerald-100 dark:bg-emerald-500/15" : "bg-blue-100 dark:bg-blue-500/15"
@@ -952,7 +952,7 @@ export default function Fidelizacao() {
 
             {/* Histórico de eventos - Cashback */}
             <div className="bg-card rounded-xl border border-border/50 p-5">
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
                   <Clock className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                 </div>
@@ -962,7 +962,7 @@ export default function Fidelizacao() {
                 </div>
                 <PeriodFilter value={cashbackEventsPeriod} onChange={setCashbackEventsPeriod} />
               </div>
-              <div className="relative mb-4">
+              <div className="relative mb-3">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Buscar por nome ou telefone..."

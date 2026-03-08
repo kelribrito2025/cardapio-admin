@@ -8446,3 +8446,7 @@
 ## Padronizar barras de busca nos cards de Fidelização
 - [x] Igualar altura da barra de busca do card Histórico de Fidelização à do card Clientes Fidelizados
 - [x] Igualar altura da barra de busca do card Histórico de Cashback à do card Clientes com Cashback
+
+## Ajustar espaçamento da barra de busca
+- [x] Ajustar espaçamento entre título e barra de busca no card Histórico de Fidelização para ficar igual ao card Clientes Fidelizados
+- [x] Ajustar espaçamento entre título e barra de busca no card Histórico de Cashback para ficar igual ao card Clientes com Cashback
