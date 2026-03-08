@@ -8411,3 +8411,7 @@
 ## Layout 50/50 dos Cards de Histórico
 - [x] Colocar cards "Clientes Fidelizados" e "Histórico de Fidelização" lado a lado (50%/50%) para Cartão Fidelidade
 - [x] Colocar cards "Clientes com Cashback" e "Histórico de Cashback" lado a lado (50%/50%) para Cashback
+
+## Visual de Stamps com Quadradinhos
+- [x] Trocar barra de progresso linear por grid de quadradinhos (stamps) no card Clientes Fidelizados
+- [x] Aplicar mesmo estilo nos cards de Clientes Perto da Recompensa

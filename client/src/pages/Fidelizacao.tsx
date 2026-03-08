@@ -638,14 +638,19 @@ export default function Fidelizacao() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{client.customerName || client.customerPhone}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                        <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                          {Array.from({ length: stampsRequiredConfig }, (_, i) => (
                             <div
-                              className="h-full rounded-full bg-amber-500 transition-all"
-                              style={{ width: `${Math.min((client.stamps / stampsRequiredConfig) * 100, 100)}%` }}
+                              key={i}
+                              className={cn(
+                                "w-5 h-5 rounded-md transition-all",
+                                i < client.stamps
+                                  ? "bg-amber-500 dark:bg-amber-400"
+                                  : "bg-muted/60 dark:bg-muted/30"
+                              )}
                             />
-                          </div>
-                          <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 whitespace-nowrap">
+                          ))}
+                          <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 whitespace-nowrap ml-1">
                             {client.stamps} / {stampsRequiredConfig}
                           </span>
                         </div>
@@ -705,18 +710,22 @@ export default function Fidelizacao() {
                               {formatRelativeTime(client.lastStampDate)}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                          <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                            {Array.from({ length: stampsRequiredConfig }, (_, i) => (
                               <div
+                                key={i}
                                 className={cn(
-                                  "h-full rounded-full transition-all",
-                                  isComplete ? "bg-emerald-500" : "bg-emerald-400/70"
+                                  "w-5 h-5 rounded-md transition-all",
+                                  i < client.stamps
+                                    ? isComplete
+                                      ? "bg-emerald-500 dark:bg-emerald-400"
+                                      : "bg-emerald-400 dark:bg-emerald-500/80"
+                                    : "bg-muted/60 dark:bg-muted/30"
                                 )}
-                                style={{ width: `${progressPct}%` }}
                               />
-                            </div>
+                            ))}
                             <span className={cn(
-                              "text-xs font-medium whitespace-nowrap",
+                              "text-xs font-medium whitespace-nowrap ml-1",
                               isComplete ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
                             )}>
                               {client.stamps} / {stampsRequiredConfig}
