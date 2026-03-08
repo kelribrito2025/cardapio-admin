@@ -12252,7 +12252,7 @@ export async function getLoyaltyCardClients(establishmentId: number, limit = 10,
 /**
  * Histórico de eventos de fidelidade (carimbos ganhos e cartões completados)
  */
-export async function getLoyaltyEventHistory(establishmentId: number, limit = 10, offset = 0, period?: 'today' | 'week' | 'month') {
+export async function getLoyaltyEventHistory(establishmentId: number, limit = 10, offset = 0, period?: 'today' | 'week' | 'month', search?: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
@@ -12269,11 +12269,18 @@ export async function getLoyaltyEventHistory(establishmentId: number, limit = 10
     periodFilter = sql`ls.createdAt >= ${monthAgo}`;
   }
 
+  // Build search filter
+  let searchFilter = sql`1=1`;
+  if (search && search.trim()) {
+    const term = `%${search.trim()}%`;
+    searchFilter = sql`(lc.customerName LIKE ${term} OR lc.customerPhone LIKE ${term})`;
+  }
+
   // Count total
   const countRes: any[] = await db.execute(
     sql`SELECT COUNT(*) as cnt FROM ${loyaltyStamps} ls
     INNER JOIN ${loyaltyCards} lc ON ls.loyaltyCardId = lc.id
-    WHERE lc.establishmentId = ${establishmentId} AND ${periodFilter}`
+    WHERE lc.establishmentId = ${establishmentId} AND ${periodFilter} AND ${searchFilter}`
   );
   const countRows = Array.isArray(countRes) ? (Array.isArray(countRes[0]) ? countRes[0] : countRes) : [];
   const total = Number(countRows[0]?.cnt ?? 0);
@@ -12285,7 +12292,7 @@ export async function getLoyaltyEventHistory(establishmentId: number, limit = 10
       lc.customerName, lc.customerPhone, lc.stamps, lc.totalStampsEarned, lc.couponsEarned
     FROM ${loyaltyStamps} ls
     INNER JOIN ${loyaltyCards} lc ON ls.loyaltyCardId = lc.id
-    WHERE lc.establishmentId = ${establishmentId} AND ${periodFilter}
+    WHERE lc.establishmentId = ${establishmentId} AND ${periodFilter} AND ${searchFilter}
     ORDER BY ls.createdAt DESC
     LIMIT ${limit} OFFSET ${offset}`
   );
@@ -12382,7 +12389,7 @@ export async function getCashbackClients(establishmentId: number, limit = 10, of
 /**
  * Histórico de eventos de cashback (créditos e débitos)
  */
-export async function getCashbackEventHistory(establishmentId: number, limit = 10, offset = 0, period?: 'today' | 'week' | 'month') {
+export async function getCashbackEventHistory(establishmentId: number, limit = 10, offset = 0, period?: 'today' | 'week' | 'month', search?: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
@@ -12397,6 +12404,10 @@ export async function getCashbackEventHistory(establishmentId: number, limit = 1
   } else if (period === 'month') {
     const monthAgo = new Date(); monthAgo.setDate(monthAgo.getDate() - 30); monthAgo.setHours(0, 0, 0, 0);
     conditions.push(sql`${cashbackTransactions.createdAt} >= ${monthAgo}`);
+  }
+  if (search && search.trim()) {
+    const term = `%${search.trim()}%`;
+    conditions.push(sql`${cashbackTransactions.customerPhone} LIKE ${term}`);
   }
 
   // Count total

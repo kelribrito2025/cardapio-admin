@@ -68,6 +68,10 @@ export default function Fidelizacao() {
   const [loyaltySearchDebounced, setLoyaltySearchDebounced] = useState("");
   const [cashbackSearch, setCashbackSearch] = useState("");
   const [cashbackSearchDebounced, setCashbackSearchDebounced] = useState("");
+  const [loyaltyEventsSearch, setLoyaltyEventsSearch] = useState("");
+  const [loyaltyEventsSearchDebounced, setLoyaltyEventsSearchDebounced] = useState("");
+  const [cashbackEventsSearch, setCashbackEventsSearch] = useState("");
+  const [cashbackEventsSearchDebounced, setCashbackEventsSearchDebounced] = useState("");
 
   // Debounce search inputs
   useEffect(() => {
@@ -84,6 +88,20 @@ export default function Fidelizacao() {
     }, 400);
     return () => clearTimeout(timer);
   }, [cashbackSearch]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoyaltyEventsSearchDebounced(loyaltyEventsSearch);
+      setLoyaltyEventsPage(0);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [loyaltyEventsSearch]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCashbackEventsSearchDebounced(cashbackEventsSearch);
+      setCashbackEventsPage(0);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [cashbackEventsSearch]);
 
   // History queries with pagination
   const { data: loyaltyClientsData, isLoading: loyaltyClientsLoading } = trpc.loyalty.getClients.useQuery(
@@ -91,7 +109,7 @@ export default function Fidelizacao() {
     { enabled: !!establishmentId && (cashbackConfig?.rewardProgramType === 'loyalty' || cashbackConfig?.loyaltyEnabled) }
   );
   const { data: loyaltyEventsData, isLoading: loyaltyEventsLoading } = trpc.loyalty.getEventHistory.useQuery(
-    { establishmentId, limit: PAGE_SIZE, offset: loyaltyEventsPage * PAGE_SIZE, period: loyaltyEventsPeriod },
+    { establishmentId, limit: PAGE_SIZE, offset: loyaltyEventsPage * PAGE_SIZE, period: loyaltyEventsPeriod, search: loyaltyEventsSearchDebounced || undefined },
     { enabled: !!establishmentId && (cashbackConfig?.rewardProgramType === 'loyalty' || cashbackConfig?.loyaltyEnabled) }
   );
   const { data: cashbackClientsData, isLoading: cashbackClientsLoading } = trpc.cashback.getClients.useQuery(
@@ -99,7 +117,7 @@ export default function Fidelizacao() {
     { enabled: !!establishmentId && cashbackConfig?.rewardProgramType === 'cashback' }
   );
   const { data: cashbackEventsData, isLoading: cashbackEventsLoading } = trpc.cashback.getEventHistory.useQuery(
-    { establishmentId, limit: PAGE_SIZE, offset: cashbackEventsPage * PAGE_SIZE, period: cashbackEventsPeriod },
+    { establishmentId, limit: PAGE_SIZE, offset: cashbackEventsPage * PAGE_SIZE, period: cashbackEventsPeriod, search: cashbackEventsSearchDebounced || undefined },
     { enabled: !!establishmentId && cashbackConfig?.rewardProgramType === 'cashback' }
   );
 
@@ -801,15 +819,24 @@ export default function Fidelizacao() {
 
             {/* Histórico de eventos - Loyalty */}
             <div className="bg-card rounded-xl border border-border/50 p-5">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-2">
                 <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
                   <Clock className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <h3 className="text-base font-semibold text-foreground">Histórico de Fidelização</h3>
                   <p className="text-xs text-muted-foreground">Atividade recente dos clientes no programa</p>
                 </div>
                 <PeriodFilter value={loyaltyEventsPeriod} onChange={setLoyaltyEventsPeriod} />
+              </div>
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nome ou telefone..."
+                  value={loyaltyEventsSearch}
+                  onChange={(e) => setLoyaltyEventsSearch(e.target.value)}
+                  className="pl-9 h-9 text-sm"
+                />
               </div>
 
               {loyaltyEventsLoading ? (
@@ -939,15 +966,24 @@ export default function Fidelizacao() {
 
             {/* Histórico de eventos - Cashback */}
             <div className="bg-card rounded-xl border border-border/50 p-5">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-2">
                 <div className="h-10 w-10 rounded-xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center flex-shrink-0" style={{borderRadius: '12px'}}>
                   <Clock className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <h3 className="text-base font-semibold text-foreground">Histórico de Cashback</h3>
                   <p className="text-xs text-muted-foreground">Transações recentes de cashback dos clientes</p>
                 </div>
                 <PeriodFilter value={cashbackEventsPeriod} onChange={setCashbackEventsPeriod} />
+              </div>
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nome ou telefone..."
+                  value={cashbackEventsSearch}
+                  onChange={(e) => setCashbackEventsSearch(e.target.value)}
+                  className="pl-9 h-9 text-sm"
+                />
               </div>
 
               {cashbackEventsLoading ? (

@@ -8428,3 +8428,10 @@
 - [x] Atualizar procedure tRPC para incluir datas dos carimbos
 - [x] Adicionar tooltips nos quadradinhos mostrando data de cada carimbo
 - [x] Aplicar tooltips também nos cards de Clientes Perto da Recompensa
+
+## Busca no Histórico de Fidelização
+- [x] Atualizar db helper getLoyaltyEventHistory com parâmetro de busca (nome/telefone)
+- [x] Atualizar db helper getCashbackEventHistory com parâmetro de busca (nome/telefone)
+- [x] Atualizar procedures tRPC de histórico com parâmetro search
+- [x] Adicionar campo de busca no card Histórico de Fidelização (loyalty)
+- [x] Adicionar campo de busca no card Histórico de Cashback

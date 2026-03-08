@@ -2817,9 +2817,9 @@ export const appRouter = router({
 
     // Histórico de eventos (carimbos ganhos, cartões completados)
     getEventHistory: protectedProcedure
-      .input(z.object({ establishmentId: z.number(), limit: z.number().optional(), offset: z.number().optional(), period: z.enum(['today', 'week', 'month']).optional() }))
+      .input(z.object({ establishmentId: z.number(), limit: z.number().optional(), offset: z.number().optional(), period: z.enum(['today', 'week', 'month']).optional(), search: z.string().optional() }))
       .query(async ({ input }) => {
-        return db.getLoyaltyEventHistory(input.establishmentId, input.limit ?? 10, input.offset ?? 0, input.period);
+        return db.getLoyaltyEventHistory(input.establishmentId, input.limit ?? 10, input.offset ?? 0, input.period, input.search);
       }),
   }),
 
@@ -6292,9 +6292,9 @@ export const appRouter = router({
 
     // Histórico de eventos de cashback (créditos e débitos)
     getEventHistory: protectedProcedure
-      .input(z.object({ establishmentId: z.number(), limit: z.number().optional(), offset: z.number().optional(), period: z.enum(['today', 'week', 'month']).optional() }))
+      .input(z.object({ establishmentId: z.number(), limit: z.number().optional(), offset: z.number().optional(), period: z.enum(['today', 'week', 'month']).optional(), search: z.string().optional() }))
       .query(async ({ input }) => {
-        return db.getCashbackEventHistory(input.establishmentId, input.limit ?? 10, input.offset ?? 0, input.period);
+        return db.getCashbackEventHistory(input.establishmentId, input.limit ?? 10, input.offset ?? 0, input.period, input.search);
       }),
   }),
 
