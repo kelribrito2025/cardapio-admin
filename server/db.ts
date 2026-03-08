@@ -12228,18 +12228,21 @@ export async function getLoyaltyCardClients(establishmentId: number, limit = 10,
     .limit(limit)
     .offset(offset);
 
-  // Para cada cartão, buscar a data do último carimbo
+  // Para cada cartão, buscar todas as datas dos carimbos
   const result = await Promise.all(cards.map(async (card) => {
-    const lastStamp = await db.select({
+    const allStamps = await db.select({
       createdAt: loyaltyStamps.createdAt,
     }).from(loyaltyStamps)
       .where(eq(loyaltyStamps.loyaltyCardId, card.id))
-      .orderBy(desc(loyaltyStamps.createdAt))
-      .limit(1);
+      .orderBy(loyaltyStamps.createdAt);
+
+    const stampDates = allStamps.map(s => s.createdAt);
+    const lastStampDate = stampDates.length > 0 ? stampDates[stampDates.length - 1] : card.updatedAt;
 
     return {
       ...card,
-      lastStampDate: lastStamp[0]?.createdAt ?? card.updatedAt,
+      lastStampDate,
+      stampDates,
     };
   }));
 

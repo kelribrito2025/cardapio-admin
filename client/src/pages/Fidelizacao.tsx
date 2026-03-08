@@ -16,9 +16,10 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   ResponsiveContainer,
 } from "recharts";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 export default function Fidelizacao() {
   // Get establishment
@@ -496,7 +497,7 @@ export default function Fidelizacao() {
                         allowDecimals={false}
                         tickLine={false}
                       />
-                      <Tooltip
+                      <RechartsTooltip
                         contentStyle={{
                           backgroundColor: 'hsl(var(--card))',
                           border: '1px solid hsl(var(--border))',
@@ -607,14 +608,14 @@ export default function Fidelizacao() {
                         allowDecimals={false}
                         tickLine={false}
                       />
-                      <Tooltip
+                      <RechartsTooltip
                         contentStyle={{
                           backgroundColor: 'hsl(var(--card))',
                           border: '1px solid hsl(var(--border))',
                           borderRadius: '8px',
                           fontSize: '12px',
                         }}
-                        formatter={(value: number) => [`${value} transações`, 'Cashback gerado']}
+                        formatter={(value: number) => [`R$ ${Number(value).toFixed(2)}`, 'Cashback']}
                         labelFormatter={(label: string) => `Data: ${label}`}
                       />
                       <Area
@@ -661,17 +662,27 @@ export default function Fidelizacao() {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{client.customerName || client.customerPhone}</p>
                         <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                          {Array.from({ length: stampsRequiredConfig }, (_, i) => (
-                            <div
-                              key={i}
-                              className={cn(
-                                "w-5 h-5 rounded-md transition-all",
-                                i < client.stamps
-                                  ? "bg-amber-500 dark:bg-amber-400"
-                                  : "bg-muted/60 dark:bg-muted/30"
-                              )}
-                            />
-                          ))}
+                          {Array.from({ length: stampsRequiredConfig }, (_, i) => {
+                            const hasStamp = i < client.stamps;
+                            const stampDate = hasStamp && client.stampDates?.[i] ? new Date(client.stampDates[i]).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : null;
+                            return (
+                              <Tooltip key={i}>
+                                <TooltipTrigger asChild>
+                                  <div
+                                    className={cn(
+                                      "w-5 h-5 rounded-md transition-all cursor-pointer",
+                                      hasStamp
+                                        ? "bg-amber-500 dark:bg-amber-400"
+                                        : "bg-muted/60 dark:bg-muted/30"
+                                    )}
+                                  />
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="text-xs">
+                                  {hasStamp ? `Carimbo ${i + 1} • ${stampDate}` : `Carimbo ${i + 1} • Pendente`}
+                                </TooltipContent>
+                              </Tooltip>
+                            );
+                          })}
                           <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 whitespace-nowrap ml-1">
                             {client.stamps} / {stampsRequiredConfig}
                           </span>
@@ -743,19 +754,29 @@ export default function Fidelizacao() {
                             </span>
                           </div>
                           <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                            {Array.from({ length: stampsRequiredConfig }, (_, i) => (
-                              <div
-                                key={i}
-                                className={cn(
-                                  "w-5 h-5 rounded-md transition-all",
-                                  i < client.stamps
-                                    ? isComplete
-                                      ? "bg-emerald-500 dark:bg-emerald-400"
-                                      : "bg-emerald-400 dark:bg-emerald-500/80"
-                                    : "bg-muted/60 dark:bg-muted/30"
-                                )}
-                              />
-                            ))}
+                            {Array.from({ length: stampsRequiredConfig }, (_, i) => {
+                              const hasStamp = i < client.stamps;
+                              const stampDate = hasStamp && client.stampDates?.[i] ? new Date(client.stampDates[i]).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : null;
+                              return (
+                                <Tooltip key={i}>
+                                  <TooltipTrigger asChild>
+                                    <div
+                                      className={cn(
+                                        "w-5 h-5 rounded-md transition-all cursor-pointer",
+                                        hasStamp
+                                          ? isComplete
+                                            ? "bg-emerald-500 dark:bg-emerald-400"
+                                            : "bg-emerald-400 dark:bg-emerald-500/80"
+                                          : "bg-muted/60 dark:bg-muted/30"
+                                      )}
+                                    />
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="text-xs">
+                                    {hasStamp ? `Carimbo ${i + 1} • ${stampDate}` : `Carimbo ${i + 1} • Pendente`}
+                                  </TooltipContent>
+                                </Tooltip>
+                              );
+                            })}
                             <span className={cn(
                               "text-xs font-medium whitespace-nowrap ml-1",
                               isComplete ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"

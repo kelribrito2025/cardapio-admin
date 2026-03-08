@@ -8422,3 +8422,9 @@
 - [x] Atualizar procedures tRPC com parâmetro de busca
 - [x] Adicionar campo de busca no card Clientes Fidelizados
 - [x] Adicionar campo de busca no card Clientes com Cashback
+
+## Tooltips nos Quadradinhos de Progresso do Cartão
+- [x] Atualizar db helper getLoyaltyCardClients para retornar datas dos carimbos individuais
+- [x] Atualizar procedure tRPC para incluir datas dos carimbos
+- [x] Adicionar tooltips nos quadradinhos mostrando data de cada carimbo
+- [x] Aplicar tooltips também nos cards de Clientes Perto da Recompensa
