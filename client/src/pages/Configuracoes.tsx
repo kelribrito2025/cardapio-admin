@@ -1107,10 +1107,10 @@ export default function Configuracoes() {
                     {/* Edit Logo Button */}
                     <button
                       onClick={() => logoInputRef.current?.click()}
-                      className="absolute bottom-1 right-1 p-2 bg-card hover:bg-muted rounded-full shadow-md transition-colors z-20"
+                      className="absolute bottom-1 right-1 p-2 bg-black/50 hover:bg-black/70 rounded-full shadow-md transition-colors z-20 text-white"
                       title="Alterar logo"
                     >
-                      <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                      <Camera className="h-3.5 w-3.5" />
                     </button>
                     <input
                       ref={logoInputRef}

@@ -8559,4 +8559,4 @@
 - [x] Adicionar botão para remover imagem de perfil (logo) no preview do perfil público
 - [x] Adicionar botão para remover imagem de capa no preview do perfil público
 - [x] Substituir botões de lixeira por overlay hover elegante com texto "Remover capa" e "Remover foto"
-- [ ] Trocar ícone de lápis por ícone de câmera no botão de editar foto do perfil
+- [x] Trocar ícone de lápis por ícone de câmera no botão de editar foto do perfil
