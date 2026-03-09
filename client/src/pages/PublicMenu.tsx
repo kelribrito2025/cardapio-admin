@@ -3050,154 +3050,32 @@ export default function PublicMenu() {
         </div>
       </main>
 
-      {/* SEO Section - Mini Hero Informativo */}
+      {/* SEO Text Section - visível para crawlers, discreto para usuários */}
       {establishment && (
-        <section className="border-t border-gray-200 py-8 px-4">
-          <div className="max-w-7xl mx-auto w-full">
-            <div className="bg-red-50/70 rounded-2xl border border-red-100/60 p-5 md:p-7">
-              {/* Header do restaurante */}
-              <div className="text-center mb-4">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-1">
-                  {establishment.name} — Cardápio Digital e Delivery
-                </h2>
-                <p className="text-sm text-gray-500 font-medium">
-                  Cardápio Digital
-                  {establishment.deliveryEnabled ? ' • Delivery' : ''}
-                  {establishment.pickupEnabled ? ' • Retirada' : ''}
-                  {establishment.dineInEnabled ? ' • Mesa' : ''}
-                </p>
-              </div>
-
-              {/* Separador vermelho */}
-              <div className="w-12 h-0.5 bg-red-400 mx-auto mb-4 rounded-full" />
-
-              {/* Status aberto/fechado + Avaliação */}
-              <div className="flex items-center justify-center gap-3 mb-4 flex-wrap">
-                {isOpen ? (
-                  <span className="flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm font-semibold border border-green-200">
-                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    Aberto agora
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1.5 bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-sm font-semibold border border-gray-200">
-                    <span className="w-2 h-2 bg-gray-400 rounded-full" />
-                    Fechado
-                  </span>
-                )}
-                {(establishment.rating || establishment.reviewCount) && (
-                  <div className="flex items-center gap-1.5 bg-amber-50 text-amber-700 px-3 py-1 rounded-full border border-amber-200">
-                    <svg className="w-3.5 h-3.5 fill-amber-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    <span className="text-sm font-bold">{establishment.rating ? Number(establishment.rating).toFixed(1) : '0.0'}</span>
-                    <span className="text-xs text-amber-600">({establishment.reviewCount || 0} {(establishment.reviewCount || 0) === 1 ? 'avaliação' : 'avaliações'})</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Informações com ícones */}
-              <div className="space-y-2.5 mb-4">
-                {/* Localização */}
-                {establishment.street && (
-                  <div className="flex items-start gap-2.5 text-sm text-gray-600">
-                    <span className="text-base mt-0.5 flex-shrink-0">📍</span>
-                    <span>
-                      {establishment.street}
-                      {establishment.number ? `, ${establishment.number}` : ''}
-                      {establishment.neighborhood ? ` — ${establishment.neighborhood}` : ''}
-                      {establishment.city ? `, ${establishment.city}` : ''}
-                      {establishment.state ? ` ${establishment.state}` : ''}
-                    </span>
-                  </div>
-                )}
-
-                {/* Modalidades */}
-                <div className="flex items-start gap-2.5 text-sm text-gray-600">
-                  <span className="text-base mt-0.5 flex-shrink-0">🛵</span>
-                  <span>
-                    {[establishment.deliveryEnabled && 'Delivery', establishment.pickupEnabled && 'Retirada no local', establishment.dineInEnabled && 'Consumo no local'].filter(Boolean).join(' • ') || 'Pedidos online'}
-                  </span>
-                </div>
-
-                {/* Horário de funcionamento - agrupado */}
-                {businessHoursData && businessHoursData.length > 0 && (() => {
-                  const dayAbbr = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-                  // Agrupar dias consecutivos com mesmo horário
-                  const groups: { days: number[]; hours: string }[] = [];
-                  for (let i = 0; i < 7; i++) {
-                    const dayData = businessHoursData.find((h: any) => h.dayOfWeek === i);
-                    const hours = dayData?.isActive && dayData.openTime && dayData.closeTime
-                      ? `${dayData.openTime} às ${dayData.closeTime}`
-                      : 'Fechado';
-                    const lastGroup = groups[groups.length - 1];
-                    if (lastGroup && lastGroup.hours === hours && lastGroup.days[lastGroup.days.length - 1] === i - 1) {
-                      lastGroup.days.push(i);
-                    } else {
-                      groups.push({ days: [i], hours });
-                    }
-                  }
-                  return (
-                    <div className="flex items-start gap-2.5 text-sm text-gray-600">
-                      <span className="text-base mt-0.5 flex-shrink-0">🕒</span>
-                      <div>
-                        <span className="font-semibold text-gray-700 text-sm">Horário de funcionamento</span>
-                        <div className="mt-1.5 space-y-0.5">
-                          {groups.map((group, idx) => {
-                            const label = group.days.length === 1
-                              ? dayAbbr[group.days[0]]
-                              : group.days.length === 2
-                                ? `${dayAbbr[group.days[0]]} e ${dayAbbr[group.days[group.days.length - 1]]}`
-                                : `${dayAbbr[group.days[0]]} a ${dayAbbr[group.days[group.days.length - 1]]}`;
-                            return (
-                              <div key={idx} className="text-xs text-gray-500">
-                                <span className="text-gray-600">{label}</span>
-                                <span className="mx-1">—</span>
-                                <span className="font-semibold text-gray-700">{group.hours}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-
-              {/* Categorias em carrossel marquee */}
-              {categories && categories.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">Categorias</p>
-                  <div className="relative overflow-hidden">
-                    {/* Fade edges */}
-                    <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-red-50/70 to-transparent z-10 pointer-events-none" />
-                    <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-red-50/70 to-transparent z-10 pointer-events-none" />
-                    <div className="flex animate-marquee-segments hover:[animation-play-state:paused]" style={{ width: 'max-content' }}>
-                      {[...categories, ...categories].map((cat, idx) => (
-                        <button
-                          key={`${cat.id}-${idx}`}
-                          onClick={() => {
-                            scrollToCategory(cat.id);
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                          }}
-                          className="flex-shrink-0 mx-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-white/80 hover:bg-red-100 hover:text-red-600 border border-red-100/60 hover:border-red-200 rounded-full transition-colors cursor-pointer whitespace-nowrap"
-                        >
-                          {cat.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Separador */}
-              <div className="border-t border-red-100/50 my-4" />
-
-              {/* CTA para SEO */}
-              <p className="text-center text-xs text-gray-400 leading-relaxed">
-                Faça seu pedido online pelo cardápio digital
-                {establishment.name ? <> do <strong className="text-gray-500">{establishment.name}</strong></> : ''}
-                {establishment.city ? ` em ${establishment.city}` : ''}.
-                {' '}Entrega rápida e prática.
+        <section className="bg-gray-50 border-t border-gray-200 py-6 px-4">
+          <div className="container mx-auto max-w-3xl">
+            <h2 className="text-lg font-semibold text-gray-700 mb-2">
+              {establishment.name} — Cardápio Digital e Delivery
+            </h2>
+            <p className="text-sm text-gray-500 leading-relaxed mb-2">
+              Confira o cardápio completo de <strong>{establishment.name}</strong>
+              {establishment.city ? ` em ${establishment.city}` : ''}
+              {establishment.state ? `/${establishment.state}` : ''}.
+              {' '}Faça seu pedido online com entrega rápida e prática.
+              {establishment.street ? ` Localizado em ${establishment.street}${establishment.number ? `, ${establishment.number}` : ''}${establishment.neighborhood ? ` — ${establishment.neighborhood}` : ''}.` : ''}
+            </p>
+            {categories && categories.length > 0 && (
+              <p className="text-xs text-gray-400 leading-relaxed">
+                <strong>Categorias disponíveis:</strong>{' '}
+                {categories.map(c => c.name).join(' • ')}
               </p>
-            </div>
+            )}
+            <p className="text-xs text-gray-400 mt-2">
+              Cardápio digital com pedidos online, delivery e retirada.
+              {establishment.deliveryEnabled ? ' Entrega disponível.' : ''}
+              {establishment.pickupEnabled ? ' Retirada no local.' : ''}
+              {establishment.dineInEnabled ? ' Consumo no local.' : ''}
+            </p>
           </div>
         </section>
       )}
