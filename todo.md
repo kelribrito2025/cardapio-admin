@@ -8550,3 +8550,5 @@
 - [x] Editar texto "Como funciona" para "Nossa IA Mindi Vision melhora iluminação, cores e cria um cenário profissional. A comida em si não é alterada."
 - [x] Adicionar badge sparkles no canto superior direito da foto do produto no catálogo quando foto foi melhorada com IA, com tooltip "Foto aprimorada com Mindi Vision"
 - [x] Adicionar badge sparkles Mindi Vision nas fotos do sidebar de edição de produto (mesmo estilo do catálogo)
+
+- [x] Corrigir texto incompleto na sidebar de boas-vindas: "Seu restaurante X com sucesso." → frase completa

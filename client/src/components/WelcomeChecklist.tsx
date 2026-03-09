@@ -655,7 +655,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
             <div className="flex-1 min-w-0">
               <h2 className="text-lg font-bold text-foreground tracking-tight">Bem-vindo ao Mindi!</h2>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Seu restaurante <span className="font-medium text-foreground">{establishmentName || "foi criado"}</span> com sucesso.
+                Seu restaurante <span className="font-medium text-foreground">{establishmentName}</span> foi criado com sucesso.
               </p>
             </div>
           </div>
@@ -784,7 +784,7 @@ export function WelcomeChecklist({ establishmentId, establishmentName, externalO
                     <div>
                       <h2 className="text-xl font-bold text-foreground tracking-tight">Bem-vindo ao Mindi!</h2>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        Seu restaurante <span className="font-medium text-foreground">{establishmentName || "foi criado"}</span> com sucesso.
+                        Seu restaurante <span className="font-medium text-foreground">{establishmentName}</span> foi criado com sucesso.
                       </p>
                     </div>
                   </div>
