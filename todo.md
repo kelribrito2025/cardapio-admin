@@ -8497,3 +8497,6 @@
 - [x] Modal antes/depois com opção de aceitar nova imagem ou manter original
 - [x] Guardar imagem original e imagem melhorada separadamente no S3
 - [ ] No cardápio público, exibir a versão melhorada quando disponível (pendente - precisa mapear no getBySlug)
+
+## Bug: coluna enhancedImages não existe no banco
+- [x] Executar db:push para criar a coluna enhancedImages na tabela products
