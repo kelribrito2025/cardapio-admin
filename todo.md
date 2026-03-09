@@ -8487,3 +8487,13 @@
 
 ## Texto do botão da sacola
 - [x] Alterar texto do botão "Finalizar pedido" para "Avançar" na sacola do menu público
+
+## Melhoramento de Imagens com IA (Nano Banana / Gemini)
+- [x] Pesquisar e integrar API Gemini para edição/geração de imagens
+- [x] Criar endpoint tRPC para melhoramento de imagem (enviar imagem + prompt, receber imagem melhorada)
+- [x] Prompt inteligente que identifica o tipo de comida e cria cenário temático (ex: hambúrguer → tábua de madeira, fundo churrasqueira)
+- [x] Limitar imagens a 4MB antes de enviar para a API
+- [x] Botão "Melhorar foto" na sidebar de edição de produto
+- [x] Modal antes/depois com opção de aceitar nova imagem ou manter original
+- [x] Guardar imagem original e imagem melhorada separadamente no S3
+- [ ] No cardápio público, exibir a versão melhorada quando disponível (pendente - precisa mapear no getBySlug)

@@ -19,6 +19,7 @@ import {
   ImagePlus,
   X,
   Info,
+  Sparkles,
 } from "lucide-react";
 import {
   Tooltip,
@@ -30,6 +31,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation, useParams } from "wouter";
 import { toast } from "sonner";
 import { cn, capitalizeFirst, formatPriceInput, parsePriceInput } from "@/lib/utils";
+import ImageEnhanceModal from "@/components/ImageEnhanceModal";
 
 
 
@@ -66,6 +68,11 @@ export default function ProductForm() {
   // Image upload
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Image enhance modal
+  const [enhanceModalOpen, setEnhanceModalOpen] = useState(false);
+  const [enhanceImageIndex, setEnhanceImageIndex] = useState(0);
+  const [enhanceImageUrl, setEnhanceImageUrl] = useState("");
   
 
   
@@ -460,13 +467,29 @@ export default function ProductForm() {
                         alt={`Imagem ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
-                      <button
-                        type="button"
-                        onClick={() => handleImageRemove(index)}
-                        className="absolute top-1.5 right-1.5 p-1 bg-destructive text-destructive-foreground rounded-md opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
+                      <div className="absolute top-1.5 right-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {isEditing && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEnhanceImageUrl(img);
+                              setEnhanceImageIndex(index);
+                              setEnhanceModalOpen(true);
+                            }}
+                            className="p-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-md shadow-sm hover:from-amber-600 hover:to-orange-600 transition-colors"
+                            title="Melhorar foto com IA"
+                          >
+                            <Sparkles className="h-3 w-3" />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleImageRemove(index)}
+                          className="p-1 bg-destructive text-destructive-foreground rounded-md shadow-sm"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                   <input
@@ -624,6 +647,22 @@ export default function ProductForm() {
           </div>
         </div>
       </form>
+      {/* Modal de melhoramento de imagem com IA */}
+      {isEditing && params.id && (
+        <ImageEnhanceModal
+          open={enhanceModalOpen}
+          onOpenChange={setEnhanceModalOpen}
+          productId={Number(params.id)}
+          imageUrl={enhanceImageUrl}
+          imageIndex={enhanceImageIndex}
+          onEnhanced={(enhancedUrl) => {
+            // Substituir a imagem no array local
+            const newImages = [...images];
+            newImages[enhanceImageIndex] = enhancedUrl;
+            setImages(newImages);
+          }}
+        />
+      )}
     </AdminLayout>
   );
 }

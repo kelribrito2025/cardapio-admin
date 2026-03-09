@@ -814,6 +814,66 @@ export const appRouter = router({
         await db.reorderProducts(input);
         return { success: true };
       }),
+
+    // Melhorar imagem do produto com IA (Nano Banana)
+    enhanceImage: protectedProcedure
+      .input(z.object({
+        productId: z.number(),
+        imageUrl: z.string().url(),
+        imageIndex: z.number().default(0), // Índice da imagem no array de images
+      }))
+      .mutation(async ({ input }) => {
+        const product = await db.getProductById(input.productId);
+        if (!product) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Produto n\u00e3o encontrado' });
+        }
+
+        const { enhanceProductImage } = await import('./imageEnhancer');
+        const result = await enhanceProductImage(input.imageUrl, product.establishmentId);
+
+        // Atualizar o array enhancedImages do produto
+        const currentEnhanced = (product.enhancedImages as string[] | null) || [];
+        const newEnhanced = [...currentEnhanced];
+        // Garantir que o array tem o tamanho correto
+        while (newEnhanced.length <= input.imageIndex) {
+          newEnhanced.push('');
+        }
+        newEnhanced[input.imageIndex] = result.enhancedUrl;
+
+        await db.updateProduct(input.productId, {
+          enhancedImages: newEnhanced,
+        });
+
+        return {
+          enhancedUrl: result.enhancedUrl,
+          originalUrl: result.originalUrl,
+        };
+      }),
+
+    // Reverter imagem melhorada para a original
+    revertEnhancedImage: protectedProcedure
+      .input(z.object({
+        productId: z.number(),
+        imageIndex: z.number().default(0),
+      }))
+      .mutation(async ({ input }) => {
+        const product = await db.getProductById(input.productId);
+        if (!product) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Produto n\u00e3o encontrado' });
+        }
+
+        const currentEnhanced = (product.enhancedImages as string[] | null) || [];
+        const newEnhanced = [...currentEnhanced];
+        if (input.imageIndex < newEnhanced.length) {
+          newEnhanced[input.imageIndex] = '';
+        }
+
+        await db.updateProduct(input.productId, {
+          enhancedImages: newEnhanced,
+        });
+
+        return { success: true };
+      }),
   }),
 
   // ============ COMPLEMENTS ============

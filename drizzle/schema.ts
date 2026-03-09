@@ -160,6 +160,7 @@ export const products = mysqlTable("products", {
   description: text("description"),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   images: json("images").$type<string[]>(),
+  enhancedImages: json("enhancedImages").$type<string[]>(), // Imagens melhoradas por IA (Nano Banana)
   blurPlaceholder: text("blurPlaceholder"),
   status: mysqlEnum("status", ["active", "paused", "archived"]).default("active").notNull(),
   stockQuantity: int("stockQuantity"),
