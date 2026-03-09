@@ -68,6 +68,9 @@ import {
   ChevronDown,
   FileText,
   Globe,
+  Eye,
+  MapPinned,
+  StickyNote,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
@@ -989,7 +992,7 @@ export default function Configuracoes() {
           <div className="flex flex-col lg:flex-row gap-5 items-start">
             {/* Preview do Perfil Público - 40% sticky */}
             <div className="w-full lg:w-[40%] lg:sticky lg:top-4 shrink-0">
-              <SectionCard title="Preview do Perfil Público" className="h-full">
+              <SectionCard title="Preview do Perfil Público" description="Visualize como seu perfil aparece para os clientes" icon={<Eye className="h-5 w-5 text-blue-600 dark:text-blue-400" />} iconBg="bg-blue-100 dark:bg-blue-500/15" className="h-full">
                 <div className="bg-card rounded-2xl overflow-hidden border border-border/30 shadow-sm">
               {/* Cover Image */}
               <div className="relative h-48 bg-gradient-to-br from-red-100 to-red-50 group/cover">
@@ -1353,7 +1356,7 @@ export default function Configuracoes() {
             {/* Coluna direita - 60% */}
             <div className="w-full lg:flex-1 space-y-5">
             <div>
-              <SectionCard title="Endereço do Estabelecimento" className="h-full">
+              <SectionCard title="Endereço do Estabelecimento" description="Localização exibida no cardápio público" icon={<MapPinned className="h-5 w-5 text-red-600 dark:text-red-400" />} iconBg="bg-red-100 dark:bg-red-500/15" className="h-full">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <p className="text-xs text-muted-foreground">Campos com <span className="text-red-500">*</span> são obrigatórios</p>
@@ -1470,11 +1473,9 @@ export default function Configuracoes() {
 
           {/* Nota do Restaurante */}
           <div>
-          <SectionCard title="Nota do Restaurante">
+          <SectionCard title="Nota do Restaurante" description="Adicione uma nota que aparecerá como um balão acima da foto no seu Menu digital." icon={<StickyNote className="h-5 w-5 text-amber-600 dark:text-amber-400" />} iconBg="bg-amber-100 dark:bg-amber-500/15">
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Adicione uma nota temporária que aparecerá como um balão acima da foto no cardápio público.
-              </p>
+
               
               {/* Campo de texto + Botão Sugestões */}
               <div className="space-y-2">
@@ -1667,7 +1668,7 @@ export default function Configuracoes() {
           {activeSection === "atendimento" && (
             <div className="space-y-5">
           {/* Configurações básicas */}
-          <SectionCard title="Configurações básicas de atendimento">
+          <SectionCard title="Configurações básicas de atendimento" description="Tempo de entrega e pedido mínimo" icon={<Settings2 className="h-5 w-5 text-slate-600 dark:text-slate-400" />} iconBg="bg-slate-100 dark:bg-slate-500/15">
             <div className="space-y-5">
               {/* Linha 1: Link do cardápio, WhatsApp e Instagram */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -1746,7 +1747,7 @@ export default function Configuracoes() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Formas de pagamento */}
             <div ref={paymentMethodsCardRef} className="transition-all duration-300">
-            <SectionCard title="Formas de pagamento">
+            <SectionCard title="Formas de pagamento" description="Métodos aceitos no estabelecimento" icon={<CreditCard className="h-5 w-5 text-violet-600 dark:text-violet-400" />} iconBg="bg-violet-100 dark:bg-violet-500/15">
               <div className="space-y-3">
                 <div className="flex gap-2">
                   <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
@@ -1799,7 +1800,7 @@ export default function Configuracoes() {
             </div>
 
             {/* Pedidos */}
-            <SectionCard title="Pedidos">
+            <SectionCard title="Pedidos" description="Configurações de recebimento" icon={<Package className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />} iconBg="bg-emerald-100 dark:bg-emerald-500/15">
             <div className="space-y-3">
               <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg border border-border/30">
                 <div className={cn(
@@ -1842,7 +1843,7 @@ export default function Configuracoes() {
           {/* Informações e entrega + Taxa de entrega lado a lado */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Informações e entrega */}
-            <SectionCard title="Informações e entrega">
+            <SectionCard title="Informações e entrega" description="Dados exibidos no cardápio" icon={<Bike className="h-5 w-5 text-orange-600 dark:text-orange-400" />} iconBg="bg-orange-100 dark:bg-orange-500/15">
               <div className="space-y-3">
                 {/* Tipo de entrega - checkboxes compactos */}
                 <div className="flex flex-wrap gap-2">
@@ -1938,7 +1939,7 @@ export default function Configuracoes() {
             </SectionCard>
 
             {/* Taxa de Entrega */}
-            <SectionCard title="Taxa de entrega">
+            <SectionCard title="Taxa de entrega" description="Defina como cobrar a entrega" icon={<MapPin className="h-5 w-5 text-rose-600 dark:text-rose-400" />} iconBg="bg-rose-100 dark:bg-rose-500/15">
               <div className="space-y-3">
                 {/* Opções de taxa - formato compacto */}
                 <div className="flex flex-wrap gap-2">
@@ -2111,7 +2112,7 @@ export default function Configuracoes() {
 
           {/* Horários de Funcionamento */}
           <div ref={businessHoursCardRef}>
-          <SectionCard title="Horários de funcionamento">
+          <SectionCard title="Horários de funcionamento" description="Defina quando seu estabelecimento está aberto" icon={<Clock className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />} iconBg="bg-cyan-100 dark:bg-cyan-500/15">
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
                 Configure os horários de funcionamento do seu estabelecimento. O menu público exibirá automaticamente se o restaurante está aberto ou fechado.

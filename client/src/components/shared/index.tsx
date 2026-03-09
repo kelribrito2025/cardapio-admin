@@ -345,21 +345,30 @@ interface SectionCardProps {
   actions?: React.ReactNode;
   className?: string;
   noPadding?: boolean;
+  icon?: React.ReactNode;
+  iconBg?: string;
 }
 
-export function SectionCard({ title, description, children, actions, className, noPadding }: SectionCardProps) {
+export function SectionCard({ title, description, children, actions, className, noPadding, icon, iconBg }: SectionCardProps) {
   return (
     <div className={cn("bg-card rounded-xl border border-border/50", className)}>
       {(title || actions) && (
-        <div className="flex items-center justify-between px-6 py-3 border-b border-border/50" style={{height: '46px'}}>
-          <div>
-            {title && <h3 className="font-semibold text-base">{title}</h3>}
-            {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
+        <div className="flex items-center justify-between px-5 pt-5 pb-3">
+          <div className="flex items-center gap-3">
+            {icon && (
+              <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0", iconBg || "bg-muted")} style={{borderRadius: '12px'}}>
+                {icon}
+              </div>
+            )}
+            <div className="min-w-0">
+              {title && <h3 className="text-base font-semibold text-foreground">{title}</h3>}
+              {description && <p className="text-xs text-muted-foreground">{description}</p>}
+            </div>
           </div>
           {actions}
         </div>
       )}
-      <div className={noPadding ? "" : "p-6"}>
+      <div className={noPadding ? "" : "px-5 pb-5"}>
         {children}
       </div>
     </div>
