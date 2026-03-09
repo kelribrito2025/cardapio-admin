@@ -989,8 +989,8 @@ export default function Configuracoes() {
             <div className="space-y-5">
           {/* Preview do Perfil Público + Endereço lado a lado */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 items-stretch">
-            {/* Preview do Perfil Público - 60% */}
-            <div className="lg:col-span-3 h-full">
+            {/* Preview do Perfil Público - 40% */}
+            <div className="lg:col-span-2 h-full">
               <SectionCard title="Preview do Perfil Público" className="h-full">
                 <div className="bg-card rounded-2xl overflow-hidden border border-border/30 shadow-sm">
               {/* Cover Image */}
@@ -1352,8 +1352,8 @@ export default function Configuracoes() {
               </SectionCard>
             </div>
 
-            {/* Endereço do Estabelecimento - 40% */}
-            <div className="lg:col-span-2 h-full">
+            {/* Endereço do Estabelecimento - 60% */}
+            <div className="lg:col-span-3 h-full">
               <SectionCard title="Endereço do Estabelecimento" className="h-full">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
