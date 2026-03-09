@@ -8582,3 +8582,4 @@
 - [x] Padronizar estilo dos cards e headers da página Configurações > Estabelecimento para ficar igual ao padrão do Dashboard
 - [x] Remover container interno do card de Preview do Perfil para eliminar efeito de card dentro de card
 - [x] Tooltip no endereço truncado do card de Preview mostrando endereço completo ao hover
+- [x] Adicionar ícone azul de engrenagem no header da página de Configurações (mesmo padrão da Dashboard)

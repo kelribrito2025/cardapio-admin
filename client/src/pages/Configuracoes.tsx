@@ -984,6 +984,7 @@ export default function Configuracoes() {
             <PageHeader
               title="Configurações"
               description="Gerencie as configurações do seu estabelecimento"
+              icon={<Settings2 className="h-6 w-6 text-blue-600" />}
             />
           </div>
           
