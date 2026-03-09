@@ -8580,4 +8580,4 @@
 - [x] Fazer as 7 cores do estilo do balão caberem todas na mesma linha
 - [x] Alterar texto descritivo da nota do restaurante
 - [x] Padronizar estilo dos cards e headers da página Configurações > Estabelecimento para ficar igual ao padrão do Dashboard
-- [ ] Remover container interno do card de Preview do Perfil para eliminar efeito de card dentro de card
+- [x] Remover container interno do card de Preview do Perfil para eliminar efeito de card dentro de card

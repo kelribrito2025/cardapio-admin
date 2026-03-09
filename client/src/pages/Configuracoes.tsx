@@ -993,7 +993,6 @@ export default function Configuracoes() {
             {/* Preview do Perfil Público - 40% sticky */}
             <div className="w-full lg:w-[40%] lg:sticky lg:top-4 shrink-0">
               <SectionCard title="Preview do Perfil Público" description="Visualize como seu perfil aparece para os clientes" icon={<Eye className="h-5 w-5 text-blue-600 dark:text-blue-400" />} iconBg="bg-blue-100 dark:bg-blue-500/15" className="h-full">
-                <div className="bg-card rounded-2xl overflow-hidden border border-border/30 shadow-sm">
               {/* Cover Image */}
               <div className="relative h-48 bg-gradient-to-br from-red-100 to-red-50 group/cover">
                 {coverImage ? (
@@ -1346,10 +1345,7 @@ export default function Configuracoes() {
                     </button>
                   </div>
                 </div>
-                
-
               </div>
-            </div>
               </SectionCard>
             </div>
 
