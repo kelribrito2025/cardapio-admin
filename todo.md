@@ -8524,3 +8524,14 @@
 - [x] Adicionar dica SaaS após gerar: "Produtos com foto profissional vendem até 3x mais"
 - [x] Remover botão "Excluir produto" do Passo 3 da sidebar de edição
 - [x] Adicionar modal de confirmação ao clicar no X para excluir foto do produto
+
+## Redesenho do Bloco SEO no Menu Público
+- [x] Transformar bloco SEO em mini hero informativo com nome do restaurante, subtítulo e localização
+- [x] Adicionar ícones (localização, delivery, categorias) para melhor escaneabilidade
+- [x] Transformar categorias em tags/chips clicáveis
+- [x] Limitar largura (max-w-720px), centralizar e reduzir espaçamento
+- [x] Adicionar avaliação do restaurante e contagem de avaliações
+- [x] Card com background sutil e border-radius
+- [x] Melhorar hierarquia tipográfica (título, subtítulo, informações)
+- [x] Adicionar separador elegante
+- [x] CTA invisível para SEO no final
