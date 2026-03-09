@@ -3058,7 +3058,7 @@ export default function PublicMenu() {
               {/* Header do restaurante */}
               <div className="text-center mb-5">
                 <h2 className="text-2xl font-bold text-gray-800 mb-1">
-                  {establishment.name}
+                  {establishment.name} — Cardápio Digital e Delivery
                 </h2>
                 <p className="text-sm text-gray-500 font-medium">
                   Cardápio Digital

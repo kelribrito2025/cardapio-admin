@@ -8535,3 +8535,6 @@
 - [x] Melhorar hierarquia tipográfica (título, subtítulo, informações)
 - [x] Adicionar separador elegante
 - [x] CTA invisível para SEO no final
+
+## Corrigir título do bloco SEO
+- [x] Restaurar título para formato original: "Nome — Cardápio Digital e Delivery"
