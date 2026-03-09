@@ -8587,3 +8587,11 @@
 - [x] Colocar campos WhatsApp e Instagram na mesma linha no card Configurações básicas
 - [x] Adicionar ícone ao lado do campo Link do cardápio no card Configurações básicas (padronizar com WhatsApp e Instagram)
 - [x] Remover card 'Configurações básicas de atendimento' duplicado da aba Atendimento (já movido para Estabelecimento)
+- [x] Redesign aba Atendimento - Layout coluna única com max-width
+- [x] Redesign aba Atendimento - Card Modalidades de atendimento (pills selecionáveis)
+- [x] Redesign aba Atendimento - Card Tempo e pedido mínimo (campos limpos com ícones)
+- [x] Redesign aba Atendimento - Card Formas de pagamento (ícones visuais)
+- [x] Redesign aba Atendimento - Card Taxa de entrega (cards selecionáveis)
+- [x] Redesign aba Atendimento - Card Pedidos (toggle aceitar automaticamente)
+- [x] Redesign aba Atendimento - Horários de funcionamento (manter e polir)
+- [x] Redesign aba Atendimento - Botão único Salvar no final

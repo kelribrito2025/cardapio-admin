@@ -1748,393 +1748,430 @@ export default function Configuracoes() {
 
           {/* Atendimento Section */}
           {activeSection === "atendimento" && (
-            <div className="space-y-5">
-          {/* Formas de pagamento e Notificações SMS lado a lado */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Formas de pagamento */}
-            <div ref={paymentMethodsCardRef} className="transition-all duration-300">
-            <SectionCard title="Formas de pagamento" description="Métodos aceitos no estabelecimento" icon={<CreditCard className="h-5 w-5 text-violet-600 dark:text-violet-400" />} iconBg="bg-violet-100 dark:bg-violet-500/15">
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
-                    <Checkbox
-                      checked={acceptsCash}
-                      onCheckedChange={(checked) => setAcceptsCash(checked as boolean)}
-                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                    />
-                    <span className="font-medium text-sm">Dinheiro</span>
-                  </label>
-                  <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
-                    <Checkbox
-                      checked={acceptsCard}
-                      onCheckedChange={(checked) => setAcceptsCard(checked as boolean)}
-                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                    />
-                    <span className="font-medium text-sm">Cartão</span>
-                  </label>
-                  <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
-                    <Checkbox
-                      checked={acceptsPix}
-                      onCheckedChange={(checked) => setAcceptsPix(checked as boolean)}
-                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                    />
-                    <span className="font-medium text-sm">Pix</span>
-                  </label>
-                </div>
+            <div className="max-w-3xl mx-auto space-y-5">
 
-                {/* Campo de Chave Pix */}
-                {acceptsPix && (
-                  <div className="space-y-2 pt-2">
-                    <Label htmlFor="pixKey" className="text-sm font-medium">Chave Pix</Label>
-                    <Input
-                      id="pixKey"
-                      value={pixKey}
-                      onChange={(e) => setPixKey(e.target.value)}
-                      placeholder="CPF, CNPJ, email, telefone ou chave aleatória"
-                      className="rounded-lg h-9"
-                    />
-                    <p className="text-xs text-muted-foreground">Esta chave será exibida para o cliente copiar.</p>
-                  </div>
-                )}
-
-                <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-lg shadow-sm h-9 mt-2">
-                  <Save className="h-4 w-4 mr-2" />
-                  {isPending ? "Salvando..." : "Salvar"}
-                </Button>
-              </div>
-            </SectionCard>
-            </div>
-
-            {/* Pedidos */}
-            <SectionCard title="Pedidos" description="Configurações de recebimento" icon={<Package className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />} iconBg="bg-emerald-100 dark:bg-emerald-500/15">
-            <div className="space-y-3">
-              <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg border border-border/30">
+          {/* Pedidos - Aceitar automaticamente */}
+          <SectionCard title="Recebimento de pedidos" description="Como os pedidos são processados" icon={<Package className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />} iconBg="bg-emerald-100 dark:bg-emerald-500/15">
+            <div className="flex items-center justify-between gap-4 p-4 rounded-xl border border-border/40 bg-muted/20">
+              <div className="flex items-start gap-3">
                 <div className={cn(
-                  "p-2 rounded-lg shrink-0",
+                  "p-2.5 rounded-xl shrink-0 transition-colors",
                   autoAcceptOrders ? "bg-emerald-100" : "bg-muted/50"
                 )}>
                   <Check className={cn("h-5 w-5", autoAcceptOrders ? "text-emerald-600" : "text-muted-foreground")} />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <h4 className="font-semibold text-sm">Aceitar pedidos automaticamente</h4>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Pedidos entram direto como "Em preparo" sem precisar aceitar manualmente.
-                      </p>
-                    </div>
-                    <Switch
-                      checked={autoAcceptOrders}
-                      onCheckedChange={(checked) => setAutoAcceptOrders(checked)}
-                    />
-                  </div>
+                <div>
+                  <h4 className="font-semibold text-sm">Aceitar pedidos automaticamente</h4>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Pedidos entram direto como "Em preparo" sem precisar aceitar manualmente.
+                  </p>
                   {autoAcceptOrders && (
-                    <div className="mt-2 p-2 bg-emerald-50 rounded border border-emerald-200">
-                      <p className="text-xs text-emerald-700">
-                        <strong>Ativo:</strong> Novos pedidos serão aceitos automaticamente e irão direto para preparo.
-                      </p>
-                    </div>
+                    <p className="text-xs text-emerald-600 font-medium mt-1.5">
+                      Ativo — Novos pedidos serão aceitos automaticamente.
+                    </p>
                   )}
                 </div>
               </div>
+              <Switch
+                checked={autoAcceptOrders}
+                onCheckedChange={(checked) => setAutoAcceptOrders(checked)}
+              />
+            </div>
+          </SectionCard>
 
-              <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-lg shadow-sm h-9">
-                <Save className="h-4 w-4 mr-2" />
-                {isPending ? "Salvando..." : "Salvar"}
-              </Button>
-              </div>
-            </SectionCard>
-          </div>
+          {/* Modalidades de atendimento + Tempo + Pedido mínimo */}
+          <SectionCard title="Modalidades e entrega" description="Tipos de atendimento e configurações de entrega" icon={<Bike className="h-5 w-5 text-orange-600 dark:text-orange-400" />} iconBg="bg-orange-100 dark:bg-orange-500/15">
+            <div className="space-y-5">
+              {/* Modalidades */}
+              <div>
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Modalidades disponíveis</Label>
+                <div className="grid grid-cols-3 gap-3 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setAllowsDelivery(!allowsDelivery)}
+                    className={cn(
+                      "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                      allowsDelivery
+                        ? "border-orange-500 bg-orange-50 shadow-sm"
+                        : "border-border/50 bg-muted/20 hover:bg-muted/40"
+                    )}
+                  >
+                    <div className={cn(
+                      "p-2.5 rounded-xl transition-colors",
+                      allowsDelivery ? "bg-orange-100" : "bg-muted/50"
+                    )}>
+                      <Bike className={cn("h-5 w-5", allowsDelivery ? "text-orange-600" : "text-muted-foreground")} />
+                    </div>
+                    <span className={cn("font-semibold text-sm", allowsDelivery ? "text-orange-700" : "text-muted-foreground")}>Entrega</span>
+                  </button>
 
-          {/* Informações e entrega + Taxa de entrega lado a lado */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Informações e entrega */}
-            <SectionCard title="Informações e entrega" description="Dados exibidos no cardápio" icon={<Bike className="h-5 w-5 text-orange-600 dark:text-orange-400" />} iconBg="bg-orange-100 dark:bg-orange-500/15">
-              <div className="space-y-3">
-                {/* Tipo de entrega - checkboxes compactos */}
-                <div className="flex flex-wrap gap-2">
-                  <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
-                    <Checkbox
-                      checked={allowsDelivery}
-                      onCheckedChange={(checked) => setAllowsDelivery(checked as boolean)}
-                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                    />
-                    <Bike className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium text-sm">Entrega</span>
-                  </label>
-                  <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
-                    <Checkbox
-                      checked={allowsPickup}
-                      onCheckedChange={(checked) => setAllowsPickup(checked as boolean)}
-                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                    />
-                    <Store className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium text-sm">Retirada</span>
-                  </label>
-                  <label className="flex items-center gap-2 px-3 py-2 border border-border/50 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors">
-                    <Checkbox
-                      checked={allowsDineIn}
-                      onCheckedChange={(checked) => setAllowsDineIn(checked as boolean)}
-                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                    />
-                    <UtensilsCrossed className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium text-sm">Consumir no local</span>
-                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setAllowsPickup(!allowsPickup)}
+                    className={cn(
+                      "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                      allowsPickup
+                        ? "border-blue-500 bg-blue-50 shadow-sm"
+                        : "border-border/50 bg-muted/20 hover:bg-muted/40"
+                    )}
+                  >
+                    <div className={cn(
+                      "p-2.5 rounded-xl transition-colors",
+                      allowsPickup ? "bg-blue-100" : "bg-muted/50"
+                    )}>
+                      <Store className={cn("h-5 w-5", allowsPickup ? "text-blue-600" : "text-muted-foreground")} />
+                    </div>
+                    <span className={cn("font-semibold text-sm", allowsPickup ? "text-blue-700" : "text-muted-foreground")}>Retirada</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setAllowsDineIn(!allowsDineIn)}
+                    className={cn(
+                      "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                      allowsDineIn
+                        ? "border-violet-500 bg-violet-50 shadow-sm"
+                        : "border-border/50 bg-muted/20 hover:bg-muted/40"
+                    )}
+                  >
+                    <div className={cn(
+                      "p-2.5 rounded-xl transition-colors",
+                      allowsDineIn ? "bg-violet-100" : "bg-muted/50"
+                    )}>
+                      <UtensilsCrossed className={cn("h-5 w-5", allowsDineIn ? "text-violet-600" : "text-muted-foreground")} />
+                    </div>
+                    <span className={cn("font-semibold text-sm", allowsDineIn ? "text-violet-700" : "text-muted-foreground")}>No local</span>
+                  </button>
                 </div>
+              </div>
 
+              {/* Tempo de entrega e Pedido mínimo lado a lado */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Tempo de entrega */}
-                <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg border border-border/30">
-                  <Checkbox
-                    checked={deliveryTimeEnabled}
-                    onCheckedChange={(checked) => setDeliveryTimeEnabled(checked as boolean)}
-                    className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary shrink-0"
-                  />
-                  <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="font-medium text-sm whitespace-nowrap">Tempo</span>
+                <div className="p-4 rounded-xl border border-border/40 bg-muted/20 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-cyan-50 rounded-lg">
+                        <Clock className="h-4 w-4 text-cyan-600" />
+                      </div>
+                      <Label className="text-sm font-semibold">Tempo de entrega</Label>
+                    </div>
+                    <Checkbox
+                      checked={deliveryTimeEnabled}
+                      onCheckedChange={(checked) => setDeliveryTimeEnabled(checked as boolean)}
+                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                  </div>
                   {deliveryTimeEnabled && (
-                    <div className="flex items-center gap-1 ml-auto">
+                    <div className="flex items-center gap-2">
                       <Input
                         type="number"
                         value={deliveryTimeMin}
                         onChange={(e) => setDeliveryTimeMin(parseInt(e.target.value) || 0)}
-                        className="w-14 h-7 rounded text-sm px-2"
+                        className="flex-1 h-9 rounded-xl text-sm text-center"
                         min={0}
                       />
-                      <span className="text-xs text-muted-foreground">-</span>
+                      <span className="text-sm text-muted-foreground font-medium">a</span>
                       <Input
                         type="number"
                         value={deliveryTimeMax}
                         onChange={(e) => setDeliveryTimeMax(parseInt(e.target.value) || 0)}
-                        className="w-14 h-7 rounded text-sm px-2"
+                        className="flex-1 h-9 rounded-xl text-sm text-center"
                         min={0}
                       />
-                      <span className="text-xs text-muted-foreground">min</span>
+                      <span className="text-sm text-muted-foreground font-medium">min</span>
                     </div>
                   )}
                 </div>
-                
-                {/* Pedido Mínimo */}
-                <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg border border-border/30">
-                  <Checkbox
-                    checked={minimumOrderEnabled}
-                    onCheckedChange={(checked) => setMinimumOrderEnabled(checked as boolean)}
-                    className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary shrink-0"
-                  />
-                  <CreditCard className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="font-medium text-sm whitespace-nowrap">Ped. mín.</span>
+
+                {/* Pedido mínimo */}
+                <div className="p-4 rounded-xl border border-border/40 bg-muted/20 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-amber-50 rounded-lg">
+                        <CreditCard className="h-4 w-4 text-amber-600" />
+                      </div>
+                      <Label className="text-sm font-semibold">Pedido mínimo</Label>
+                    </div>
+                    <Checkbox
+                      checked={minimumOrderEnabled}
+                      onCheckedChange={(checked) => setMinimumOrderEnabled(checked as boolean)}
+                      className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                  </div>
                   {minimumOrderEnabled && (
-                    <div className="flex items-center gap-1 ml-auto">
-                      <span className="text-sm text-muted-foreground">R$</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-muted-foreground">R$</span>
                       <Input
                         type="number"
                         value={minimumOrderValue}
                         onChange={(e) => setMinimumOrderValue(e.target.value)}
-                        className="w-20 h-7 rounded text-sm px-2"
+                        className="flex-1 h-9 rounded-xl text-sm"
                         min={0}
                         step="0.01"
                       />
                     </div>
                   )}
                 </div>
-
-                <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
-                  <Save className="h-4 w-4 mr-2" />
-                  {isPending ? "Salvando..." : "Salvar"}
-                </Button>
               </div>
-            </SectionCard>
+            </div>
+          </SectionCard>
 
-            {/* Taxa de Entrega */}
-            <SectionCard title="Taxa de entrega" description="Defina como cobrar a entrega" icon={<MapPin className="h-5 w-5 text-rose-600 dark:text-rose-400" />} iconBg="bg-rose-100 dark:bg-rose-500/15">
-              <div className="space-y-3">
-                {/* Opções de taxa - formato compacto */}
-                <div className="flex flex-wrap gap-2">
-                  <label className={cn(
-                    "flex items-center gap-2 px-3 py-2 border rounded-lg cursor-pointer transition-colors",
-                    deliveryFeeType === "free"
-                      ? "border-emerald-500 bg-emerald-50"
-                      : "border-border/50 hover:bg-muted/30"
+          {/* Formas de pagamento */}
+          <div ref={paymentMethodsCardRef} className="transition-all duration-300">
+          <SectionCard title="Formas de pagamento" description="Métodos aceitos no estabelecimento" icon={<CreditCard className="h-5 w-5 text-violet-600 dark:text-violet-400" />} iconBg="bg-violet-100 dark:bg-violet-500/15">
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setAcceptsCash(!acceptsCash)}
+                  className={cn(
+                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                    acceptsCash
+                      ? "border-emerald-500 bg-emerald-50 shadow-sm"
+                      : "border-border/50 bg-muted/20 hover:bg-muted/40"
+                  )}
+                >
+                  <div className={cn(
+                    "p-2.5 rounded-xl transition-colors",
+                    acceptsCash ? "bg-emerald-100" : "bg-muted/50"
                   )}>
-                    <input
-                      type="radio"
-                      name="deliveryFeeType"
-                      value="free"
-                      checked={deliveryFeeType === "free"}
-                      onChange={() => setDeliveryFeeType("free")}
-                      className="sr-only"
-                    />
-                    <div className={cn(
-                      "h-4 w-4 rounded-full border-2 flex items-center justify-center",
-                      deliveryFeeType === "free" ? "border-emerald-500" : "border-muted-foreground/50"
-                    )}>
-                      {deliveryFeeType === "free" && <div className="h-2 w-2 rounded-full bg-emerald-500" />}
-                    </div>
-                    <Bike className={cn("h-4 w-4", deliveryFeeType === "free" ? "text-emerald-600" : "text-muted-foreground")} />
-                    <span className={cn("font-medium text-sm", deliveryFeeType === "free" ? "text-emerald-700" : "text-foreground")}>Grátis</span>
-                  </label>
+                    <svg className={cn("h-5 w-5", acceptsCash ? "text-emerald-600" : "text-muted-foreground")} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  </div>
+                  <span className={cn("font-semibold text-sm", acceptsCash ? "text-emerald-700" : "text-muted-foreground")}>Dinheiro</span>
+                </button>
 
-                  <label className={cn(
-                    "flex items-center gap-2 px-3 py-2 border rounded-lg cursor-pointer transition-colors",
-                    deliveryFeeType === "fixed"
-                      ? "border-primary bg-primary/5"
-                      : "border-border/50 hover:bg-muted/30"
+                <button
+                  type="button"
+                  onClick={() => setAcceptsCard(!acceptsCard)}
+                  className={cn(
+                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                    acceptsCard
+                      ? "border-blue-500 bg-blue-50 shadow-sm"
+                      : "border-border/50 bg-muted/20 hover:bg-muted/40"
+                  )}
+                >
+                  <div className={cn(
+                    "p-2.5 rounded-xl transition-colors",
+                    acceptsCard ? "bg-blue-100" : "bg-muted/50"
                   )}>
-                    <input
-                      type="radio"
-                      name="deliveryFeeType"
-                      value="fixed"
-                      checked={deliveryFeeType === "fixed"}
-                      onChange={() => setDeliveryFeeType("fixed")}
-                      className="sr-only"
-                    />
-                    <div className={cn(
-                      "h-4 w-4 rounded-full border-2 flex items-center justify-center",
-                      deliveryFeeType === "fixed" ? "border-primary" : "border-muted-foreground/50"
-                    )}>
-                      {deliveryFeeType === "fixed" && <div className="h-2 w-2 rounded-full bg-primary" />}
-                    </div>
-                    <CreditCard className={cn("h-4 w-4", deliveryFeeType === "fixed" ? "text-primary" : "text-muted-foreground")} />
-                    <span className={cn("font-medium text-sm", deliveryFeeType === "fixed" ? "text-primary" : "text-foreground")}>Fixa</span>
-                  </label>
+                    <CreditCard className={cn("h-5 w-5", acceptsCard ? "text-blue-600" : "text-muted-foreground")} />
+                  </div>
+                  <span className={cn("font-semibold text-sm", acceptsCard ? "text-blue-700" : "text-muted-foreground")}>Cartão</span>
+                </button>
 
-                  <label className={cn(
-                    "flex items-center gap-2 px-3 py-2 border rounded-lg cursor-pointer transition-colors",
-                    deliveryFeeType === "byNeighborhood"
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-border/50 hover:bg-muted/30"
+                <button
+                  type="button"
+                  onClick={() => setAcceptsPix(!acceptsPix)}
+                  className={cn(
+                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                    acceptsPix
+                      ? "border-violet-500 bg-violet-50 shadow-sm"
+                      : "border-border/50 bg-muted/20 hover:bg-muted/40"
+                  )}
+                >
+                  <div className={cn(
+                    "p-2.5 rounded-xl transition-colors",
+                    acceptsPix ? "bg-violet-100" : "bg-muted/50"
                   )}>
-                    <input
-                      type="radio"
-                      name="deliveryFeeType"
-                      value="byNeighborhood"
-                      checked={deliveryFeeType === "byNeighborhood"}
-                      onChange={() => setDeliveryFeeType("byNeighborhood")}
-                      className="sr-only"
-                    />
-                    <div className={cn(
-                      "h-4 w-4 rounded-full border-2 flex items-center justify-center",
-                      deliveryFeeType === "byNeighborhood" ? "border-blue-500" : "border-muted-foreground/50"
-                    )}>
-                      {deliveryFeeType === "byNeighborhood" && <div className="h-2 w-2 rounded-full bg-blue-500" />}
-                    </div>
-                    <MapPin className={cn("h-4 w-4", deliveryFeeType === "byNeighborhood" ? "text-blue-600" : "text-muted-foreground")} />
-                    <span className={cn("font-medium text-sm", deliveryFeeType === "byNeighborhood" ? "text-blue-700" : "text-foreground")}>Por Bairros</span>
-                  </label>
+                    <svg className={cn("h-5 w-5", acceptsPix ? "text-violet-600" : "text-muted-foreground")} viewBox="0 0 24 24" fill="currentColor"><path d="M13.59 4.41l2.83 2.83a2 2 0 0 1 0 2.83l-2.83 2.83a2 2 0 0 1-2.83 0L7.93 10.07a2 2 0 0 1 0-2.83l2.83-2.83a2 2 0 0 1 2.83 0zm-5.66 8.49l2.83 2.83a2 2 0 0 1 0 2.83L7.93 21.39a2 2 0 0 1-2.83 0L2.27 18.56a2 2 0 0 1 0-2.83l2.83-2.83a2 2 0 0 1 2.83 0zm11.31 0l2.83 2.83a2 2 0 0 1 0 2.83l-2.83 2.83a2 2 0 0 1-2.83 0l-2.83-2.83a2 2 0 0 1 0-2.83l2.83-2.83a2 2 0 0 1 2.83 0z"/></svg>
+                  </div>
+                  <span className={cn("font-semibold text-sm", acceptsPix ? "text-violet-700" : "text-muted-foreground")}>Pix</span>
+                </button>
+              </div>
+
+              {/* Campo de Chave Pix */}
+              {acceptsPix && (
+                <div className="p-4 rounded-xl border border-violet-200 bg-violet-50/50 space-y-2">
+                  <Label htmlFor="pixKey" className="text-sm font-semibold">Chave Pix</Label>
+                  <Input
+                    id="pixKey"
+                    value={pixKey}
+                    onChange={(e) => setPixKey(e.target.value)}
+                    placeholder="CPF, CNPJ, email, telefone ou chave aleatória"
+                    className="rounded-xl h-9"
+                  />
+                  <p className="text-xs text-muted-foreground">Esta chave será exibida para o cliente copiar.</p>
                 </div>
+              )}
+            </div>
+          </SectionCard>
+          </div>
 
-                {/* Campo de valor fixo */}
-                {deliveryFeeType === "fixed" && (
-                  <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg border border-border/30">
-                    <Label className="text-sm font-medium">Valor:</Label>
-                    <div className="flex items-center gap-1">
-                      <span className="text-sm text-muted-foreground">R$</span>
+          {/* Taxa de Entrega */}
+          <SectionCard title="Taxa de entrega" description="Defina como cobrar a entrega" icon={<MapPin className="h-5 w-5 text-rose-600 dark:text-rose-400" />} iconBg="bg-rose-100 dark:bg-rose-500/15">
+            <div className="space-y-4">
+              {/* Opções de taxa - cards selecionáveis */}
+              <div className="grid grid-cols-3 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setDeliveryFeeType("free")}
+                  className={cn(
+                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                    deliveryFeeType === "free"
+                      ? "border-emerald-500 bg-emerald-50 shadow-sm"
+                      : "border-border/50 bg-muted/20 hover:bg-muted/40"
+                  )}
+                >
+                  <div className={cn(
+                    "p-2.5 rounded-xl transition-colors",
+                    deliveryFeeType === "free" ? "bg-emerald-100" : "bg-muted/50"
+                  )}>
+                    <Bike className={cn("h-5 w-5", deliveryFeeType === "free" ? "text-emerald-600" : "text-muted-foreground")} />
+                  </div>
+                  <span className={cn("font-semibold text-sm", deliveryFeeType === "free" ? "text-emerald-700" : "text-muted-foreground")}>Grátis</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setDeliveryFeeType("fixed")}
+                  className={cn(
+                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                    deliveryFeeType === "fixed"
+                      ? "border-primary bg-primary/5 shadow-sm"
+                      : "border-border/50 bg-muted/20 hover:bg-muted/40"
+                  )}
+                >
+                  <div className={cn(
+                    "p-2.5 rounded-xl transition-colors",
+                    deliveryFeeType === "fixed" ? "bg-primary/10" : "bg-muted/50"
+                  )}>
+                    <CreditCard className={cn("h-5 w-5", deliveryFeeType === "fixed" ? "text-primary" : "text-muted-foreground")} />
+                  </div>
+                  <span className={cn("font-semibold text-sm", deliveryFeeType === "fixed" ? "text-primary" : "text-muted-foreground")}>Fixa</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setDeliveryFeeType("byNeighborhood")}
+                  className={cn(
+                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                    deliveryFeeType === "byNeighborhood"
+                      ? "border-blue-500 bg-blue-50 shadow-sm"
+                      : "border-border/50 bg-muted/20 hover:bg-muted/40"
+                  )}
+                >
+                  <div className={cn(
+                    "p-2.5 rounded-xl transition-colors",
+                    deliveryFeeType === "byNeighborhood" ? "bg-blue-100" : "bg-muted/50"
+                  )}>
+                    <MapPin className={cn("h-5 w-5", deliveryFeeType === "byNeighborhood" ? "text-blue-600" : "text-muted-foreground")} />
+                  </div>
+                  <span className={cn("font-semibold text-sm", deliveryFeeType === "byNeighborhood" ? "text-blue-700" : "text-muted-foreground")}>Por Bairros</span>
+                </button>
+              </div>
+
+              {/* Campo de valor fixo */}
+              {deliveryFeeType === "fixed" && (
+                <div className="p-4 rounded-xl border border-border/40 bg-muted/20">
+                  <div className="flex items-center gap-3">
+                    <Label className="text-sm font-semibold">Valor da taxa:</Label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-muted-foreground">R$</span>
                       <Input
                         type="number"
                         value={deliveryFeeFixed}
                         onChange={(e) => setDeliveryFeeFixed(e.target.value)}
-                        className="w-20 h-7 rounded text-sm px-2"
+                        className="w-24 h-9 rounded-xl text-sm"
                         min={0}
                         step="0.01"
                       />
                     </div>
                   </div>
-                )}
+                </div>
+              )}
 
-                {/* Lista de bairros */}
-                {deliveryFeeType === "byNeighborhood" && (
-                  <div className="p-3 bg-muted/30 rounded-lg border border-border/30 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium">Bairros e taxas</Label>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setNeighborhoodFees([...neighborhoodFees, { neighborhood: "", fee: "0" }])}
-                        className="rounded-lg h-7 text-xs"
-                      >
-                        + Adicionar
-                      </Button>
-                    </div>
-                    
-                    {neighborhoodFees.length === 0 ? (
-                      <p className="text-xs text-muted-foreground text-center py-2">
-                        Nenhum bairro cadastrado.
-                      </p>
-                    ) : (
-                      <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {neighborhoodFees.map((item, index) => (
-                          <div key={index} className="flex items-center gap-2">
+              {/* Lista de bairros */}
+              {deliveryFeeType === "byNeighborhood" && (
+                <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/30 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-semibold">Bairros e taxas</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setNeighborhoodFees([...neighborhoodFees, { neighborhood: "", fee: "0" }])}
+                      className="rounded-xl h-8 text-xs gap-1"
+                    >
+                      + Adicionar bairro
+                    </Button>
+                  </div>
+                  
+                  {neighborhoodFees.length === 0 ? (
+                    <p className="text-xs text-muted-foreground text-center py-3">
+                      Nenhum bairro cadastrado. Clique em "+ Adicionar bairro" para começar.
+                    </p>
+                  ) : (
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {neighborhoodFees.map((item, index) => (
+                        <div key={index} className="flex items-center gap-2 p-2 bg-white/60 rounded-lg border border-border/30">
+                          <Input
+                            placeholder="Nome do bairro"
+                            value={item.neighborhood}
+                            onChange={(e) => {
+                              const updated = [...neighborhoodFees];
+                              updated[index].neighborhood = e.target.value;
+                              setNeighborhoodFees(updated);
+                            }}
+                            className="flex-1 h-8 rounded-lg text-sm"
+                          />
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-muted-foreground font-medium">R$</span>
                             <Input
-                              placeholder="Bairro"
-                              value={item.neighborhood}
+                              type="number"
+                              placeholder="0"
+                              value={item.fee}
                               onChange={(e) => {
                                 const updated = [...neighborhoodFees];
-                                updated[index].neighborhood = e.target.value;
+                                updated[index].fee = e.target.value;
                                 setNeighborhoodFees(updated);
                               }}
-                              className="flex-1 h-7 rounded text-sm px-2"
+                              className="w-20 h-8 rounded-lg text-sm"
+                              min={0}
+                              step="0.01"
                             />
-                            <div className="flex items-center gap-1">
-                              <span className="text-xs text-muted-foreground">R$</span>
-                              <Input
-                                type="number"
-                                placeholder="0"
-                                value={item.fee}
-                                onChange={(e) => {
-                                  const updated = [...neighborhoodFees];
-                                  updated[index].fee = e.target.value;
-                                  setNeighborhoodFees(updated);
-                                }}
-                                className="w-16 h-7 rounded text-sm px-2"
-                                min={0}
-                                step="0.01"
-                              />
-                            </div>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                setNeighborhoodFees(neighborhoodFees.filter((_, i) => i !== index));
-                              }}
-                              className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <Button onClick={handleSaveServiceSettings} disabled={isPending} className="rounded-xl shadow-sm">
-                  <Save className="h-4 w-4 mr-2" />
-                  {isPending ? "Salvando..." : "Salvar"}
-                </Button>
-              </div>
-            </SectionCard>
-          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setNeighborhoodFees(neighborhoodFees.filter((_, i) => i !== index));
+                            }}
+                            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </SectionCard>
 
           {/* Horários de Funcionamento */}
           <div ref={businessHoursCardRef}>
           <SectionCard title="Horários de funcionamento" description="Defina quando seu estabelecimento está aberto" icon={<Clock className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />} iconBg="bg-cyan-100 dark:bg-cyan-500/15">
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Configure os horários de funcionamento do seu estabelecimento. O menu público exibirá automaticamente se o restaurante está aberto ou fechado.
+                O menu público exibirá automaticamente se o restaurante está aberto ou fechado.
               </p>
               
               {/* Fuso horário */}
-              <div className="flex items-center gap-3 p-4 rounded-xl border border-border/50 bg-muted/30">
-                <Globe className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              <div className="flex items-center gap-3 p-4 rounded-xl border border-border/40 bg-muted/20">
+                <div className="p-2 bg-cyan-50 rounded-lg">
+                  <Globe className="h-4 w-4 text-cyan-600" />
+                </div>
                 <div className="flex-1">
-                  <Label className="text-sm font-medium">Fuso horário do restaurante</Label>
-                  <p className="text-xs text-muted-foreground mt-0.5">Todos os horários do sistema serão baseados neste fuso.</p>
+                  <Label className="text-sm font-semibold">Fuso horário</Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">Todos os horários serão baseados neste fuso.</p>
                 </div>
                 <select
                   value={timezone}
                   onChange={(e) => setTimezone(e.target.value)}
-                  className="h-9 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="h-9 rounded-xl border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   {Object.entries(
                     SUPPORTED_TIMEZONES.reduce((acc, tz) => {
@@ -2152,7 +2189,7 @@ export default function Configuracoes() {
                 </select>
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {[
                   { day: 0, name: "Domingo" },
                   { day: 1, name: "Segunda-feira" },
@@ -2167,13 +2204,12 @@ export default function Configuracoes() {
                     <div
                       key={day}
                       className={cn(
-                        "flex items-center gap-4 p-4 rounded-xl border transition-all",
+                        "flex items-center gap-4 p-3.5 rounded-xl border transition-all",
                         hourData?.isActive
                           ? "border-primary/30 bg-primary/5"
-                          : "border-border/50 bg-muted/30"
+                          : "border-border/40 bg-muted/20"
                       )}
                     >
-                      {/* Toggle */}
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input
                           type="checkbox"
@@ -2185,34 +2221,29 @@ export default function Configuracoes() {
                           }}
                           className="sr-only peer"
                         />
-                        <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        <div className="w-10 h-5.5 bg-muted rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-primary"></div>
                       </label>
                       
-                      {/* Day name */}
                       <span className={cn(
-                        "font-medium min-w-[120px]",
+                        "font-medium text-sm min-w-[120px]",
                         hourData?.isActive ? "text-foreground" : "text-muted-foreground"
                       )}>
                         {name}
                       </span>
                       
-                      {/* Time inputs */}
                       {hourData?.isActive && (
                         <div className="flex items-center gap-2 ml-auto">
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-muted-foreground" />
-                            <Input
-                              type="time"
-                              value={hourData.openTime}
-                              onChange={(e) => {
-                                setBusinessHours(prev => prev.map(h =>
-                                  h.dayOfWeek === day ? { ...h, openTime: e.target.value } : h
-                                ));
-                              }}
-                              className="w-[100px] h-9 rounded-lg text-sm"
-                            />
-                          </div>
-                          <span className="text-muted-foreground">até</span>
+                          <Input
+                            type="time"
+                            value={hourData.openTime}
+                            onChange={(e) => {
+                              setBusinessHours(prev => prev.map(h =>
+                                h.dayOfWeek === day ? { ...h, openTime: e.target.value } : h
+                              ));
+                            }}
+                            className="w-[100px] h-8 rounded-lg text-sm"
+                          />
+                          <span className="text-xs text-muted-foreground font-medium">até</span>
                           <Input
                             type="time"
                             value={hourData.closeTime}
@@ -2221,47 +2252,51 @@ export default function Configuracoes() {
                                 h.dayOfWeek === day ? { ...h, closeTime: e.target.value } : h
                               ));
                             }}
-                            className="w-[100px] h-9 rounded-lg text-sm"
+                            className="w-[100px] h-8 rounded-lg text-sm"
                           />
                         </div>
                       )}
                       
                       {!hourData?.isActive && (
-                        <span className="text-sm text-muted-foreground ml-auto">Fechado</span>
+                        <span className="text-xs text-muted-foreground ml-auto">Fechado</span>
                       )}
                     </div>
                   );
                 })}
               </div>
-              
-              <Button
-                onClick={() => {
-                  // Salvar timezone junto com os horários
-                  if (establishment?.id) {
-                    updateMutation.mutate({
-                      id: establishment.id,
-                      timezone,
-                    });
-                  }
-                  saveBusinessHoursMutation.mutate({
-                    establishmentId: establishment?.id || 0,
-                    hours: businessHours.map(h => ({
-                      dayOfWeek: h.dayOfWeek,
-                      isActive: h.isActive,
-                      openTime: h.openTime,
-                      closeTime: h.closeTime,
-                    })),
-                  });
-                }}
-                disabled={saveBusinessHoursMutation.isPending}
-                className="rounded-xl shadow-sm"
-              >
-                <Save className="h-4 w-4 mr-2" />
-                {saveBusinessHoursMutation.isPending ? "Salvando..." : "Salvar Horários"}
-              </Button>
             </div>
           </SectionCard>
           </div>
+
+          {/* Botão único Salvar tudo */}
+          <div className="flex gap-3 pt-2">
+            <Button
+              onClick={() => {
+                handleSaveServiceSettings();
+                if (establishment?.id) {
+                  updateMutation.mutate({
+                    id: establishment.id,
+                    timezone,
+                  });
+                }
+                saveBusinessHoursMutation.mutate({
+                  establishmentId: establishment?.id || 0,
+                  hours: businessHours.map(h => ({
+                    dayOfWeek: h.dayOfWeek,
+                    isActive: h.isActive,
+                    openTime: h.openTime,
+                    closeTime: h.closeTime,
+                  })),
+                });
+              }}
+              disabled={isPending || saveBusinessHoursMutation.isPending}
+              className="flex-1 rounded-xl shadow-sm h-11 text-base font-semibold"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {isPending || saveBusinessHoursMutation.isPending ? "Salvando..." : "Salvar todas as configurações"}
+            </Button>
+          </div>
+
             </div>
           )}
 
