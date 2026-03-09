@@ -8596,3 +8596,6 @@
 - [x] Redesign aba Atendimento - Horários de funcionamento (manter e polir)
 - [x] Redesign aba Atendimento - Botão único Salvar no final
 - [x] Diminuir tamanho dos cards de seleção (Modalidades, Pagamento, Taxa) na aba Atendimento
+- [x] Corrigir responsividade do card de Preview - textos saindo para fora do container
+- [x] Adicionar botão dropdown ao lado esquerdo do seletor Kanban/Lista na página de Pedidos com opção "Aceitar pedidos automaticamente"
+- [x] Remover card "Recebimento de pedidos" da aba Atendimento em Configurações

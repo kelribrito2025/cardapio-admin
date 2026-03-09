@@ -1127,10 +1127,10 @@ export default function Configuracoes() {
                 </div>
 
                 {/* Restaurant Info - PIXEL PERFECT igual ao menu público */}
-                <div className="pt-20 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                  <div className="flex-1">
+                <div className="pt-20 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 overflow-hidden">
+                  <div className="flex-1 min-w-0">
                     {/* Restaurant Name and Rating */}
-                    <div className="flex items-center gap-1 flex-wrap">
+                    <div className="flex items-center gap-1 flex-wrap min-w-0">
                       {isEditingName ? (
                         <div className="flex items-center gap-1.5">
                           <Input
@@ -1190,7 +1190,7 @@ export default function Configuracoes() {
                             setTimeout(() => nameInputRef.current?.focus(), 0);
                           }}
                         >
-                          <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                          <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors truncate">
                             {name || "Nome do Restaurante"}
                           </h3>
                           <Pencil className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
@@ -1211,7 +1211,7 @@ export default function Configuracoes() {
                     </div>
 
                     {/* Address and More Info - PIXEL PERFECT igual ao menu público */}
-                    <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground min-w-0">
+                    <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground min-w-0 flex-wrap">
                       {fullAddress && (
                         <>
                           <Tooltip>
@@ -1237,7 +1237,7 @@ export default function Configuracoes() {
                     </div>
                     
                     {/* Status and Delivery Types - PIXEL PERFECT igual ao menu público */}
-                    <div className="flex flex-wrap items-center gap-3 mt-2">
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
                       {/* Open Status with Pulsing Icon - igual ao menu público */}
                       <span className="flex items-center gap-1.5 text-green-600 font-medium text-sm">
                         <span className="relative flex h-2.5 w-2.5">
@@ -1750,34 +1750,6 @@ export default function Configuracoes() {
           {activeSection === "atendimento" && (
             <div className="max-w-3xl mx-auto space-y-5">
 
-          {/* Pedidos - Aceitar automaticamente */}
-          <SectionCard title="Recebimento de pedidos" description="Como os pedidos são processados" icon={<Package className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />} iconBg="bg-emerald-100 dark:bg-emerald-500/15">
-            <div className="flex items-center justify-between gap-4 p-4 rounded-xl border border-border/40 bg-muted/20">
-              <div className="flex items-start gap-3">
-                <div className={cn(
-                  "p-2.5 rounded-xl shrink-0 transition-colors",
-                  autoAcceptOrders ? "bg-emerald-100" : "bg-muted/50"
-                )}>
-                  <Check className={cn("h-5 w-5", autoAcceptOrders ? "text-emerald-600" : "text-muted-foreground")} />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">Aceitar pedidos automaticamente</h4>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Pedidos entram direto como "Em preparo" sem precisar aceitar manualmente.
-                  </p>
-                  {autoAcceptOrders && (
-                    <p className="text-xs text-emerald-600 font-medium mt-1.5">
-                      Ativo — Novos pedidos serão aceitos automaticamente.
-                    </p>
-                  )}
-                </div>
-              </div>
-              <Switch
-                checked={autoAcceptOrders}
-                onCheckedChange={(checked) => setAutoAcceptOrders(checked)}
-              />
-            </div>
-          </SectionCard>
 
           {/* Modalidades de atendimento + Tempo + Pedido mínimo */}
           <SectionCard title="Modalidades e entrega" description="Tipos de atendimento e configurações de entrega" icon={<Bike className="h-5 w-5 text-orange-600 dark:text-orange-400" />} iconBg="bg-orange-100 dark:bg-orange-500/15">

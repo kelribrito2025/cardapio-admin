@@ -73,7 +73,9 @@ import {
   Video,
   AlertTriangle,
   Ban,
+  Settings2,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "wouter";
 import { useOrdersSSE } from "@/hooks/useOrdersSSE";
@@ -335,6 +337,22 @@ export default function Pedidos() {
 
   // All hooks MUST be called before any early return
   const utils = trpc.useUtils();
+
+  // Auto-accept orders - dropdown de configurações
+  const [showOrderSettingsDropdown, setShowOrderSettingsDropdown] = useState(false);
+  const autoAcceptOrders = establishment?.autoAcceptOrders ?? false;
+  const updateAutoAcceptMutation = trpc.establishment.update.useMutation({
+    onSuccess: (_data, variables) => {
+      utils.establishment.get.setData(undefined, (old) => {
+        if (!old) return old;
+        return { ...old, ...variables };
+      });
+      toast.success(variables.autoAcceptOrders 
+        ? "Pedidos serão aceitos automaticamente" 
+        : "Aceitação automática desativada");
+    },
+    onError: () => toast.error("Erro ao atualizar configuração"),
+  });
   
   // Query para status do WhatsApp (com polling quando modal está aberto)
   const { data: whatsappStatus, refetch: refetchWhatsappStatus, isLoading: isWhatsappLoading, isFetched: isWhatsappFetched } = trpc.whatsapp.getStatus.useQuery(undefined, {
@@ -1276,6 +1294,50 @@ export default function Pedidos() {
         />
         {/* Toggle Kanban/Lista + WhatsApp Status */}
         <div className="hidden sm:flex items-center gap-3">
+          {/* Botão de configurações de pedidos */}
+          <div className="relative">
+            <button
+              onClick={() => setShowOrderSettingsDropdown(!showOrderSettingsDropdown)}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium transition-all",
+                autoAcceptOrders
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+                  : "bg-muted border-border text-muted-foreground hover:bg-muted/80"
+              )}
+              style={{height: '35px'}}
+            >
+              <Settings2 className="h-3.5 w-3.5" />
+            </button>
+            {showOrderSettingsDropdown && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowOrderSettingsDropdown(false)} />
+                <div className="absolute right-0 top-full mt-1 z-50 bg-card rounded-xl shadow-lg border border-border p-4 w-72">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-start gap-2.5">
+                      <div className={cn(
+                        "p-2 rounded-lg shrink-0 transition-colors",
+                        autoAcceptOrders ? "bg-emerald-100" : "bg-muted/50"
+                      )}>
+                        <CheckCircle className={cn("h-4 w-4", autoAcceptOrders ? "text-emerald-600" : "text-muted-foreground")} />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm">Aceitar automaticamente</h4>
+                        <p className="text-xs text-muted-foreground mt-0.5">Pedidos entram direto como "Em preparo"</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={autoAcceptOrders}
+                      onCheckedChange={(checked) => {
+                        if (establishment) {
+                          updateAutoAcceptMutation.mutate({ id: establishment.id, autoAcceptOrders: checked });
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
           {/* Toggle de visualização */}
           <div className="flex items-center bg-muted rounded-lg p-1 gap-0.5">
             <button
