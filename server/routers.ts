@@ -1458,11 +1458,15 @@ export const appRouter = router({
         const hasCover = !!establishment.coverImage;
         const hasPhotos = hasLogo && hasCover;
 
+        // 7. Verificar se cadastrou chave Pix
+        const hasPixKey = !!establishment.pixKey && establishment.pixKey.trim().length > 0;
+
         const steps = [
           { id: 'category', label: 'Criar primeira categoria', completed: hasCategories, href: '/catalogo?action=new-category' },
           { id: 'products', label: 'Adicionar primeiros produtos', completed: hasProducts, href: '/catalogo?action=new-product' },
           { id: 'business_hours', label: 'Configurar atendimento', completed: hasBusinessHours, href: '/configuracoes?section=atendimento' },
           { id: 'photos', label: 'Adicionar foto e capa', completed: hasPhotos, href: '/configuracoes?section=estabelecimento' },
+          { id: 'pix_key', label: 'Cadastrar chave Pix', completed: hasPixKey, href: '/configuracoes?section=atendimento&scrollTo=formas-pagamento' },
           { id: 'whatsapp', label: 'Conectar WhatsApp', completed: hasWhatsappConnected, href: '/pedidos?connectWhatsapp=true' },
           { id: 'sound_notification', label: 'Ativar notificação sonora', completed: false, href: '#sound' },
           { id: 'test_order', label: 'Testar um pedido', completed: hasOrders, href: establishment.menuSlug ? `/menu/${establishment.menuSlug}` : '/pdv' },

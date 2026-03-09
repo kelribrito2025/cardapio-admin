@@ -8552,3 +8552,6 @@
 - [x] Adicionar badge sparkles Mindi Vision nas fotos do sidebar de edição de produto (mesmo estilo do catálogo)
 
 - [x] Corrigir texto incompleto na sidebar de boas-vindas: "Seu restaurante X com sucesso." → frase completa
+- [x] Adicionar passo "Cadastrar chave Pix" na sidebar de primeiros passos (WelcomeChecklist)
+- [x] Ao clicar no passo, navegar para configurações do estabelecimento com scroll automático até card Formas de Pagamento
+- [x] Concluir passo automaticamente quando chave Pix for salva

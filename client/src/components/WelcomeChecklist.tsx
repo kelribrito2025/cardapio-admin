@@ -24,6 +24,7 @@ import {
   Share2,
   Copy,
   Link2,
+  QrCode,
 } from "lucide-react";
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { cn } from "@/lib/utils";
@@ -126,6 +127,17 @@ const stepConfig: Record<string, {
       "Destaca seu restaurante da concorrência",
     ],
     buttonLabel: "Adicionar Fotos",
+  },
+  pix_key: {
+    icon: QrCode,
+    subtitle: "Receba pagamentos via Pix",
+    description: "Cadastre sua chave Pix para que os clientes possam pagar diretamente pelo cardápio digital.",
+    whyImportant: [
+      "Pix é o meio de pagamento mais usado no Brasil",
+      "Clientes copiam a chave direto do pedido",
+      "Receba pagamentos de forma rápida e segura",
+    ],
+    buttonLabel: "Cadastrar Chave Pix",
   },
 };
 

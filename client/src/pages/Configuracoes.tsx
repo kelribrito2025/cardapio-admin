@@ -146,10 +146,23 @@ export default function Configuracoes() {
 
   // Scroll automático para o card de horários quando vem do onboarding
   useEffect(() => {
-    if (activeSection === 'atendimento' && businessHoursCardRef.current) {
+    if (activeSection === 'atendimento') {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('section') === 'atendimento') {
-        // Pequeno delay para garantir que o DOM renderizou
+      const scrollTo = params.get('scrollTo');
+      
+      if (scrollTo === 'formas-pagamento' && paymentMethodsCardRef.current) {
+        // Scroll para o card de formas de pagamento
+        const timer = setTimeout(() => {
+          paymentMethodsCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Highlight visual temporário
+          paymentMethodsCardRef.current?.classList.add('ring-2', 'ring-primary/50', 'ring-offset-2');
+          setTimeout(() => {
+            paymentMethodsCardRef.current?.classList.remove('ring-2', 'ring-primary/50', 'ring-offset-2');
+          }, 3000);
+        }, 400);
+        return () => clearTimeout(timer);
+      } else if (params.get('section') === 'atendimento' && businessHoursCardRef.current) {
+        // Scroll para o card de horários
         const timer = setTimeout(() => {
           businessHoursCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 300);
@@ -314,6 +327,7 @@ export default function Configuracoes() {
   const [showSocialDropdown, setShowSocialDropdown] = useState(false);
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const businessHoursCardRef = useRef<HTMLDivElement>(null);
+  const paymentMethodsCardRef = useRef<HTMLDivElement>(null);
   
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -1790,6 +1804,7 @@ export default function Configuracoes() {
           {/* Formas de pagamento e Notificações SMS lado a lado */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Formas de pagamento */}
+            <div ref={paymentMethodsCardRef} className="transition-all duration-300">
             <SectionCard title="Formas de pagamento">
               <div className="space-y-3">
                 <div className="flex gap-2">
@@ -1840,6 +1855,7 @@ export default function Configuracoes() {
                 </Button>
               </div>
             </SectionCard>
+            </div>
 
             {/* Pedidos */}
             <SectionCard title="Pedidos">

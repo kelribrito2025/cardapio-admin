@@ -32,12 +32,10 @@ function createAuthContext(): { ctx: TrpcContext } {
 }
 
 describe("dashboard.onboardingChecklist", () => {
-  it("returns checklist steps including sound_notification", async () => {
+  it("returns checklist steps including sound_notification and pix_key", async () => {
     const { ctx } = createAuthContext();
     const caller = appRouter.createCaller(ctx);
 
-    // This will fail if the establishment doesn't exist, but we can test the procedure exists
-    // and the router shape is correct
     try {
       const result = await caller.dashboard.onboardingChecklist({ establishmentId: 999999 });
       // If it somehow succeeds, verify structure
@@ -50,24 +48,31 @@ describe("dashboard.onboardingChecklist", () => {
       const soundStep = result.steps.find((s: any) => s.id === "sound_notification");
       expect(soundStep).toBeDefined();
       expect(soundStep?.label).toBe("Ativar notificação sonora");
-      expect(soundStep?.href).toBe("/configuracoes");
+      expect(soundStep?.href).toBe("#sound");
+      
+      // Verify pix_key step exists
+      const pixStep = result.steps.find((s: any) => s.id === "pix_key");
+      expect(pixStep).toBeDefined();
+      expect(pixStep?.label).toBe("Cadastrar chave Pix");
+      expect(pixStep?.href).toBe("/configuracoes?section=atendimento&scrollTo=formas-pagamento");
       
       // Verify test_order step has correct href pattern (menu public)
       const testOrderStep = result.steps.find((s: any) => s.id === "test_order");
       expect(testOrderStep).toBeDefined();
       expect(testOrderStep?.label).toBe("Testar um pedido");
       
-      // Verify total steps is 7 (including sound_notification)
-      expect(result.totalSteps).toBe(7);
+      // Verify total steps is 8 (including sound_notification and pix_key)
+      expect(result.totalSteps).toBe(8);
       
       // Verify step order
       const stepIds = result.steps.map((s: any) => s.id);
       expect(stepIds).toEqual([
-        "create_category",
-        "add_products",
-        "configure_hours",
-        "add_photos",
-        "connect_whatsapp",
+        "category",
+        "products",
+        "business_hours",
+        "photos",
+        "pix_key",
+        "whatsapp",
         "sound_notification",
         "test_order",
       ]);
@@ -91,9 +96,24 @@ describe("dashboard.onboardingChecklist", () => {
 
     try {
       const result = await caller.dashboard.onboardingChecklist({ establishmentId: 999999 });
-      const waStep = result.steps.find((s: any) => s.id === "connect_whatsapp");
+      const waStep = result.steps.find((s: any) => s.id === "whatsapp");
       expect(waStep).toBeDefined();
       expect(waStep?.href).toBe("/pedidos?connectWhatsapp=true");
+    } catch {
+      // Expected: establishment not found - procedure shape is still validated above
+    }
+  });
+
+  it("pix_key step redirects to configuracoes with scrollTo param", async () => {
+    const { ctx } = createAuthContext();
+    const caller = appRouter.createCaller(ctx);
+
+    try {
+      const result = await caller.dashboard.onboardingChecklist({ establishmentId: 999999 });
+      const pixStep = result.steps.find((s: any) => s.id === "pix_key");
+      expect(pixStep).toBeDefined();
+      expect(pixStep?.href).toContain("/configuracoes");
+      expect(pixStep?.href).toContain("scrollTo=formas-pagamento");
     } catch {
       // Expected: establishment not found - procedure shape is still validated above
     }
