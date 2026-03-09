@@ -154,7 +154,7 @@ export default function ImageEnhanceModal({
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <DialogTitle className="sr-only">Melhorar Foto com IA</DialogTitle>
+        <DialogTitle className="sr-only">Mindi Vision</DialogTitle>
 
         {/* Header com créditos */}
         <div className="p-5 pb-3 border-b border-border/50">
@@ -164,8 +164,9 @@ export default function ImageEnhanceModal({
                 <Sparkles className="h-5 w-5 text-red-500" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-foreground">Foto Profissional com IA</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <h3 className="text-base font-bold text-foreground">Mindi Vision</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Transforme suas fotos em imagens profissionais</p>
+                <p className="text-xs text-muted-foreground mt-0.5 hidden">
                   {showBuyCredits
                     ? "Compre créditos para continuar melhorando suas fotos"
                     : !showComparison
@@ -441,7 +442,7 @@ export default function ImageEnhanceModal({
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
                   <Sparkles className="h-3.5 w-3.5 text-red-500" />
-                  <span className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">Foto Profissional</span>
+                  <span className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">Mindi Vision</span>
                 </div>
                 <div className="relative aspect-square rounded-xl overflow-hidden border-2 border-red-300 dark:border-red-700 bg-muted shadow-lg shadow-red-500/10">
                   <img
