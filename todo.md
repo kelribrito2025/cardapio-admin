@@ -8526,3 +8526,17 @@
 - [x] Adicionar modal de confirmação ao clicar no X para excluir foto do produto
 - [x] Alterar texto do card "Como funciona" no modal de Foto Profissional com IA
 - [x] Aplicar efeito shimmer no texto "Como funciona" do modal de Foto Profissional com IA
+
+## Sistema de Créditos para Melhoria de Fotos com IA
+- [ ] Adicionar campo ai_image_credits na tabela establishments (default 15)
+- [ ] Criar tabela ai_image_credit_logs (user_id, action, quantity, date)
+- [ ] Criar procedure tRPC para consultar créditos disponíveis
+- [ ] Criar procedure tRPC para consumir 1 crédito ao melhorar foto
+- [ ] Criar procedure tRPC para compra de pacotes via Stripe Checkout
+- [ ] Atualizar modal ImageEnhance com indicador de créditos restantes
+- [ ] Bloquear botão Melhorar Foto quando créditos = 0
+- [ ] Exibir mensagem e botão "Comprar créditos" quando créditos acabarem
+- [ ] Criar página/modal de compra de pacotes (50/100/300 créditos)
+- [ ] Processar webhook Stripe para creditar automaticamente após compra
+- [ ] Definir produtos/preços no Stripe (R$29/R$49/R$99)
+- [ ] Testes vitest para o fluxo de créditos

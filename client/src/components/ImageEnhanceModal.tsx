@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Sparkles, RotateCcw, Check, ImageIcon, Search, Palette, Camera, TrendingUp } from "lucide-react";
+import { Sparkles, RotateCcw, Check, ImageIcon, Search, Palette, Camera, TrendingUp, ShoppingCart, Zap } from "lucide-react";
 import { toast } from "sonner";
 
 const ENHANCE_STEPS = [
@@ -36,7 +36,30 @@ export default function ImageEnhanceModal({
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [showBuyCredits, setShowBuyCredits] = useState(false);
   const stepTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Buscar créditos disponíveis
+  const creditsQuery = trpc.aiCredits.getBalance.useQuery(undefined, {
+    enabled: open,
+  });
+  const credits = creditsQuery.data?.credits ?? 0;
+
+  // Buscar pacotes de créditos
+  const packagesQuery = trpc.aiCredits.getPackages.useQuery(undefined, {
+    enabled: showBuyCredits,
+  });
+
+  // Mutation para comprar créditos
+  const buyMutation = trpc.aiCredits.createCheckout.useMutation({
+    onSuccess: (data) => {
+      window.open(data.url, '_blank');
+      toast.info("Redirecionando para a página de pagamento...");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao criar sessão de pagamento.");
+    },
+  });
 
   // Etapas visuais progressivas
   useEffect(() => {
@@ -69,14 +92,23 @@ export default function ImageEnhanceModal({
       setEnhancedUrl(data.enhancedUrl);
       setShowComparison(true);
       setIsEnhancing(false);
+      // Atualizar créditos após uso
+      creditsQuery.refetch();
     },
     onError: (error) => {
+      if (error.message?.includes("créditos")) {
+        setShowBuyCredits(true);
+      }
       toast.error(error.message || "Erro ao melhorar imagem. Tente novamente.");
       setIsEnhancing(false);
     },
   });
 
   const handleEnhance = () => {
+    if (credits <= 0) {
+      setShowBuyCredits(true);
+      return;
+    }
     setIsEnhancing(true);
     setShowComparison(false);
     setEnhancedUrl(null);
@@ -100,7 +132,12 @@ export default function ImageEnhanceModal({
     setShowComparison(false);
     setIsEnhancing(false);
     setCurrentStep(0);
+    setShowBuyCredits(false);
     onOpenChange(false);
+  };
+
+  const handleBuyPackage = (packageId: string) => {
+    buyMutation.mutate({ packageId });
   };
 
   const StepIcon = ENHANCE_STEPS[currentStep]?.icon || Search;
@@ -115,24 +152,125 @@ export default function ImageEnhanceModal({
       >
         <DialogTitle className="sr-only">Melhorar Foto com IA</DialogTitle>
 
-        {/* Header */}
+        {/* Header com créditos */}
         <div className="p-5 pb-3 border-b border-border/50">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-red-50 dark:bg-red-950/30">
-              <Sparkles className="h-5 w-5 text-red-500" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-red-50 dark:bg-red-950/30">
+                <Sparkles className="h-5 w-5 text-red-500" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-foreground">Foto Profissional com IA</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {showBuyCredits
+                    ? "Compre créditos para continuar melhorando suas fotos"
+                    : !showComparison
+                    ? "Transforme a foto do seu produto em uma imagem profissional"
+                    : "Compare e escolha a melhor versão para o seu cardápio"}
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-base font-bold text-foreground">Foto Profissional com IA</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {!showComparison
-                  ? "Transforme a foto do seu produto em uma imagem profissional"
-                  : "Compare e escolha a melhor versão para o seu cardápio"}
-              </p>
-            </div>
+            {/* Badge de créditos */}
+            {!creditsQuery.isLoading && (
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
+                credits > 5
+                  ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
+                  : credits > 0
+                  ? "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+                  : "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800"
+              }`}>
+                <Zap className="h-3 w-3" />
+                {credits} {credits === 1 ? "crédito" : "créditos"}
+              </div>
+            )}
           </div>
         </div>
 
-        {!showComparison ? (
+        {showBuyCredits ? (
+          /* Tela de compra de créditos */
+          <div className="p-5 space-y-4">
+            {/* Mensagem */}
+            <div className="text-center py-2">
+              {credits <= 0 ? (
+                <>
+                  <div className="mx-auto w-12 h-12 rounded-full bg-red-50 dark:bg-red-950/30 flex items-center justify-center mb-3">
+                    <Sparkles className="h-6 w-6 text-red-400" />
+                  </div>
+                  <h4 className="text-sm font-bold text-foreground">Seus créditos de melhoria de imagem acabaram</h4>
+                  <p className="text-xs text-muted-foreground mt-1">Compre um pacote para continuar transformando suas fotos em imagens profissionais.</p>
+                </>
+              ) : (
+                <>
+                  <h4 className="text-sm font-bold text-foreground">Comprar mais créditos</h4>
+                  <p className="text-xs text-muted-foreground mt-1">Cada crédito = 1 melhoria de foto com IA</p>
+                </>
+              )}
+            </div>
+
+            {/* Pacotes */}
+            <div className="space-y-2.5">
+              {packagesQuery.isLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="h-6 w-6 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" />
+                </div>
+              ) : (
+                packagesQuery.data?.map((pkg) => (
+                  <button
+                    key={pkg.id}
+                    onClick={() => handleBuyPackage(pkg.id)}
+                    disabled={buyMutation.isPending}
+                    className={`w-full relative flex items-center justify-between p-4 rounded-xl border-2 transition-all hover:shadow-md ${
+                      (pkg as any).popular
+                        ? "border-red-300 dark:border-red-700 bg-red-50/50 dark:bg-red-950/20 hover:border-red-400"
+                        : "border-border hover:border-red-200 dark:hover:border-red-800"
+                    } ${buyMutation.isPending ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                  >
+                    {(pkg as any).popular && (
+                      <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[10px] font-bold px-3 py-0.5 rounded-full">
+                        MAIS POPULAR
+                      </div>
+                    )}
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${
+                        (pkg as any).popular ? "bg-red-100 dark:bg-red-900/50" : "bg-muted"
+                      }`}>
+                        <Sparkles className={`h-4 w-4 ${(pkg as any).popular ? "text-red-500" : "text-muted-foreground"}`} />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-sm font-bold text-foreground">{pkg.name}</p>
+                        <p className="text-[11px] text-muted-foreground">{pkg.pricePerImage} por melhoria</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-base font-bold text-foreground">{pkg.priceFormatted}</p>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+
+            {/* Botões */}
+            <div className="flex gap-3 pt-1">
+              {credits > 0 ? (
+                <Button
+                  variant="outline"
+                  onClick={() => setShowBuyCredits(false)}
+                  className="flex-1 rounded-xl h-11"
+                >
+                  Voltar
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  onClick={handleClose}
+                  className="flex-1 rounded-xl h-11"
+                >
+                  Fechar
+                </Button>
+              )}
+            </div>
+          </div>
+        ) : !showComparison ? (
           /* Estado inicial ou processando */
           <div className="p-5 space-y-4">
             {/* Imagem com overlay de processamento */}
@@ -225,24 +363,37 @@ export default function ImageEnhanceModal({
               >
                 Cancelar
               </Button>
-              <Button
-                onClick={handleEnhance}
-                disabled={isEnhancing}
-                className="flex-1 rounded-xl h-11 font-semibold"
-                style={{ backgroundColor: '#db262f', color: 'white' }}
-              >
-                {isEnhancing ? (
+              {credits > 0 ? (
+                <Button
+                  onClick={handleEnhance}
+                  disabled={isEnhancing}
+                  className="flex-1 rounded-xl h-11 font-semibold"
+                  style={{ backgroundColor: '#db262f', color: 'white' }}
+                >
+                  {isEnhancing ? (
+                    <span className="flex items-center gap-2">
+                      <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Processando...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4" />
+                      Melhorar Foto
+                    </span>
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => setShowBuyCredits(true)}
+                  className="flex-1 rounded-xl h-11 font-semibold"
+                  style={{ backgroundColor: '#db262f', color: 'white' }}
+                >
                   <span className="flex items-center gap-2">
-                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Processando...
+                    <ShoppingCart className="h-4 w-4" />
+                    Comprar créditos
                   </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4" />
-                    Melhorar Foto
-                  </span>
-                )}
-              </Button>
+                </Button>
+              )}
             </div>
           </div>
         ) : (
@@ -317,7 +468,7 @@ export default function ImageEnhanceModal({
               <Button
                 variant="outline"
                 onClick={handleEnhance}
-                disabled={isEnhancing}
+                disabled={isEnhancing || credits <= 0}
                 className="flex-1 rounded-xl h-11 text-sm"
               >
                 <RotateCcw className="h-4 w-4 mr-1.5" />

@@ -54,7 +54,8 @@ import {
   feedbacks, InsertFeedback, Feedback,
   stories, InsertStory, Story,
   storyViews, InsertStoryView, StoryView,
-  storyEvents, InsertStoryEvent, StoryEvent
+  storyEvents, InsertStoryEvent, StoryEvent,
+  aiImageCreditLogs, InsertAiImageCreditLog, AiImageCreditLog
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 import crypto from 'crypto';
@@ -12476,4 +12477,106 @@ export async function getCashbackEventHistory(establishmentId: number, limit = 1
   }));
 
   return { items, total, hasMore: offset + limit < total };
+}
+
+
+// ============ AI IMAGE CREDITS FUNCTIONS ============
+
+/**
+ * Busca créditos de imagem IA disponíveis para um estabelecimento
+ */
+export async function getAiImageCredits(establishmentId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  
+  const result = await db.select({ aiImageCredits: establishments.aiImageCredits })
+    .from(establishments)
+    .where(eq(establishments.id, establishmentId))
+    .limit(1);
+  
+  return result.length > 0 ? (result[0].aiImageCredits ?? 0) : 0;
+}
+
+/**
+ * Consome 1 crédito de imagem IA e registra no log
+ * Retorna o saldo restante ou null se não houver créditos
+ */
+export async function consumeAiImageCredit(establishmentId: number, userId: number): Promise<number | null> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Verificar saldo atual
+  const current = await getAiImageCredits(establishmentId);
+  if (current <= 0) return null;
+  
+  const newBalance = current - 1;
+  
+  // Decrementar crédito
+  await db.update(establishments)
+    .set({ aiImageCredits: newBalance })
+    .where(eq(establishments.id, establishmentId));
+  
+  // Registrar no log
+  await db.insert(aiImageCreditLogs).values({
+    establishmentId,
+    userId,
+    action: "use",
+    quantity: -1,
+    balanceAfter: newBalance,
+    description: "Melhoria de foto com IA",
+  });
+  
+  return newBalance;
+}
+
+/**
+ * Adiciona créditos de imagem IA (compra ou bônus) e registra no log
+ */
+export async function addAiImageCredits(
+  establishmentId: number,
+  userId: number,
+  quantity: number,
+  action: "purchase" | "bonus" | "refund",
+  description: string,
+  stripeSessionId?: string,
+): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const current = await getAiImageCredits(establishmentId);
+  const newBalance = current + quantity;
+  
+  // Atualizar saldo
+  await db.update(establishments)
+    .set({ aiImageCredits: newBalance })
+    .where(eq(establishments.id, establishmentId));
+  
+  // Registrar no log
+  await db.insert(aiImageCreditLogs).values({
+    establishmentId,
+    userId,
+    action,
+    quantity,
+    balanceAfter: newBalance,
+    description,
+    stripeSessionId: stripeSessionId || null,
+  });
+  
+  return newBalance;
+}
+
+/**
+ * Busca histórico de créditos de imagem IA
+ */
+export async function getAiImageCreditHistory(establishmentId: number, limit = 50) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db.select()
+    .from(aiImageCreditLogs)
+    .where(eq(aiImageCreditLogs.establishmentId, establishmentId))
+    .orderBy(desc(aiImageCreditLogs.createdAt))
+    .limit(limit);
+  
+  return result;
 }

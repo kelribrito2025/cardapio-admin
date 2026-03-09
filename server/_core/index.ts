@@ -1474,6 +1474,36 @@ async function startServer() {
           }
         }
         
+        // Processar compra de créditos de melhoria de imagem com IA
+        if (metadata.type === "ai_image_credits" && metadata.establishmentId > 0) {
+          const creditsCount = parseInt(session.metadata?.credits_count || "0");
+          
+          console.log(`[Stripe Webhook] Compra de créditos IA: estabelecimento ${metadata.establishmentId}, ${creditsCount} créditos`);
+          
+          try {
+            const { addAiImageCredits } = await import("../db");
+            
+            const newBalance = await addAiImageCredits(
+              metadata.establishmentId,
+              metadata.userId,
+              creditsCount,
+              "purchase",
+              `Compra de ${creditsCount} créditos de melhoria de imagem (Stripe: ${metadata.paymentIntentId})`,
+              session.id,
+            );
+            
+            // Enviar SSE para atualizar créditos em tempo real
+            sendEvent(metadata.establishmentId, "aiCreditsUpdated", {
+              credits: newBalance,
+              purchased: creditsCount,
+            });
+            
+            console.log(`[Stripe Webhook] ${creditsCount} créditos IA creditados com sucesso para estabelecimento ${metadata.establishmentId}. Novo saldo: ${newBalance}`);
+          } catch (creditError) {
+            console.error("[Stripe Webhook] Erro ao creditar créditos IA:", creditError);
+          }
+        }
+        
         // Processar pagamento de pedido online via Stripe Connect
         if (session.metadata?.type === "online_order") {
           const estId = parseInt(session.metadata.establishment_id || "0");

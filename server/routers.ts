@@ -822,10 +822,16 @@ export const appRouter = router({
         imageUrl: z.string().url(),
         imageIndex: z.number().default(0), // Índice da imagem no array de images
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const product = await db.getProductById(input.productId);
         if (!product) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Produto não encontrado' });
+        }
+
+        // Verificar créditos de imagem IA
+        const credits = await db.getAiImageCredits(product.establishmentId);
+        if (credits <= 0) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Seus créditos de melhoria de imagem acabaram. Compre mais créditos para continuar.' });
         }
 
         const { enhanceProductImage } = await import('./imageEnhancer');
@@ -869,9 +875,13 @@ export const appRouter = router({
 
         await db.updateProduct(input.productId, updateData);
 
+        // Consumir 1 crédito após sucesso
+        const remainingCredits = await db.consumeAiImageCredit(product.establishmentId, ctx.user.id);
+
         return {
           enhancedUrl: optimizedUrl,
           originalUrl: result.originalUrl,
+          remainingCredits: remainingCredits ?? 0,
         };
       }),
 
@@ -4271,6 +4281,60 @@ export const appRouter = router({
         
         return { ...result, smsCount };
       }),
+  }),
+
+   // ============ CRÉDITOS DE MELHORIA DE IMAGEM COM IA ============
+  aiCredits: router({
+    // Consultar créditos disponíveis
+    getBalance: protectedProcedure.query(async ({ ctx }) => {
+      const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+      if (!establishment) return { credits: 0 };
+      const credits = await db.getAiImageCredits(establishment.id);
+      return { credits };
+    }),
+
+    // Listar pacotes de compra
+    getPackages: protectedProcedure.query(async () => {
+      const { AI_IMAGE_PACKAGES } = await import("./stripe");
+      return AI_IMAGE_PACKAGES;
+    }),
+
+    // Criar sessão de checkout Stripe para compra de créditos
+    createCheckout: protectedProcedure
+      .input(z.object({
+        packageId: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+        
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: 'NOT_FOUND', message: 'Estabelecimento n\u00e3o encontrado' });
+        
+        const { createAiImageCheckoutSession } = await import("./stripe");
+        const origin = ctx.req.headers.origin || ctx.req.headers.referer?.replace(/\/$/, '') || '';
+        
+        const result = await createAiImageCheckoutSession({
+          packageId: input.packageId,
+          userId: ctx.user.id,
+          userEmail: ctx.user.email || '',
+          userName: ctx.user.name || '',
+          establishmentId: establishment.id,
+          origin,
+        });
+        
+        if (!result) {
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Stripe n\u00e3o configurado. Configure as chaves em Configura\u00e7\u00f5es > Pagamento.' });
+        }
+        
+        return result;
+      }),
+
+    // Histórico de créditos
+    getHistory: protectedProcedure.query(async ({ ctx }) => {
+      const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+      if (!establishment) return [];
+      return db.getAiImageCreditHistory(establishment.id);
+    }),
   }),
 
   // ============ TABLE SPACES (ESPA\u00c7OS) ============

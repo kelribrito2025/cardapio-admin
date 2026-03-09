@@ -125,6 +125,8 @@ export const establishments = mysqlTable("establishments", {
   autoAcceptOrders: boolean("autoAcceptOrders").default(false).notNull(),
   // Meta de tempo de preparo (em minutos)
   prepGoalMinutes: int("prepGoalMinutes").default(30),
+  // Créditos de melhoria de imagem com IA
+  aiImageCredits: int("aiImageCredits").default(15).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -1172,3 +1174,18 @@ export const storyEvents = mysqlTable("storyEvents", {
 });
 export type StoryEvent = typeof storyEvents.$inferSelect;
 export type InsertStoryEvent = typeof storyEvents.$inferInsert;
+
+// Histórico de créditos de melhoria de imagem com IA
+export const aiImageCreditLogs = mysqlTable("ai_image_credit_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  userId: int("userId").notNull(),
+  action: mysqlEnum("action", ["use", "purchase", "bonus", "refund"]).notNull(),
+  quantity: int("quantity").notNull(), // positivo para compra/bonus, negativo para uso
+  balanceAfter: int("balanceAfter").notNull(),
+  description: varchar("description", { length: 255 }),
+  stripeSessionId: varchar("stripeSessionId", { length: 255 }), // referência ao checkout session do Stripe
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type AiImageCreditLog = typeof aiImageCreditLogs.$inferSelect;
+export type InsertAiImageCreditLog = typeof aiImageCreditLogs.$inferInsert;

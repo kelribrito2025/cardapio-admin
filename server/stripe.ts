@@ -339,3 +339,93 @@ export function extractCheckoutMetadata(session: Stripe.Checkout.Session) {
     amountTotal: session.amount_total || 0,
   };
 }
+
+
+// ============ CRÉDITOS DE MELHORIA DE IMAGEM COM IA ============
+
+// Pacotes de créditos de imagem IA disponíveis
+export const AI_IMAGE_PACKAGES = [
+  {
+    id: "ai_50",
+    name: "50 melhorias",
+    credits: 50,
+    priceInCents: 2900, // R$ 29,00
+    priceFormatted: "R$ 29,00",
+    pricePerImage: "R$ 0,58",
+    description: "Pacote com 50 melhorias de foto com IA",
+  },
+  {
+    id: "ai_100",
+    name: "100 melhorias",
+    credits: 100,
+    priceInCents: 4900, // R$ 49,00
+    priceFormatted: "R$ 49,00",
+    pricePerImage: "R$ 0,49",
+    description: "Pacote com 100 melhorias de foto com IA",
+    popular: true,
+  },
+  {
+    id: "ai_300",
+    name: "300 melhorias",
+    credits: 300,
+    priceInCents: 9900, // R$ 99,00
+    priceFormatted: "R$ 99,00",
+    pricePerImage: "R$ 0,33",
+    description: "Pacote com 300 melhorias de foto com IA",
+  },
+];
+
+/**
+ * Cria uma sessão de checkout Stripe para compra de créditos de imagem IA
+ */
+export async function createAiImageCheckoutSession(params: {
+  packageId: string;
+  userId: number;
+  userEmail: string;
+  userName: string;
+  establishmentId: number;
+  origin: string;
+}): Promise<{ url: string; sessionId: string } | null> {
+  const stripe = getStripe();
+  if (!stripe) return null;
+
+  const pkg = AI_IMAGE_PACKAGES.find((p) => p.id === params.packageId);
+  if (!pkg) throw new Error("Pacote de créditos não encontrado");
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    mode: "payment",
+    client_reference_id: params.userId.toString(),
+    customer_email: params.userEmail,
+    allow_promotion_codes: true,
+    line_items: [
+      {
+        price_data: {
+          currency: "brl",
+          product_data: {
+            name: `✨ ${pkg.name} de foto com IA`,
+            description: pkg.description,
+          },
+          unit_amount: pkg.priceInCents,
+        },
+        quantity: 1,
+      },
+    ],
+    metadata: {
+      user_id: params.userId.toString(),
+      establishment_id: params.establishmentId.toString(),
+      customer_email: params.userEmail,
+      customer_name: params.userName,
+      package_id: pkg.id,
+      credits_count: pkg.credits.toString(),
+      type: "ai_image_credits",
+    },
+    success_url: `${params.origin}/menu?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${params.origin}/menu?payment=cancelled`,
+  });
+
+  return {
+    url: session.url!,
+    sessionId: session.id,
+  };
+}

@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE ai_image_credit_logs (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  establishmentId INT NOT NULL,\n  userId INT NOT NULL,\n  action VARCHAR(20) NOT NULL,\n  amount INT NOT NULL,\n  balanceAfter INT NOT NULL,\n  description TEXT,\n  stripeSessionId VARCHAR(255),\n  createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute CREATE TABLE ai_image_credit_logs (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  establishmentId INT NOT NULL,\n  userId INT NOT NULL,\n  action VARCHAR(20) NOT NULL,\n  amount INT NOT NULL,\n  balanceAfter INT NOT NULL,\n  description TEXT,\n  stripeSessionId VARCHAR(255),\n  createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 106
+}
