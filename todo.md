@@ -8570,3 +8570,4 @@
 - [x] Adicionar breve explicação abaixo de cada opção de programa de fidelização (Cartão Fidelidade e Cashback)
 - [x] Adicionar tooltip com preview do cartão fidelidade/cashback ao hover sobre a opção selecionada no sheet de Programa de Recompensas
 - [x] Aumentar tamanho dos tooltips de preview do cartão fidelidade/cashback em 33%
+- [x] Corrigir bug: barra de rolagem do sidebar volta ao topo ao clicar nos itens inferiores (Bot WhatsApp, Configurações)

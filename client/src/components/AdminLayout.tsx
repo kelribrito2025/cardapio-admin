@@ -723,30 +723,46 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
-  // Ref para preservar scroll da sidebar
+  // Ref para preservar scroll da sidebar (usa sessionStorage para persistir entre re-montagens)
   const sidebarNavRef = useRef<HTMLElement>(null);
-  const sidebarScrollPos = useRef<number>(0);
+  const SIDEBAR_SCROLL_KEY = 'sidebar-scroll-pos';
 
-  // Salvar posição do scroll antes da navegação
+  // Salvar posição do scroll continuamente no sessionStorage
   useEffect(() => {
     const nav = sidebarNavRef.current;
     if (!nav) return;
     const handleScroll = () => {
-      sidebarScrollPos.current = nav.scrollTop;
+      sessionStorage.setItem(SIDEBAR_SCROLL_KEY, String(nav.scrollTop));
     };
     nav.addEventListener('scroll', handleScroll);
     return () => nav.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Restaurar posição do scroll após navegação
+  // Restaurar posição do scroll na montagem do componente (persiste entre navegações)
   useEffect(() => {
     const nav = sidebarNavRef.current;
-    if (nav && sidebarScrollPos.current > 0) {
+    if (!nav) return;
+    const savedPos = parseInt(sessionStorage.getItem(SIDEBAR_SCROLL_KEY) || '0', 10);
+    if (savedPos <= 0) return;
+
+    // Restaurar imediatamente
+    nav.scrollTop = savedPos;
+
+    // Restaurar após o DOM estabilizar
+    requestAnimationFrame(() => {
+      nav.scrollTop = savedPos;
       requestAnimationFrame(() => {
-        nav.scrollTop = sidebarScrollPos.current;
+        nav.scrollTop = savedPos;
       });
-    }
-  }, [location]);
+    });
+
+    // Fallback final
+    const timeout = setTimeout(() => {
+      if (nav) nav.scrollTop = savedPos;
+    }, 150);
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -771,9 +787,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   const handleNavClick = (href: string) => {
-    // Salvar posição do scroll antes de navegar
+    // Salvar posição do scroll antes de navegar (sessionStorage persiste entre re-montagens)
     if (sidebarNavRef.current) {
-      sidebarScrollPos.current = sidebarNavRef.current.scrollTop;
+      sessionStorage.setItem(SIDEBAR_SCROLL_KEY, String(sidebarNavRef.current.scrollTop));
     }
     // Fechar sidebar mobile
     setSidebarOpen(false);
