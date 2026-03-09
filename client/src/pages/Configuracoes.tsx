@@ -1213,10 +1213,19 @@ export default function Configuracoes() {
                     <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground min-w-0">
                       {fullAddress && (
                         <>
-                          <span className="flex items-center gap-1 min-w-0 truncate">
-                            <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                            <span className="truncate">{fullAddress.length > 35 ? fullAddress.slice(0, 35) + '...' : fullAddress}</span>
-                          </span>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="flex items-center gap-1 min-w-0 truncate cursor-default">
+                                <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                                <span className="truncate">{fullAddress.length > 35 ? fullAddress.slice(0, 35) + '...' : fullAddress}</span>
+                              </span>
+                            </TooltipTrigger>
+                            {fullAddress.length > 35 && (
+                              <TooltipContent side="bottom" className="max-w-xs text-xs">
+                                {fullAddress}
+                              </TooltipContent>
+                            )}
+                          </Tooltip>
                           <span className="text-muted-foreground shrink-0">•</span>
                         </>
                       )}
