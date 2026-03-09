@@ -666,6 +666,16 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
             {images.map((img, index) => (
               <div key={index} className="relative h-20 w-20 rounded-xl overflow-hidden border border-border/50 group flex-shrink-0">
                 <img src={img} alt={`Produto ${index + 1}`} className="h-full w-full object-cover" />
+                {isEditing && existingProduct?.enhancedImages && (existingProduct.enhancedImages as string[])[index] && (existingProduct.enhancedImages as string[])[index].length > 0 && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="absolute top-0 right-0 bg-red-500 rounded-bl-md rounded-tr-xl p-0.5 cursor-default z-10">
+                        <Sparkles className="h-2.5 w-2.5 text-white" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">Foto aprimorada com Mindi Vision</TooltipContent>
+                  </Tooltip>
+                )}
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                   {isEditing && productId && (
                     <button
