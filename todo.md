@@ -8540,3 +8540,4 @@
 - [ ] Processar webhook Stripe para creditar automaticamente após compra
 - [ ] Definir produtos/preços no Stripe (R$29/R$49/R$99)
 - [ ] Testes vitest para o fluxo de créditos
+- [x] Atualizar preços dos pacotes de créditos IA: 50=R$40,50 (R$0,81/cada), 100=R$72,00 (R$0,72/cada), 300=R$201,00 (R$0,67/cada)

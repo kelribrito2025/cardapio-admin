@@ -349,18 +349,18 @@ export const AI_IMAGE_PACKAGES = [
     id: "ai_50",
     name: "50 melhorias",
     credits: 50,
-    priceInCents: 2900, // R$ 29,00
-    priceFormatted: "R$ 29,00",
-    pricePerImage: "R$ 0,58",
+    priceInCents: 4050, // R$ 40,50
+    priceFormatted: "R$ 40,50",
+    pricePerImage: "R$ 0,81",
     description: "Pacote com 50 melhorias de foto com IA",
   },
   {
     id: "ai_100",
     name: "100 melhorias",
     credits: 100,
-    priceInCents: 4900, // R$ 49,00
-    priceFormatted: "R$ 49,00",
-    pricePerImage: "R$ 0,49",
+    priceInCents: 7200, // R$ 72,00
+    priceFormatted: "R$ 72,00",
+    pricePerImage: "R$ 0,72",
     description: "Pacote com 100 melhorias de foto com IA",
     popular: true,
   },
@@ -368,9 +368,9 @@ export const AI_IMAGE_PACKAGES = [
     id: "ai_300",
     name: "300 melhorias",
     credits: 300,
-    priceInCents: 9900, // R$ 99,00
-    priceFormatted: "R$ 99,00",
-    pricePerImage: "R$ 0,33",
+    priceInCents: 20100, // R$ 201,00
+    priceFormatted: "R$ 201,00",
+    pricePerImage: "R$ 0,67",
     description: "Pacote com 300 melhorias de foto com IA",
   },
 ];
