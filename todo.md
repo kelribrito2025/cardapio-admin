@@ -8576,3 +8576,6 @@
 - [x] Ajustar layout desktop Configurações > Estabelecimento: card Preview 40% e card Endereço 60%
 - [x] Card de Preview do Perfil sticky (fixo ao rolar) na coluna esquerda (40%)
 - [x] Card de Nota do Restaurante na coluna direita (60%), mesma largura do Endereço
+- [x] Alterar texto 'Aberto agora' para 'Aberto' no card de preview do perfil
+- [x] Fazer as 7 cores do estilo do balão caberem todas na mesma linha
+- [x] Alterar texto descritivo da nota do restaurante

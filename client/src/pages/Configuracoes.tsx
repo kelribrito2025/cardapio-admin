@@ -1232,7 +1232,7 @@ export default function Configuracoes() {
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                           <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
                         </span>
-                        Aberto agora
+                        Aberto
                       </span>
                       
                       {/* Tempo de Entrega Badge - CÓPIA FIEL do menu público */}
@@ -1473,7 +1473,7 @@ export default function Configuracoes() {
           <SectionCard title="Nota do Restaurante">
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Deixe uma nota temporária para seus clientes. Ela aparecerá como um balão acima da foto de perfil no cardápio público e ficará visível por 24 horas.
+                Adicione uma nota temporária que aparecerá como um balão acima da foto no cardápio público.
               </p>
               
               {/* Campo de texto + Botão Sugestões */}
@@ -1535,7 +1535,7 @@ export default function Configuracoes() {
               {/* Seleção de Estilo do Balão */}
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">Estilo do Balão</Label>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
                   {[
                     { id: "default", name: "Padrão", bg: "bg-white", text: "text-gray-700", border: "border-gray-200", arrowBg: "bg-white border-r border-b border-gray-200" },
                     { id: "ocean", name: "Oceano", bg: "bg-gradient-to-r from-cyan-400 to-blue-500", text: "text-white", border: "border-transparent", arrowBg: "bg-blue-500" },
