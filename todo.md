@@ -8595,3 +8595,4 @@
 - [x] Redesign aba Atendimento - Card Pedidos (toggle aceitar automaticamente)
 - [x] Redesign aba Atendimento - Horários de funcionamento (manter e polir)
 - [x] Redesign aba Atendimento - Botão único Salvar no final
+- [x] Diminuir tamanho dos cards de seleção (Modalidades, Pagamento, Taxa) na aba Atendimento
