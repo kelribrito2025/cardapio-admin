@@ -1762,7 +1762,7 @@ export default function Configuracoes() {
                     type="button"
                     onClick={() => setAllowsDelivery(!allowsDelivery)}
                     className={cn(
-                      "flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all cursor-pointer",
+                      "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                       allowsDelivery
                         ? "border-orange-500 bg-orange-50 shadow-sm"
                         : "border-border/50 bg-muted/20 hover:bg-muted/40"
@@ -1781,7 +1781,7 @@ export default function Configuracoes() {
                     type="button"
                     onClick={() => setAllowsPickup(!allowsPickup)}
                     className={cn(
-                      "flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all cursor-pointer",
+                      "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                       allowsPickup
                         ? "border-blue-500 bg-blue-50 shadow-sm"
                         : "border-border/50 bg-muted/20 hover:bg-muted/40"
@@ -1800,7 +1800,7 @@ export default function Configuracoes() {
                     type="button"
                     onClick={() => setAllowsDineIn(!allowsDineIn)}
                     className={cn(
-                      "flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all cursor-pointer",
+                      "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                       allowsDineIn
                         ? "border-violet-500 bg-violet-50 shadow-sm"
                         : "border-border/50 bg-muted/20 hover:bg-muted/40"
@@ -1898,7 +1898,7 @@ export default function Configuracoes() {
                   type="button"
                   onClick={() => setAcceptsCash(!acceptsCash)}
                   className={cn(
-                    "flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all cursor-pointer",
+                    "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     acceptsCash
                       ? "border-emerald-500 bg-emerald-50 shadow-sm"
                       : "border-border/50 bg-muted/20 hover:bg-muted/40"
@@ -1917,7 +1917,7 @@ export default function Configuracoes() {
                   type="button"
                   onClick={() => setAcceptsCard(!acceptsCard)}
                   className={cn(
-                    "flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all cursor-pointer",
+                    "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     acceptsCard
                       ? "border-blue-500 bg-blue-50 shadow-sm"
                       : "border-border/50 bg-muted/20 hover:bg-muted/40"
@@ -1936,7 +1936,7 @@ export default function Configuracoes() {
                   type="button"
                   onClick={() => setAcceptsPix(!acceptsPix)}
                   className={cn(
-                    "flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all cursor-pointer",
+                    "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     acceptsPix
                       ? "border-violet-500 bg-violet-50 shadow-sm"
                       : "border-border/50 bg-muted/20 hover:bg-muted/40"
@@ -1979,7 +1979,7 @@ export default function Configuracoes() {
                   type="button"
                   onClick={() => setDeliveryFeeType("free")}
                   className={cn(
-                    "flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all cursor-pointer",
+                    "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     deliveryFeeType === "free"
                       ? "border-emerald-500 bg-emerald-50 shadow-sm"
                       : "border-border/50 bg-muted/20 hover:bg-muted/40"
@@ -1998,7 +1998,7 @@ export default function Configuracoes() {
                   type="button"
                   onClick={() => setDeliveryFeeType("fixed")}
                   className={cn(
-                    "flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all cursor-pointer",
+                    "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     deliveryFeeType === "fixed"
                       ? "border-primary bg-primary/5 shadow-sm"
                       : "border-border/50 bg-muted/20 hover:bg-muted/40"
@@ -2017,7 +2017,7 @@ export default function Configuracoes() {
                   type="button"
                   onClick={() => setDeliveryFeeType("byNeighborhood")}
                   className={cn(
-                    "flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all cursor-pointer",
+                    "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     deliveryFeeType === "byNeighborhood"
                       ? "border-blue-500 bg-blue-50 shadow-sm"
                       : "border-border/50 bg-muted/20 hover:bg-muted/40"
