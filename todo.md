@@ -8524,3 +8524,5 @@
 - [x] Adicionar dica SaaS após gerar: "Produtos com foto profissional vendem até 3x mais"
 - [x] Remover botão "Excluir produto" do Passo 3 da sidebar de edição
 - [x] Adicionar modal de confirmação ao clicar no X para excluir foto do produto
+- [x] Alterar texto do card "Como funciona" no modal de Foto Profissional com IA
+- [x] Aplicar efeito shimmer no texto "Como funciona" do modal de Foto Profissional com IA

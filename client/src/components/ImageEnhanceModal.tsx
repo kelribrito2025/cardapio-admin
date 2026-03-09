@@ -189,14 +189,29 @@ export default function ImageEnhanceModal({
               )}
             </div>
 
-            {/* Info box */}
+            {/* Info box com shimmer */}
             {!isEnhancing && (
-              <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/50 rounded-xl p-3.5">
-                <p className="text-xs text-red-700 dark:text-red-300 leading-relaxed">
-                  <strong>Como funciona:</strong> A IA identifica o tipo de comida e cria um cenário temático profissional.
-                  Por exemplo, um hambúrguer será colocado sobre uma tábua de madeira rústica com atmosfera de churrasqueira.
-                  A comida em si não é alterada — apenas o cenário, iluminação e qualidade são melhorados.
+              <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/50 rounded-xl p-3.5 overflow-hidden">
+                <p
+                  className="text-xs leading-relaxed"
+                  style={{
+                    background: 'linear-gradient(90deg, #b91c1c 0%, #ef4444 40%, #fca5a5 50%, #ef4444 60%, #b91c1c 100%)',
+                    backgroundSize: '200% 100%',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    animation: 'shimmer-text 3s ease-in-out infinite',
+                  }}
+                >
+                  <strong>Como funciona:</strong> A IA melhora iluminação, cores e cria um cenário profissional.
+                  A comida em si não é alterada.
                 </p>
+                <style>{`
+                  @keyframes shimmer-text {
+                    0% { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
+                  }
+                `}</style>
               </div>
             )}
 
