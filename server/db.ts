@@ -12580,3 +12580,77 @@ export async function getAiImageCreditHistory(establishmentId: number, limit = 5
   
   return result;
 }
+
+
+/**
+ * Verifica se o estabelecimento é elegível para créditos grátis de IA
+ * Condições: 15+ produtos, foto de perfil, capa, 5+ produtos com foto
+ */
+export async function checkAiCreditsEligibility(establishmentId: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+
+  // Buscar dados do estabelecimento
+  const est = await db.select({
+    logo: establishments.logo,
+    coverImage: establishments.coverImage,
+  })
+    .from(establishments)
+    .where(eq(establishments.id, establishmentId))
+    .limit(1);
+
+  if (!est.length) return false;
+  const { logo, coverImage } = est[0];
+
+  // Precisa ter foto de perfil e capa
+  if (!logo || !coverImage) return false;
+
+  // Contar total de produtos
+  const totalProducts = await db.select({ count: sql<number>`count(*)` })
+    .from(products)
+    .where(eq(products.establishmentId, establishmentId));
+
+  if (!totalProducts.length || totalProducts[0].count < 15) return false;
+
+  // Contar produtos com foto (images é um campo JSON array)
+  const productsWithPhoto = await db.select({ count: sql<number>`count(*)` })
+    .from(products)
+    .where(and(
+      eq(products.establishmentId, establishmentId),
+      isNotNull(products.images),
+      sql`JSON_LENGTH(${products.images}) > 0`
+    ));
+
+  if (!productsWithPhoto.length || productsWithPhoto[0].count < 5) return false;
+
+  return true;
+}
+
+/**
+ * Concede 3 créditos grátis de IA ao estabelecimento (apenas uma vez)
+ */
+export async function grantFreeAiCredits(establishmentId: number, userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  const FREE_CREDITS = 3;
+
+  // Atualizar saldo e marcar como concedido
+  await db.update(establishments)
+    .set({
+      aiImageCredits: sql`${establishments.aiImageCredits} + ${FREE_CREDITS}`,
+      aiCreditsGranted: true,
+    })
+    .where(eq(establishments.id, establishmentId));
+
+  // Registrar no log
+  const newBalance = await getAiImageCredits(establishmentId);
+  await db.insert(aiImageCreditLogs).values({
+    establishmentId,
+    userId,
+    action: "bonus",
+    quantity: FREE_CREDITS,
+    balanceAfter: newBalance,
+    description: "Créditos grátis de boas-vindas",
+  });
+}

@@ -8541,3 +8541,7 @@
 - [ ] Definir produtos/preços no Stripe (R$29/R$49/R$99)
 - [ ] Testes vitest para o fluxo de créditos
 - [x] Atualizar preços dos pacotes de créditos IA: 50=R$40,50 (R$0,81/cada), 100=R$72,00 (R$0,72/cada), 300=R$201,00 (R$0,67/cada)
+- [x] Alterar default de créditos grátis de 15 para 0 (créditos são concedidos sob condições)
+- [x] Backend: criar verificação de elegibilidade (15+ produtos, foto perfil, capa, 5+ produtos com foto)
+- [x] Backend: conceder 3 créditos grátis quando elegível (apenas uma vez)
+- [x] Frontend: exibir "Não elegível" no modal quando condições não atendidas (sem mostrar motivo)

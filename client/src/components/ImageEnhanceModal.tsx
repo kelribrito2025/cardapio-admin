@@ -39,11 +39,12 @@ export default function ImageEnhanceModal({
   const [showBuyCredits, setShowBuyCredits] = useState(false);
   const stepTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Buscar créditos disponíveis
+  // Buscar créditos disponíveis + elegibilidade
   const creditsQuery = trpc.aiCredits.getBalance.useQuery(undefined, {
     enabled: open,
   });
   const credits = creditsQuery.data?.credits ?? 0;
+  const eligible = creditsQuery.data?.eligible ?? false;
 
   // Buscar pacotes de créditos
   const packagesQuery = trpc.aiCredits.getPackages.useQuery(undefined, {
@@ -105,6 +106,9 @@ export default function ImageEnhanceModal({
   });
 
   const handleEnhance = () => {
+    if (!eligible && credits <= 0) {
+      return; // Não elegível, botão já está desabilitado
+    }
     if (credits <= 0) {
       setShowBuyCredits(true);
       return;
@@ -172,16 +176,22 @@ export default function ImageEnhanceModal({
             </div>
             {/* Badge de créditos */}
             {!creditsQuery.isLoading && (
-              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
-                credits > 5
-                  ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
-                  : credits > 0
-                  ? "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
-                  : "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800"
-              }`}>
-                <Zap className="h-3 w-3" />
-                {credits} {credits === 1 ? "crédito" : "créditos"}
-              </div>
+              !eligible && credits <= 0 ? (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
+                  Não elegível
+                </div>
+              ) : (
+                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
+                  credits > 5
+                    ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
+                    : credits > 0
+                    ? "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+                    : "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800"
+                }`}>
+                  <Zap className="h-3 w-3" />
+                  {credits} {credits === 1 ? "crédito" : "créditos"}
+                </div>
+              )
             )}
           </div>
         </div>
@@ -363,7 +373,18 @@ export default function ImageEnhanceModal({
               >
                 Cancelar
               </Button>
-              {credits > 0 ? (
+              {!eligible && credits <= 0 ? (
+                <Button
+                  disabled
+                  className="flex-1 rounded-xl h-11 font-semibold opacity-50 cursor-not-allowed"
+                  style={{ backgroundColor: '#999', color: 'white' }}
+                >
+                  <span className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    Não elegível
+                  </span>
+                </Button>
+              ) : credits > 0 ? (
                 <Button
                   onClick={handleEnhance}
                   disabled={isEnhancing}

@@ -4285,12 +4285,23 @@ export const appRouter = router({
 
    // ============ CRÉDITOS DE MELHORIA DE IMAGEM COM IA ============
   aiCredits: router({
-    // Consultar créditos disponíveis
+    // Consultar créditos disponíveis + elegibilidade
     getBalance: protectedProcedure.query(async ({ ctx }) => {
       const establishment = await db.getEstablishmentByUserId(ctx.user.id);
-      if (!establishment) return { credits: 0 };
+      if (!establishment) return { credits: 0, eligible: false };
+      
+      // Verificar elegibilidade para créditos grátis
+      const eligible = await db.checkAiCreditsEligibility(establishment.id);
+      
+      // Se elegível e ainda não recebeu os 3 créditos grátis, conceder
+      if (eligible && !establishment.aiCreditsGranted) {
+        await db.grantFreeAiCredits(establishment.id, ctx.user.id);
+        const credits = await db.getAiImageCredits(establishment.id);
+        return { credits, eligible: true };
+      }
+      
       const credits = await db.getAiImageCredits(establishment.id);
-      return { credits };
+      return { credits, eligible: eligible || establishment.aiCreditsGranted || credits > 0 };
     }),
 
     // Listar pacotes de compra
