@@ -440,7 +440,7 @@ function DriverFormSheet({
 
             {/* Estratégia de repasse */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium">Estratégia de repasse</Label>
+              <Label className="text-sm font-medium">Como o entregador será pago pelas entregas?</Label>
               <div className="space-y-2">
                 <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${form.repasseStrategy === "neighborhood" ? "border-red-400 bg-red-50 shadow-sm" : "border-border/50 hover:border-red-300 bg-muted/30 hover:bg-muted/50"}`}>
                   <input
