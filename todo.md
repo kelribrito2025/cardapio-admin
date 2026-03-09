@@ -8600,3 +8600,4 @@
 - [x] Adicionar botão dropdown ao lado esquerdo do seletor Kanban/Lista na página de Pedidos com opção "Aceitar pedidos automaticamente"
 - [x] Remover card "Recebimento de pedidos" da aba Atendimento em Configurações
 - [x] Alterar layout dos cards de seleção (Modalidades, Pagamento, Taxa) para ícone ao lado do texto (horizontal)
+- [x] Aplicar redesign visual da aba Atendimento na aba Agendamento para manter consistência
