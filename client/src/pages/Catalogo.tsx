@@ -47,6 +47,7 @@ import {
   Camera,
   ImageOff,
   ArrowRight,
+  Sparkles,
 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef, useCallback, startTransition, type FocusEvent } from "react";
 import { useLocation } from "wouter";
@@ -214,21 +215,33 @@ function SortableProductItem({
         >
           <div
             className={cn(
-              "hidden md:flex h-12 w-12 rounded-lg items-center justify-center overflow-hidden flex-shrink-0",
+              "hidden md:flex h-12 w-12 rounded-lg items-center justify-center overflow-hidden flex-shrink-0 relative",
               effectiveStatus === "active"
                 ? "bg-gradient-to-br from-red-500 to-red-600"
                 : "bg-gradient-to-br from-gray-400 to-gray-500 grayscale"
             )}>
             {product.images && product.images.length > 0 ? (
-              <BlurImage
-                src={product.images[0]}
-                blurDataUrl={product.blurPlaceholder}
-                alt={product.name}
-                containerClassName="h-full w-full"
-                className="h-full w-full object-cover"
-                responsive
-                sizes="48px"
-              />
+              <>
+                <BlurImage
+                  src={product.images[0]}
+                  blurDataUrl={product.blurPlaceholder}
+                  alt={product.name}
+                  containerClassName="h-full w-full"
+                  className="h-full w-full object-cover"
+                  responsive
+                  sizes="48px"
+                />
+                {product.enhancedImages && (product.enhancedImages as string[]).some(img => img && img.length > 0) && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="absolute top-0 right-0 bg-red-500 rounded-bl-md rounded-tr-lg p-0.5 cursor-default">
+                        <Sparkles className="h-2.5 w-2.5 text-white" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">Foto aprimorada com Mindi Vision</TooltipContent>
+                  </Tooltip>
+                )}
+              </>
             ) : (
               <Camera className="h-5 w-5 text-white animate-placeholder-pulse" />
             )}
