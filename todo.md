@@ -8556,3 +8556,5 @@
 - [x] Ao clicar no passo, navegar para configurações do estabelecimento com scroll automático até card Formas de Pagamento
 - [x] Concluir passo automaticamente quando chave Pix for salva
 - [x] Corrigir notificação "Finalizado" do WhatsApp para vir ativada por padrão ao criar conta
+- [x] Adicionar botão para remover imagem de perfil (logo) no preview do perfil público
+- [x] Adicionar botão para remover imagem de capa no preview do perfil público

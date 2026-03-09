@@ -1007,14 +1007,30 @@ export default function Configuracoes() {
                   </div>
                 )}
                 
-                {/* Edit Cover Button */}
-                <button
-                  onClick={() => coverInputRef.current?.click()}
-                  className="absolute top-3 right-3 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors"
-                  title="Alterar capa"
-                >
-                  <Camera className="h-4 w-4" />
-                </button>
+                {/* Cover Action Buttons */}
+                <div className="absolute top-3 right-3 flex items-center gap-2">
+                  {coverImage && (
+                    <button
+                      onClick={() => {
+                        setCoverImage("");
+                        if (establishment) {
+                          updateMutation.mutate({ id: establishment.id, coverImage: null, coverBlur: null });
+                        }
+                      }}
+                      className="p-2 bg-red-500/80 hover:bg-red-600/90 rounded-full text-white transition-colors"
+                      title="Remover capa"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => coverInputRef.current?.click()}
+                    className="p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors"
+                    title="Alterar capa"
+                  >
+                    <Camera className="h-4 w-4" />
+                  </button>
+                </div>
                 <input
                   ref={coverInputRef}
                   type="file"
@@ -1074,14 +1090,30 @@ export default function Configuracoes() {
                       )}
                     </div>
                     
-                    {/* Edit Logo Button */}
-                    <button
-                      onClick={() => logoInputRef.current?.click()}
-                      className="absolute bottom-1 right-1 p-2 bg-card hover:bg-muted rounded-full shadow-md transition-colors"
-                      title="Alterar logo"
-                    >
-                      <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
-                    </button>
+                    {/* Logo Action Buttons */}
+                    <div className="absolute bottom-1 right-1 flex items-center gap-1">
+                      {logo && (
+                        <button
+                          onClick={() => {
+                            setLogo("");
+                            if (establishment) {
+                              updateMutation.mutate({ id: establishment.id, logo: null, logoBlur: null });
+                            }
+                          }}
+                          className="p-1.5 bg-red-500 hover:bg-red-600 rounded-full shadow-md transition-colors text-white"
+                          title="Remover logo"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => logoInputRef.current?.click()}
+                        className="p-2 bg-card hover:bg-muted rounded-full shadow-md transition-colors"
+                        title="Alterar logo"
+                      >
+                        <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                      </button>
+                    </div>
                     <input
                       ref={logoInputRef}
                       type="file"
