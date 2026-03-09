@@ -1748,9 +1748,10 @@ export default function Configuracoes() {
 
           {/* Atendimento Section */}
           {activeSection === "atendimento" && (
-            <div className="max-w-3xl mx-auto space-y-5">
+            <div className="flex gap-5 items-start">
 
-
+          {/* Coluna esquerda - Modalidades (40%) */}
+          <div className="w-[40%] flex-shrink-0 sticky top-4 space-y-5">
           {/* Modalidades de atendimento + Tempo + Pedido mínimo */}
           <SectionCard title="Modalidades e entrega" description="Tipos de atendimento e configurações de entrega" icon={<Bike className="h-5 w-5 text-orange-600 dark:text-orange-400" />} iconBg="bg-orange-100 dark:bg-orange-500/15">
             <div className="space-y-5">
@@ -1888,7 +1889,10 @@ export default function Configuracoes() {
               </div>
             </div>
           </SectionCard>
+          </div>
 
+          {/* Coluna direita - Pagamento/Taxa/Horários (60%) */}
+          <div className="flex-1 space-y-5">
           {/* Formas de pagamento */}
           <div ref={paymentMethodsCardRef} className="transition-all duration-300">
           <SectionCard title="Formas de pagamento" description="Métodos aceitos no estabelecimento" icon={<CreditCard className="h-5 w-5 text-violet-600 dark:text-violet-400" />} iconBg="bg-violet-100 dark:bg-violet-500/15">
@@ -2267,6 +2271,7 @@ export default function Configuracoes() {
               <Save className="h-4 w-4 mr-2" />
               {isPending || saveBusinessHoursMutation.isPending ? "Salvando..." : "Salvar todas as configurações"}
             </Button>
+          </div>
           </div>
 
             </div>

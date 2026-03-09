@@ -8601,3 +8601,4 @@
 - [x] Remover card "Recebimento de pedidos" da aba Atendimento em Configurações
 - [x] Alterar layout dos cards de seleção (Modalidades, Pagamento, Taxa) para ícone ao lado do texto (horizontal)
 - [x] Aplicar redesign visual da aba Atendimento na aba Agendamento para manter consistência
+- [x] Reorganizar aba Atendimento em 2 colunas: Modalidades (40% esquerda fixo) + Pagamento/Taxa/Horários (60% direita)
