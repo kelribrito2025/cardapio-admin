@@ -1215,7 +1215,7 @@ export default function Configuracoes() {
                         <>
                           <span className="flex items-center gap-1 min-w-0 truncate">
                             <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                            <span className="truncate">{fullAddress}</span>
+                            <span className="truncate">{fullAddress.length > 35 ? fullAddress.slice(0, 35) + '...' : fullAddress}</span>
                           </span>
                           <span className="text-muted-foreground shrink-0">•</span>
                         </>
