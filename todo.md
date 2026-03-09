@@ -8538,3 +8538,6 @@
 
 ## Corrigir título do bloco SEO
 - [x] Restaurar título para formato original: "Nome — Cardápio Digital e Delivery"
+
+## Horário de funcionamento no bloco SEO
+- [x] Adicionar ícone de relógio com horário de funcionamento no bloco informativo do menu público

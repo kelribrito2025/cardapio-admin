@@ -3105,6 +3105,41 @@ export default function PublicMenu() {
                     {[establishment.deliveryEnabled && 'Delivery', establishment.pickupEnabled && 'Retirada no local', establishment.dineInEnabled && 'Consumo no local'].filter(Boolean).join(' • ') || 'Pedidos online'}
                   </span>
                 </div>
+
+                {/* Horário de funcionamento */}
+                {businessHoursData && businessHoursData.length > 0 && (() => {
+                  const dayNames = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+                  const today = new Date().getDay();
+                  const todayData = businessHoursData.find((h: any) => h.dayOfWeek === today);
+                  const todayOpen = todayData?.isActive && todayData.openTime && todayData.closeTime;
+                  return (
+                    <div className="flex items-start gap-2.5 text-sm text-gray-600">
+                      <span className="text-base mt-0.5 flex-shrink-0">⏰</span>
+                      <div>
+                        <span className="font-medium">
+                          {todayOpen
+                            ? `Hoje: ${todayData.openTime} às ${todayData.closeTime}`
+                            : 'Fechado hoje'}
+                        </span>
+                        <div className="mt-1 text-xs text-gray-400 leading-relaxed">
+                          {dayNames.map((name, idx) => {
+                            const dayData = businessHoursData.find((h: any) => h.dayOfWeek === idx);
+                            const isToday = idx === today;
+                            const hours = dayData?.isActive && dayData.openTime && dayData.closeTime
+                              ? `${dayData.openTime} - ${dayData.closeTime}`
+                              : 'Fechado';
+                            return (
+                              <span key={idx} className={isToday ? 'font-semibold text-gray-600' : ''}>
+                                {name.slice(0, 3)}: {hours}
+                                {idx < 6 ? ' | ' : ''}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Categorias em tags */}
