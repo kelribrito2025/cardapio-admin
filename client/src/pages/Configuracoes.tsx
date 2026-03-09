@@ -994,7 +994,7 @@ export default function Configuracoes() {
               <SectionCard title="Preview do Perfil Público" className="h-full">
                 <div className="bg-card rounded-2xl overflow-hidden border border-border/30 shadow-sm">
               {/* Cover Image */}
-              <div className="relative h-48 bg-gradient-to-br from-red-100 to-red-50">
+              <div className="relative h-48 bg-gradient-to-br from-red-100 to-red-50 group/cover">
                 {coverImage ? (
                   <img 
                     src={coverImage} 
@@ -1007,30 +1007,29 @@ export default function Configuracoes() {
                   </div>
                 )}
                 
-                {/* Cover Action Buttons */}
-                <div className="absolute top-3 right-3 flex items-center gap-2">
-                  {coverImage && (
-                    <button
-                      onClick={() => {
-                        setCoverImage("");
-                        if (establishment) {
-                          updateMutation.mutate({ id: establishment.id, coverImage: null, coverBlur: null });
-                        }
-                      }}
-                      className="p-2 bg-red-500/80 hover:bg-red-600/90 rounded-full text-white transition-colors"
-                      title="Remover capa"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  )}
+                {/* Hover overlay para remover capa */}
+                {coverImage && (
                   <button
-                    onClick={() => coverInputRef.current?.click()}
-                    className="p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors"
-                    title="Alterar capa"
+                    onClick={() => {
+                      setCoverImage("");
+                      if (establishment) {
+                        updateMutation.mutate({ id: establishment.id, coverImage: null, coverBlur: null });
+                      }
+                    }}
+                    className="absolute inset-0 bg-black/0 group-hover/cover:bg-black/50 flex items-center justify-center opacity-0 group-hover/cover:opacity-100 transition-all duration-300 cursor-pointer"
                   >
-                    <Camera className="h-4 w-4" />
+                    <span className="text-white font-medium text-sm bg-red-500/90 px-4 py-2 rounded-full shadow-lg">Remover capa</span>
                   </button>
-                </div>
+                )}
+
+                {/* Edit Cover Button */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); coverInputRef.current?.click(); }}
+                  className="absolute top-3 right-3 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors z-10"
+                  title="Alterar capa"
+                >
+                  <Camera className="h-4 w-4" />
+                </button>
                 <input
                   ref={coverInputRef}
                   type="file"
@@ -1090,30 +1089,29 @@ export default function Configuracoes() {
                       )}
                     </div>
                     
-                    {/* Logo Action Buttons */}
-                    <div className="absolute bottom-1 right-1 flex items-center gap-1">
-                      {logo && (
-                        <button
-                          onClick={() => {
-                            setLogo("");
-                            if (establishment) {
-                              updateMutation.mutate({ id: establishment.id, logo: null, logoBlur: null });
-                            }
-                          }}
-                          className="p-1.5 bg-red-500 hover:bg-red-600 rounded-full shadow-md transition-colors text-white"
-                          title="Remover logo"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      )}
+                    {/* Hover overlay para remover logo */}
+                    {logo && (
                       <button
-                        onClick={() => logoInputRef.current?.click()}
-                        className="p-2 bg-card hover:bg-muted rounded-full shadow-md transition-colors"
-                        title="Alterar logo"
+                        onClick={() => {
+                          setLogo("");
+                          if (establishment) {
+                            updateMutation.mutate({ id: establishment.id, logo: null, logoBlur: null });
+                          }
+                        }}
+                        className="absolute inset-0 rounded-full bg-black/0 hover:bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-all duration-300 cursor-pointer z-10"
                       >
-                        <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span className="text-white font-medium text-[10px] leading-tight text-center">Remover<br/>foto</span>
                       </button>
-                    </div>
+                    )}
+                    
+                    {/* Edit Logo Button */}
+                    <button
+                      onClick={() => logoInputRef.current?.click()}
+                      className="absolute bottom-1 right-1 p-2 bg-card hover:bg-muted rounded-full shadow-md transition-colors z-20"
+                      title="Alterar logo"
+                    >
+                      <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                    </button>
                     <input
                       ref={logoInputRef}
                       type="file"
