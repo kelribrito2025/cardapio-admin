@@ -8516,3 +8516,11 @@
 ## Auto-abertura do modal de melhorar foto após upload
 - [x] Após upload de imagem, abrir automaticamente o modal de melhorar foto com IA
 - [x] Garantir que o fluxo de manter original também passa pela otimização WebP+resize+thumb+blur (upload já otimiza antes de salvar)
+
+## Redesenho do Modal de Melhorar Foto com IA
+- [x] Redesenhar visual do modal alinhado ao estilo do sistema (vermelho/branco)
+- [x] Adicionar etapas visuais progressivas durante processamento (Identificando comida → Ajustando iluminação → Criando cenário)
+- [x] Renomear botões: "Usar original", "Tentar outra versão", "Usar foto profissional"
+- [x] Adicionar dica SaaS após gerar: "Produtos com foto profissional vendem até 3x mais"
+- [x] Remover botão "Excluir produto" do Passo 3 da sidebar de edição
+- [x] Adicionar modal de confirmação ao clicar no X para excluir foto do produto
