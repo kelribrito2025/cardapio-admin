@@ -1824,6 +1824,11 @@ export default function Catalogo() {
             refetchProducts();
             refetchCategories();
           }}
+          onDelete={(id) => {
+            deleteMutation.mutate({ id });
+            setProductSheetOpen(false);
+            setEditingProductId(undefined);
+          }}
         />
       )}
 

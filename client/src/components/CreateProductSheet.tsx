@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -71,9 +76,10 @@ interface Props {
   onSuccess: () => void;
   defaultCategoryId?: number;
   productId?: number; // Para edição de produto existente
+  onDelete?: (id: number) => void; // Para exclusão com confirmação
 }
 
-export default function CreateProductSheet({ open, onOpenChange, establishmentId, onSuccess, defaultCategoryId, productId }: Props) {
+export default function CreateProductSheet({ open, onOpenChange, establishmentId, onSuccess, defaultCategoryId, productId, onDelete }: Props) {
   const isEditing = !!productId;
   // Step state
   const [step, setStep] = useState<Step>(1);
@@ -84,6 +90,9 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
   const [enhanceModalOpen, setEnhanceModalOpen] = useState(false);
   const [enhanceImageIndex, setEnhanceImageIndex] = useState(0);
   const [enhanceImageUrl, setEnhanceImageUrl] = useState("");
+
+  // Delete confirmation dialog state
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   // Step 1: Basic info
   const [name, setName] = useState("");
@@ -341,6 +350,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
         { base64, mimeType: file.type, folder: "products" },
         {
           onSuccess: (data) => {
+            const newIndex = images.length;
             setImages(prev => {
               if (prev.length >= 3) {
                 toast.error("Máximo de 3 fotos por produto");
@@ -348,7 +358,12 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
               }
               return [...prev, data.url];
             });
-            toast.success("Imagem enviada");
+            // Auto-abrir modal de melhorar foto com IA após upload
+            if (isEditing && productId && newIndex < 3) {
+              setEnhanceImageUrl(data.url);
+              setEnhanceImageIndex(newIndex);
+              setEnhanceModalOpen(true);
+            }
           },
           onError: () => toast.error("Erro ao enviar imagem"),
           onSettled: () => setUploading(false),
@@ -1683,7 +1698,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border/50 bg-card">
+        <div className="p-4 border-t border-border/50 bg-card space-y-2">
           <div className="flex gap-3">
             <Button
               variant="outline"
@@ -1712,6 +1727,16 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
               )}
             </Button>
           </div>
+          {isEditing && onDelete && productId && (
+            <Button
+              variant="ghost"
+              onClick={() => setDeleteConfirmOpen(true)}
+              className="w-full rounded-xl h-10 text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Excluir produto
+            </Button>
+          )}
         </div>
       </div>
     );
@@ -1759,6 +1784,50 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
         }}
       />
     )}
+
+    {/* Modal de confirmação de exclusão */}
+    <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+      <DialogContent
+        className="sm:max-w-md p-0 overflow-hidden border-t-4 border-t-red-500"
+        style={{ borderRadius: '16px' }}
+      >
+        <DialogTitle className="sr-only">Excluir produto</DialogTitle>
+        <div className="px-6 pt-5 pb-6">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="p-2.5 rounded-xl flex-shrink-0 bg-red-100 dark:bg-red-950/50">
+              <Trash2 className="h-6 w-6 text-red-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Excluir produto</h3>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                Tem certeza que deseja excluir <strong>{name || 'este produto'}</strong>? Esta ação não pode ser desfeita.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteConfirmOpen(false)}
+              className="flex-1 rounded-xl h-10"
+            >
+              Cancelar
+            </Button>
+            <Button
+              className="flex-1 rounded-xl h-10 font-semibold bg-red-500 hover:bg-red-600 text-white"
+              onClick={() => {
+                if (onDelete && productId) {
+                  onDelete(productId);
+                  setDeleteConfirmOpen(false);
+                  onOpenChange(false);
+                }
+              }}
+            >
+              Excluir Produto
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
     </>
   );
 }

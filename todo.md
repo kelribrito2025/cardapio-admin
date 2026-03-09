@@ -8509,3 +8509,10 @@
 
 ## Otimização da imagem melhorada com IA
 - [x] Aplicar pipeline de otimização (WebP + resize + thumb + blur) na imagem melhorada pela IA, igual ao upload normal
+
+## Modal de confirmação de exclusão de produto
+- [x] Adicionar modal de confirmação antes de excluir produto na sidebar de edição
+
+## Auto-abertura do modal de melhorar foto após upload
+- [x] Após upload de imagem, abrir automaticamente o modal de melhorar foto com IA
+- [x] Garantir que o fluxo de manter original também passa pela otimização WebP+resize+thumb+blur (upload já otimiza antes de salvar)
