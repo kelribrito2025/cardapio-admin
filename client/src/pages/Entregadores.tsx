@@ -442,6 +442,21 @@ function DriverFormSheet({
             <div className="space-y-3">
               <Label className="text-sm font-medium">Como o entregador será pago pelas entregas?</Label>
               <div className="space-y-2">
+                <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${form.repasseStrategy === "none" ? "border-red-400 bg-red-50 shadow-sm" : "border-border/50 hover:border-red-300 bg-muted/30 hover:bg-muted/50"}`}>
+                  <input
+                    type="radio"
+                    name="strategy"
+                    value="none"
+                    checked={form.repasseStrategy === "none"}
+                    onChange={() => setForm((f) => ({ ...f, repasseStrategy: "none" }))}
+                    className="mt-0.5 accent-red-500"
+                  />
+                  <div>
+                    <span className="text-sm font-medium">Nenhuma</span>
+                    <p className="text-xs text-muted-foreground">Sem repasse automático ao entregador.</p>
+                  </div>
+                </label>
+
                 <label className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${form.repasseStrategy === "neighborhood" ? "border-red-400 bg-red-50 shadow-sm" : "border-border/50 hover:border-red-300 bg-muted/30 hover:bg-muted/50"}`}>
                   <input
                     type="radio"

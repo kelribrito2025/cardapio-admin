@@ -8571,3 +8571,5 @@
 - [x] Adicionar tooltip com preview do cartão fidelidade/cashback ao hover sobre a opção selecionada no sheet de Programa de Recompensas
 - [x] Aumentar tamanho dos tooltips de preview do cartão fidelidade/cashback em 33%
 - [x] Corrigir bug: barra de rolagem do sidebar volta ao topo ao clicar nos itens inferiores (Bot WhatsApp, Configurações)
+- [x] Alterar label 'Estratégia de repasse' para 'Como o entregador será pago pelas entregas?' (editor visual)
+- [x] Adicionar opção 'Nenhuma' na estratégia de repasse do entregador
