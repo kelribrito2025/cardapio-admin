@@ -8506,3 +8506,6 @@
 
 ## Bug: Modal de melhorar foto fecha ao clicar fora
 - [x] Impedir que o modal de melhorar foto com IA feche ao clicar fora (overlay)
+
+## Otimização da imagem melhorada com IA
+- [x] Aplicar pipeline de otimização (WebP + resize + thumb + blur) na imagem melhorada pela IA, igual ao upload normal

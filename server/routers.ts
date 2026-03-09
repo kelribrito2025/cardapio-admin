@@ -825,11 +825,32 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const product = await db.getProductById(input.productId);
         if (!product) {
-          throw new TRPCError({ code: 'NOT_FOUND', message: 'Produto n\u00e3o encontrado' });
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Produto não encontrado' });
         }
 
         const { enhanceProductImage } = await import('./imageEnhancer');
         const result = await enhanceProductImage(input.imageUrl, product.establishmentId);
+
+        // Baixar a imagem melhorada e aplicar o mesmo pipeline de otimização do upload normal
+        const enhancedResponse = await fetch(result.enhancedUrl);
+        if (!enhancedResponse.ok) {
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Falha ao baixar imagem melhorada para otimização' });
+        }
+        const enhancedBuffer = Buffer.from(await enhancedResponse.arrayBuffer());
+
+        // Processar: WebP + resize (1200px main + 400px thumb) + blur placeholder
+        const processed = await processImage(enhancedBuffer);
+        const id = nanoid(12);
+        const folder = `est/${product.establishmentId}/products`;
+        const mainFileName = `${folder}/enhanced_${id}.webp`;
+        const thumbFileName = `${folder}/enhanced_${id}_thumb.webp`;
+
+        const [mainResult, thumbResult] = await Promise.all([
+          mindiStoragePut(mainFileName, processed.mainBuffer, "image/webp"),
+          mindiStoragePut(thumbFileName, processed.thumbBuffer, "image/webp"),
+        ]);
+
+        const optimizedUrl = mainResult.url;
 
         // Atualizar o array enhancedImages do produto
         const currentEnhanced = (product.enhancedImages as string[] | null) || [];
@@ -838,14 +859,18 @@ export const appRouter = router({
         while (newEnhanced.length <= input.imageIndex) {
           newEnhanced.push('');
         }
-        newEnhanced[input.imageIndex] = result.enhancedUrl;
+        newEnhanced[input.imageIndex] = optimizedUrl;
 
-        await db.updateProduct(input.productId, {
-          enhancedImages: newEnhanced,
-        });
+        // Atualizar blurPlaceholder se for a primeira imagem
+        const updateData: any = { enhancedImages: newEnhanced };
+        if (input.imageIndex === 0) {
+          updateData.blurPlaceholder = processed.blurDataUrl;
+        }
+
+        await db.updateProduct(input.productId, updateData);
 
         return {
-          enhancedUrl: result.enhancedUrl,
+          enhancedUrl: optimizedUrl,
           originalUrl: result.originalUrl,
         };
       }),
