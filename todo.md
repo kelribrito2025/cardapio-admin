@@ -8546,3 +8546,5 @@
 - [x] Backend: conceder 3 créditos grátis quando elegível (apenas uma vez)
 - [x] Frontend: exibir "Não elegível" no modal quando condições não atendidas (sem mostrar motivo)
 - [x] Renomear modal de melhoria de imagem para "Mindi Vision — Transforme suas fotos em imagens profissionais"
+- [x] Adicionar 6 créditos ao estabelecimento 210006 (ficar com 15)
+- [x] Editar texto "Como funciona" para "Nossa IA Mindi Vision melhora iluminação, cores e cria um cenário profissional. A comida em si não é alterada."

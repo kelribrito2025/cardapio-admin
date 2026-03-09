@@ -352,8 +352,8 @@ export default function ImageEnhanceModal({
                     animation: 'shimmer-text 3s ease-in-out infinite',
                   }}
                 >
-                  <strong>Como funciona:</strong> A IA melhora iluminação, cores e cria um cenário profissional.
-                  A comida em si não é alterada.
+<strong>Como funciona:</strong> Nossa IA Mindi Vision melhora iluminação, cores e cria um cenário profissional.
+                   A comida em si não é alterada.
                 </p>
                 <style>{`
                   @keyframes shimmer-text {
