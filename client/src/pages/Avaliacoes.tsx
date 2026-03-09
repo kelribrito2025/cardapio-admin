@@ -24,6 +24,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
   return (
@@ -302,6 +306,14 @@ export default function Avaliacoes() {
     enabled: !!user,
   });
 
+  const utils = trpc.useUtils();
+
+  const updateMutation = trpc.establishment.update.useMutation({
+    onSuccess: () => {
+      utils.establishment.get.invalidate();
+    },
+  });
+
   const establishmentId = establishment?.id;
 
   // Métricas
@@ -375,23 +387,7 @@ export default function Avaliacoes() {
     );
   }
 
-  if (establishment.reviewsEnabled === false) {
-    return (
-      <AdminLayout>
-        <div className="flex flex-col items-center justify-center h-64 text-center space-y-4">
-          <div className="p-4 bg-muted rounded-full">
-            <Star className="h-10 w-10 text-muted-foreground" />
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold">Avaliações desativadas</h2>
-            <p className="text-muted-foreground mt-1 max-w-md">
-              As avaliações estão desativadas para o seu estabelecimento. Para ativar, acesse Configurações &gt; Estabelecimento &gt; Avaliações do Restaurante.
-            </p>
-          </div>
-        </div>
-      </AdminLayout>
-    );
-  }
+  const reviewsEnabled = establishment.reviewsEnabled !== false;
 
   return (
     <AdminLayout>
@@ -400,8 +396,47 @@ export default function Avaliacoes() {
         title="Avaliações"
         description="Gerencie e responda as avaliações dos seus clientes"
         icon={<Star className="h-6 w-6 text-amber-500" />}
+        actions={
+          <div className="flex items-center gap-3">
+            <Label htmlFor="reviews-toggle" className="text-sm text-muted-foreground cursor-pointer">
+              {reviewsEnabled ? "Ativado" : "Desativado"}
+            </Label>
+            <Switch
+              id="reviews-toggle"
+              checked={reviewsEnabled}
+              onCheckedChange={(checked) => {
+                if (establishment?.id) {
+                  updateMutation.mutate({
+                    id: establishment.id,
+                    reviewsEnabled: checked,
+                  }, {
+                    onSuccess: () => {
+                      toast.success(checked ? "Avaliações ativadas" : "Avaliações desativadas");
+                    },
+                  });
+                }
+              }}
+            />
+          </div>
+        }
       />
 
+      {/* Conteúdo quando avaliações desativadas */}
+      {!reviewsEnabled && (
+        <div className="flex flex-col items-center justify-center h-52 text-center space-y-4 border border-dashed border-border rounded-xl bg-muted/20">
+          <div className="p-4 bg-muted rounded-full">
+            <Star className="h-10 w-10 text-muted-foreground" />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold">Avaliações desativadas</h2>
+            <p className="text-muted-foreground mt-1 max-w-md text-sm">
+              Ative o toggle acima para permitir que clientes avaliem após o pedido ser entregue.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {reviewsEnabled && <>
       {/* Banner informativo de avaliações */}
       {!reviewsBannerDismissed && (
         <div className="relative rounded-xl overflow-hidden border bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20 border-amber-200/50 dark:border-amber-800/30">
@@ -760,6 +795,7 @@ export default function Avaliacoes() {
           </>
         )}
       </div>
+    </>}
     </div>
 
     {/* Sidebar de detalhes da avaliação */}

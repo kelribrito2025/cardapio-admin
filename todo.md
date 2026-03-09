@@ -8560,3 +8560,6 @@
 - [x] Adicionar botão para remover imagem de capa no preview do perfil público
 - [x] Substituir botões de lixeira por overlay hover elegante com texto "Remover capa" e "Remover foto"
 - [x] Trocar ícone de lápis por ícone de câmera no botão de editar foto do perfil
+- [x] Adicionar toggle ativar/desativar avaliações na página de Avaliações (na linha do título)
+- [x] Remover card "Avaliações do Restaurante" da página de Configurações
+- [x] Manter item "Avaliações" sempre visível no menu lateral (não esconder quando desativado)

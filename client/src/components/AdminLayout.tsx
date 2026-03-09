@@ -902,11 +902,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   // ===== PARENT MENU WITH CHILDREN =====
                   if (item.isParent && item.children) {
                     // Filtrar filhos visíveis antes de renderizar
-                    const visibleChildren = item.children.filter((child: any) => {
-                      if (child.href === '/avaliacoes' && !reviewsEnabled) return false;
-                      if (child.href === '/agendados' && !schedulingEnabled) return false;
-                      return true;
-                    });
+                     const visibleChildren = item.children.filter((child: any) => {
+                       if (child.href === '/agendados' && !schedulingEnabled) return false;
+                       return true;
+                     });
 
                     // Se não há filhos visíveis e o item tem href navegável, renderizar como link direto
                     if (visibleChildren.length === 0 && item.href && !item.href.endsWith('-parent')) {
@@ -1053,13 +1052,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                           isExpanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
                         )}>
                           <div className="ml-4 mt-0.5 space-y-0.5 border-l-2 border-border/50 pl-1">
-                            {item.children.filter((child: any) => {
-                              // Ocultar submenu Avaliações quando reviewsEnabled === false
-                              if (child.href === '/avaliacoes' && !reviewsEnabled) return false;
-                              // Ocultar submenu Agendados quando agendamento não está ativado
-                              if (child.href === '/agendados' && !schedulingEnabled) return false;
-                              return true;
-                            }).map((child: any) => {
+                             {item.children.filter((child: any) => {
+                               // Ocultar submenu Agendados quando agendamento não está ativado
+                               if (child.href === '/agendados' && !schedulingEnabled) return false;
+                               return true;
+                             }).map((child: any) => {
                               const childActive = location === child.href || (child.href !== '/' && location.startsWith(child.href));
                               const childBadge = child.badgeKey === 'reviews' && reviewsEnabled && typeof unreadReviewCount === 'number' && unreadReviewCount > 0 ? unreadReviewCount 
                                 : child.href === '/agendados' && scheduledPendingCount > 0 ? scheduledPendingCount 
