@@ -1,0 +1,15 @@
+{
+  "query": "UPDATE establishments SET aiImageCredits = 4 WHERE id = 210015;\nSELECT id, name, aiImageCredits FROM establishments WHERE id = 210015;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute UPDATE establishments SET aiImageCredits = 4 WHERE id = 210015;\nSELECT id, name, aiImageCredits FROM establishments WHERE id = 210015;",
+  "rows": [
+    {
+      "id": "210015",
+      "name": "D' Gust Lanches",
+      "aiImageCredits": "4"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\taiImageCredits\n210015\tD' Gust Lanches\t4\n",
+  "stderr": "",
+  "execution_time_ms": 78
+}

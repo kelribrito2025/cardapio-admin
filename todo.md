@@ -8565,3 +8565,4 @@
 - [x] Manter item "Avaliações" sempre visível no menu lateral (não esconder quando desativado)
 - [x] Adicionar configurações do modo desativado (quantidade de avaliações fictícias + preview) na página de Avaliações
 - [x] Adicionar validação de máximo 149 avaliações fictícias no campo de quantidade
+- [x] Remover texto "IA" do badge no modal de melhoramento de imagem, deixar apenas ícone sparkles

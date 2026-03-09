@@ -1,0 +1,26 @@
+{
+  "query": "SELECT id, name FROM categories WHERE establishmentId = 210015 ORDER BY sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name FROM categories WHERE establishmentId = 210015 ORDER BY sortOrder;",
+  "rows": [
+    {
+      "id": "570001",
+      "name": "LANCHE"
+    },
+    {
+      "id": "570002",
+      "name": "COMBOS"
+    },
+    {
+      "id": "570003",
+      "name": "PORÇÃO"
+    },
+    {
+      "id": "570004",
+      "name": "BEBIDA"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n570001\tLANCHE\n570002\tCOMBOS\n570003\tPORÇÃO\n570004\tBEBIDA\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

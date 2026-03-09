@@ -451,9 +451,8 @@ export default function ImageEnhanceModal({
                     className="w-full h-full object-cover"
                   />
                   {/* Badge */}
-                  <div className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <Sparkles className="h-2.5 w-2.5" />
-                    IA
+                  <div className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 flex items-center justify-center">
+                    <Sparkles className="h-3 w-3" />
                   </div>
                 </div>
               </div>
