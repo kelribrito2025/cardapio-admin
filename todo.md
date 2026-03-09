@@ -8555,3 +8555,4 @@
 - [x] Adicionar passo "Cadastrar chave Pix" na sidebar de primeiros passos (WelcomeChecklist)
 - [x] Ao clicar no passo, navegar para configurações do estabelecimento com scroll automático até card Formas de Pagamento
 - [x] Concluir passo automaticamente quando chave Pix for salva
+- [x] Corrigir notificação "Finalizado" do WhatsApp para vir ativada por padrão ao criar conta

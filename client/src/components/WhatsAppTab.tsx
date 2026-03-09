@@ -41,7 +41,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
   const [notifyOnNewOrder, setNotifyOnNewOrder] = useState(true);
   const [notifyOnPreparing, setNotifyOnPreparing] = useState(true);
   const [notifyOnReady, setNotifyOnReady] = useState(true);
-  const [notifyOnCompleted, setNotifyOnCompleted] = useState(false);
+  const [notifyOnCompleted, setNotifyOnCompleted] = useState(true);
   const [notifyOnCancelled, setNotifyOnCancelled] = useState(true);
   const [notifyOnReservation, setNotifyOnReservation] = useState(false);
   
@@ -131,7 +131,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
       setNotifyOnNewOrder(configQuery.data.notifyOnNewOrder ?? true);
       setNotifyOnPreparing(configQuery.data.notifyOnPreparing ?? true);
       setNotifyOnReady(configQuery.data.notifyOnReady ?? true);
-      setNotifyOnCompleted(configQuery.data.notifyOnCompleted ?? false);
+      setNotifyOnCompleted(configQuery.data.notifyOnCompleted ?? true);
       setNotifyOnCancelled(configQuery.data.notifyOnCancelled ?? true);
       setNotifyOnReservation((configQuery.data as any).notifyOnReservation ?? false);
       // Usar templates salvos ou manter os padrões
