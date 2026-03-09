@@ -8566,3 +8566,5 @@
 - [x] Adicionar configurações do modo desativado (quantidade de avaliações fictícias + preview) na página de Avaliações
 - [x] Adicionar validação de máximo 149 avaliações fictícias no campo de quantidade
 - [x] Remover texto "IA" do badge no modal de melhoramento de imagem, deixar apenas ícone sparkles
+- [ ] Investigar e corrigir bug: itens de complemento não aparecem em alguns produtos após exclusão de itens do grupo
+- [x] Adicionar breve explicação abaixo de cada opção de programa de fidelização (Cartão Fidelidade e Cashback)

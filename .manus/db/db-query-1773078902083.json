@@ -1,0 +1,136 @@
+{
+  "query": "SELECT cg.id, cg.productId, cg.name, cg.minQuantity, cg.maxQuantity, cg.isRequired, cg.isActive\nFROM complementGroups cg \nJOIN products p ON cg.productId = p.id\nWHERE p.establishmentId = 210015 AND cg.name LIKE '%catchup%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.id, cg.productId, cg.name, cg.minQuantity, cg.maxQuantity, cg.isRequired, cg.isActive\nFROM complementGroups cg \nJOIN products p ON cg.productId = p.id\nWHERE p.establishmentId = 210015 AND cg.name LIKE '%catchup%';",
+  "rows": [
+    {
+      "id": "660004",
+      "productId": "800006",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    },
+    {
+      "id": "660006",
+      "productId": "800007",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    },
+    {
+      "id": "660008",
+      "productId": "800008",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    },
+    {
+      "id": "660010",
+      "productId": "800009",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    },
+    {
+      "id": "660012",
+      "productId": "800010",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    },
+    {
+      "id": "660015",
+      "productId": "800011",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    },
+    {
+      "id": "660017",
+      "productId": "800012",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    },
+    {
+      "id": "660019",
+      "productId": "800013",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    },
+    {
+      "id": "660025",
+      "productId": "800017",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    },
+    {
+      "id": "660026",
+      "productId": "800018",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    },
+    {
+      "id": "660027",
+      "productId": "800019",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    },
+    {
+      "id": "660029",
+      "productId": "800014",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    },
+    {
+      "id": "660032",
+      "productId": "800015",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    },
+    {
+      "id": "660033",
+      "productId": "800016",
+      "name": "Deseja catchup e maionese?",
+      "minQuantity": "1",
+      "maxQuantity": "1",
+      "isRequired": "1",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tproductId\tname\tminQuantity\tmaxQuantity\tisRequired\tisActive\n660004\t800006\tDeseja catchup e maionese?\t1\t1\t1\t1\n660006\t800007\tDeseja catchup e maionese?\t1\t1\t1\t1\n660008\t800008\tDeseja catchup e maionese?\t1\t1\t1\t1\n660010\t800009\tDeseja catchup e maionese?\t1\t1\t1\t1\n660012\t800010\tDeseja catchup e maionese?\t1\t1\t1\t1\n660015\t800011\tDeseja catchup e maionese?\t1\t1\t1\t1\n660017\t800012\tDeseja catchup e maionese?\t1\t1\t1\t1\n660019\t800013\tDeseja catchup e maionese?\t1\t1\t1\t1\n660025\t800017\tDeseja catchup e maionese?\t1\t1\t1\t1\n660026\t800018\tDeseja catchup e maionese?\t1\t1\t1\t1\n660027\t800019\tDeseja catchup e maionese?\t1\t1\t1\t1\n660029\t800014\tDeseja catchup e maionese?\t1\t1\t1\t1\n660032\t800015\tDeseja catchup e maionese?\t1\t1\t1\t1\n660033\t800016\tDeseja catchup e maionese?\t1\t1\t1\t1\n",
+  "stderr": "",
+  "execution_time_ms": 72
+}

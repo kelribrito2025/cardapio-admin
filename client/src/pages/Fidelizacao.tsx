@@ -1143,6 +1143,11 @@ export default function Fidelizacao() {
                   <div className="flex-1 text-left">
                     <span className="font-semibold text-sm block">Cartão Fidelidade</span>
                     <span className="text-xs text-muted-foreground">Ganhe carimbos a cada pedido</span>
+                    {rewardType === "loyalty" && (
+                      <span className="text-[11px] text-emerald-600/80 dark:text-emerald-400/80 block mt-1 leading-relaxed">
+                        O cliente acumula carimbos a cada pedido e, ao completar todos, ganha um cupom no valor definido por você.
+                      </span>
+                    )}
                   </div>
                   {rewardType === "loyalty" ? (
                     <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
@@ -1171,6 +1176,11 @@ export default function Fidelizacao() {
                   <div className="flex-1 text-left">
                     <span className="font-semibold text-sm block">Cashback</span>
                     <span className="text-xs text-muted-foreground">Percentual de volta por pedido</span>
+                    {rewardType === "cashback" && (
+                      <span className="text-[11px] text-blue-600/80 dark:text-blue-400/80 block mt-1 leading-relaxed">
+                        O cliente recebe uma porcentagem do valor do pedido de volta como crédito para usar em compras futuras.
+                      </span>
+                    )}
                   </div>
                   {rewardType === "cashback" ? (
                     <Check className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />

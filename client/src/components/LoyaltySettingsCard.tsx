@@ -190,6 +190,11 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
             </div>
             <span className="font-medium text-sm">Cartão Fidelidade</span>
             <span className="text-xs text-muted-foreground text-center">Carimbos por pedido</span>
+            {rewardType === "loyalty" && (
+              <p className="text-[11px] text-emerald-600/80 dark:text-emerald-400/80 text-center mt-1 leading-relaxed">
+                O cliente acumula carimbos a cada pedido e, ao completar todos, ganha um cupom no valor definido por você.
+              </p>
+            )}
           </button>
           
           {/* Cashback */}
@@ -216,6 +221,11 @@ export function LoyaltySettingsCard({ establishmentId }: LoyaltySettingsCardProp
             </div>
             <span className="font-medium text-sm">Cashback</span>
             <span className="text-xs text-muted-foreground text-center">% de volta por pedido</span>
+            {rewardType === "cashback" && (
+              <p className="text-[11px] text-blue-600/80 dark:text-blue-400/80 text-center mt-1 leading-relaxed">
+                O cliente recebe uma porcentagem do valor do pedido de volta como crédito para usar em compras futuras.
+              </p>
+            )}
           </button>
         </div>
       </div>
