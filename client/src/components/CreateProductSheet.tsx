@@ -32,7 +32,9 @@ import {
   ClipboardList,
   PackageOpen,
   Info,
+  Sparkles,
 } from "lucide-react";
+import ImageEnhanceModal from "@/components/ImageEnhanceModal";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { cn, capitalizeFirst, parsePriceInput } from "@/lib/utils";
@@ -77,6 +79,11 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
   const [step, setStep] = useState<Step>(1);
   const [step2Sub, setStep2Sub] = useState<Step2Sub>("groups-list");
   const [dataLoaded, setDataLoaded] = useState(false);
+
+  // Image enhance modal state
+  const [enhanceModalOpen, setEnhanceModalOpen] = useState(false);
+  const [enhanceImageIndex, setEnhanceImageIndex] = useState(0);
+  const [enhanceImageUrl, setEnhanceImageUrl] = useState("");
 
   // Step 1: Basic info
   const [name, setName] = useState("");
@@ -643,13 +650,29 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
             {images.map((img, index) => (
               <div key={index} className="relative h-20 w-20 rounded-xl overflow-hidden border border-border/50 group flex-shrink-0">
                 <img src={img} alt={`Produto ${index + 1}`} className="h-full w-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => removeImage(index)}
-                  className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <X className="h-5 w-5 text-white" />
-                </button>
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {isEditing && productId && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEnhanceImageUrl(img);
+                        setEnhanceImageIndex(index);
+                        setEnhanceModalOpen(true);
+                      }}
+                      className="p-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:from-amber-600 hover:to-orange-600 transition-colors shadow-sm"
+                      title="Melhorar foto com IA"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="p-1.5 bg-destructive text-white rounded-lg shadow-sm"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             ))}
             {images.length < 3 && (
@@ -1695,6 +1718,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
   };
 
   return (
+    <>
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-[420px] !p-0 !gap-0 !h-dvh" hideCloseButton>
         <SheetTitle className="sr-only">{isEditing ? "Editar produto" : "Criar produto"}</SheetTitle>
@@ -1719,5 +1743,22 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
         )}
       </SheetContent>
     </Sheet>
+
+    {/* Modal de melhoramento de imagem com IA */}
+    {isEditing && productId && (
+      <ImageEnhanceModal
+        open={enhanceModalOpen}
+        onOpenChange={setEnhanceModalOpen}
+        productId={productId}
+        imageUrl={enhanceImageUrl}
+        imageIndex={enhanceImageIndex}
+        onEnhanced={(enhancedUrl) => {
+          const newImages = [...images];
+          newImages[enhanceImageIndex] = enhancedUrl;
+          setImages(newImages);
+        }}
+      />
+    )}
+    </>
   );
 }

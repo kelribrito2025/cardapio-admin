@@ -8500,3 +8500,6 @@
 
 ## Bug: coluna enhancedImages não existe no banco
 - [x] Executar db:push para criar a coluna enhancedImages na tabela products
+
+## Mover botão de melhorar imagem para o modal de edição
+- [x] Adicionar botão de melhorar imagem no modal de edição de produto (Passo 1 - Imagens do produto)
