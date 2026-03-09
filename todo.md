@@ -8541,3 +8541,14 @@
 
 ## Horário de funcionamento no bloco SEO
 - [x] Adicionar ícone de relógio com horário de funcionamento no bloco informativo do menu público
+
+## Bloco SEO - largura e carrossel de categorias
+- [x] Ajustar largura do bloco SEO para ocupar a largura total do menu público no desktop
+- [x] Transformar categorias em carrossel horizontal infinito (marquee) estilo landing page
+
+## Redesenho visual bloco SEO v2
+- [x] Agrupar horários consecutivos com mesmo horário (Seg a Qua — 18h às 23h)
+- [x] Adicionar indicador "Aberto agora" quando restaurante estiver aberto
+- [x] Visual estilo "Como funciona" com background rosado/vermelho suave (bg-red-50)
+- [x] Ajustar largura do bloco SEO para ocupar largura total do container do menu público no desktop (remover maxWidth 640px)
+- [x] Ajustar largura do bloco SEO para ocupar largura total do container do menu público no desktop (remover maxWidth 640px)
