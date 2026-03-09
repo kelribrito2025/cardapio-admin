@@ -8484,3 +8484,6 @@
 
 ## Bug: SSE establishment_closed não atualiza status no menu público
 - [x] Corrigir: evento SSE establishment_closed é recebido mas o menu público continua mostrando "Aberto agora"
+
+## Texto do botão da sacola
+- [x] Alterar texto do botão "Finalizar pedido" para "Avançar" na sacola do menu público

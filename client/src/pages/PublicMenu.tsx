@@ -3039,7 +3039,7 @@ export default function PublicMenu() {
                           Adicionar mais itens
                         </>
                       ) : (
-                        'Finalizar pedido'
+                        'Avançar'
                       )}
                     </button>
                   );
@@ -5865,7 +5865,7 @@ setOnlinePaymentUrl(null);
                               Restaurante Fechado
                             </>
                           ) : (
-                            'Finalizar pedido'
+                            'Avançar'
                           )}
                         </button>
                       )}
