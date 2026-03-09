@@ -8574,3 +8574,5 @@
 - [x] Alterar label 'Estratégia de repasse' para 'Como o entregador será pago pelas entregas?' (editor visual)
 - [x] Adicionar opção 'Nenhuma' na estratégia de repasse do entregador
 - [x] Ajustar layout desktop Configurações > Estabelecimento: card Preview 40% e card Endereço 60%
+- [x] Card de Preview do Perfil sticky (fixo ao rolar) na coluna esquerda (40%)
+- [x] Card de Nota do Restaurante na coluna direita (60%), mesma largura do Endereço
