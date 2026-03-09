@@ -54,16 +54,15 @@ export function SchedulingSettings() {
 
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto space-y-5">
+      <div className="space-y-5">
         <div className="h-8 bg-muted animate-pulse rounded-lg w-48" />
-        <div className="h-40 bg-muted animate-pulse rounded-xl" />
         <div className="h-40 bg-muted animate-pulse rounded-xl" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-5">
+    <div className="space-y-5">
 
       {/* Toggle principal */}
       <SectionCard

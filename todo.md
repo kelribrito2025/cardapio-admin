@@ -8602,3 +8602,4 @@
 - [x] Alterar layout dos cards de seleção (Modalidades, Pagamento, Taxa) para ícone ao lado do texto (horizontal)
 - [x] Aplicar redesign visual da aba Atendimento na aba Agendamento para manter consistência
 - [x] Reorganizar aba Atendimento em 2 colunas: Modalidades (40% esquerda fixo) + Pagamento/Taxa/Horários (60% direita)
+- [x] Mover card Agendamento de Pedidos para aba Atendimento, abaixo de Modalidades e entrega (coluna esquerda 40%)
