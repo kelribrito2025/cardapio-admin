@@ -8584,4 +8584,5 @@
 - [x] Tooltip no endereço truncado do card de Preview mostrando endereço completo ao hover
 - [x] Adicionar ícone azul de engrenagem no header da página de Configurações (mesmo padrão da Dashboard)
 - [x] Mover card 'Configurações básicas de atendimento' da aba Atendimento para aba Estabelecimento (abaixo do Preview, coluna esquerda 40%, 3 linhas: link, whatsapp, instagram)
-- [ ] Colocar campos WhatsApp e Instagram na mesma linha no card Configurações básicas
+- [x] Colocar campos WhatsApp e Instagram na mesma linha no card Configurações básicas
+- [x] Adicionar ícone ao lado do campo Link do cardápio no card Configurações básicas (padronizar com WhatsApp e Instagram)
