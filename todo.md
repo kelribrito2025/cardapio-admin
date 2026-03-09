@@ -8503,3 +8503,6 @@
 
 ## Mover botão de melhorar imagem para o modal de edição
 - [x] Adicionar botão de melhorar imagem no modal de edição de produto (Passo 1 - Imagens do produto)
+
+## Bug: Modal de melhorar foto fecha ao clicar fora
+- [x] Impedir que o modal de melhorar foto com IA feche ao clicar fora (overlay)
