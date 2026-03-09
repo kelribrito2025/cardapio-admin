@@ -423,15 +423,74 @@ export default function Avaliacoes() {
 
       {/* Conteúdo quando avaliações desativadas */}
       {!reviewsEnabled && (
-        <div className="flex flex-col items-center justify-center h-52 text-center space-y-4 border border-dashed border-border rounded-xl bg-muted/20">
-          <div className="p-4 bg-muted rounded-full">
-            <Star className="h-10 w-10 text-muted-foreground" />
+        <div className="space-y-5">
+          <div className="flex flex-col items-center justify-center h-44 text-center space-y-3 border border-dashed border-border rounded-xl bg-muted/20">
+            <div className="p-4 bg-muted rounded-full">
+              <Star className="h-10 w-10 text-muted-foreground" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold">Avaliações desativadas</h2>
+              <p className="text-muted-foreground mt-1 max-w-md text-sm">
+                Quando ativado, clientes podem avaliar após pedido entregue. Quando desativado, uma nota fixa 5.0 será exibida no menu público.
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-lg font-semibold">Avaliações desativadas</h2>
-            <p className="text-muted-foreground mt-1 max-w-md text-sm">
-              Ative o toggle acima para permitir que clientes avaliem após o pedido ser entregue.
-            </p>
+
+          {/* Configurações do modo desativado */}
+          <div className="border border-border rounded-xl p-5 bg-card">
+            <div className="flex items-center gap-2 mb-4">
+              <Info className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium text-muted-foreground">Configurações do modo desativado</span>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold">Quantidade de avaliações exibidas (visual)</span>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs text-xs">Número fictício de avaliações exibido no menu público quando as avaliações estão desativadas.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="flex items-center gap-3">
+                <Input
+                  type="number"
+                  min={0}
+                  max={9999}
+                  value={establishment.fakeReviewCount ?? 355}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value) || 0;
+                    // Atualizar localmente via cache otimista
+                    utils.establishment.get.setData(undefined, (old: any) => old ? { ...old, fakeReviewCount: val } : old);
+                  }}
+                  className="w-28 h-9 rounded-lg"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg"
+                  onClick={() => {
+                    if (establishment?.id) {
+                      updateMutation.mutate({
+                        id: establishment.id,
+                        fakeReviewCount: establishment.fakeReviewCount ?? 355,
+                      }, {
+                        onSuccess: () => {
+                          toast.success("Quantidade atualizada");
+                        },
+                      });
+                    }
+                  }}
+                >
+                  Salvar
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                No menu público será exibido: ⭐ 5.0 ({establishment.fakeReviewCount ?? 355} avaliações)
+              </p>
+            </div>
           </div>
         </div>
       )}

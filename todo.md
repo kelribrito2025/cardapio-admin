@@ -8563,3 +8563,4 @@
 - [x] Adicionar toggle ativar/desativar avaliações na página de Avaliações (na linha do título)
 - [x] Remover card "Avaliações do Restaurante" da página de Configurações
 - [x] Manter item "Avaliações" sempre visível no menu lateral (não esconder quando desativado)
+- [x] Adicionar configurações do modo desativado (quantidade de avaliações fictícias + preview) na página de Avaliações
