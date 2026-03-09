@@ -8568,3 +8568,5 @@
 - [x] Remover texto "IA" do badge no modal de melhoramento de imagem, deixar apenas ícone sparkles
 - [ ] Investigar e corrigir bug: itens de complemento não aparecem em alguns produtos após exclusão de itens do grupo
 - [x] Adicionar breve explicação abaixo de cada opção de programa de fidelização (Cartão Fidelidade e Cashback)
+- [x] Adicionar tooltip com preview do cartão fidelidade/cashback ao hover sobre a opção selecionada no sheet de Programa de Recompensas
+- [x] Aumentar tamanho dos tooltips de preview do cartão fidelidade/cashback em 33%

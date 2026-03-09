@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Heart, Save, Coins, CreditCard, AlertTriangle, Check, Loader2, Users, Stamp, Gift, Wallet, TrendingUp, Ban, Settings2, X, ChevronRight, ChevronLeft, Clock, ArrowUpRight, ArrowDownRight, Trophy, Filter, Search } from "lucide-react";
+import { Heart, Save, Coins, CreditCard, AlertTriangle, Check, Loader2, Users, Stamp, Gift, Wallet, TrendingUp, Ban, Settings2, X, ChevronRight, ChevronLeft, Clock, ArrowUpRight, ArrowDownRight, Trophy, Filter, Search, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -1124,70 +1124,178 @@ export default function Fidelizacao() {
                 </button>
 
                 {/* Cartão Fidelidade */}
-                <button
-                  type="button"
-                  onClick={() => setRewardType("loyalty")}
-                  className={cn(
-                    "w-full flex items-center gap-3 p-3.5 rounded-xl border transition-all duration-200",
-                    rewardType === "loyalty"
-                      ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 shadow-sm"
-                      : "border-border/50 hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-muted/30"
-                  )}
-                >
-                  <div className={cn(
-                    "p-2 rounded-lg shrink-0",
-                    rewardType === "loyalty" ? "bg-emerald-200 dark:bg-emerald-800" : "bg-muted/50"
-                  )}>
-                    <CreditCard className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <span className="font-semibold text-sm block">Cartão Fidelidade</span>
-                    <span className="text-xs text-muted-foreground">Ganhe carimbos a cada pedido</span>
-                    {rewardType === "loyalty" && (
-                      <span className="text-[11px] text-emerald-600/80 dark:text-emerald-400/80 block mt-1 leading-relaxed">
-                        O cliente acumula carimbos a cada pedido e, ao completar todos, ganha um cupom no valor definido por você.
-                      </span>
-                    )}
-                  </div>
-                  {rewardType === "loyalty" ? (
-                    <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
-                  )}
-                </button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => setRewardType("loyalty")}
+                      className={cn(
+                        "w-full flex items-center gap-3 p-3.5 rounded-xl border transition-all duration-200",
+                        rewardType === "loyalty"
+                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 shadow-sm"
+                          : "border-border/50 hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-muted/30"
+                      )}
+                    >
+                      <div className={cn(
+                        "p-2 rounded-lg shrink-0",
+                        rewardType === "loyalty" ? "bg-emerald-200 dark:bg-emerald-800" : "bg-muted/50"
+                      )}>
+                        <CreditCard className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <span className="font-semibold text-sm block">Cartão Fidelidade</span>
+                        <span className="text-xs text-muted-foreground">Ganhe carimbos a cada pedido</span>
+                        {rewardType === "loyalty" && (
+                          <span className="text-[11px] text-emerald-600/80 dark:text-emerald-400/80 block mt-1 leading-relaxed">
+                            O cliente acumula carimbos a cada pedido e, ao completar todos, ganha um cupom no valor definido por você.
+                          </span>
+                        )}
+                      </div>
+                      {rewardType === "loyalty" ? (
+                        <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="left" sideOffset={12} className="p-0 bg-transparent border-0 shadow-2xl rounded-2xl overflow-hidden w-[346px]">
+                    {/* Preview miniatura do Cartão Fidelidade */}
+                    <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+                      <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+                        <Eye className="h-4 w-4 text-gray-400" />
+                        <span className="text-[13px] font-medium text-gray-500">Visão do cliente</span>
+                      </div>
+                      <div className="bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-4 text-white relative overflow-hidden">
+                        {/* Coração decorativo */}
+                        <div className="absolute -left-10 -bottom-10 opacity-[0.12] pointer-events-none">
+                          <svg width="160" height="160" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        </div>
+                        <div className="flex items-start gap-2.5 mb-3 relative z-10">
+                          <div className="p-1.5 bg-white/20 rounded-lg">
+                            <Gift className="h-4.5 w-4.5" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-sm">{establishment?.name || 'Seu Restaurante'}</h3>
+                            <p className="text-white/70 text-xs">Maria Silva • Fidelidade ativa</p>
+                          </div>
+                        </div>
+                        <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 relative z-10">
+                          <div className="flex items-center justify-between text-xs mb-1.5">
+                            <span className="text-white/90">Progresso</span>
+                            <span className="font-bold">3 / {stampsRequired} carimbos</span>
+                          </div>
+                          <div className="h-2 bg-white/30 rounded-full overflow-hidden mb-2.5">
+                            <div className="h-full bg-white rounded-full" style={{ width: `${(3 / stampsRequired) * 100}%` }} />
+                          </div>
+                          <div className="flex justify-center gap-1.5">
+                            {Array.from({ length: stampsRequired }).map((_, i) => (
+                              <div
+                                key={i}
+                                className={cn(
+                                  "w-6 h-6 rounded-full border flex items-center justify-center",
+                                  i < 3
+                                    ? "bg-emerald-500 border-emerald-400 shadow-sm"
+                                    : "border-white/40 bg-white/10"
+                                )}
+                              >
+                                {i < 3 && (
+                                  <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="bg-gray-50 px-4 py-2.5 text-center">
+                        <p className="text-gray-600 text-[13px]">Faltam <span className="text-emerald-600 font-bold">{stampsRequired - 3}</span> pedidos para ganhar seu cupom!</p>
+                      </div>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
 
                 {/* Cashback */}
-                <button
-                  type="button"
-                  onClick={() => setRewardType("cashback")}
-                  className={cn(
-                    "w-full flex items-center gap-3 p-3.5 rounded-xl border transition-all duration-200",
-                    rewardType === "cashback"
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-sm"
-                      : "border-border/50 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-muted/30"
-                  )}
-                >
-                  <div className={cn(
-                    "p-2 rounded-lg shrink-0",
-                    rewardType === "cashback" ? "bg-blue-200 dark:bg-blue-800" : "bg-muted/50"
-                  )}>
-                    <Coins className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <span className="font-semibold text-sm block">Cashback</span>
-                    <span className="text-xs text-muted-foreground">Percentual de volta por pedido</span>
-                    {rewardType === "cashback" && (
-                      <span className="text-[11px] text-blue-600/80 dark:text-blue-400/80 block mt-1 leading-relaxed">
-                        O cliente recebe uma porcentagem do valor do pedido de volta como crédito para usar em compras futuras.
-                      </span>
-                    )}
-                  </div>
-                  {rewardType === "cashback" ? (
-                    <Check className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
-                  )}
-                </button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => setRewardType("cashback")}
+                      className={cn(
+                        "w-full flex items-center gap-3 p-3.5 rounded-xl border transition-all duration-200",
+                        rewardType === "cashback"
+                          ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-sm"
+                          : "border-border/50 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-muted/30"
+                      )}
+                    >
+                      <div className={cn(
+                        "p-2 rounded-lg shrink-0",
+                        rewardType === "cashback" ? "bg-blue-200 dark:bg-blue-800" : "bg-muted/50"
+                      )}>
+                        <Coins className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <span className="font-semibold text-sm block">Cashback</span>
+                        <span className="text-xs text-muted-foreground">Percentual de volta por pedido</span>
+                        {rewardType === "cashback" && (
+                          <span className="text-[11px] text-blue-600/80 dark:text-blue-400/80 block mt-1 leading-relaxed">
+                            O cliente recebe uma porcentagem do valor do pedido de volta como crédito para usar em compras futuras.
+                          </span>
+                        )}
+                      </div>
+                      {rewardType === "cashback" ? (
+                        <Check className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="left" sideOffset={12} className="p-0 bg-transparent border-0 shadow-2xl rounded-2xl overflow-hidden w-[346px]">
+                    {/* Preview miniatura do Cashback */}
+                    <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+                      <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+                        <Eye className="h-4 w-4 text-gray-400" />
+                        <span className="text-[13px] font-medium text-gray-500">Visão do cliente</span>
+                      </div>
+                      <div className="bg-gradient-to-br from-blue-500 to-blue-700 p-4 text-white">
+                        <p className="text-blue-100 text-xs font-medium">Saldo disponível</p>
+                        <p className="text-2xl font-bold mt-0.5">R$ 12,50</p>
+                        <div className="flex gap-4 mt-2.5 text-xs">
+                          <div>
+                            <p className="text-blue-200">Total ganho</p>
+                            <p className="font-semibold">R$ 47,80</p>
+                          </div>
+                          <div>
+                            <p className="text-blue-200">Total usado</p>
+                            <p className="font-semibold">R$ 35,30</p>
+                          </div>
+                        </div>
+                        {Number(cashbackPercent) > 0 && (
+                          <div className="mt-2.5 bg-white/20 rounded-md px-2.5 py-1.5 inline-block">
+                            <p className="text-xs font-medium">Você ganha {cashbackPercent}% de cashback a cada pedido</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="px-4 py-2.5">
+                        <div className="bg-blue-50 rounded-lg p-3">
+                          <h4 className="font-semibold text-gray-900 text-xs flex items-center gap-1.5">
+                            <span className="text-blue-500">ℹ</span> Como funciona
+                          </h4>
+                          <ul className="mt-1.5 space-y-1 text-[11px] text-gray-600">
+                            <li className="flex items-start gap-1.5">
+                              <span className="text-blue-500">✓</span>
+                              Ganhe {cashbackPercent || 5}% a cada pedido concluído
+                            </li>
+                            <li className="flex items-start gap-1.5">
+                              <span className="text-blue-500">✓</span>
+                              Use como desconto em pedidos futuros
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
               </div>
 
               {/* Configurações do Cartão Fidelidade */}
