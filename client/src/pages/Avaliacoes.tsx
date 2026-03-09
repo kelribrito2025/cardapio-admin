@@ -450,7 +450,7 @@ export default function Avaliacoes() {
                     <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs text-xs">Número fictício de avaliações exibido no menu público quando as avaliações estão desativadas.</p>
+                    <p className="max-w-xs text-xs">Limite de 149 para manter a credibilidade do perfil. Valores muito altos podem parecer artificiais para os clientes.</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -458,12 +458,12 @@ export default function Avaliacoes() {
                 <Input
                   type="number"
                   min={0}
-                  max={9999}
-                  value={establishment.fakeReviewCount ?? 355}
+                  max={149}
+                  value={establishment.fakeReviewCount ?? 149}
                   onChange={(e) => {
-                    const val = parseInt(e.target.value) || 0;
-                    // Atualizar localmente via cache otimista
-                    utils.establishment.get.setData(undefined, (old: any) => old ? { ...old, fakeReviewCount: val } : old);
+                    const val = Number(e.target.value);
+                    const clamped = val > 149 ? 149 : val < 0 ? 0 : val;
+                    utils.establishment.get.setData(undefined, (old: any) => old ? { ...old, fakeReviewCount: clamped } : old);
                   }}
                   className="w-28 h-9 rounded-lg"
                 />
@@ -473,9 +473,11 @@ export default function Avaliacoes() {
                   className="rounded-lg"
                   onClick={() => {
                     if (establishment?.id) {
+                      const clampedCount = Math.min(Math.max(establishment.fakeReviewCount ?? 149, 0), 149);
+                      utils.establishment.get.setData(undefined, (old: any) => old ? { ...old, fakeReviewCount: clampedCount } : old);
                       updateMutation.mutate({
                         id: establishment.id,
-                        fakeReviewCount: establishment.fakeReviewCount ?? 355,
+                        fakeReviewCount: clampedCount,
                       }, {
                         onSuccess: () => {
                           toast.success("Quantidade atualizada");
@@ -488,7 +490,7 @@ export default function Avaliacoes() {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                No menu público será exibido: ⭐ 5.0 ({establishment.fakeReviewCount ?? 355} avaliações)
+                No menu público será exibido: ⭐ 5.0 ({Math.min(establishment.fakeReviewCount ?? 149, 149)} avaliações)
               </p>
             </div>
           </div>
