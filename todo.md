@@ -8481,3 +8481,6 @@
 
 ## Header do card Desempenho (estado sem programa)
 - [x] Corrigir header do card "Desempenho da Fidelização" quando nenhum programa está ativo (estado 'none') para usar modelo com ícone colorido
+
+## Bug: SSE establishment_closed não atualiza status no menu público
+- [x] Corrigir: evento SSE establishment_closed é recebido mas o menu público continua mostrando "Aberto agora"

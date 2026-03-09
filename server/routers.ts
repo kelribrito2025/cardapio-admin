@@ -350,6 +350,8 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         await db.toggleEstablishmentOpen(input.id, input.isOpen);
+        // Invalidar cache do menu público para que o próximo refetch traga dados frescos
+        db.invalidatePublicMenuCache(input.id);
         sendMenuPublicEvent(
           input.id,
           input.isOpen ? 'establishment_opened' : 'establishment_closed',
@@ -366,6 +368,8 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         await db.setManualClose(input.id, input.close);
+        // Invalidar cache do menu público para que o próximo refetch traga dados frescos
+        db.invalidatePublicMenuCache(input.id);
         sendMenuPublicEvent(
           input.id,
           input.close ? 'establishment_closed' : 'establishment_opened',

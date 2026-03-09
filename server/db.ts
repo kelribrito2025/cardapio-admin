@@ -492,7 +492,25 @@ export async function toggleEstablishmentOpen(id: number, isOpen: boolean) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  await db.update(establishments).set({ isOpen }).where(eq(establishments.id, id));
+  if (isOpen) {
+    // Abrir: limpar fechamento manual, marcar abertura manual
+    await db.update(establishments).set({ 
+      isOpen: true,
+      manuallyClosed: false,
+      manuallyClosedAt: null,
+      manuallyOpened: true,
+      manuallyOpenedAt: new Date(),
+    }).where(eq(establishments.id, id));
+  } else {
+    // Fechar: marcar fechamento manual, limpar abertura manual
+    await db.update(establishments).set({ 
+      isOpen: false,
+      manuallyClosed: true,
+      manuallyClosedAt: new Date(),
+      manuallyOpened: false,
+      manuallyOpenedAt: null,
+    }).where(eq(establishments.id, id));
+  }
 }
 
 export async function savePublicNote(id: number, note: string, noteStyle?: string, validityDays?: number) {
