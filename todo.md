@@ -8620,3 +8620,5 @@
 - [x] Auto-save nas taxas por bairro
 - [x] Remover botão "Salvar todas as configurações" da aba Atendimento (redundante após auto-save)
 - [x] Adicionar filtro de pesquisa no card de taxa de entrega por bairros para buscar bairros rapidamente
+- [ ] PDV: Reduzir ícone de seleção de bairro e mover ao lado do título "Selecione o Bairro"
+- [ ] PDV: Adicionar campo de filtro/pesquisa na seleção de bairros para buscar rapidamente
