@@ -605,7 +605,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(sidebarCollapsed));
   }, [sidebarCollapsed]);
 
-  // Minimizar menu automaticamente ao acessar a página PDV, Pedidos, Configurações ou Mesas
+  // Minimizar menu automaticamente ao acessar a página Configurações
+  useEffect(() => {
+    if (location === "/configuracoes") {
+      setSidebarCollapsed(true);
+    }
+  }, [location]);
+
   // Limpar busca global ao mudar de página
   useEffect(() => {
     setSearchQuery("");
