@@ -1454,7 +1454,7 @@ export default function Configuracoes() {
                       <Input
                         id="menuSlugEstab"
                         value={menuSlug}
-                        onChange={(e) => setMenuSlug(e.target.value.toLowerCase().replace(/[^a-z0-9_\.\-]/g, ""))}
+                        onChange={(e) => { const val = e.target.value.toLowerCase().replace(/[^a-z0-9_\.\-]/g, ""); setMenuSlug(val); autoSaveFieldDebounced({ menuSlug: val || null }, 'menuSlug'); }}
                         placeholder="seu_restaurante"
                         className="rounded-l-none flex-1 h-9 rounded-r-xl border-border/50 focus:ring-2 focus:ring-primary/20 min-w-0"
                       />
@@ -1478,7 +1478,7 @@ export default function Configuracoes() {
                         <Input
                           id="whatsappEstab"
                           value={whatsapp}
-                          onChange={(e) => setWhatsapp(e.target.value)}
+                          onChange={(e) => { const val = e.target.value; setWhatsapp(val); autoSaveFieldDebounced({ whatsapp: val || null }, 'whatsapp'); }}
                           placeholder="+55 00 00000-0000"
                           className="flex-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 min-w-0"
                         />
@@ -1495,7 +1495,7 @@ export default function Configuracoes() {
                         <Input
                           id="instagramEstab"
                           value={instagram}
-                          onChange={(e) => setInstagram(e.target.value)}
+                          onChange={(e) => { const val = e.target.value; setInstagram(val); autoSaveFieldDebounced({ instagram: val || null }, 'instagram'); }}
                           placeholder="@seurestaurante"
                           className="flex-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 min-w-0"
                         />
@@ -1507,10 +1507,7 @@ export default function Configuracoes() {
                     O link do cardápio será público. Use apenas letras minúsculas, números, hífens, underscores e pontos.
                   </p>
 
-                  <Button onClick={handleSaveServiceSettings} disabled={isPending} className="w-full rounded-xl shadow-sm h-9">
-                    <Save className="h-3.5 w-3.5 mr-2" />
-                    {isPending ? "Salvando..." : "Salvar"}
-                  </Button>
+
                 </div>
               </SectionCard>
             </div>
@@ -1547,7 +1544,7 @@ export default function Configuracoes() {
                     <Input
                       id="street"
                       value={street}
-                      onChange={(e) => setStreet(e.target.value)}
+                      onChange={(e) => { const val = e.target.value; setStreet(val); autoSaveFieldDebounced({ street: val.trim() || null }, 'street'); }}
                       placeholder="Nome da rua"
                       required
                       className={cn(
@@ -1564,7 +1561,7 @@ export default function Configuracoes() {
                       <Input
                         id="number"
                         value={number}
-                        onChange={(e) => setNumber(e.target.value)}
+                        onChange={(e) => { const val = e.target.value; setNumber(val); autoSaveFieldDebounced({ number: val.trim() || null }, 'number'); }}
                         placeholder="123"
                         className="mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm"
                       />
@@ -1574,7 +1571,7 @@ export default function Configuracoes() {
                       <Input
                         id="neighborhood"
                         value={neighborhood}
-                        onChange={(e) => setNeighborhood(e.target.value)}
+                        onChange={(e) => { const val = e.target.value; setNeighborhood(val); autoSaveFieldDebounced({ neighborhood: val.trim() || null }, 'addressNeighborhood'); }}
                         placeholder="Bairro"
                         className="mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm"
                       />
@@ -1584,7 +1581,7 @@ export default function Configuracoes() {
                       <Input
                         id="city"
                         value={city}
-                        onChange={(e) => setCity(e.target.value)}
+                        onChange={(e) => { const val = e.target.value; setCity(val); autoSaveFieldDebounced({ city: val.trim() || null }, 'city'); }}
                         placeholder="Cidade"
                         className="mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm"
                       />
@@ -1594,7 +1591,7 @@ export default function Configuracoes() {
                       <Input
                         id="state"
                         value={state}
-                        onChange={(e) => setState(e.target.value)}
+                        onChange={(e) => { const val = e.target.value; setState(val); autoSaveFieldDebounced({ state: val.trim() || null }, 'state'); }}
                         placeholder="UF"
                         className="mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm"
                       />
@@ -1608,7 +1605,7 @@ export default function Configuracoes() {
                       <Input
                         id="complement"
                         value={complement}
-                        onChange={(e) => setComplement(e.target.value)}
+                        onChange={(e) => { const val = e.target.value; setComplement(val); autoSaveFieldDebounced({ complement: val.trim() || null }, 'complement'); }}
                         placeholder="Sala, Bloco, etc."
                         className="mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm"
                       />
@@ -1618,17 +1615,14 @@ export default function Configuracoes() {
                       <Input
                         id="zipCode"
                         value={zipCode}
-                        onChange={(e) => setZipCode(e.target.value)}
+                        onChange={(e) => { const val = e.target.value; setZipCode(val); autoSaveFieldDebounced({ zipCode: val.trim() || null }, 'zipCode'); }}
                         placeholder="00000-000"
                         className="mt-1 h-9 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 text-sm"
                       />
                     </div>
                   </div>
 
-                  <Button onClick={handleSaveEstablishment} disabled={isPending} className="w-full rounded-xl shadow-sm">
-                    <Save className="h-4 w-4 mr-2" />
-                    {isPending ? "Salvando..." : "Salvar Endereço"}
-                  </Button>
+
                 </div>
               </SectionCard>
             </div>
@@ -1650,7 +1644,18 @@ export default function Configuracoes() {
                     <Input
                       id="publicNote"
                       value={publicNote}
-                      onChange={(e) => setPublicNote(e.target.value.slice(0, 80))}
+                      onChange={(e) => {
+                        const val = e.target.value.slice(0, 80);
+                        setPublicNote(val);
+                        if (val.trim() && establishment) {
+                          // Debounce auto-save da nota
+                          if (debounceTimerRef.current['publicNote']) clearTimeout(debounceTimerRef.current['publicNote']);
+                          debounceTimerRef.current['publicNote'] = setTimeout(() => {
+                            saveNoteMutation.mutate({ id: establishment.id, note: val.trim(), noteStyle, validityDays: noteValidityDays });
+                            delete debounceTimerRef.current['publicNote'];
+                          }, 1000);
+                        }
+                      }}
                       placeholder="Deixe uma nota temporária para seus clientes..."
                       maxLength={80}
                       className="h-11 rounded-xl border-border/50 focus:ring-2 focus:ring-primary/20 pr-16"
@@ -1686,6 +1691,11 @@ export default function Configuracoes() {
                       onClick={() => {
                         setPublicNote(suggestion);
                         setShowSuggestions(false);
+                        // Auto-save imediato ao selecionar sugestão
+                        if (establishment) {
+                          if (debounceTimerRef.current['publicNote']) clearTimeout(debounceTimerRef.current['publicNote']);
+                          saveNoteMutation.mutate({ id: establishment.id, note: suggestion.trim(), noteStyle, validityDays: noteValidityDays });
+                        }
                       }}
                       className="px-3 py-1.5 text-xs bg-card hover:bg-primary/10 hover:text-primary rounded-full transition-colors border border-border hover:border-primary/30 shadow-sm"
                     >
@@ -1713,6 +1723,10 @@ export default function Configuracoes() {
                       type="button"
                       onClick={() => {
                         setNoteStyle(style.id);
+                        // Auto-save imediato ao trocar estilo
+                        if (publicNote.trim() && establishment) {
+                          saveNoteMutation.mutate({ id: establishment.id, note: publicNote.trim(), noteStyle: style.id, validityDays: noteValidityDays });
+                        }
                         if (publicNote) {
                           // Limpar timeout anterior se existir
                           if (previewTimeoutRef.current) {
@@ -1770,34 +1784,9 @@ export default function Configuracoes() {
                 </div>
               </div>
               
-              {/* Botões */}
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => {
-                    if (!publicNote.trim()) {
-                      toast.error("Digite uma nota para salvar");
-                      return;
-                    }
-                    if (!establishment) return;
-                    saveNoteMutation.mutate({ id: establishment.id, note: publicNote.trim(), noteStyle, validityDays: noteValidityDays });
-                  }}
-                  disabled={!publicNote.trim() || saveNoteMutation.isPending}
-                  className="flex-1 h-11 rounded-xl bg-primary hover:bg-primary/90"
-                >
-                  {saveNoteMutation.isPending ? (
-                    <span className="flex items-center gap-2">
-                      <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                      Salvando...
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-2">
-                      <Save className="h-4 w-4" />
-                      Salvar Nota
-                    </span>
-                  )}
-                </Button>
-                
-                {publicNoteCreatedAt && (
+              {/* Botão Remover Nota */}
+              {publicNoteCreatedAt && (
+                <div className="flex justify-end">
                   <Button
                     variant="outline"
                     onClick={() => {
@@ -1805,7 +1794,7 @@ export default function Configuracoes() {
                       removeNoteMutation.mutate({ id: establishment.id });
                     }}
                     disabled={removeNoteMutation.isPending}
-                    className="h-11 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                    className="h-9 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
                   >
                     {removeNoteMutation.isPending ? (
                       <span className="h-4 w-4 border-2 border-red-300 border-t-red-600 rounded-full animate-spin"></span>
@@ -1816,8 +1805,8 @@ export default function Configuracoes() {
                       </span>
                     )}
                   </Button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </SectionCard>
           </div>
