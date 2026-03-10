@@ -8631,3 +8631,4 @@
 - [x] Adicionar spinner animado durante o processo de salvamento (antes do checkmark verde) para feedback imediato em todas as abas com auto-save
 - [x] Corrigir responsividade da aba Atendimento: cards devem ficar em coluna única no mobile (igual Impressora e Estabelecimento)
 - [x] Atualizar modal de detalhes do item no PDV para seguir o mesmo modelo do menu público (grupo sticky no topo, seleção com círculos vermelhos em vez de checkboxes azuis, mesmo layout visual)
+- [x] Aplicar mesmas alterações visuais do modal de complementos na página /pdv (Frente de Caixa): grupo sticky, círculos vermelhos, controles +/-, fundo rosa
