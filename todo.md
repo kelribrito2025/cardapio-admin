@@ -8645,3 +8645,8 @@
 - [x] Implementar autoformatação de horário com máscara HH:MM nos campos de horário de funcionamento (aceitar apenas números, formatar automaticamente, validar 00:00-23:59)
 - [x] Implementar replicação automática do horário de segunda-feira para os outros dias vazios ao preencher segunda
 - [x] Corrigir bug de auto-save em Configurações: refetch após salvar sobrescreve estado local, fazendo campos como 'Nota do Restaurante' sumirem momentaneamente antes de reaparecer
+- [x] Migrar dados do menu antigo (menu.mindi.com.br/casaraogastrobar) para o estabelecimento ID 1560157: categorias, produtos, preços, descrições e fotos
+- [x] Corrigir migração do menu Casarão Gastrobar: mover categorias e produtos do estabelecimento 1560157 (errado, era o ID do usuário) para o estabelecimento 210016 (correto)
+- [x] Verificar e cadastrar grupos de complementos dos produtos do menu antigo (menu.mindi.com.br/casaraogastrobar) no estabelecimento 210016
+- [x] Verificar manualmente cada produto do menu antigo para encontrar grupos de complementos e cadastrá-los no estabelecimento 210016
+- [x] Corrigir créditos de melhoramento de imagem para novas contas: de 18 para 4 créditos (corrigido race condition no grantFreeAiCredits com UPDATE atômico)

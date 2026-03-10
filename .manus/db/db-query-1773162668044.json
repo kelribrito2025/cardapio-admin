@@ -1,0 +1,26 @@
+{
+  "query": "SELECT 'categorias_210016' as tipo, COUNT(*) as total FROM categories WHERE establishmentId = 210016\nUNION ALL\nSELECT 'produtos_210016' as tipo, COUNT(*) as total FROM products WHERE establishmentId = 210016\nUNION ALL\nSELECT 'categorias_1560157' as tipo, COUNT(*) as total FROM categories WHERE establishmentId = 1560157\nUNION ALL\nSELECT 'produtos_1560157' as tipo, COUNT(*) as total FROM products WHERE establishmentId = 1560157;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT 'categorias_210016' as tipo, COUNT(*) as total FROM categories WHERE establishmentId = 210016\nUNION ALL\nSELECT 'produtos_210016' as tipo, COUNT(*) as total FROM products WHERE establishmentId = 210016\nUNION ALL\nSELECT 'categorias_1560157' as tipo, COUNT(*) as total FROM categories WHERE establishmentId = 1560157\nUNION ALL\nSELECT 'produtos_1560157' as tipo, COUNT(*) as total FROM products WHERE establishmentId = 1560157;",
+  "rows": [
+    {
+      "tipo": "categorias_1560157",
+      "total": "0"
+    },
+    {
+      "tipo": "categorias_210016",
+      "total": "12"
+    },
+    {
+      "tipo": "produtos_210016",
+      "total": "95"
+    },
+    {
+      "tipo": "produtos_1560157",
+      "total": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "tipo\ttotal\ncategorias_1560157\t0\ncategorias_210016\t12\nprodutos_210016\t95\nprodutos_1560157\t0\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

@@ -1,0 +1,26 @@
+{
+  "query": "SELECT 'categorias' as tipo, COUNT(*) as total FROM categories WHERE establishmentId = 1560157\nUNION ALL\nSELECT 'produtos' as tipo, COUNT(*) as total FROM products WHERE establishmentId = 1560157\nUNION ALL\nSELECT 'com_foto' as tipo, COUNT(*) as total FROM products WHERE establishmentId = 1560157 AND images IS NOT NULL\nUNION ALL\nSELECT 'sem_foto' as tipo, COUNT(*) as total FROM products WHERE establishmentId = 1560157 AND images IS NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT 'categorias' as tipo, COUNT(*) as total FROM categories WHERE establishmentId = 1560157\nUNION ALL\nSELECT 'produtos' as tipo, COUNT(*) as total FROM products WHERE establishmentId = 1560157\nUNION ALL\nSELECT 'com_foto' as tipo, COUNT(*) as total FROM products WHERE establishmentId = 1560157 AND images IS NOT NULL\nUNION ALL\nSELECT 'sem_foto' as tipo, COUNT(*) as total FROM products WHERE establishmentId = 1560157 AND images IS NULL;",
+  "rows": [
+    {
+      "tipo": "categorias",
+      "total": "12"
+    },
+    {
+      "tipo": "produtos",
+      "total": "95"
+    },
+    {
+      "tipo": "com_foto",
+      "total": "26"
+    },
+    {
+      "tipo": "sem_foto",
+      "total": "69"
+    }
+  ],
+  "messages": [],
+  "stdout": "tipo\ttotal\ncategorias\t12\nprodutos\t95\ncom_foto\t26\nsem_foto\t69\n",
+  "stderr": "",
+  "execution_time_ms": 51
+}

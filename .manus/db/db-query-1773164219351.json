@@ -1,0 +1,13 @@
+{
+  "query": "SELECT cg.id as groupId FROM complementGroups cg JOIN products p ON cg.productId = p.id WHERE p.establishmentId = 210016 AND p.name = 'Jantinha';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.id as groupId FROM complementGroups cg JOIN products p ON cg.productId = p.id WHERE p.establishmentId = 210016 AND p.name = 'Jantinha';",
+  "rows": [
+    {
+      "groupId": "690001"
+    }
+  ],
+  "messages": [],
+  "stdout": "groupId\n690001\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

@@ -1,0 +1,16 @@
+{
+  "query": "SELECT p.id as productId, p.name, cg.id as groupId, cg.name as groupName FROM products p LEFT JOIN complementGroups cg ON cg.productId = p.id WHERE p.establishmentId = 210016 AND p.name = 'Jantinha';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id as productId, p.name, cg.id as groupId, cg.name as groupName FROM products p LEFT JOIN complementGroups cg ON cg.productId = p.id WHERE p.establishmentId = 210016 AND p.name = 'Jantinha';",
+  "rows": [
+    {
+      "productId": "830002",
+      "name": "Jantinha",
+      "groupId": "NULL",
+      "groupName": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "productId\tname\tgroupId\tgroupName\n830002\tJantinha\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

@@ -1,0 +1,70 @@
+{
+  "query": "SELECT cg.name as grupo, cg.isRequired, ci.name as item, ci.price FROM complementGroups cg JOIN complementItems ci ON ci.groupId = cg.id JOIN products p ON cg.productId = p.id WHERE p.establishmentId = 210016 AND p.name = 'Jantinha' ORDER BY ci.sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT cg.name as grupo, cg.isRequired, ci.name as item, ci.price FROM complementGroups cg JOIN complementItems ci ON ci.groupId = cg.id JOIN products p ON cg.productId = p.id WHERE p.establishmentId = 210016 AND p.name = 'Jantinha' ORDER BY ci.sortOrder;",
+  "rows": [
+    {
+      "grupo": "Espetinho",
+      "isRequired": "1",
+      "item": "Alcatra",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Espetinho",
+      "isRequired": "1",
+      "item": "Kafta",
+      "price": "2.00"
+    },
+    {
+      "grupo": "Espetinho",
+      "isRequired": "1",
+      "item": "Coração",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Espetinho",
+      "isRequired": "1",
+      "item": "Linguiça",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Espetinho",
+      "isRequired": "1",
+      "item": "Medalhão de cupim",
+      "price": "5.00"
+    },
+    {
+      "grupo": "Espetinho",
+      "isRequired": "1",
+      "item": "Tulipa de frango",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Espetinho",
+      "isRequired": "1",
+      "item": "Barriguinha",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Espetinho",
+      "isRequired": "1",
+      "item": "Costela",
+      "price": "0.00"
+    },
+    {
+      "grupo": "Espetinho",
+      "isRequired": "1",
+      "item": "Queijo com bacon",
+      "price": "2.00"
+    },
+    {
+      "grupo": "Espetinho",
+      "isRequired": "1",
+      "item": "Franbacon",
+      "price": "0.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "grupo\tisRequired\titem\tprice\nEspetinho\t1\tAlcatra\t0.00\nEspetinho\t1\tKafta\t2.00\nEspetinho\t1\tCoração\t0.00\nEspetinho\t1\tLinguiça\t0.00\nEspetinho\t1\tMedalhão de cupim\t5.00\nEspetinho\t1\tTulipa de frango\t0.00\nEspetinho\t1\tBarriguinha\t0.00\nEspetinho\t1\tCostela\t0.00\nEspetinho\t1\tQueijo com bacon\t2.00\nEspetinho\t1\tFranbacon\t0.00\n",
+  "stderr": "",
+  "execution_time_ms": 74
+}

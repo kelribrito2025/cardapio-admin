@@ -12627,23 +12627,30 @@ export async function checkAiCreditsEligibility(establishmentId: number): Promis
 }
 
 /**
- * Concede 3 créditos grátis de IA ao estabelecimento (apenas uma vez)
+ * Concede 4 créditos grátis de IA ao estabelecimento (apenas uma vez)
+ * Usa UPDATE atômico com WHERE aiCreditsGranted = false para evitar race condition
+ * (múltiplas chamadas simultâneas a getBalance não concedem créditos duplicados)
  */
 export async function grantFreeAiCredits(establishmentId: number, userId: number): Promise<void> {
   const db = await getDb();
   if (!db) return;
 
-  const FREE_CREDITS = 3;
+  const FREE_CREDITS = 4;
 
-  // Atualizar saldo e marcar como concedido
-  await db.update(establishments)
-    .set({
-      aiImageCredits: sql`${establishments.aiImageCredits} + ${FREE_CREDITS}`,
-      aiCreditsGranted: true,
-    })
-    .where(eq(establishments.id, establishmentId));
+  // UPDATE atômico: só atualiza se aiCreditsGranted ainda for false
+  // Isso evita race condition quando múltiplas chamadas simultâneas tentam conceder créditos
+  const result = await db.execute(
+    sql`UPDATE \`establishments\` SET \`aiImageCredits\` = \`aiImageCredits\` + ${FREE_CREDITS}, \`aiCreditsGranted\` = true WHERE \`id\` = ${establishmentId} AND \`aiCreditsGranted\` = false`
+  );
 
-  // Registrar no log
+  // Se nenhuma linha foi afetada, significa que já foi concedido (outra chamada ganhou a corrida)
+  const affectedRows = (result as any)?.[0]?.affectedRows ?? (result as any)?.affectedRows ?? 0;
+  if (affectedRows === 0) {
+    console.log(`[grantFreeAiCredits] Créditos já concedidos para estabelecimento ${establishmentId} (race condition evitada)`);
+    return;
+  }
+
+  // Registrar no log apenas se realmente concedeu
   const newBalance = await getAiImageCredits(establishmentId);
   await db.insert(aiImageCreditLogs).values({
     establishmentId,

@@ -127,7 +127,7 @@ export const establishments = mysqlTable("establishments", {
   prepGoalMinutes: int("prepGoalMinutes").default(30),
   // Créditos de melhoria de imagem com IA
   aiImageCredits: int("aiImageCredits").default(0).notNull(),
-  aiCreditsGranted: boolean("aiCreditsGranted").default(false).notNull(), // se já recebeu os 3 créditos grátis
+  aiCreditsGranted: boolean("aiCreditsGranted").default(false).notNull(), // se já recebeu os 4 créditos grátis
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

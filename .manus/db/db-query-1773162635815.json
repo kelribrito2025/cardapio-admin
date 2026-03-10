@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, name, sortOrder FROM categories WHERE establishmentId = 1560157 ORDER BY sortOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, sortOrder FROM categories WHERE establishmentId = 1560157 ORDER BY sortOrder;",
+  "rows": [
+    {
+      "id": "600001",
+      "name": "Promoção",
+      "sortOrder": "1"
+    },
+    {
+      "id": "600002",
+      "name": "Espetinhos",
+      "sortOrder": "2"
+    },
+    {
+      "id": "600003",
+      "name": "Guarnições",
+      "sortOrder": "3"
+    },
+    {
+      "id": "600004",
+      "name": "Caldos",
+      "sortOrder": "4"
+    },
+    {
+      "id": "600005",
+      "name": "Pratos e Executivos",
+      "sortOrder": "5"
+    },
+    {
+      "id": "600006",
+      "name": "Porções",
+      "sortOrder": "6"
+    },
+    {
+      "id": "600007",
+      "name": "Bebidas",
+      "sortOrder": "7"
+    },
+    {
+      "id": "600008",
+      "name": "Chopp",
+      "sortOrder": "8"
+    },
+    {
+      "id": "600009",
+      "name": "Cervejas",
+      "sortOrder": "9"
+    },
+    {
+      "id": "600010",
+      "name": "Drinks e Gin",
+      "sortOrder": "10"
+    },
+    {
+      "id": "600011",
+      "name": "Doses",
+      "sortOrder": "11"
+    },
+    {
+      "id": "600012",
+      "name": "Sorvete e Picolé",
+      "sortOrder": "12"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tsortOrder\n600001\tPromoção\t1\n600002\tEspetinhos\t2\n600003\tGuarnições\t3\n600004\tCaldos\t4\n600005\tPratos e Executivos\t5\n600006\tPorções\t6\n600007\tBebidas\t7\n600008\tChopp\t8\n600009\tCervejas\t9\n600010\tDrinks e Gin\t10\n600011\tDoses\t11\n600012\tSorvete e Picolé\t12\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

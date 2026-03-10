@@ -4297,7 +4297,7 @@ export const appRouter = router({
       // Verificar elegibilidade para créditos grátis
       const eligible = await db.checkAiCreditsEligibility(establishment.id);
       
-      // Se elegível e ainda não recebeu os 3 créditos grátis, conceder
+      // Se elegível e ainda não recebeu os 4 créditos grátis, conceder
       if (eligible && !establishment.aiCreditsGranted) {
         await db.grantFreeAiCredits(establishment.id, ctx.user.id);
         const credits = await db.getAiImageCredits(establishment.id);
