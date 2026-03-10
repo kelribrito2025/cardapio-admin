@@ -108,12 +108,20 @@ function DashboardLayoutContent({
 }: DashboardLayoutContentProps) {
   const { user, logout } = useAuth();
   const [location, setLocation] = useLocation();
-  const { state, toggleSidebar } = useSidebar();
+  const { state, open, setOpen, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
+
+  // No mobile, garantir que o sidebar sempre abra expandido (não minimizado)
+  // O cookie do desktop pode ter guardado "collapsed", mas no mobile queremos sempre expandido
+  useEffect(() => {
+    if (isMobile && !open) {
+      setOpen(true);
+    }
+  }, [isMobile, open, setOpen]);
 
   useEffect(() => {
     if (isCollapsed) {

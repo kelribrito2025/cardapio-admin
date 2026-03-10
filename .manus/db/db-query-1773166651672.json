@@ -1,0 +1,129 @@
+{
+  "query": "SELECT c.id AS category_id, c.name AS category_name, p.id AS product_id, p.name AS product_name, p.price FROM categories c LEFT JOIN products p ON p.categoryId = c.id WHERE c.establishmentId = 210016 AND c.name IN ('Guarnições', 'Espetinhos') ORDER BY c.name, p.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT c.id AS category_id, c.name AS category_name, p.id AS product_id, p.name AS product_name, p.price FROM categories c LEFT JOIN products p ON p.categoryId = c.id WHERE c.establishmentId = 210016 AND c.name IN ('Guarnições', 'Espetinhos') ORDER BY c.name, p.id;",
+  "rows": [
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830005",
+      "product_name": "Alcatra",
+      "price": "10.00"
+    },
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830006",
+      "product_name": "Costela",
+      "price": "10.00"
+    },
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830007",
+      "product_name": "Franbacon",
+      "price": "10.00"
+    },
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830008",
+      "product_name": "Tulipa de frango",
+      "price": "10.00"
+    },
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830009",
+      "product_name": "Coração de frango",
+      "price": "10.00"
+    },
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830010",
+      "product_name": "Queijo Coalho",
+      "price": "10.00"
+    },
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830011",
+      "product_name": "Barriguinha suína",
+      "price": "10.00"
+    },
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830012",
+      "product_name": "Linguiça",
+      "price": "10.00"
+    },
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830013",
+      "product_name": "Romeu e Julieta",
+      "price": "12.00"
+    },
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830014",
+      "product_name": "Kafta",
+      "price": "12.00"
+    },
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830015",
+      "product_name": "Carneiro",
+      "price": "15.00"
+    },
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830016",
+      "product_name": "Medalhão de cupim",
+      "price": "15.00"
+    },
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830017",
+      "product_name": "Queijo com bacon",
+      "price": "12.00"
+    },
+    {
+      "category_id": "600002",
+      "category_name": "Espetinhos",
+      "product_id": "830018",
+      "product_name": "Medalhão de provolone",
+      "price": "12.00"
+    },
+    {
+      "category_id": "600003",
+      "category_name": "Guarnições",
+      "product_id": "830019",
+      "product_name": "Arroz",
+      "price": "10.00"
+    },
+    {
+      "category_id": "600003",
+      "category_name": "Guarnições",
+      "product_id": "830020",
+      "product_name": "Feijão tropeiro",
+      "price": "15.00"
+    },
+    {
+      "category_id": "600003",
+      "category_name": "Guarnições",
+      "product_id": "830021",
+      "product_name": "Vinagrete",
+      "price": "10.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "category_id\tcategory_name\tproduct_id\tproduct_name\tprice\n600002\tEspetinhos\t830005\tAlcatra\t10.00\n600002\tEspetinhos\t830006\tCostela\t10.00\n600002\tEspetinhos\t830007\tFranbacon\t10.00\n600002\tEspetinhos\t830008\tTulipa de frango\t10.00\n600002\tEspetinhos\t830009\tCoração de frango\t10.00\n600002\tEspetinhos\t830010\tQueijo Coalho\t10.00\n600002\tEspetinhos\t830011\tBarriguinha suína\t10.00\n600002\tEspetinhos\t830012\tLinguiça\t10.00\n600002\tEspetinhos\t830013\tRomeu e Julieta\t12.00\n600002\tEspetinhos\t830014\tKafta\t12.00\n600002\tEspetinhos\t830015\tCarneiro\t15.00\n600002\tEspetinhos\t830016\tMedalhão de cupim\t15.00\n600002\tEspetinhos\t830017\tQueijo com bacon\t12.00\n600002\tEspetinhos\t830018\tMedalhão de provolone\t12.00\n600003\tGuarnições\t830019\tArroz\t10.00\n600003\tGuarnições\t830020\tFeijão tropeiro\t15.00\n600003\tGuarnições\t830021\tVinagrete\t10.00\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

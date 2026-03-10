@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, name, images FROM products WHERE establishmentId = 210016 AND name = 'Medalhão de provolone';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, images FROM products WHERE establishmentId = 210016 AND name = 'Medalhão de provolone';",
+  "rows": [
+    {
+      "id": "830018",
+      "name": "Medalhão de provolone",
+      "images": "[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/est/210016/products/enhanced_p9RCK8auATsP.webp\"]"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\timages\n830018\tMedalhão de provolone\t[\"https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/est/210016/products/enhanced_p9RCK8auATsP.webp\"]\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}

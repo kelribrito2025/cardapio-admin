@@ -8650,3 +8650,6 @@
 - [x] Verificar e cadastrar grupos de complementos dos produtos do menu antigo (menu.mindi.com.br/casaraogastrobar) no estabelecimento 210016
 - [x] Verificar manualmente cada produto do menu antigo para encontrar grupos de complementos e cadastrá-los no estabelecimento 210016
 - [x] Corrigir créditos de melhoramento de imagem para novas contas: de 18 para 4 créditos (corrigido race condition no grantFreeAiCredits com UPDATE atômico)
+- [x] Transformar categoria Guarnições (Arroz, Feijão Tropeiro, Vinagrete) em grupo de complementos e adicionar a todos os produtos da categoria Espetinhos no estabelecimento 210016
+- [ ] Corrigir créditos de contas existentes que receberam 18 créditos indevidamente (race condition), ajustando para 4
+- [x] Corrigir menu/sidebar mobile para abrir maximizado (expandido) por padrão quando o utilizador clicar no ícone do menu
