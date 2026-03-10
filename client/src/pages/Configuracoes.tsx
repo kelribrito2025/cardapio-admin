@@ -471,6 +471,41 @@ export default function Configuracoes() {
     onError: () => toast.error("Erro ao criar estabelecimento"),
   });
 
+  // Estado para rastrear campos salvos com sucesso (indicador visual)
+  const [savedFields, setSavedFields] = useState<Set<string>>(new Set());
+  const savedTimersRef = useRef<Record<string, NodeJS.Timeout>>({});
+
+  // Marca campos como salvos e remove após 2s
+  const markFieldsSaved = useCallback((fieldKeys: string[]) => {
+    setSavedFields(prev => {
+      const next = new Set(prev);
+      fieldKeys.forEach(k => next.add(k));
+      return next;
+    });
+    fieldKeys.forEach(k => {
+      if (savedTimersRef.current[k]) clearTimeout(savedTimersRef.current[k]);
+      savedTimersRef.current[k] = setTimeout(() => {
+        setSavedFields(prev => {
+          const next = new Set(prev);
+          next.delete(k);
+          return next;
+        });
+        delete savedTimersRef.current[k];
+      }, 2000);
+    });
+  }, []);
+
+  // Componente indicador de campo salvo
+  const SavedCheck = ({ field }: { field: string }) => {
+    if (!savedFields.has(field)) return null;
+    return (
+      <span className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 text-xs font-medium animate-in fade-in slide-in-from-left-1 duration-300 ml-1.5">
+        <Check className="h-3 w-3" />
+        <span>Salvo</span>
+      </span>
+    );
+  };
+
   const updateMutation = trpc.establishment.update.useMutation({
     onSuccess: (_data, variables) => {
       // Invalidar checklist do onboarding (para passos como foto/capa)
@@ -484,6 +519,9 @@ export default function Configuracoes() {
       });
       // Also refetch in background to ensure full server sync
       refetch();
+      // Marcar campos salvos para indicador visual (excluir id)
+      const fieldKeys = Object.keys(variables).filter(k => k !== 'id');
+      if (fieldKeys.length > 0) markFieldsSaved(fieldKeys);
       toast.success("Configurações salvas com sucesso");
     },
     onError: (error) => {
@@ -499,6 +537,7 @@ export default function Configuracoes() {
     onSuccess: () => {
       setInitialDataLoaded(false);
       utils.establishment.get.invalidate();
+      markFieldsSaved(['publicNote']);
       toast.success("Nota salva com sucesso! Ela ficará visível por 24 horas.");
     },
     onError: () => toast.error("Erro ao salvar nota"),
@@ -520,6 +559,7 @@ export default function Configuracoes() {
       setInitialBusinessHoursLoaded(false);
       refetchBusinessHours();
       utils.dashboard.onboardingChecklist.invalidate();
+      markFieldsSaved(['businessHours']);
       toast.success("Horários de funcionamento salvos com sucesso");
     },
     onError: () => toast.error("Erro ao salvar horários de funcionamento"),
@@ -560,6 +600,7 @@ export default function Configuracoes() {
         fee: f.fee,
       })));
       setInitialNeighborhoodFeesLoaded(true);
+      markFieldsSaved(['neighborhoodFees']);
     },
     onError: () => toast.error("Erro ao salvar taxas por bairro"),
   });
@@ -1030,6 +1071,7 @@ export default function Configuracoes() {
   useEffect(() => {
     return () => {
       Object.values(debounceTimerRef.current).forEach(clearTimeout);
+      Object.values(savedTimersRef.current).forEach(clearTimeout);
       if (businessHoursDebounceRef.current) clearTimeout(businessHoursDebounceRef.current);
       if (neighborhoodFeesDebounceRef.current) clearTimeout(neighborhoodFeesDebounceRef.current);
     };
@@ -1443,7 +1485,7 @@ export default function Configuracoes() {
                 <div className="space-y-4">
                   {/* Link do cardápio */}
                   <div>
-                    <Label htmlFor="menuSlugEstab" className="text-xs font-semibold">Link do cardápio</Label>
+                    <Label htmlFor="menuSlugEstab" className="text-xs font-semibold">Link do cardápio<SavedCheck field="menuSlug" /></Label>
                     <div className="flex items-center gap-2 mt-1.5">
                       <div className="p-2 bg-blue-50 rounded-xl flex-shrink-0">
                         <LinkIcon className="h-3.5 w-3.5 text-blue-600" />
@@ -1470,7 +1512,7 @@ export default function Configuracoes() {
                   {/* WhatsApp e Instagram na mesma linha */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label htmlFor="whatsappEstab" className="text-xs font-semibold">WhatsApp</Label>
+                      <Label htmlFor="whatsappEstab" className="text-xs font-semibold">WhatsApp<SavedCheck field="whatsapp" /></Label>
                       <div className="flex items-center gap-2 mt-1.5">
                         <div className="p-2 bg-emerald-50 rounded-xl flex-shrink-0">
                           <Phone className="h-3.5 w-3.5 text-emerald-600" />
@@ -1485,7 +1527,7 @@ export default function Configuracoes() {
                       </div>
                     </div>
                     <div>
-                      <Label htmlFor="instagramEstab" className="text-xs font-semibold">Instagram</Label>
+                      <Label htmlFor="instagramEstab" className="text-xs font-semibold">Instagram<SavedCheck field="instagram" /></Label>
                       <div className="flex items-center gap-2 mt-1.5">
                         <div className="p-2 bg-pink-50 rounded-xl flex-shrink-0">
                           <svg className="h-3.5 w-3.5 text-pink-600" viewBox="0 0 24 24" fill="currentColor">
@@ -1540,7 +1582,7 @@ export default function Configuracoes() {
                   
                   {/* Rua */}
                   <div>
-                    <Label htmlFor="street" className="text-sm font-semibold">Rua <span className="text-red-500">*</span></Label>
+                    <Label htmlFor="street" className="text-sm font-semibold">Rua <span className="text-red-500">*</span><SavedCheck field="street" /></Label>
                     <Input
                       id="street"
                       value={street}
@@ -1557,7 +1599,7 @@ export default function Configuracoes() {
                   {/* Número, Bairro, Cidade e UF */}
                   <div className="grid grid-cols-12 gap-2">
                     <div className="col-span-3">
-                      <Label htmlFor="number" className="text-xs font-semibold">Nº <span className="text-muted-foreground text-xs font-normal">(opcional)</span></Label>
+                      <Label htmlFor="number" className="text-xs font-semibold">Nº<SavedCheck field="number" /></Label>
                       <Input
                         id="number"
                         value={number}
@@ -1567,7 +1609,7 @@ export default function Configuracoes() {
                       />
                     </div>
                     <div className="col-span-3">
-                      <Label htmlFor="neighborhood" className="text-xs font-semibold">Bairro <span className="text-muted-foreground text-xs font-normal">(opcional)</span></Label>
+                      <Label htmlFor="neighborhood" className="text-xs font-semibold">Bairro<SavedCheck field="addressNeighborhood" /></Label>
                       <Input
                         id="neighborhood"
                         value={neighborhood}
@@ -1577,7 +1619,7 @@ export default function Configuracoes() {
                       />
                     </div>
                     <div className="col-span-4">
-                      <Label htmlFor="city" className="text-xs font-semibold">Cidade <span className="text-muted-foreground text-xs font-normal">(opcional)</span></Label>
+                      <Label htmlFor="city" className="text-xs font-semibold">Cidade<SavedCheck field="city" /></Label>
                       <Input
                         id="city"
                         value={city}
@@ -1587,7 +1629,7 @@ export default function Configuracoes() {
                       />
                     </div>
                     <div className="col-span-2">
-                      <Label htmlFor="state" className="text-xs font-semibold">UF <span className="text-muted-foreground text-xs font-normal">(opcional)</span></Label>
+                      <Label htmlFor="state" className="text-xs font-semibold">UF<SavedCheck field="state" /></Label>
                       <Input
                         id="state"
                         value={state}
@@ -1601,7 +1643,7 @@ export default function Configuracoes() {
                   {/* Complemento e CEP */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label htmlFor="complement" className="text-xs font-semibold">Complemento <span className="text-muted-foreground text-xs font-normal">(opcional)</span></Label>
+                      <Label htmlFor="complement" className="text-xs font-semibold">Complemento<SavedCheck field="complement" /></Label>
                       <Input
                         id="complement"
                         value={complement}
@@ -1611,7 +1653,7 @@ export default function Configuracoes() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="zipCode" className="text-xs font-semibold">CEP <span className="text-muted-foreground text-xs font-normal">(opcional)</span></Label>
+                      <Label htmlFor="zipCode" className="text-xs font-semibold">CEP<SavedCheck field="zipCode" /></Label>
                       <Input
                         id="zipCode"
                         value={zipCode}
@@ -1637,7 +1679,7 @@ export default function Configuracoes() {
               <div className="space-y-2">
                 <Label htmlFor="publicNote" className="text-sm font-semibold flex items-center gap-2">
                   <MessageCircle className="h-4 w-4 text-primary" />
-                  Nota do Restaurante (opcional)
+                  Nota do Restaurante (opcional)<SavedCheck field="publicNote" />
                 </Label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
@@ -1826,7 +1868,7 @@ export default function Configuracoes() {
             <div className="space-y-5">
               {/* Modalidades */}
               <div>
-                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Modalidades disponíveis</Label>
+                <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Modalidades disponíveis<SavedCheck field="allowsDelivery" /><SavedCheck field="allowsPickup" /><SavedCheck field="allowsDineIn" /></Label>
                 <div className="grid grid-cols-3 gap-3 mt-2">
                   <button
                     type="button"
@@ -1896,7 +1938,7 @@ export default function Configuracoes() {
                       <div className="p-2 bg-cyan-50 rounded-lg">
                         <Clock className="h-4 w-4 text-cyan-600" />
                       </div>
-                      <Label className="text-sm font-semibold">Tempo de entrega</Label>
+                      <Label className="text-sm font-semibold">Tempo de entrega<SavedCheck field="deliveryTimeEnabled" /><SavedCheck field="deliveryTimeMin" /><SavedCheck field="deliveryTimeMax" /></Label>
                     </div>
                     <Checkbox
                       checked={deliveryTimeEnabled}
@@ -1933,7 +1975,7 @@ export default function Configuracoes() {
                       <div className="p-2 bg-amber-50 rounded-lg">
                         <CreditCard className="h-4 w-4 text-amber-600" />
                       </div>
-                      <Label className="text-sm font-semibold">Pedido mínimo</Label>
+                      <Label className="text-sm font-semibold">Pedido mínimo<SavedCheck field="minimumOrderEnabled" /><SavedCheck field="minimumOrderValue" /></Label>
                     </div>
                     <Checkbox
                       checked={minimumOrderEnabled}
@@ -2031,7 +2073,7 @@ export default function Configuracoes() {
               {/* Campo de Chave Pix */}
               {acceptsPix && (
                 <div className="p-4 rounded-xl border border-violet-200 bg-violet-50/50 space-y-2">
-                  <Label htmlFor="pixKey" className="text-sm font-semibold">Chave Pix</Label>
+                  <Label htmlFor="pixKey" className="text-sm font-semibold">Chave Pix<SavedCheck field="pixKey" /></Label>
                   <Input
                     id="pixKey"
                     value={pixKey}
@@ -2133,7 +2175,7 @@ export default function Configuracoes() {
               {deliveryFeeType === "byNeighborhood" && (
                 <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/30 space-y-3">
                   <div className="flex items-center justify-between">
-                    <Label className="text-sm font-semibold">Bairros e taxas</Label>
+                    <Label className="text-sm font-semibold">Bairros e taxas<SavedCheck field="neighborhoodFees" /></Label>
                     <Button
                       type="button"
                       variant="outline"
@@ -2238,7 +2280,7 @@ export default function Configuracoes() {
                   <Globe className="h-4 w-4 text-cyan-600" />
                 </div>
                 <div className="flex-1">
-                  <Label className="text-sm font-semibold">Fuso horário</Label>
+                  <Label className="text-sm font-semibold">Fuso horário<SavedCheck field="timezone" /></Label>
                   <p className="text-xs text-muted-foreground mt-0.5">Todos os horários serão baseados neste fuso.</p>
                 </div>
                 <select

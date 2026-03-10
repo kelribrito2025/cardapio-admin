@@ -8626,3 +8626,4 @@
 - [x] PDV: Ajustar espaçamento do título "Selecione o Bairro" mais próximo do topo
 - [x] Implementar auto-save no Agendamento de Pedidos na aba Atendimento
 - [x] Implementar auto-save com debounce na aba Estabelecimento (nome, endereço, WhatsApp, Instagram, link do cardápio, nota do restaurante)
+- [x] Adicionar indicador visual checkmark verde temporário ao lado de cada campo após auto-save confirmar sucesso
