@@ -956,6 +956,15 @@ export default function Configuracoes() {
     }
   };
 
+  // Auto-save helper: atualiza estado local + salva no servidor imediatamente
+  const autoSaveField = (fields: Record<string, any>) => {
+    if (!establishment) {
+      toast.error("Crie o estabelecimento primeiro");
+      return;
+    }
+    updateMutation.mutate({ id: establishment.id, ...fields });
+  };
+
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   // Get full address
@@ -1762,7 +1771,7 @@ export default function Configuracoes() {
                 <div className="grid grid-cols-3 gap-3 mt-2">
                   <button
                     type="button"
-                    onClick={() => setAllowsDelivery(!allowsDelivery)}
+                    onClick={() => { const newVal = !allowsDelivery; setAllowsDelivery(newVal); autoSaveField({ allowsDelivery: newVal }); }}
                     className={cn(
                       "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                       allowsDelivery
@@ -1781,7 +1790,7 @@ export default function Configuracoes() {
 
                   <button
                     type="button"
-                    onClick={() => setAllowsPickup(!allowsPickup)}
+                    onClick={() => { const newVal = !allowsPickup; setAllowsPickup(newVal); autoSaveField({ allowsPickup: newVal }); }}
                     className={cn(
                       "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                       allowsPickup
@@ -1800,7 +1809,7 @@ export default function Configuracoes() {
 
                   <button
                     type="button"
-                    onClick={() => setAllowsDineIn(!allowsDineIn)}
+                    onClick={() => { const newVal = !allowsDineIn; setAllowsDineIn(newVal); autoSaveField({ allowsDineIn: newVal }); }}
                     className={cn(
                       "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                       allowsDineIn
@@ -1832,7 +1841,7 @@ export default function Configuracoes() {
                     </div>
                     <Checkbox
                       checked={deliveryTimeEnabled}
-                      onCheckedChange={(checked) => setDeliveryTimeEnabled(checked as boolean)}
+                      onCheckedChange={(checked) => { const newVal = checked as boolean; setDeliveryTimeEnabled(newVal); autoSaveField({ deliveryTimeEnabled: newVal }); }}
                       className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
                   </div>
@@ -1869,7 +1878,7 @@ export default function Configuracoes() {
                     </div>
                     <Checkbox
                       checked={minimumOrderEnabled}
-                      onCheckedChange={(checked) => setMinimumOrderEnabled(checked as boolean)}
+                      onCheckedChange={(checked) => { const newVal = checked as boolean; setMinimumOrderEnabled(newVal); autoSaveField({ minimumOrderEnabled: newVal }); }}
                       className="h-4 w-4 rounded data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
                   </div>
@@ -1904,7 +1913,7 @@ export default function Configuracoes() {
               <div className="grid grid-cols-3 gap-3">
                 <button
                   type="button"
-                  onClick={() => setAcceptsCash(!acceptsCash)}
+                  onClick={() => { const newVal = !acceptsCash; setAcceptsCash(newVal); autoSaveField({ acceptsCash: newVal }); }}
                   className={cn(
                     "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     acceptsCash
@@ -1923,7 +1932,7 @@ export default function Configuracoes() {
 
                 <button
                   type="button"
-                  onClick={() => setAcceptsCard(!acceptsCard)}
+                  onClick={() => { const newVal = !acceptsCard; setAcceptsCard(newVal); autoSaveField({ acceptsCard: newVal }); }}
                   className={cn(
                     "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     acceptsCard
@@ -1942,7 +1951,7 @@ export default function Configuracoes() {
 
                 <button
                   type="button"
-                  onClick={() => setAcceptsPix(!acceptsPix)}
+                  onClick={() => { const newVal = !acceptsPix; setAcceptsPix(newVal); autoSaveField({ acceptsPix: newVal }); }}
                   className={cn(
                     "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     acceptsPix
@@ -1985,7 +1994,7 @@ export default function Configuracoes() {
               <div className="grid grid-cols-3 gap-3">
                 <button
                   type="button"
-                  onClick={() => setDeliveryFeeType("free")}
+                  onClick={() => { setDeliveryFeeType("free"); autoSaveField({ deliveryFeeType: "free" }); }}
                   className={cn(
                     "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     deliveryFeeType === "free"
@@ -2004,7 +2013,7 @@ export default function Configuracoes() {
 
                 <button
                   type="button"
-                  onClick={() => setDeliveryFeeType("fixed")}
+                  onClick={() => { setDeliveryFeeType("fixed"); autoSaveField({ deliveryFeeType: "fixed" }); }}
                   className={cn(
                     "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     deliveryFeeType === "fixed"
@@ -2023,7 +2032,7 @@ export default function Configuracoes() {
 
                 <button
                   type="button"
-                  onClick={() => setDeliveryFeeType("byNeighborhood")}
+                  onClick={() => { setDeliveryFeeType("byNeighborhood"); autoSaveField({ deliveryFeeType: "byNeighborhood" }); }}
                   className={cn(
                     "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     deliveryFeeType === "byNeighborhood"
