@@ -8610,3 +8610,5 @@
 - [x] Padronizar aba Impressora e Teste com SectionCards e layout em colunas
 - [x] Padronizar aba Conta e Segurança com SectionCards e layout em colunas
 - [x] Auto-save nos toggles de seleção da aba Atendimento (modalidades, formas de pagamento, taxa de entrega, tempo de entrega, pedido mínimo) para consistência
+- [x] Padronizar aba Pagamento Online com SectionCards e layout em colunas
+- [x] Padronizar aba Integrações com SectionCards e layout em colunas
