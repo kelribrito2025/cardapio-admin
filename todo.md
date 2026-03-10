@@ -8638,3 +8638,5 @@
 - [x] Adicionar animações de transição ao selecionar/desselecionar complementos no ComplementGroups (fundo, checkmark, controles +/-, badge Completo)
 - [x] Implementar efeito de shrink na imagem do modal de detalhes do item ao rolar (reduzir altura ~30%) nos 3 modais (PublicMenu, PDV, PDVSlidebar)
 - [x] Corrigir efeito de shrink da imagem: remover CSS transition e usar scroll direto para eliminar travamento ao rolar para baixo
+- [x] Implementar efeito de parallax na imagem do modal de detalhes do item (translateY, scale e object-position) nos 3 modais (PublicMenu, PDV, PDVSlidebar) para experiência de scroll mais sofisticada
+- [x] Remover efeito de parallax da imagem do modal de detalhes do item e restaurar apenas o shrink original nos 3 modais (PublicMenu, PDV, PDVSlidebar)

@@ -259,7 +259,8 @@ export default function PDV() {
   const [selectedComplementImage, setSelectedComplementImage] = useState<string | null>(null);
   const [modalImageShrink, setModalImageShrink] = useState(0);
   const handleModalScroll = useCallback((e: { currentTarget: { scrollTop: number } }) => {
-    const shrinkAmount = Math.min(1, e.currentTarget.scrollTop / 100);
+    const scrollTop = e.currentTarget.scrollTop;
+    const shrinkAmount = Math.min(1, scrollTop / 100);
     setModalImageShrink(shrinkAmount);
   }, []);
   const [showCategoriesModal, setShowCategoriesModal] = useState(false);
@@ -1527,7 +1528,7 @@ export default function PDV() {
                       alt={selectedProduct.name}
                       className="w-full h-full object-cover"
                     />
-                    <button 
+                     <button
                       onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
                       className="absolute top-3 right-3 p-2 bg-card/90 hover:bg-card rounded-full shadow-lg transition-colors z-10"
                     >

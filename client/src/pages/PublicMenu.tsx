@@ -341,7 +341,8 @@ export default function PublicMenu() {
 
   // Handle modal scroll to shrink image
   const handleModalScroll = useCallback((e: { currentTarget: { scrollTop: number } }) => {
-    const shrinkAmount = Math.min(1, e.currentTarget.scrollTop / 100);
+    const scrollTop = e.currentTarget.scrollTop;
+    const shrinkAmount = Math.min(1, scrollTop / 100);
     setModalImageShrink(shrinkAmount);
   }, []);
   const [selectedComplementImage, setSelectedComplementImage] = useState<string | null>(null);
@@ -3298,7 +3299,8 @@ export default function PublicMenu() {
                     <img
                       src={displayImage}
                       alt={selectedProduct.name}
-                      className="w-full h-full object-cover cursor-pointer transition-all duration-300"
+                      className="w-full h-full object-cover cursor-pointer"
+
                       onClick={() => { 
                         if (!isComplementImage) {
                           setFullscreenImageIndex(modalImageIndex); 
