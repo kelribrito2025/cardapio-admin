@@ -1900,10 +1900,10 @@ export default function Configuracoes() {
 
           {/* Atendimento Section */}
           {activeSection === "atendimento" && (
-            <div className="flex gap-5 items-start">
+            <div className="flex flex-col lg:flex-row gap-5 items-start">
 
           {/* Coluna esquerda - Modalidades (40%) */}
-          <div className="w-[40%] flex-shrink-0 sticky top-4 space-y-5">
+          <div className="w-full lg:w-[40%] flex-shrink-0 lg:sticky lg:top-4 space-y-5">
           {/* Modalidades de atendimento + Tempo + Pedido mínimo */}
           <SectionCard title="Modalidades e entrega" description="Tipos de atendimento e configurações de entrega" icon={<Bike className="h-5 w-5 text-primary dark:text-primary" />} iconBg="bg-primary/10 dark:bg-primary/15">
             <div className="space-y-5">
@@ -2047,7 +2047,7 @@ export default function Configuracoes() {
           </div>
 
           {/* Coluna direita - Pagamento/Taxa/Horários (60%) */}
-          <div className="flex-1 space-y-5">
+          <div className="w-full lg:flex-1 space-y-5">
           {/* Formas de pagamento */}
           <div ref={paymentMethodsCardRef} className="transition-all duration-300">
           <SectionCard title="Formas de pagamento" description="Métodos aceitos no estabelecimento" icon={<CreditCard className="h-5 w-5 text-primary dark:text-primary" />} iconBg="bg-primary/10 dark:bg-primary/15">

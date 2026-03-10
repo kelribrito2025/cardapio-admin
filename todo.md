@@ -8629,3 +8629,4 @@
 - [x] Adicionar indicador visual checkmark verde temporário ao lado de cada campo após auto-save confirmar sucesso
 - [x] Implementar auto-save com debounce na aba Conta e Segurança (dados do estabelecimento e do responsável)
 - [x] Adicionar spinner animado durante o processo de salvamento (antes do checkmark verde) para feedback imediato em todas as abas com auto-save
+- [x] Corrigir responsividade da aba Atendimento: cards devem ficar em coluna única no mobile (igual Impressora e Estabelecimento)
