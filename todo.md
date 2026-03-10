@@ -8678,3 +8678,9 @@
 - [x] Implementar visualização em lista/tabela como alternativa ao grid de cards
 - [x] Persistir preferência de visualização no localStorage
 - [x] Página de pedidos: viewMode padrão = Kanban no mobile e Lista no desktop
+
+## Migração de Dados - Rota 17 Burger
+- [x] Extrair categorias, produtos, fotos, preços e descrições do menu antigo (menu.mindi.com.br/rota-17-burger)
+- [x] Inserir categorias no estabelecimento ID 210017
+- [x] Inserir produtos com fotos, preços e descrições no estabelecimento ID 210017
+- [x] Migrar imagens dos produtos do Google Storage para S3 do novo sistema
