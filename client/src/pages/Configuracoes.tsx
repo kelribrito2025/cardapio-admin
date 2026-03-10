@@ -1754,7 +1754,7 @@ export default function Configuracoes() {
           {/* Coluna esquerda - Modalidades (40%) */}
           <div className="w-[40%] flex-shrink-0 sticky top-4 space-y-5">
           {/* Modalidades de atendimento + Tempo + Pedido mínimo */}
-          <SectionCard title="Modalidades e entrega" description="Tipos de atendimento e configurações de entrega" icon={<Bike className="h-5 w-5 text-orange-600 dark:text-orange-400" />} iconBg="bg-orange-100 dark:bg-orange-500/15">
+          <SectionCard title="Modalidades e entrega" description="Tipos de atendimento e configurações de entrega" icon={<Bike className="h-5 w-5 text-primary dark:text-primary" />} iconBg="bg-primary/10 dark:bg-primary/15">
             <div className="space-y-5">
               {/* Modalidades */}
               <div>
@@ -1766,17 +1766,17 @@ export default function Configuracoes() {
                     className={cn(
                       "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                       allowsDelivery
-                        ? "border-orange-500 bg-orange-50 shadow-sm"
+                        ? "border-primary bg-primary/5 shadow-sm"
                         : "border-border/50 bg-muted/20 hover:bg-muted/40"
                     )}
                   >
                     <div className={cn(
                       "p-2 rounded-lg transition-colors",
-                      allowsDelivery ? "bg-orange-100" : "bg-muted/50"
+                      allowsDelivery ? "bg-primary/10" : "bg-muted/50"
                     )}>
-                      <Bike className={cn("h-4 w-4", allowsDelivery ? "text-orange-600" : "text-muted-foreground")} />
+                      <Bike className={cn("h-4 w-4", allowsDelivery ? "text-primary" : "text-muted-foreground")} />
                     </div>
-                    <span className={cn("font-semibold text-sm", allowsDelivery ? "text-orange-700" : "text-muted-foreground")}>Entrega</span>
+                    <span className={cn("font-semibold text-sm", allowsDelivery ? "text-primary" : "text-muted-foreground")}>Entrega</span>
                   </button>
 
                   <button
@@ -1785,17 +1785,17 @@ export default function Configuracoes() {
                     className={cn(
                       "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                       allowsPickup
-                        ? "border-blue-500 bg-blue-50 shadow-sm"
+                        ? "border-primary bg-primary/5 shadow-sm"
                         : "border-border/50 bg-muted/20 hover:bg-muted/40"
                     )}
                   >
                     <div className={cn(
                       "p-2 rounded-lg transition-colors",
-                      allowsPickup ? "bg-blue-100" : "bg-muted/50"
+                      allowsPickup ? "bg-primary/10" : "bg-muted/50"
                     )}>
-                      <Store className={cn("h-4 w-4", allowsPickup ? "text-blue-600" : "text-muted-foreground")} />
+                      <Store className={cn("h-4 w-4", allowsPickup ? "text-primary" : "text-muted-foreground")} />
                     </div>
-                    <span className={cn("font-semibold text-sm", allowsPickup ? "text-blue-700" : "text-muted-foreground")}>Retirada</span>
+                    <span className={cn("font-semibold text-sm", allowsPickup ? "text-primary" : "text-muted-foreground")}>Retirada</span>
                   </button>
 
                   <button
@@ -1804,17 +1804,17 @@ export default function Configuracoes() {
                     className={cn(
                       "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                       allowsDineIn
-                        ? "border-violet-500 bg-violet-50 shadow-sm"
+                        ? "border-primary bg-primary/5 shadow-sm"
                         : "border-border/50 bg-muted/20 hover:bg-muted/40"
                     )}
                   >
                     <div className={cn(
                       "p-2 rounded-lg transition-colors",
-                      allowsDineIn ? "bg-violet-100" : "bg-muted/50"
+                      allowsDineIn ? "bg-primary/10" : "bg-muted/50"
                     )}>
-                      <UtensilsCrossed className={cn("h-4 w-4", allowsDineIn ? "text-violet-600" : "text-muted-foreground")} />
+                      <UtensilsCrossed className={cn("h-4 w-4", allowsDineIn ? "text-primary" : "text-muted-foreground")} />
                     </div>
-                    <span className={cn("font-semibold text-sm", allowsDineIn ? "text-violet-700" : "text-muted-foreground")}>No local</span>
+                    <span className={cn("font-semibold text-sm", allowsDineIn ? "text-primary" : "text-muted-foreground")}>No local</span>
                   </button>
                 </div>
               </div>
@@ -1899,7 +1899,7 @@ export default function Configuracoes() {
           <div className="flex-1 space-y-5">
           {/* Formas de pagamento */}
           <div ref={paymentMethodsCardRef} className="transition-all duration-300">
-          <SectionCard title="Formas de pagamento" description="Métodos aceitos no estabelecimento" icon={<CreditCard className="h-5 w-5 text-violet-600 dark:text-violet-400" />} iconBg="bg-violet-100 dark:bg-violet-500/15">
+          <SectionCard title="Formas de pagamento" description="Métodos aceitos no estabelecimento" icon={<CreditCard className="h-5 w-5 text-primary dark:text-primary" />} iconBg="bg-primary/10 dark:bg-primary/15">
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
                 <button
@@ -1908,17 +1908,17 @@ export default function Configuracoes() {
                   className={cn(
                     "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     acceptsCash
-                      ? "border-emerald-500 bg-emerald-50 shadow-sm"
+                      ? "border-primary bg-primary/5 shadow-sm"
                       : "border-border/50 bg-muted/20 hover:bg-muted/40"
                   )}
                 >
                   <div className={cn(
                     "p-2 rounded-lg transition-colors",
-                    acceptsCash ? "bg-emerald-100" : "bg-muted/50"
+                    acceptsCash ? "bg-primary/10" : "bg-muted/50"
                   )}>
-                    <svg className={cn("h-4 w-4", acceptsCash ? "text-emerald-600" : "text-muted-foreground")} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <svg className={cn("h-4 w-4", acceptsCash ? "text-primary" : "text-muted-foreground")} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                   </div>
-                  <span className={cn("font-semibold text-sm", acceptsCash ? "text-emerald-700" : "text-muted-foreground")}>Dinheiro</span>
+                  <span className={cn("font-semibold text-sm", acceptsCash ? "text-primary" : "text-muted-foreground")}>Dinheiro</span>
                 </button>
 
                 <button
@@ -1927,17 +1927,17 @@ export default function Configuracoes() {
                   className={cn(
                     "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     acceptsCard
-                      ? "border-blue-500 bg-blue-50 shadow-sm"
+                      ? "border-primary bg-primary/5 shadow-sm"
                       : "border-border/50 bg-muted/20 hover:bg-muted/40"
                   )}
                 >
                   <div className={cn(
                     "p-2 rounded-lg transition-colors",
-                    acceptsCard ? "bg-blue-100" : "bg-muted/50"
+                    acceptsCard ? "bg-primary/10" : "bg-muted/50"
                   )}>
-                    <CreditCard className={cn("h-4 w-4", acceptsCard ? "text-blue-600" : "text-muted-foreground")} />
+                    <CreditCard className={cn("h-4 w-4", acceptsCard ? "text-primary" : "text-muted-foreground")} />
                   </div>
-                  <span className={cn("font-semibold text-sm", acceptsCard ? "text-blue-700" : "text-muted-foreground")}>Cartão</span>
+                  <span className={cn("font-semibold text-sm", acceptsCard ? "text-primary" : "text-muted-foreground")}>Cartão</span>
                 </button>
 
                 <button
@@ -1946,17 +1946,17 @@ export default function Configuracoes() {
                   className={cn(
                     "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     acceptsPix
-                      ? "border-violet-500 bg-violet-50 shadow-sm"
+                      ? "border-primary bg-primary/5 shadow-sm"
                       : "border-border/50 bg-muted/20 hover:bg-muted/40"
                   )}
                 >
                   <div className={cn(
                     "p-2 rounded-lg transition-colors",
-                    acceptsPix ? "bg-violet-100" : "bg-muted/50"
+                    acceptsPix ? "bg-primary/10" : "bg-muted/50"
                   )}>
-                    <svg className={cn("h-4 w-4", acceptsPix ? "text-violet-600" : "text-muted-foreground")} viewBox="0 0 24 24" fill="currentColor"><path d="M13.59 4.41l2.83 2.83a2 2 0 0 1 0 2.83l-2.83 2.83a2 2 0 0 1-2.83 0L7.93 10.07a2 2 0 0 1 0-2.83l2.83-2.83a2 2 0 0 1 2.83 0zm-5.66 8.49l2.83 2.83a2 2 0 0 1 0 2.83L7.93 21.39a2 2 0 0 1-2.83 0L2.27 18.56a2 2 0 0 1 0-2.83l2.83-2.83a2 2 0 0 1 2.83 0zm11.31 0l2.83 2.83a2 2 0 0 1 0 2.83l-2.83 2.83a2 2 0 0 1-2.83 0l-2.83-2.83a2 2 0 0 1 0-2.83l2.83-2.83a2 2 0 0 1 2.83 0z"/></svg>
+                    <svg className={cn("h-4 w-4", acceptsPix ? "text-primary" : "text-muted-foreground")} viewBox="0 0 24 24" fill="currentColor"><path d="M13.59 4.41l2.83 2.83a2 2 0 0 1 0 2.83l-2.83 2.83a2 2 0 0 1-2.83 0L7.93 10.07a2 2 0 0 1 0-2.83l2.83-2.83a2 2 0 0 1 2.83 0zm-5.66 8.49l2.83 2.83a2 2 0 0 1 0 2.83L7.93 21.39a2 2 0 0 1-2.83 0L2.27 18.56a2 2 0 0 1 0-2.83l2.83-2.83a2 2 0 0 1 2.83 0zm11.31 0l2.83 2.83a2 2 0 0 1 0 2.83l-2.83 2.83a2 2 0 0 1-2.83 0l-2.83-2.83a2 2 0 0 1 0-2.83l2.83-2.83a2 2 0 0 1 2.83 0z"/></svg>
                   </div>
-                  <span className={cn("font-semibold text-sm", acceptsPix ? "text-violet-700" : "text-muted-foreground")}>Pix</span>
+                  <span className={cn("font-semibold text-sm", acceptsPix ? "text-primary" : "text-muted-foreground")}>Pix</span>
                 </button>
               </div>
 
@@ -1989,17 +1989,17 @@ export default function Configuracoes() {
                   className={cn(
                     "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     deliveryFeeType === "free"
-                      ? "border-emerald-500 bg-emerald-50 shadow-sm"
+                      ? "border-primary bg-primary/5 shadow-sm"
                       : "border-border/50 bg-muted/20 hover:bg-muted/40"
                   )}
                 >
                   <div className={cn(
                     "p-2 rounded-lg transition-colors",
-                    deliveryFeeType === "free" ? "bg-emerald-100" : "bg-muted/50"
+                    deliveryFeeType === "free" ? "bg-primary/10" : "bg-muted/50"
                   )}>
-                    <Bike className={cn("h-4 w-4", deliveryFeeType === "free" ? "text-emerald-600" : "text-muted-foreground")} />
+                    <Bike className={cn("h-4 w-4", deliveryFeeType === "free" ? "text-primary" : "text-muted-foreground")} />
                   </div>
-                  <span className={cn("font-semibold text-sm", deliveryFeeType === "free" ? "text-emerald-700" : "text-muted-foreground")}>Grátis</span>
+                  <span className={cn("font-semibold text-sm", deliveryFeeType === "free" ? "text-primary" : "text-muted-foreground")}>Grátis</span>
                 </button>
 
                 <button
@@ -2027,17 +2027,17 @@ export default function Configuracoes() {
                   className={cn(
                     "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                     deliveryFeeType === "byNeighborhood"
-                      ? "border-blue-500 bg-blue-50 shadow-sm"
+                      ? "border-primary bg-primary/5 shadow-sm"
                       : "border-border/50 bg-muted/20 hover:bg-muted/40"
                   )}
                 >
                   <div className={cn(
                     "p-2 rounded-lg transition-colors",
-                    deliveryFeeType === "byNeighborhood" ? "bg-blue-100" : "bg-muted/50"
+                    deliveryFeeType === "byNeighborhood" ? "bg-primary/10" : "bg-muted/50"
                   )}>
-                    <MapPin className={cn("h-4 w-4", deliveryFeeType === "byNeighborhood" ? "text-blue-600" : "text-muted-foreground")} />
+                    <MapPin className={cn("h-4 w-4", deliveryFeeType === "byNeighborhood" ? "text-primary" : "text-muted-foreground")} />
                   </div>
-                  <span className={cn("font-semibold text-sm", deliveryFeeType === "byNeighborhood" ? "text-blue-700" : "text-muted-foreground")}>Por Bairros</span>
+                  <span className={cn("font-semibold text-sm", deliveryFeeType === "byNeighborhood" ? "text-primary" : "text-muted-foreground")}>Por Bairros</span>
                 </button>
               </div>
 
