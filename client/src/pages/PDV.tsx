@@ -3,7 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { getThumbUrl } from "../../../shared/imageUtils";
 import { BlurImage } from "@/components/BlurImage";
 import { ComplementGroups } from "@/components/ComplementGroups";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { useLocation } from "wouter";
@@ -257,6 +257,11 @@ export default function PDV() {
   // Map<groupId, Map<itemId, quantity>>
   const [selectedComplements, setSelectedComplements] = useState<Map<number, Map<number, number>>>(new Map());
   const [selectedComplementImage, setSelectedComplementImage] = useState<string | null>(null);
+  const [modalImageShrink, setModalImageShrink] = useState(0);
+  const handleModalScroll = useCallback((e: { currentTarget: { scrollTop: number } }) => {
+    const shrinkAmount = Math.min(1, e.currentTarget.scrollTop / 100);
+    setModalImageShrink(shrinkAmount);
+  }, []);
   const [showCategoriesModal, setShowCategoriesModal] = useState(false);
   const [expandedCartItem, setExpandedCartItem] = useState<number | null>(null);
   const [editingCartItem, setEditingCartItem] = useState<{index: number; item: CartItem} | null>(null);
@@ -836,6 +841,7 @@ export default function PDV() {
     // Produto indisponível apenas quando tem controle de estoque ativo E quantidade = 0
     if (product.hasStock && (product.stockQuantity === null || product.stockQuantity === undefined || product.stockQuantity <= 0)) return;
     setSelectedProduct(product);
+    setModalImageShrink(0);
     setProductQuantity(1);
     setProductObservation("");
     setSelectedComplements(new Map());
@@ -856,6 +862,7 @@ export default function PDV() {
     // Primeiro, abrir o modal com o produto selecionado
     // Os complementos serão restaurados pelo useEffect quando productComplements carregar
     setSelectedProduct(product);
+    setModalImageShrink(0);
     setProductQuantity(item.quantity);
     setProductObservation(item.observation);
     setSelectedComplements(new Map()); // Será preenchido pelo useEffect
@@ -1514,7 +1521,7 @@ export default function PDV() {
               
               if (displayImage) {
                 return (
-                  <div className="relative w-full h-[215px] sm:h-60 md:h-72 flex-shrink-0">
+                  <div className="relative w-full flex-shrink-0 overflow-hidden" style={{ height: `${215 - (modalImageShrink * 75)}px`, transition: 'height 0.15s ease-out' }}>
                     <img
                       src={displayImage}
                       alt={selectedProduct.name}
@@ -1532,7 +1539,7 @@ export default function PDV() {
               
               // Se não tem imagem, mostrar placeholder
               return (
-                <div className="relative w-full h-[180px] sm:h-48 md:h-56 flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                <div className="relative w-full flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center overflow-hidden" style={{ height: `${180 - (modalImageShrink * 60)}px`, transition: 'height 0.15s ease-out' }}>
                   <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80 animate-placeholder-pulse" />
                   <button 
                     onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
@@ -1545,7 +1552,7 @@ export default function PDV() {
             })()}
             
             {/* Conteúdo */}
-            <div className="flex-1 overflow-y-auto overscroll-contain">
+            <div className="flex-1 overflow-y-auto overscroll-contain" onScroll={handleModalScroll}>
               <div className="p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
                 {/* Título e Preço */}
                 <div>

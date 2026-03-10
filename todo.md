@@ -8636,3 +8636,4 @@
 - [x] Corrigir espaçamentos do footer (botões +/- e Adicionar) no modal de detalhes do item no PDV.tsx e PDVSlidebar.tsx para igualar ao menu público
 - [x] Unificar o componente de complementos num único componente reutilizável (ComplementGroups) para PublicMenu, PDV e PDVSlidebar
 - [x] Adicionar animações de transição ao selecionar/desselecionar complementos no ComplementGroups (fundo, checkmark, controles +/-, badge Completo)
+- [x] Implementar efeito de shrink na imagem do modal de detalhes do item ao rolar (reduzir altura ~30%) nos 3 modais (PublicMenu, PDV, PDVSlidebar)

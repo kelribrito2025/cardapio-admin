@@ -336,6 +336,16 @@ export default function PublicMenu() {
   const [showFullscreenImage, setShowFullscreenImage] = useState(false);
   const [fullscreenImageIndex, setFullscreenImageIndex] = useState(0);
   const [modalImageIndex, setModalImageIndex] = useState(0);
+  const [modalImageShrink, setModalImageShrink] = useState(0); // 0 = full, 1 = fully shrunk
+  const modalScrollRef = useRef<HTMLDivElement>(null);
+
+  // Handle modal scroll to shrink image
+  const handleModalScroll = useCallback((e: { currentTarget: { scrollTop: number } }) => {
+    const scrollTop = e.currentTarget.scrollTop;
+    const shrinkThreshold = 100; // pixels of scroll to fully shrink
+    const shrinkAmount = Math.min(1, scrollTop / shrinkThreshold);
+    setModalImageShrink(shrinkAmount);
+  }, []);
   const [selectedComplementImage, setSelectedComplementImage] = useState<string | null>(null);
   const [ratingSuccess, setRatingSuccess] = useState(false);
   const [canReviewChecked, setCanReviewChecked] = useState(false);
@@ -1941,6 +1951,7 @@ export default function PublicMenu() {
             const product = products.find(p => p.id === productId);
             if (product) {
               setModalImageIndex(0);
+              setModalImageShrink(0);
               setSelectedProduct({
                 id: product.id,
                 name: product.name,
@@ -3285,7 +3296,7 @@ export default function PublicMenu() {
               
               if (displayImage) {
                 return (
-                  <div className="relative w-full h-[215px] sm:h-60 md:h-72 flex-shrink-0">
+                  <div className="relative w-full flex-shrink-0 overflow-hidden" style={{ height: `${215 - (modalImageShrink * 75)}px`, transition: 'height 0.15s ease-out' }}>
                     <img
                       src={displayImage}
                       alt={selectedProduct.name}
@@ -3347,7 +3358,7 @@ export default function PublicMenu() {
               
               // Placeholder quando não há imagem
               return (
-                <div className="relative w-full h-[180px] sm:h-48 md:h-56 flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                <div className="relative w-full flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center overflow-hidden" style={{ height: `${180 - (modalImageShrink * 60)}px`, transition: 'height 0.15s ease-out' }}>
                   <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80 animate-placeholder-pulse" />
                   <button 
                     onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); }}
@@ -3373,7 +3384,7 @@ export default function PublicMenu() {
             )}
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto overscroll-contain space-y-0">
+            <div ref={modalScrollRef} onScroll={handleModalScroll} className="flex-1 overflow-y-auto overscroll-contain space-y-0">
               {/* Título, Preço e Descrição - dentro do scroll mas com z-index para ficar acima */}
               <div className="p-4 sm:p-5 md:p-6 pb-2 space-y-3 sm:space-y-4 relative z-30 bg-white">
                 {/* Título e Preço */}
