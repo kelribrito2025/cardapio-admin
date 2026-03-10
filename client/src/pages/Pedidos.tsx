@@ -266,8 +266,11 @@ export default function Pedidos() {
   // Estado para alternar entre visualização kanban e lista compacta
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>(() => {
     try {
-      return (localStorage.getItem('pedidos_viewMode') as 'kanban' | 'list') || 'list';
-    } catch { return 'list'; }
+      const saved = localStorage.getItem('pedidos_viewMode') as 'kanban' | 'list' | null;
+      if (saved) return saved;
+      // Mobile padrão = kanban, Desktop padrão = lista
+      return window.innerWidth < 768 ? 'kanban' : 'list';
+    } catch { return window.innerWidth < 768 ? 'kanban' : 'list'; }
   });
   // Estado para filtro de status na lista compacta
   const [listStatusFilter, setListStatusFilter] = useState<OrderStatus | 'all'>('all');

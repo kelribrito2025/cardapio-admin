@@ -8677,3 +8677,4 @@
 - [x] Adicionar toggle Grid/Lista no mapa de mesas (estilo do toggle Kanban/Lista dos pedidos)
 - [x] Implementar visualização em lista/tabela como alternativa ao grid de cards
 - [x] Persistir preferência de visualização no localStorage
+- [x] Página de pedidos: viewMode padrão = Kanban no mobile e Lista no desktop
