@@ -8655,3 +8655,8 @@
 - [x] Corrigir menu/sidebar mobile para abrir maximizado (expandido) por padrão quando o utilizador clicar no ícone do menu
 - [x] Reduzir tamanho dos cards de mesas na versão mobile em 25% (feedback dos donos de restaurantes)
 - [x] Mover campo Preço do produto do Passo 3 para o Passo 1 (abaixo do Nome) na slidebar mobile de edição de produto no /catalogo
+- [x] Implementar meta tags Open Graph dinâmicas para URLs /menu/{slug} servidas pelo servidor (SSR)
+- [x] Buscar dados do restaurante (capa/logo) pelo slug no banco de dados
+- [x] Usar imagem fallback quando restaurante não tiver foto cadastrada
+- [x] Garantir que meta tags vêm no HTML inicial (não via JS/React)
+- [x] Incluir og:image:width e og:image:height nas meta tags

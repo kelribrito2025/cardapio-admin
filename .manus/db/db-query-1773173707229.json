@@ -1,0 +1,80 @@
+{
+  "query": "SELECT id, name, menuSlug, CASE WHEN coverImage IS NOT NULL THEN 'HAS_COVER' ELSE 'NO_COVER' END as cover_status, CASE WHEN logo IS NOT NULL THEN 'HAS_LOGO' ELSE 'NO_LOGO' END as logo_status FROM establishments WHERE menuSlug IS NOT NULL LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, menuSlug, CASE WHEN coverImage IS NOT NULL THEN 'HAS_COVER' ELSE 'NO_COVER' END as cover_status, CASE WHEN logo IS NOT NULL THEN 'HAS_LOGO' ELSE 'NO_LOGO' END as logo_status FROM establishments WHERE menuSlug IS NOT NULL LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Burger House Gourmet",
+      "menuSlug": "burger-house-gourmet",
+      "cover_status": "HAS_COVER",
+      "logo_status": "HAS_LOGO"
+    },
+    {
+      "id": "30001",
+      "name": "Sushi Haruno",
+      "menuSlug": "sushi_haruno",
+      "cover_status": "HAS_COVER",
+      "logo_status": "HAS_LOGO"
+    },
+    {
+      "id": "60018",
+      "name": "Big Norte",
+      "menuSlug": "big-norte",
+      "cover_status": "HAS_COVER",
+      "logo_status": "HAS_LOGO"
+    },
+    {
+      "id": "90001",
+      "name": "Palácio do Açai",
+      "menuSlug": "palacio-do-acai",
+      "cover_status": "HAS_COVER",
+      "logo_status": "HAS_LOGO"
+    },
+    {
+      "id": "150004",
+      "name": "Potim Açai",
+      "menuSlug": "potim-acai",
+      "cover_status": "HAS_COVER",
+      "logo_status": "HAS_LOGO"
+    },
+    {
+      "id": "210001",
+      "name": "Sr. Macarrão",
+      "menuSlug": "sr-macarrao",
+      "cover_status": "HAS_COVER",
+      "logo_status": "HAS_LOGO"
+    },
+    {
+      "id": "210002",
+      "name": "Açai Roxedo",
+      "menuSlug": "acai-roxedo",
+      "cover_status": "HAS_COVER",
+      "logo_status": "NO_LOGO"
+    },
+    {
+      "id": "210003",
+      "name": "Lanche PS",
+      "menuSlug": "lanche-ps",
+      "cover_status": "NO_COVER",
+      "logo_status": "NO_LOGO"
+    },
+    {
+      "id": "210004",
+      "name": "Casa de Carnes",
+      "menuSlug": "imperial-casa-de-carnes",
+      "cover_status": "HAS_COVER",
+      "logo_status": "HAS_LOGO"
+    },
+    {
+      "id": "210005",
+      "name": "Wood Restaurante",
+      "menuSlug": "wood-restaurante",
+      "cover_status": "HAS_COVER",
+      "logo_status": "HAS_LOGO"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tmenuSlug\tcover_status\tlogo_status\n1\tBurger House Gourmet\tburger-house-gourmet\tHAS_COVER\tHAS_LOGO\n30001\tSushi Haruno\tsushi_haruno\tHAS_COVER\tHAS_LOGO\n60018\tBig Norte\tbig-norte\tHAS_COVER\tHAS_LOGO\n90001\tPalácio do Açai\tpalacio-do-acai\tHAS_COVER\tHAS_LOGO\n150004\tPotim Açai\tpotim-acai\tHAS_COVER\tHAS_LOGO\n210001\tSr. Macarrão\tsr-macarrao\tHAS_COVER\tHAS_LOGO\n210002\tAçai Roxedo\tacai-roxedo\tHAS_COVER\tNO_LOGO\n210003\tLanche PS\tlanche-ps\tNO_COVER\tNO_LOGO\n210004\tCasa de Carnes\timperial-casa-de-carnes\tHAS_COVER\tHAS_LOGO\n210005\tWood Restaurante\twood-restaurante\tHAS_COVER\tHAS_LOGO\n",
+  "stderr": "",
+  "execution_time_ms": 198
+}

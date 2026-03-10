@@ -43,6 +43,11 @@ interface ProductSEO {
   categoryName: string;
 }
 
+// ─── Constants ──────────────────────────────────────────────────────────────
+
+/** Default OG image for restaurants without a cover photo or logo */
+const DEFAULT_OG_IMAGE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/og-fallback-restaurant-59Pg6eq6bi2fQgZCkkFtJp.png";
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function escapeHtml(str: string): string {
@@ -100,7 +105,7 @@ function generateMetaTags(est: EstablishmentSEO, menuUrl: string): string {
     ? `Faça seu pedido online no ${name}. ${serviceTypes} em ${city || location}. Cardápio completo com preços atualizados. Peça agora!`
     : `Faça seu pedido online no ${name}. ${serviceTypes}. Cardápio completo com preços atualizados. Peça agora!`;
 
-  const ogImage = est.coverImage || est.logo || "";
+  const ogImage = est.coverImage || est.logo || DEFAULT_OG_IMAGE;
 
   const tags: string[] = [
     // Basic SEO
@@ -118,20 +123,18 @@ function generateMetaTags(est: EstablishmentSEO, menuUrl: string): string {
     `<meta property="og:locale" content="pt_BR" />`,
   ];
 
-  if (ogImage) {
-    tags.push(`<meta property="og:image" content="${escapeHtml(ogImage)}" />`);
-    tags.push(`<meta property="og:image:width" content="1200" />`);
-    tags.push(`<meta property="og:image:height" content="630" />`);
-    tags.push(`<meta property="og:image:alt" content="${name}" />`);
-  }
+  // og:image is always present (uses restaurant cover, logo, or platform default)
+  tags.push(`<meta property="og:image" content="${escapeHtml(ogImage)}" />`);
+  tags.push(`<meta property="og:image:type" content="image/png" />`);
+  tags.push(`<meta property="og:image:width" content="1200" />`);
+  tags.push(`<meta property="og:image:height" content="630" />`);
+  tags.push(`<meta property="og:image:alt" content="${name}" />`);
 
   // Twitter Card
   tags.push(`<meta name="twitter:card" content="summary_large_image" />`);
   tags.push(`<meta name="twitter:title" content="${title}" />`);
   tags.push(`<meta name="twitter:description" content="${escapeHtml(description)}" />`);
-  if (ogImage) {
-    tags.push(`<meta name="twitter:image" content="${escapeHtml(ogImage)}" />`);
-  }
+  tags.push(`<meta name="twitter:image" content="${escapeHtml(ogImage)}" />`);
 
   // Geo tags
   if (est.latitude && est.longitude) {

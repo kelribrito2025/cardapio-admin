@@ -93,8 +93,6 @@ describe("SEO Module", () => {
 
   describe("Meta Tags Structure", () => {
     it("should include OpenGraph tags for WhatsApp sharing", () => {
-      // Verify the meta tag generation includes og: tags
-      // This tests the structure expectations
       const expectedOgTags = [
         'og:type',
         'og:title',
@@ -104,7 +102,6 @@ describe("SEO Module", () => {
         'og:locale',
       ];
 
-      // These are the tag names that should be present in generated meta tags
       for (const tag of expectedOgTags) {
         expect(tag).toBeTruthy();
       }
@@ -120,6 +117,65 @@ describe("SEO Module", () => {
       for (const tag of expectedTwitterTags) {
         expect(tag).toBeTruthy();
       }
+    });
+  });
+
+  describe("OG Image Fallback", () => {
+    const fallbackImageUrl = "https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/og-fallback-restaurant-59Pg6eq6bi2fQgZCkkFtJp.png";
+
+    it("should inject og:image with fallback when restaurant has no photo", () => {
+      const html = `<!DOCTYPE html><html><head><title>Cardápio Admin</title><meta name="description" content="Sistema de gerenciamento de pedidos e cardápio digital" /></head><body></body></html>`;
+      const metaTags = `<title>Lanche PS | Cardápio Digital</title>
+    <meta property="og:image" content="${fallbackImageUrl}" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />`;
+      const schemaOrg = `<script type="application/ld+json">{}</script>`;
+
+      const result = injectSEOIntoHTML(html, metaTags, schemaOrg);
+
+      expect(result).toContain(fallbackImageUrl);
+      expect(result).toContain('og:image:width');
+      expect(result).toContain('og:image:height');
+      expect(result).toContain('og:image:type');
+    });
+
+    it("should use restaurant cover image instead of fallback when available", () => {
+      const html = `<!DOCTYPE html><html><head><title>Cardápio Admin</title><meta name="description" content="Sistema de gerenciamento de pedidos e cardápio digital" /></head><body></body></html>`;
+      const coverUrl = "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/test.webp";
+      const metaTags = `<title>Burger House | Cardápio Digital</title>
+    <meta property="og:image" content="${coverUrl}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />`;
+      const schemaOrg = `<script type="application/ld+json">{}</script>`;
+
+      const result = injectSEOIntoHTML(html, metaTags, schemaOrg);
+
+      expect(result).toContain(coverUrl);
+      expect(result).not.toContain("og-fallback-restaurant");
+    });
+
+    it("should always include og:image:width and og:image:height for proper WhatsApp preview", () => {
+      const html = `<!DOCTYPE html><html><head><title>Cardápio Admin</title><meta name="description" content="Sistema de gerenciamento de pedidos e cardápio digital" /></head><body></body></html>`;
+      const metaTags = `<title>Test | Cardápio Digital</title>
+    <meta property="og:image" content="${fallbackImageUrl}" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Test" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="${fallbackImageUrl}" />`;
+      const schemaOrg = ``;
+
+      const result = injectSEOIntoHTML(html, metaTags, schemaOrg);
+
+      // Must have all required OG image properties for WhatsApp
+      expect(result).toContain('content="1200"');
+      expect(result).toContain('content="630"');
+      expect(result).toContain('og:image:alt');
+      // Must have twitter card for Telegram/Twitter
+      expect(result).toContain('summary_large_image');
+      expect(result).toContain('twitter:image');
     });
   });
 
