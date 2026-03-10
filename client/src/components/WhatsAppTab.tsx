@@ -189,6 +189,46 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
       notifyOnReservation,
     });
   };
+
+  // Auto-save individual notification toggle
+  const autoSaveNotification = (field: string, value: boolean) => {
+    const currentSettings = {
+      requireOrderConfirmation: false,
+      notifyOnNewOrder,
+      notifyOnPreparing,
+      notifyOnReady,
+      notifyOnCompleted,
+      notifyOnCancelled,
+      notifyOnReservation,
+      [field]: value,
+    };
+    saveNotificationsMutation.mutate(currentSettings);
+  };
+
+  const handleToggleNewOrder = (val: boolean) => {
+    setNotifyOnNewOrder(val);
+    autoSaveNotification('notifyOnNewOrder', val);
+  };
+  const handleTogglePreparing = (val: boolean) => {
+    setNotifyOnPreparing(val);
+    autoSaveNotification('notifyOnPreparing', val);
+  };
+  const handleToggleReady = (val: boolean) => {
+    setNotifyOnReady(val);
+    autoSaveNotification('notifyOnReady', val);
+  };
+  const handleToggleCompleted = (val: boolean) => {
+    setNotifyOnCompleted(val);
+    autoSaveNotification('notifyOnCompleted', val);
+  };
+  const handleToggleCancelled = (val: boolean) => {
+    setNotifyOnCancelled(val);
+    autoSaveNotification('notifyOnCancelled', val);
+  };
+  const handleToggleReservation = (val: boolean) => {
+    setNotifyOnReservation(val);
+    autoSaveNotification('notifyOnReservation', val);
+  };
   
   const handleConnect = () => {
     connectMutation.mutate();
@@ -370,7 +410,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                 </div>
                 <Switch
                   checked={notifyOnReservation}
-                  onCheckedChange={setNotifyOnReservation}
+                  onCheckedChange={handleToggleReservation}
                 />
               </div>
             </SectionCard>
@@ -391,7 +431,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                       <p className="text-xs text-muted-foreground">Enviar quando um novo pedido for recebido</p>
                     </div>
                   </div>
-                  <Switch checked={notifyOnNewOrder} onCheckedChange={setNotifyOnNewOrder} />
+                  <Switch checked={notifyOnNewOrder} onCheckedChange={handleToggleNewOrder} />
                 </div>
 
                 {/* Preparando */}
@@ -405,7 +445,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                       <p className="text-xs text-muted-foreground">Enviar quando o pedido começar a ser preparado</p>
                     </div>
                   </div>
-                  <Switch checked={notifyOnPreparing} onCheckedChange={setNotifyOnPreparing} />
+                  <Switch checked={notifyOnPreparing} onCheckedChange={handleTogglePreparing} />
                 </div>
 
                 {/* Pronto */}
@@ -419,7 +459,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                       <p className="text-xs text-muted-foreground">Enviar quando o pedido estiver pronto</p>
                     </div>
                   </div>
-                  <Switch checked={notifyOnReady} onCheckedChange={setNotifyOnReady} />
+                  <Switch checked={notifyOnReady} onCheckedChange={handleToggleReady} />
                 </div>
 
                 {/* Finalizado */}
@@ -433,7 +473,7 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                       <p className="text-xs text-muted-foreground">Enviar quando o pedido for entregue/retirado</p>
                     </div>
                   </div>
-                  <Switch checked={notifyOnCompleted} onCheckedChange={setNotifyOnCompleted} />
+                  <Switch checked={notifyOnCompleted} onCheckedChange={handleToggleCompleted} />
                 </div>
 
                 {/* Cancelado */}
@@ -447,26 +487,12 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
                       <p className="text-xs text-muted-foreground">Enviar quando o pedido for cancelado</p>
                     </div>
                   </div>
-                  <Switch checked={notifyOnCancelled} onCheckedChange={setNotifyOnCancelled} />
+                  <Switch checked={notifyOnCancelled} onCheckedChange={handleToggleCancelled} />
                 </div>
               </div>
             </SectionCard>
 
-            {/* Botão Salvar */}
-            <div className="flex gap-3 pt-2">
-              <Button 
-                onClick={handleSaveNotifications}
-                disabled={saveNotificationsMutation.isPending}
-                className="bg-primary hover:bg-primary/90 text-white gap-2"
-              >
-                {saveNotificationsMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Bell className="h-4 w-4" />
-                )}
-                Salvar Configurações de Notificações
-              </Button>
-            </div>
+
           </div>
         </div>
       )}

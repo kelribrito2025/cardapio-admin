@@ -8606,3 +8606,4 @@
 - [x] Minimizar sidebar automaticamente ao clicar em Configurações no menu
 - [x] Padronizar cores dos cards de seleção (Modalidades e Pagamento) para vermelho igual Taxa de entrega
 - [x] Padronizar aba Notificações com SectionCards e layout em colunas da aba Atendimento
+- [x] Auto-save nos toggles de notificação (salvar ao ativar/desativar) e remover botão Salvar
