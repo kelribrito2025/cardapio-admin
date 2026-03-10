@@ -465,6 +465,7 @@ export default function Configuracoes() {
   // Mutations
   const createMutation = trpc.establishment.create.useMutation({
     onSuccess: () => {
+      // Para criação, precisamos recarregar tudo pois é um novo registro
       setInitialDataLoaded(false);
       utils.establishment.get.invalidate();
       toast.success("Estabelecimento criado com sucesso");
@@ -566,7 +567,12 @@ export default function Configuracoes() {
   
   const saveNoteMutation = trpc.establishment.savePublicNote.useMutation({
     onSuccess: () => {
-      setInitialDataLoaded(false);
+      // Optimistic cache update: atualizar o cache local sem resetar initialDataLoaded
+      // para evitar que o useEffect sobrescreva o estado local
+      utils.establishment.get.setData(undefined, (old) => {
+        if (!old) return old;
+        return { ...old, publicNote, publicNoteCreatedAt: new Date() };
+      });
       utils.establishment.get.invalidate();
       clearFieldsSaving(['publicNote']);
       markFieldsSaved(['publicNote']);
@@ -577,7 +583,11 @@ export default function Configuracoes() {
   
   const removeNoteMutation = trpc.establishment.removePublicNote.useMutation({
     onSuccess: () => {
-      setInitialDataLoaded(false);
+      // Optimistic cache update: atualizar o cache local sem resetar initialDataLoaded
+      utils.establishment.get.setData(undefined, (old) => {
+        if (!old) return old;
+        return { ...old, publicNote: null, publicNoteCreatedAt: null, noteExpiresAt: null };
+      });
       utils.establishment.get.invalidate();
       setPublicNote("");
       setPublicNoteCreatedAt(null);
@@ -600,7 +610,7 @@ export default function Configuracoes() {
   // Neighborhood fees mutations (individual - kept for backwards compatibility)
   const createNeighborhoodFeeMutation = trpc.neighborhoodFees.create.useMutation({
     onSuccess: () => {
-      setInitialNeighborhoodFeesLoaded(false);
+      // Refetch sem resetar a flag para evitar sobrescrever estado local
       refetchNeighborhoodFees();
     },
     onError: () => toast.error("Erro ao salvar taxa por bairro"),
@@ -608,7 +618,7 @@ export default function Configuracoes() {
   
   const updateNeighborhoodFeeMutation = trpc.neighborhoodFees.update.useMutation({
     onSuccess: () => {
-      setInitialNeighborhoodFeesLoaded(false);
+      // Refetch sem resetar a flag para evitar sobrescrever estado local
       refetchNeighborhoodFees();
     },
     onError: () => toast.error("Erro ao atualizar taxa por bairro"),
@@ -616,7 +626,7 @@ export default function Configuracoes() {
   
   const deleteNeighborhoodFeeMutation = trpc.neighborhoodFees.delete.useMutation({
     onSuccess: () => {
-      setInitialNeighborhoodFeesLoaded(false);
+      // Refetch sem resetar a flag para evitar sobrescrever estado local
       refetchNeighborhoodFees();
     },
     onError: () => toast.error("Erro ao remover taxa por bairro"),
@@ -671,7 +681,7 @@ export default function Configuracoes() {
 
   const savePrinterSettingsMutation = trpc.printer.saveSettings.useMutation({
     onSuccess: () => {
-      setInitialPrinterSettingsLoaded(false);
+      // Refetch sem resetar a flag para evitar sobrescrever estado local
       refetchPrinterSettings();
       toast.success("Configurações de impressão salvas com sucesso");
     },
