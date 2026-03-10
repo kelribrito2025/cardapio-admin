@@ -8605,3 +8605,4 @@
 - [x] Mover card Agendamento de Pedidos para aba Atendimento, abaixo de Modalidades e entrega (coluna esquerda 40%)
 - [x] Minimizar sidebar automaticamente ao clicar em Configurações no menu
 - [x] Padronizar cores dos cards de seleção (Modalidades e Pagamento) para vermelho igual Taxa de entrega
+- [x] Padronizar aba Notificações com SectionCards e layout em colunas da aba Atendimento

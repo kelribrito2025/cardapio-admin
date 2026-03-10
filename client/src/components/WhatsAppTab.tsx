@@ -18,8 +18,17 @@ import {
   Send,
   FileText,
   Smartphone,
-  Unplug
+  Unplug,
+  Bell,
+  BellRing,
+  ShoppingBag,
+  ChefHat,
+  PackageCheck,
+  CheckCheck,
+  XOctagon,
+  CalendarCheck
 } from "lucide-react";
+import { SectionCard } from "@/components/shared";
 import { TemplatesEditor } from "@/components/TemplatesEditor";
 
 interface WhatsAppTabProps {
@@ -330,148 +339,135 @@ export function WhatsAppTab({ hideConnectionCard = false, activeSubTab, showOnly
       
       {/* Modo showOnlyContent - renderiza apenas o conteúdo da aba selecionada */}
       {showOnlyContent && activeSubTab === "notifications" && (
-        <div className="space-y-4">
-          <Card className="shadow-none">
-            <CardHeader>
-              <CardTitle>Notificações Automáticas</CardTitle>
-              <CardDescription>
-                Configure quando enviar mensagens automáticas para os clientes
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-4">
-                {/* Confirmação de Pedido com Botões */}
-                <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label className="text-amber-800 dark:text-amber-300 font-semibold flex items-center gap-2">
-                        📱 Confirmação via Botões
-                      </Label>
-                      <p className="text-sm text-amber-700 dark:text-amber-400">
-                        Enviar botões interativos para o cliente confirmar ou cancelar o pedido antes de começar a preparar
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Switch
-                        checked={false}
-                        disabled
-                      />
-                      <span className="text-xs text-muted-foreground italic">Indisponível</span>
-                    </div>
-                  </div>
-                  {false && (
-                    <div className="mt-3 p-3 bg-card rounded-md border border-amber-100 dark:border-amber-800/30">
-                      <p className="text-xs text-amber-600 dark:text-amber-400 mb-2">
-                        <strong>Como funciona:</strong>
-                      </p>
-                      <ol className="text-xs text-amber-600 dark:text-amber-400 list-decimal list-inside space-y-1">
-                        <li>Cliente faz o pedido no cardápio</li>
-                        <li>Recebe mensagem com botões: "✅ Ok, pode fazer" ou "❌ Não quero mais"</li>
-                        <li>Se confirmar, o pedido aparece na página de Pedidos</li>
-                        <li>Se cancelar, o pedido é automaticamente cancelado</li>
-                      </ol>
-                    </div>
-                  )}
+        <div className="flex flex-col lg:flex-row gap-5">
+          {/* Coluna esquerda - 40% - Confirmação via Botões */}
+          <div className="w-full lg:w-[40%] lg:sticky lg:top-4 shrink-0 space-y-5 self-start">
+            <SectionCard title="Confirmação via Botões" description="Confirmação interativa antes de preparar" icon={<Smartphone className="h-5 w-5 text-amber-600 dark:text-amber-400" />} iconBg="bg-amber-100 dark:bg-amber-500/15">
+              <div className="space-y-3">
+                <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-lg">
+                  <p className="text-sm text-amber-700 dark:text-amber-400">
+                    Enviar botões interativos para o cliente confirmar ou cancelar o pedido antes de começar a preparar
+                  </p>
                 </div>
-                
-                <div className="border-t pt-4">
-                  <p className="text-sm font-medium text-muted-foreground mb-4">Notificações de Status</p>
-                </div>
-                
                 <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Novo Pedido</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Enviar quando um novo pedido for recebido
-                    </p>
+                  <Label className="text-sm font-medium">Ativar confirmação</Label>
+                  <div className="flex items-center gap-2">
+                    <Switch checked={false} disabled />
+                    <span className="text-xs text-muted-foreground italic">Indisponível</span>
                   </div>
-                  <Switch
-                    checked={notifyOnNewOrder}
-                    onCheckedChange={setNotifyOnNewOrder}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Preparando</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Enviar quando o pedido começar a ser preparado
-                    </p>
-                  </div>
-                  <Switch
-                    checked={notifyOnPreparing}
-                    onCheckedChange={setNotifyOnPreparing}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Pronto</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Enviar quando o pedido estiver pronto
-                    </p>
-                  </div>
-                  <Switch
-                    checked={notifyOnReady}
-                    onCheckedChange={setNotifyOnReady}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Finalizado</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Enviar quando o pedido for entregue/retirado
-                    </p>
-                  </div>
-                  <Switch
-                    checked={notifyOnCompleted}
-                    onCheckedChange={setNotifyOnCompleted}
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Cancelado</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Enviar quando o pedido for cancelado
-                    </p>
-                  </div>
-                  <Switch
-                    checked={notifyOnCancelled}
-                    onCheckedChange={setNotifyOnCancelled}
-                  />
-                </div>
-                
-                <div className="border-t pt-4">
-                  <p className="text-sm font-medium text-muted-foreground mb-4">Reserva de Mesa</p>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Confirmação de Reserva</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Enviar confirmação por WhatsApp ao reservar mesa
-                    </p>
-                  </div>
-                  <Switch
-                    checked={notifyOnReservation}
-                    onCheckedChange={setNotifyOnReservation}
-                  />
                 </div>
               </div>
-              
+            </SectionCard>
+
+            {/* Reserva de Mesa */}
+            <SectionCard title="Reserva de Mesa" description="Notificações de reserva" icon={<CalendarCheck className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />} iconBg="bg-indigo-100 dark:bg-indigo-500/15">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-medium">Confirmação de Reserva</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Enviar confirmação por WhatsApp ao reservar mesa
+                  </p>
+                </div>
+                <Switch
+                  checked={notifyOnReservation}
+                  onCheckedChange={setNotifyOnReservation}
+                />
+              </div>
+            </SectionCard>
+          </div>
+
+          {/* Coluna direita - 60% - Notificações de Status */}
+          <div className="w-full lg:flex-1 space-y-5">
+            <SectionCard title="Notificações de Status" description="Configure quando enviar mensagens automáticas" icon={<BellRing className="h-5 w-5 text-primary dark:text-primary" />} iconBg="bg-primary/10 dark:bg-primary/15">
+              <div className="space-y-3">
+                {/* Novo Pedido */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-green-100 dark:bg-green-500/15 rounded-lg">
+                      <ShoppingBag className="h-4 w-4 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Novo Pedido</Label>
+                      <p className="text-xs text-muted-foreground">Enviar quando um novo pedido for recebido</p>
+                    </div>
+                  </div>
+                  <Switch checked={notifyOnNewOrder} onCheckedChange={setNotifyOnNewOrder} />
+                </div>
+
+                {/* Preparando */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-orange-100 dark:bg-orange-500/15 rounded-lg">
+                      <ChefHat className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Preparando</Label>
+                      <p className="text-xs text-muted-foreground">Enviar quando o pedido começar a ser preparado</p>
+                    </div>
+                  </div>
+                  <Switch checked={notifyOnPreparing} onCheckedChange={setNotifyOnPreparing} />
+                </div>
+
+                {/* Pronto */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-blue-100 dark:bg-blue-500/15 rounded-lg">
+                      <PackageCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Pronto</Label>
+                      <p className="text-xs text-muted-foreground">Enviar quando o pedido estiver pronto</p>
+                    </div>
+                  </div>
+                  <Switch checked={notifyOnReady} onCheckedChange={setNotifyOnReady} />
+                </div>
+
+                {/* Finalizado */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-emerald-100 dark:bg-emerald-500/15 rounded-lg">
+                      <CheckCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Finalizado</Label>
+                      <p className="text-xs text-muted-foreground">Enviar quando o pedido for entregue/retirado</p>
+                    </div>
+                  </div>
+                  <Switch checked={notifyOnCompleted} onCheckedChange={setNotifyOnCompleted} />
+                </div>
+
+                {/* Cancelado */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-red-100 dark:bg-red-500/15 rounded-lg">
+                      <XOctagon className="h-4 w-4 text-red-600 dark:text-red-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Cancelado</Label>
+                      <p className="text-xs text-muted-foreground">Enviar quando o pedido for cancelado</p>
+                    </div>
+                  </div>
+                  <Switch checked={notifyOnCancelled} onCheckedChange={setNotifyOnCancelled} />
+                </div>
+              </div>
+            </SectionCard>
+
+            {/* Botão Salvar */}
+            <div className="flex gap-3 pt-2">
               <Button 
                 onClick={handleSaveNotifications}
                 disabled={saveNotificationsMutation.isPending}
+                className="bg-primary hover:bg-primary/90 text-white gap-2"
               >
                 {saveNotificationsMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : null}
-                Salvar Configurações
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Bell className="h-4 w-4" />
+                )}
+                Salvar Configurações de Notificações
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       )}
       
