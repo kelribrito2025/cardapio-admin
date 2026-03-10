@@ -587,12 +587,11 @@ export default function Configuracoes() {
   
   const saveBusinessHoursMutation = trpc.establishment.saveBusinessHours.useMutation({
     onSuccess: () => {
-      setInitialBusinessHoursLoaded(false);
-      refetchBusinessHours();
+      // NÃO resetar initialBusinessHoursLoaded aqui para evitar que o useEffect
+      // sobrescreva o estado local enquanto o utilizador está a editar outro dia
       utils.dashboard.onboardingChecklist.invalidate();
       clearFieldsSaving(['businessHours']);
       markFieldsSaved(['businessHours']);
-      toast.success("Horários de funcionamento salvos com sucesso");
     },
     onError: () => toast.error("Erro ao salvar horários de funcionamento"),
   });
