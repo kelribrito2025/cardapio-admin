@@ -3359,6 +3359,10 @@ async function startServer() {
     res.type("application/xml").send(sitemap);
   });
 
+  // Dynamic OG image generation for /menu/:slug
+  const { registerOGImageRoute } = await import("../og-image");
+  registerOGImageRoute(app);
+
   // SEO middleware for /menu/:slug (injects meta tags into HTML)
   app.use(createSEOMiddleware());
 

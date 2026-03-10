@@ -105,7 +105,8 @@ function generateMetaTags(est: EstablishmentSEO, menuUrl: string): string {
     ? `Faça seu pedido online no ${name}. ${serviceTypes} em ${city || location}. Cardápio completo com preços atualizados. Peça agora!`
     : `Faça seu pedido online no ${name}. ${serviceTypes}. Cardápio completo com preços atualizados. Peça agora!`;
 
-  const ogImage = est.coverImage || est.logo || DEFAULT_OG_IMAGE;
+  // Use dynamic OG image endpoint that composes cover + logo + text
+  const ogImage = `${menuUrl.replace(/\/menu\/.*$/, '')}/api/og-image/${est.menuSlug || ''}`;
 
   const tags: string[] = [
     // Basic SEO
@@ -125,7 +126,7 @@ function generateMetaTags(est: EstablishmentSEO, menuUrl: string): string {
 
   // og:image is always present (uses restaurant cover, logo, or platform default)
   tags.push(`<meta property="og:image" content="${escapeHtml(ogImage)}" />`);
-  tags.push(`<meta property="og:image:type" content="image/png" />`);
+  tags.push(`<meta property="og:image:type" content="image/jpeg" />`);
   tags.push(`<meta property="og:image:width" content="1200" />`);
   tags.push(`<meta property="og:image:height" content="630" />`);
   tags.push(`<meta property="og:image:alt" content="${name}" />`);

@@ -8660,3 +8660,6 @@
 - [x] Usar imagem fallback quando restaurante não tiver foto cadastrada
 - [x] Garantir que meta tags vêm no HTML inicial (não via JS/React)
 - [x] Incluir og:image:width e og:image:height nas meta tags
+- [x] Gerar imagem OG dinâmica server-side com composição visual (capa + logo + nome + info do restaurante)
+- [x] Criar endpoint /api/og-image/:slug que gera a imagem dinamicamente com sharp
+- [x] Atualizar og:image no seo.ts para apontar para o endpoint dinâmico

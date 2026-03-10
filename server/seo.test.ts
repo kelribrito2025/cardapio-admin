@@ -120,51 +120,52 @@ describe("SEO Module", () => {
     });
   });
 
-  describe("OG Image Fallback", () => {
-    const fallbackImageUrl = "https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/og-fallback-restaurant-59Pg6eq6bi2fQgZCkkFtJp.png";
-
-    it("should inject og:image with fallback when restaurant has no photo", () => {
+  describe("OG Image Dynamic Endpoint", () => {
+    it("should inject og:image pointing to dynamic /api/og-image/:slug endpoint", () => {
       const html = `<!DOCTYPE html><html><head><title>Cardápio Admin</title><meta name="description" content="Sistema de gerenciamento de pedidos e cardápio digital" /></head><body></body></html>`;
+      const ogImageUrl = "https://v2.mindi.com.br/api/og-image/lanche-ps";
       const metaTags = `<title>Lanche PS | Cardápio Digital</title>
-    <meta property="og:image" content="${fallbackImageUrl}" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image" content="${ogImageUrl}" />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />`;
       const schemaOrg = `<script type="application/ld+json">{}</script>`;
 
       const result = injectSEOIntoHTML(html, metaTags, schemaOrg);
 
-      expect(result).toContain(fallbackImageUrl);
+      expect(result).toContain("/api/og-image/lanche-ps");
       expect(result).toContain('og:image:width');
       expect(result).toContain('og:image:height');
       expect(result).toContain('og:image:type');
+      expect(result).toContain('image/jpeg');
     });
 
-    it("should use restaurant cover image instead of fallback when available", () => {
+    it("should use dynamic og:image URL with restaurant slug", () => {
       const html = `<!DOCTYPE html><html><head><title>Cardápio Admin</title><meta name="description" content="Sistema de gerenciamento de pedidos e cardápio digital" /></head><body></body></html>`;
-      const coverUrl = "https://mindi-storage-bucket.s3.us-east-1.amazonaws.com/establishments/test.webp";
+      const ogImageUrl = "https://v2.mindi.com.br/api/og-image/burger-house-gourmet";
       const metaTags = `<title>Burger House | Cardápio Digital</title>
-    <meta property="og:image" content="${coverUrl}" />
+    <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />`;
       const schemaOrg = `<script type="application/ld+json">{}</script>`;
 
       const result = injectSEOIntoHTML(html, metaTags, schemaOrg);
 
-      expect(result).toContain(coverUrl);
+      expect(result).toContain("/api/og-image/burger-house-gourmet");
       expect(result).not.toContain("og-fallback-restaurant");
     });
 
     it("should always include og:image:width and og:image:height for proper WhatsApp preview", () => {
       const html = `<!DOCTYPE html><html><head><title>Cardápio Admin</title><meta name="description" content="Sistema de gerenciamento de pedidos e cardápio digital" /></head><body></body></html>`;
+      const ogImageUrl = "https://v2.mindi.com.br/api/og-image/test-restaurant";
       const metaTags = `<title>Test | Cardápio Digital</title>
-    <meta property="og:image" content="${fallbackImageUrl}" />
-    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image" content="${ogImageUrl}" />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Test" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="${fallbackImageUrl}" />`;
+    <meta name="twitter:image" content="${ogImageUrl}" />`;
       const schemaOrg = ``;
 
       const result = injectSEOIntoHTML(html, metaTags, schemaOrg);
