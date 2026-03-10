@@ -341,9 +341,7 @@ export default function PublicMenu() {
 
   // Handle modal scroll to shrink image
   const handleModalScroll = useCallback((e: { currentTarget: { scrollTop: number } }) => {
-    const scrollTop = e.currentTarget.scrollTop;
-    const shrinkThreshold = 100; // pixels of scroll to fully shrink
-    const shrinkAmount = Math.min(1, scrollTop / shrinkThreshold);
+    const shrinkAmount = Math.min(1, e.currentTarget.scrollTop / 100);
     setModalImageShrink(shrinkAmount);
   }, []);
   const [selectedComplementImage, setSelectedComplementImage] = useState<string | null>(null);
@@ -3296,7 +3294,7 @@ export default function PublicMenu() {
               
               if (displayImage) {
                 return (
-                  <div className="relative w-full flex-shrink-0 overflow-hidden" style={{ height: `${215 - (modalImageShrink * 75)}px`, transition: 'height 0.15s ease-out' }}>
+                  <div className="relative w-full flex-shrink-0 overflow-hidden" style={{ height: `${215 - (modalImageShrink * 75)}px` }}>
                     <img
                       src={displayImage}
                       alt={selectedProduct.name}
@@ -3358,7 +3356,7 @@ export default function PublicMenu() {
               
               // Placeholder quando não há imagem
               return (
-                <div className="relative w-full flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center overflow-hidden" style={{ height: `${180 - (modalImageShrink * 60)}px`, transition: 'height 0.15s ease-out' }}>
+                <div className="relative w-full flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center overflow-hidden" style={{ height: `${180 - (modalImageShrink * 60)}px` }}>
                   <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80 animate-placeholder-pulse" />
                   <button 
                     onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); }}

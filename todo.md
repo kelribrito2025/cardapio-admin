@@ -8637,3 +8637,4 @@
 - [x] Unificar o componente de complementos num único componente reutilizável (ComplementGroups) para PublicMenu, PDV e PDVSlidebar
 - [x] Adicionar animações de transição ao selecionar/desselecionar complementos no ComplementGroups (fundo, checkmark, controles +/-, badge Completo)
 - [x] Implementar efeito de shrink na imagem do modal de detalhes do item ao rolar (reduzir altura ~30%) nos 3 modais (PublicMenu, PDV, PDVSlidebar)
+- [x] Corrigir efeito de shrink da imagem: remover CSS transition e usar scroll direto para eliminar travamento ao rolar para baixo

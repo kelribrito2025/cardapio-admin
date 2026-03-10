@@ -2244,7 +2244,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               
               if (displayImage) {
                 return (
-                  <div className="relative w-full flex-shrink-0 overflow-hidden" style={{ height: `${215 - (modalImageShrink * 75)}px`, transition: 'height 0.15s ease-out' }}>
+                  <div className="relative w-full flex-shrink-0 overflow-hidden" style={{ height: `${215 - (modalImageShrink * 75)}px` }}>
                     <img
                       src={displayImage}
                       alt={selectedProduct.name}
@@ -2261,7 +2261,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
               }
               
               return (
-                <div className="relative w-full flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center overflow-hidden" style={{ height: `${180 - (modalImageShrink * 60)}px`, transition: 'height 0.15s ease-out' }}>
+                <div className="relative w-full flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center overflow-hidden" style={{ height: `${180 - (modalImageShrink * 60)}px` }}>
                   <UtensilsCrossed className="h-16 w-16 md:h-20 md:w-20 text-white/80 animate-placeholder-pulse" />
                   <button 
                     onClick={() => { setSelectedProduct(null); setSelectedComplementImage(null); setIsEditingMode(false); setEditingCartItem(null); }}
