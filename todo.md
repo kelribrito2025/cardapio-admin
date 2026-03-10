@@ -8619,3 +8619,4 @@
 - [x] Auto-save nos horários de funcionamento e fuso horário
 - [x] Auto-save nas taxas por bairro
 - [x] Remover botão "Salvar todas as configurações" da aba Atendimento (redundante após auto-save)
+- [x] Adicionar filtro de pesquisa no card de taxa de entrega por bairros para buscar bairros rapidamente

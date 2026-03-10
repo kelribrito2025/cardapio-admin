@@ -72,6 +72,7 @@ import {
   MapPinned,
   StickyNote,
   CalendarClock,
+  Search,
 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
@@ -329,6 +330,7 @@ export default function Configuracoes() {
   
   // Social dropdown state for preview
   const [showSocialDropdown, setShowSocialDropdown] = useState(false);
+  const [neighborhoodSearch, setNeighborhoodSearch] = useState("");
   const socialDropdownRef = useRef<HTMLDivElement>(null);
   const businessHoursCardRef = useRef<HTMLDivElement>(null);
   const paymentMethodsCardRef = useRef<HTMLDivElement>(null);
@@ -2154,13 +2156,30 @@ export default function Configuracoes() {
                     </Button>
                   </div>
                   
+                  {neighborhoodFees.length > 3 && (
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                      <Input
+                        placeholder="Buscar bairro..."
+                        value={neighborhoodSearch}
+                        onChange={(e) => setNeighborhoodSearch(e.target.value)}
+                        className="h-8 pl-8 rounded-lg text-sm"
+                      />
+                    </div>
+                  )}
+
                   {neighborhoodFees.length === 0 ? (
                     <p className="text-xs text-muted-foreground text-center py-3">
                       Nenhum bairro cadastrado. Clique em "+ Adicionar bairro" para começar.
                     </p>
                   ) : (
                     <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {neighborhoodFees.map((item, index) => (
+                      {neighborhoodFees.map((item, index) => {
+                        // Filtrar por pesquisa
+                        if (neighborhoodSearch && !item.neighborhood.toLowerCase().includes(neighborhoodSearch.toLowerCase())) {
+                          return null;
+                        }
+                        return (
                         <div key={index} className="flex items-center gap-2 p-2 bg-white/60 rounded-lg border border-border/30">
                           <Input
                             placeholder="Nome do bairro"
@@ -2204,7 +2223,11 @@ export default function Configuracoes() {
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>
-                      ))}
+                        );
+                      })}
+                      {neighborhoodSearch && neighborhoodFees.filter(f => f.neighborhood.toLowerCase().includes(neighborhoodSearch.toLowerCase())).length === 0 && (
+                        <p className="text-xs text-muted-foreground text-center py-2">Nenhum bairro encontrado para "{neighborhoodSearch}"</p>
+                      )}
                     </div>
                   )}
                 </div>
