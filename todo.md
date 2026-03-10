@@ -8607,3 +8607,5 @@
 - [x] Padronizar cores dos cards de seleção (Modalidades e Pagamento) para vermelho igual Taxa de entrega
 - [x] Padronizar aba Notificações com SectionCards e layout em colunas da aba Atendimento
 - [x] Auto-save nos toggles de notificação (salvar ao ativar/desativar) e remover botão Salvar
+- [x] Padronizar aba Impressora e Teste com SectionCards e layout em colunas
+- [x] Padronizar aba Conta e Segurança com SectionCards e layout em colunas

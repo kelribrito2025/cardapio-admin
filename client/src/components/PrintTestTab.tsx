@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Printer, Save, RotateCcw, Smartphone, Loader2, FileText, Settings, Eye, Type, Plus, Pencil, Trash2, Star, Key, Copy, RefreshCw, Unplug, ScrollText } from "lucide-react";
-import { PrintLogsTab } from "./PrintLogsTab";
+import { Printer, Save, RotateCcw, Smartphone, Loader2, FileText, Settings, Eye, Type, Plus, Pencil, Trash2, Star, Key, Copy, RefreshCw, Unplug, ScrollText, Volume2, LayoutGrid, Ruler, QrCode, FileCode, SlidersHorizontal } from "lucide-react";
+import { SectionCard } from "@/components/shared";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
@@ -92,6 +90,9 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
   const [mindiFooterMessage, setMindiFooterMessage] = useState<string | null>(null);
   const [mindiBeepOnPrint, setMindiBeepOnPrint] = useState(false);
   const [mindiHtmlPrintEnabled, setMindiHtmlPrintEnabled] = useState(true);
+
+  // Sub-tab ativa
+  const [activeTab, setActiveTab] = useState<"layout" | "mindi" | "api">("layout");
 
   // Carregar configurações salvas quando disponíveis
   useEffect(() => {
@@ -398,33 +399,11 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
     }
     
     if (!customText.trim()) {
-      toast.error("Digite um texto para imprimir");
+      toast.error("Digite algum texto para imprimir");
       return;
     }
     
-    // Primeiro salvar as configurações atuais
-    try {
-      await saveSettingsMutation.mutateAsync({
-        establishmentId,
-        fontSize,
-        fontWeight,
-        titleFontSize,
-        titleFontWeight,
-        itemFontSize,
-        itemFontWeight,
-        obsFontSize,
-        obsFontWeight,
-        paperWidth: paperWidth as "58mm" | "80mm",
-        showDividers,
-        showQrCode,
-        qrCodeUrl,
-        beepOnPrint,
-      });
-    } catch (e) {
-      // Continuar mesmo se falhar o save
-    }
-    
-    // URL do texto personalizado no servidor
+    // Abrir URL de impressão customizada
     const customUrl = `${window.location.origin}/api/print/custom/${establishmentId}?text=${encodeURIComponent(customText)}`;
     
     // Detectar se é Android
@@ -443,9 +422,7 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
   };
 
   // Gerar HTML do recibo - USA EXATAMENTE O MESMO TEMPLATE DO SERVIDOR (generateReceiptHTML)
-  // Isso garante que o preview seja idêntico ao recibo real impresso ao aceitar pedidos
   const generateReceiptHTML = () => {
-    // Usar EXATAMENTE as mesmas variáveis do servidor
     const is58mm = paperWidth === '58mm';
     const paperWidthValue = is58mm ? '48mm' : '72mm';
     const baseFontSize = `${fontSize}px`;
@@ -456,10 +433,8 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
     const smallFontSize = `${obsFontSize}px`;
     const smallFontWeight = obsFontWeight;
     
-    // Gerar HTML dos itens EXATAMENTE como o servidor faz
     let itemsHTML = '';
     for (const item of sampleOrder.items) {
-      // Preço total do item (base + complementos)
       const complementsTotal = item.complements.reduce((sum, c) => sum + (c.price || 0), 0);
       const totalItemPrice = (item.quantity * item.price) + (complementsTotal * item.quantity);
       let itemHTML = `
@@ -472,7 +447,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       if (item.observation) {
         itemHTML += `<div class="item-obs">Obs: ${item.observation}</div>`;
       }
-      // Complementos
       for (const comp of item.complements) {
         itemHTML += `<div class="item-complement">+ ${comp.name}${comp.price > 0 ? ` (${formatCurrency(comp.price)})` : ''}</div>`;
       }
@@ -480,7 +454,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       itemsHTML += itemHTML;
     }
 
-    // TEMPLATE EXATAMENTE IGUAL AO SERVIDOR (generateReceiptHTML em server/_core/index.ts)
     return `
 <!DOCTYPE html>
 <html>
@@ -511,7 +484,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       -webkit-font-smoothing: antialiased;
     }
     
-    /* CABEÇALHO */
     .logo {
       text-align: center;
       padding-bottom: 12px;
@@ -575,7 +547,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       align-self: center;
     }
     
-    /* DIVISOR */
     .divider { 
       border: none;
       ${showDividers ? 'border-top: 2px dashed #000;' : ''} 
@@ -586,7 +557,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       margin: 12px 0;
     }
     
-    /* CLIENTE */
     .customer { 
       margin: 10px 0; 
       font-size: ${itemFontSize}px;
@@ -604,7 +574,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       margin: 6px 0;
     }
     
-    /* ITENS */
     .item {
       margin: 8px 0;
       padding: ${itemBorderStyle === 'rounded' ? boxPadding + 'px' : '8px 0'};
@@ -629,7 +598,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       padding-left: 10px;
     }
     
-    /* TOTAIS */
     .totals { 
       margin: 12px 0; 
     }
@@ -653,7 +621,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       text-transform: uppercase;
     }
     
-    /* SEÇÕES (Entrega, Pagamento, Cliente) */
     .section-box {
       border: 2px solid #000;
       border-radius: 8px;
@@ -691,7 +658,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       font-size: ${smallFontSize};
     }
     
-    /* PAGAMENTO */
     .payment {
       margin: 10px 0;
       font-size: ${itemFontSize}px;
@@ -701,7 +667,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       font-size: ${itemFontSize}px;
     }
     
-    /* OBSERVAÇÕES */
     .notes { 
       background: #f0f0f0; 
       padding: 8px; 
@@ -714,7 +679,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       margin-bottom: 4px;
     }
     
-    /* QR CODE */
     .qrcode-box {
       padding: 12px 0;
       margin: 12px 0;
@@ -730,7 +694,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       margin: 0 auto;
     }
     
-    /* RODAPÉ */
     .footer { 
       text-align: center; 
       margin-top: 16px; 
@@ -742,7 +705,6 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
       margin-top: 8px;
     }
     
-    /* PRINT STYLES */
     @media print {
       body {
         width: ${paperWidthValue};
@@ -849,596 +811,612 @@ export function PrintTestTab({ establishmentId, printers, onAddPrinter, onEditPr
     );
   }
 
+  // ==================== RENDER ====================
   return (
-    <div className="space-y-6">
-      {/* Card de Impressoras Cadastradas */}
-      <Card className="shadow-none">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <div>
-            <CardTitle>Impressoras Cadastradas</CardTitle>
-            <CardDescription>Gerencie suas impressoras térmicas</CardDescription>
-          </div>
-          {onAddPrinter && (
+    <div className="space-y-5">
+      {/* Impressoras Cadastradas - SectionCard */}
+      <SectionCard
+        title="Impressoras Cadastradas"
+        description="Gerencie suas impressoras térmicas"
+        icon={<Printer className="h-5 w-5 text-primary dark:text-primary" />}
+        iconBg="bg-primary/10 dark:bg-primary/15"
+        actions={
+          onAddPrinter ? (
             <Button onClick={onAddPrinter} size="sm" className="rounded-xl">
               <Plus className="h-4 w-4 mr-2" />
-              Adicionar Impressora
+              Adicionar
             </Button>
-          )}
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {!printers || printers.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Printer className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p>Nenhuma impressora cadastrada</p>
-                <p className="text-sm">Clique em "Adicionar Impressora" para começar</p>
-              </div>
-            ) : (
-              printers.map((printer) => (
-                <div
-                  key={printer.id}
-                  className="flex items-center justify-between p-4 bg-muted/30 rounded-xl"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "p-2 rounded-lg",
-                      printer.isActive ? "bg-green-100 text-green-600" : "bg-muted text-muted-foreground"
-                    )}>
-                      <Printer className="h-5 w-5" />
+          ) : undefined
+        }
+      >
+        <div className="space-y-3">
+          {!printers || printers.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Printer className="h-12 w-12 mx-auto mb-3 opacity-50" />
+              <p>Nenhuma impressora cadastrada</p>
+              <p className="text-sm">Clique em "Adicionar" para começar</p>
+            </div>
+          ) : (
+            printers.map((printer) => (
+              <div
+                key={printer.id}
+                className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/30"
+              >
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    "p-2 rounded-lg",
+                    printer.isActive ? "bg-green-100 dark:bg-green-500/15 text-green-600 dark:text-green-400" : "bg-muted text-muted-foreground"
+                  )}>
+                    <Printer className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">{printer.name}</span>
+                      {printer.isDefault && (
+                        <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <Star className="h-3 w-3" />
+                          Padrão
+                        </span>
+                      )}
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{printer.name}</span>
-                        {printer.isDefault && (
-                          <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <Star className="h-3 w-3" />
-                            Padrão
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {printer.ipAddress}:{printer.port}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {onEditPrinter && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEditPrinter(printer)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                    )}
-                    {onDeletePrinter && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onDeletePrinter(printer)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
+                    <p className="text-xs text-muted-foreground">
+                      {printer.ipAddress}:{printer.port}
+                    </p>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Tabs defaultValue="layout" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="layout" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
-            <span className="hidden sm:inline">Layout e Fontes</span>
-          </TabsTrigger>
-          <TabsTrigger value="mindi" className="flex items-center gap-2">
-            <Smartphone className="h-4 w-4" />
-            <span className="hidden sm:inline">Mindi</span>
-          </TabsTrigger>
-          <TabsTrigger value="api" className="flex items-center gap-2">
-            <Key className="h-4 w-4" />
-            <span className="hidden sm:inline">API</span>
-          </TabsTrigger>
-        </TabsList>
-        
-        {/* Layout Tab */}
-        <TabsContent value="layout" className="space-y-4 mt-4">
-          <Card className="shadow-none">
-            <CardHeader>
-              <CardTitle>Configurações de Layout</CardTitle>
-              <CardDescription>
-                Ajuste o layout e aparência do recibo impresso
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Impressão HTML</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Ative quando a impressora aceita impressão com layout HTML (mais flexível). Desative para usar o formato compatível ESC/POS.
-                  </p>
-                </div>
-                <Switch
-                  checked={htmlPrintEnabled}
-                  onCheckedChange={setHtmlPrintEnabled}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Largura do papel</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Selecione o tamanho da bobina térmica
-                  </p>
-                </div>
-                <Select value={paperWidth} onValueChange={setPaperWidth}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="58mm">58mm</SelectItem>
-                    <SelectItem value="80mm">80mm</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Mostrar divisores</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Exibir linhas tracejadas entre seções
-                  </p>
-                </div>
-                <Switch
-                  checked={showDividers}
-                  onCheckedChange={setShowDividers}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Bipe ao imprimir</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Emitir som de bipe na impressora ao imprimir
-                  </p>
-                </div>
-                <Switch
-                  checked={beepOnPrint}
-                  onCheckedChange={setBeepOnPrint}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Estilo dos itens</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Aparência das caixas de produtos
-                  </p>
-                </div>
-                <Select value={itemBorderStyle} onValueChange={(v) => setItemBorderStyle(v as "rounded" | "dashed")}>
-                  <SelectTrigger className="w-44">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="rounded">Caixas arredondadas</SelectItem>
-                    <SelectItem value="dashed">Linhas tracejadas</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Espaçamento interno: {boxPadding}px</Label>
-                </div>
-                <Slider
-                  value={[boxPadding]}
-                  onValueChange={(v) => setBoxPadding(v[0])}
-                  min={4}
-                  max={20}
-                  step={2}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Mostrar QR Code PIX</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Exibir QR Code para pagamento no recibo
-                  </p>
-                </div>
-                <Switch
-                  checked={showQrCode}
-                  onCheckedChange={setShowQrCode}
-                />
-              </div>
-
-              {showQrCode && (
-                <div className="p-4 bg-muted/50 rounded-lg space-y-3">
-                  <Label>Imagem do QR Code PIX</Label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        
-                        setQrCodeUploading(true);
-                        try {
-                          const reader = new FileReader();
-                          reader.onload = async () => {
-                            const base64 = reader.result as string;
-                            const result = await uploadImageMutation.mutateAsync({
-                              base64,
-                              mimeType: file.type,
-                              singleVersion: true,
-                            });
-                            setQrCodeUrl(result.url);
-                            toast.success("QR Code carregado!");
-                          };
-                          reader.readAsDataURL(file);
-                        } catch (error) {
-                          toast.error("Erro ao carregar imagem");
-                        } finally {
-                          setQrCodeUploading(false);
-                        }
-                      }}
-                      className="text-sm"
-                    />
-                    {qrCodeUploading && <Loader2 className="h-4 w-4 animate-spin" />}
-                  </div>
-                  {qrCodeUrl && (
-                    <img src={qrCodeUrl} alt="QR Code PIX" className="w-24 h-24 object-contain border rounded bg-card" />
+                <div className="flex items-center gap-1">
+                  {onEditPrinter && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEditPrinter(printer)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                  {onDeletePrinter && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDeletePrinter(printer)}
+                      className="text-destructive hover:text-destructive h-8 w-8 p-0"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
                   )}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-none">
-            <CardHeader>
-              <CardTitle>Configurações de Fonte</CardTitle>
-              <CardDescription>
-                Ajuste o tamanho e peso das fontes do recibo
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Fonte do corpo */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Texto geral</Label>
-                  <span className="text-sm text-muted-foreground">{fontSize}px / peso {fontWeight}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Tamanho</span>
-                    <Slider
-                      value={[fontSize]}
-                      onValueChange={(v) => setFontSize(v[0])}
-                      min={8}
-                      max={18}
-                      step={1}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Peso</span>
-                    <Slider
-                      value={[fontWeight]}
-                      onValueChange={(v) => setFontWeight(v[0])}
-                      min={300}
-                      max={900}
-                      step={100}
-                      className="mt-2"
-                    />
-                  </div>
-                </div>
               </div>
+            ))
+          )}
+        </div>
+      </SectionCard>
 
-              {/* Fonte do título */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Títulos/Pedido</Label>
-                  <span className="text-sm text-muted-foreground">{titleFontSize}px / peso {titleFontWeight}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Tamanho</span>
-                    <Slider
-                      value={[titleFontSize]}
-                      onValueChange={(v) => setTitleFontSize(v[0])}
-                      min={12}
-                      max={24}
-                      step={1}
-                      className="mt-2"
-                    />
+      {/* Sub-tab selector - styled as pills */}
+      <div className="flex gap-2 p-1 bg-muted/50 rounded-xl w-fit">
+        <button
+          onClick={() => setActiveTab("layout")}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
+            activeTab === "layout"
+              ? "bg-card text-foreground shadow-sm border border-border/50"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Settings className="h-4 w-4" />
+          Layout e Fontes
+        </button>
+        <button
+          onClick={() => setActiveTab("mindi")}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
+            activeTab === "mindi"
+              ? "bg-card text-foreground shadow-sm border border-border/50"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Smartphone className="h-4 w-4" />
+          Mindi Printer
+        </button>
+        <button
+          onClick={() => setActiveTab("api")}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
+            activeTab === "api"
+              ? "bg-card text-foreground shadow-sm border border-border/50"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Key className="h-4 w-4" />
+          API
+        </button>
+      </div>
+
+      {/* ==================== LAYOUT TAB ==================== */}
+      {activeTab === "layout" && (
+        <div className="flex flex-col lg:flex-row gap-5">
+          {/* Coluna esquerda - 40% - Layout e Opções */}
+          <div className="w-full lg:w-[40%] lg:sticky lg:top-4 shrink-0 space-y-5 self-start">
+            <SectionCard
+              title="Configurações de Layout"
+              description="Ajuste o layout e aparência do recibo"
+              icon={<LayoutGrid className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
+              iconBg="bg-blue-100 dark:bg-blue-500/15"
+            >
+              <div className="space-y-4">
+                {/* Impressão HTML */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-blue-100 dark:bg-blue-500/15 rounded-lg">
+                      <FileCode className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Impressão HTML</Label>
+                      <p className="text-xs text-muted-foreground">Layout mais flexível</p>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Peso</span>
-                    <Slider
-                      value={[titleFontWeight]}
-                      onValueChange={(v) => setTitleFontWeight(v[0])}
-                      min={300}
-                      max={900}
-                      step={100}
-                      className="mt-2"
-                    />
-                  </div>
+                  <Switch checked={htmlPrintEnabled} onCheckedChange={setHtmlPrintEnabled} />
                 </div>
+
+                {/* Largura do papel */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-violet-100 dark:bg-violet-500/15 rounded-lg">
+                      <Ruler className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Largura do papel</Label>
+                      <p className="text-xs text-muted-foreground">Tamanho da bobina</p>
+                    </div>
+                  </div>
+                  <Select value={paperWidth} onValueChange={setPaperWidth}>
+                    <SelectTrigger className="w-24 h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="58mm">58mm</SelectItem>
+                      <SelectItem value="80mm">80mm</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Mostrar divisores */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-emerald-100 dark:bg-emerald-500/15 rounded-lg">
+                      <SlidersHorizontal className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Divisores</Label>
+                      <p className="text-xs text-muted-foreground">Linhas tracejadas</p>
+                    </div>
+                  </div>
+                  <Switch checked={showDividers} onCheckedChange={setShowDividers} />
+                </div>
+
+                {/* Bipe ao imprimir */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-amber-100 dark:bg-amber-500/15 rounded-lg">
+                      <Volume2 className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Bipe ao imprimir</Label>
+                      <p className="text-xs text-muted-foreground">Som na impressora</p>
+                    </div>
+                  </div>
+                  <Switch checked={beepOnPrint} onCheckedChange={setBeepOnPrint} />
+                </div>
+
+                {/* Estilo dos itens */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-pink-100 dark:bg-pink-500/15 rounded-lg">
+                      <LayoutGrid className="h-4 w-4 text-pink-600 dark:text-pink-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Estilo dos itens</Label>
+                      <p className="text-xs text-muted-foreground">Aparência dos produtos</p>
+                    </div>
+                  </div>
+                  <Select value={itemBorderStyle} onValueChange={(v) => setItemBorderStyle(v as "rounded" | "dashed")}>
+                    <SelectTrigger className="w-36 h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rounded">Arredondadas</SelectItem>
+                      <SelectItem value="dashed">Tracejadas</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Espaçamento interno */}
+                <div className="space-y-2 px-1">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm">Espaçamento interno</Label>
+                    <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded">{boxPadding}px</span>
+                  </div>
+                  <Slider
+                    value={[boxPadding]}
+                    onValueChange={(v) => setBoxPadding(v[0])}
+                    min={4}
+                    max={20}
+                    step={2}
+                  />
+                </div>
+
+                {/* QR Code PIX */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-green-100 dark:bg-green-500/15 rounded-lg">
+                      <QrCode className="h-4 w-4 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">QR Code PIX</Label>
+                      <p className="text-xs text-muted-foreground">No recibo</p>
+                    </div>
+                  </div>
+                  <Switch checked={showQrCode} onCheckedChange={setShowQrCode} />
+                </div>
+
+                {showQrCode && (
+                  <div className="p-3 bg-muted/30 rounded-lg border border-border/30 space-y-3">
+                    <Label className="text-sm">Imagem do QR Code PIX</Label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          
+                          setQrCodeUploading(true);
+                          try {
+                            const reader = new FileReader();
+                            reader.onload = async () => {
+                              const base64 = reader.result as string;
+                              const result = await uploadImageMutation.mutateAsync({
+                                base64,
+                                mimeType: file.type,
+                                singleVersion: true,
+                              });
+                              setQrCodeUrl(result.url);
+                              toast.success("QR Code carregado!");
+                            };
+                            reader.readAsDataURL(file);
+                          } catch (error) {
+                            toast.error("Erro ao carregar imagem");
+                          } finally {
+                            setQrCodeUploading(false);
+                          }
+                        }}
+                        className="text-sm"
+                      />
+                      {qrCodeUploading && <Loader2 className="h-4 w-4 animate-spin" />}
+                    </div>
+                    {qrCodeUrl && (
+                      <img src={qrCodeUrl} alt="QR Code PIX" className="w-24 h-24 object-contain border rounded bg-card" />
+                    )}
+                  </div>
+                )}
               </div>
-
-              {/* Fonte dos itens */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Nome dos itens</Label>
-                  <span className="text-sm text-muted-foreground">{itemFontSize}px / peso {itemFontWeight}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Tamanho</span>
-                    <Slider
-                      value={[itemFontSize]}
-                      onValueChange={(v) => setItemFontSize(v[0])}
-                      min={8}
-                      max={18}
-                      step={1}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Peso</span>
-                    <Slider
-                      value={[itemFontWeight]}
-                      onValueChange={(v) => setItemFontWeight(v[0])}
-                      min={300}
-                      max={900}
-                      step={100}
-                      className="mt-2"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Fonte das observações */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Observações/Complementos</Label>
-                  <span className="text-sm text-muted-foreground">{obsFontSize}px / peso {obsFontWeight}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Tamanho</span>
-                    <Slider
-                      value={[obsFontSize]}
-                      onValueChange={(v) => setObsFontSize(v[0])}
-                      min={8}
-                      max={16}
-                      step={1}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Peso</span>
-                    <Slider
-                      value={[obsFontWeight]}
-                      onValueChange={(v) => setObsFontWeight(v[0])}
-                      min={300}
-                      max={900}
-                      step={100}
-                      className="mt-2"
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="flex gap-3">
-            <Button onClick={handleSaveSettings} disabled={saveSettingsMutation.isPending}>
-              <Save className="h-4 w-4 mr-2" />
-              {saveSettingsMutation.isPending ? "Salvando..." : "Salvar"}
-            </Button>
-            <Button variant="outline" onClick={resetToDefaults}>
-              <RotateCcw className="h-4 w-4 mr-2" />
-              Restaurar Padrão
-            </Button>
-            <Button variant="outline" onClick={handleTestPrint}>
-              <Printer className="h-4 w-4 mr-2" />
-              Imprimir Teste
-            </Button>
+            </SectionCard>
           </div>
-        </TabsContent>
 
-        {/* Mindi Printer Tab */}
-        <TabsContent value="mindi" className="space-y-4 mt-4">
-          <Card className="shadow-none">
-            <CardHeader>
-              <CardTitle>Configurações do Mindi Printer</CardTitle>
-              <CardDescription>
-                Ajustes exclusivos para impressão via Mindi Printer (app externo). Estas configurações não afetam a impressão normal do navegador.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Impressão HTML Mindi */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Impressão HTML</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Ative quando a impressora aceita impressão com layout HTML (mais flexível). Desative para usar o formato compatível ESC/POS.
-                  </p>
-                </div>
-                <Switch
-                  checked={mindiHtmlPrintEnabled}
-                  onCheckedChange={setMindiHtmlPrintEnabled}
-                />
-              </div>
-
-              {/* Bipe ao imprimir Mindi */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Bipe ao imprimir</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Emitir som de bipe na impressora ao imprimir
-                  </p>
-                </div>
-                <Switch
-                  checked={mindiBeepOnPrint}
-                  onCheckedChange={setMindiBeepOnPrint}
-                />
-              </div>
-
-              {/* Largura do papel Mindi */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Largura do papel</Label>
-                  <p className="text-sm text-muted-foreground">Tamanho da bobina térmica no Mindi</p>
-                </div>
-                <Select value={mindiPaperWidth} onValueChange={setMindiPaperWidth}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="58mm">58mm</SelectItem>
-                    <SelectItem value="80mm">80mm</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Divisores Mindi */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Mostrar divisores</Label>
-                  <p className="text-sm text-muted-foreground">Linhas tracejadas entre seções</p>
-                </div>
-                <Switch checked={mindiShowDividers} onCheckedChange={setMindiShowDividers} />
-              </div>
-
-              {/* Estilo de borda Mindi */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Estilo dos itens</Label>
-                  <p className="text-sm text-muted-foreground">Aparência das caixas de produtos</p>
-                </div>
-                <Select value={mindiItemBorderStyle} onValueChange={(v) => setMindiItemBorderStyle(v as "rounded" | "dashed")}>
-                  <SelectTrigger className="w-44">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="rounded">Caixas arredondadas</SelectItem>
-                    <SelectItem value="dashed">Linhas tracejadas</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Espaçamento Mindi */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Espaçamento interno: {mindiBoxPadding}px</Label>
-                </div>
-                <Slider value={[mindiBoxPadding]} onValueChange={(v) => setMindiBoxPadding(v[0])} min={4} max={20} step={2} />
-              </div>
-
-              <div className="border-t pt-4 mt-4">
-                <h4 className="font-medium mb-4">Configurações de Fonte</h4>
-              </div>
-
-              {/* Fonte geral Mindi */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Texto geral</Label>
-                  <span className="text-sm text-muted-foreground">{mindiFontSize}px / peso {mindiFontWeight}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Tamanho</span>
-                    <Slider value={[mindiFontSize]} onValueChange={(v) => setMindiFontSize(v[0])} min={8} max={18} step={1} className="mt-2" />
+          {/* Coluna direita - 60% - Fontes e Ações */}
+          <div className="w-full lg:flex-1 space-y-5">
+            <SectionCard
+              title="Configurações de Fonte"
+              description="Ajuste o tamanho e peso das fontes"
+              icon={<Type className="h-5 w-5 text-orange-600 dark:text-orange-400" />}
+              iconBg="bg-orange-100 dark:bg-orange-500/15"
+            >
+              <div className="space-y-5">
+                {/* Texto geral */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Texto geral</Label>
+                    <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded">{fontSize}px / peso {fontWeight}</span>
                   </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Peso</span>
-                    <Slider value={[mindiFontWeight]} onValueChange={(v) => setMindiFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-xs text-muted-foreground">Tamanho</span>
+                      <Slider value={[fontSize]} onValueChange={(v) => setFontSize(v[0])} min={8} max={18} step={1} className="mt-2" />
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground">Peso</span>
+                      <Slider value={[fontWeight]} onValueChange={(v) => setFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Títulos/Pedido */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Títulos/Pedido</Label>
+                    <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded">{titleFontSize}px / peso {titleFontWeight}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-xs text-muted-foreground">Tamanho</span>
+                      <Slider value={[titleFontSize]} onValueChange={(v) => setTitleFontSize(v[0])} min={12} max={24} step={1} className="mt-2" />
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground">Peso</span>
+                      <Slider value={[titleFontWeight]} onValueChange={(v) => setTitleFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Nome dos itens */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Nome dos itens</Label>
+                    <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded">{itemFontSize}px / peso {itemFontWeight}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-xs text-muted-foreground">Tamanho</span>
+                      <Slider value={[itemFontSize]} onValueChange={(v) => setItemFontSize(v[0])} min={8} max={18} step={1} className="mt-2" />
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground">Peso</span>
+                      <Slider value={[itemFontWeight]} onValueChange={(v) => setItemFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Observações/Complementos */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Observações/Complementos</Label>
+                    <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded">{obsFontSize}px / peso {obsFontWeight}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-xs text-muted-foreground">Tamanho</span>
+                      <Slider value={[obsFontSize]} onValueChange={(v) => setObsFontSize(v[0])} min={8} max={16} step={1} className="mt-2" />
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground">Peso</span>
+                      <Slider value={[obsFontWeight]} onValueChange={(v) => setObsFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
+                    </div>
                   </div>
                 </div>
               </div>
+            </SectionCard>
 
-              {/* Títulos Mindi */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Títulos/Pedido</Label>
-                  <span className="text-sm text-muted-foreground">{mindiTitleFontSize}px / peso {mindiTitleFontWeight}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Tamanho</span>
-                    <Slider value={[mindiTitleFontSize]} onValueChange={(v) => setMindiTitleFontSize(v[0])} min={12} max={24} step={1} className="mt-2" />
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Peso</span>
-                    <Slider value={[mindiTitleFontWeight]} onValueChange={(v) => setMindiTitleFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Itens Mindi */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Nome dos itens</Label>
-                  <span className="text-sm text-muted-foreground">{mindiItemFontSize}px / peso {mindiItemFontWeight}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Tamanho</span>
-                    <Slider value={[mindiItemFontSize]} onValueChange={(v) => setMindiItemFontSize(v[0])} min={8} max={18} step={1} className="mt-2" />
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Peso</span>
-                    <Slider value={[mindiItemFontWeight]} onValueChange={(v) => setMindiItemFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Observações Mindi */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Observações/Complementos</Label>
-                  <span className="text-sm text-muted-foreground">{mindiObsFontSize}px / peso {mindiObsFontWeight}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Tamanho</span>
-                    <Slider value={[mindiObsFontSize]} onValueChange={(v) => setMindiObsFontSize(v[0])} min={8} max={16} step={1} className="mt-2" />
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Peso</span>
-                    <Slider value={[mindiObsFontWeight]} onValueChange={(v) => setMindiObsFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="flex gap-3">
-            <Button onClick={handleSaveMindiSettings} disabled={saveSettingsMutation.isPending}>
-              <Save className="h-4 w-4 mr-2" />
-              {saveSettingsMutation.isPending ? "Salvando..." : "Salvar Mindi"}
-            </Button>
-            <Button variant="outline" onClick={resetMindiToDefaults}>
-              <RotateCcw className="h-4 w-4 mr-2" />
-              Restaurar Padrão
-            </Button>
+            {/* Botões de ação */}
+            <div className="flex flex-wrap gap-3">
+              <Button onClick={handleSaveSettings} disabled={saveSettingsMutation.isPending} className="rounded-xl">
+                <Save className="h-4 w-4 mr-2" />
+                {saveSettingsMutation.isPending ? "Salvando..." : "Salvar"}
+              </Button>
+              <Button variant="outline" onClick={resetToDefaults} className="rounded-xl">
+                <RotateCcw className="h-4 w-4 mr-2" />
+                Restaurar Padrão
+              </Button>
+              <Button variant="outline" onClick={handleTestPrint} className="rounded-xl">
+                <Printer className="h-4 w-4 mr-2" />
+                Imprimir Teste
+              </Button>
+            </div>
           </div>
-        </TabsContent>
+        </div>
+      )}
 
-        {/* API Key Tab */}
-        <TabsContent value="api" className="space-y-4 mt-4">
-          <PrinterApiKeySection establishmentId={establishmentId} />
-        </TabsContent>
+      {/* ==================== MINDI TAB ==================== */}
+      {activeTab === "mindi" && (
+        <div className="flex flex-col lg:flex-row gap-5">
+          {/* Coluna esquerda - 40% - Layout Mindi */}
+          <div className="w-full lg:w-[40%] lg:sticky lg:top-4 shrink-0 space-y-5 self-start">
+            <SectionCard
+              title="Layout do Mindi Printer"
+              description="Configurações exclusivas para o app Mindi"
+              icon={<Smartphone className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />}
+              iconBg="bg-indigo-100 dark:bg-indigo-500/15"
+            >
+              <div className="space-y-4">
+                {/* Impressão HTML Mindi */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-blue-100 dark:bg-blue-500/15 rounded-lg">
+                      <FileCode className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Impressão HTML</Label>
+                      <p className="text-xs text-muted-foreground">Layout mais flexível</p>
+                    </div>
+                  </div>
+                  <Switch checked={mindiHtmlPrintEnabled} onCheckedChange={setMindiHtmlPrintEnabled} />
+                </div>
 
+                {/* Bipe ao imprimir Mindi */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-amber-100 dark:bg-amber-500/15 rounded-lg">
+                      <Volume2 className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Bipe ao imprimir</Label>
+                      <p className="text-xs text-muted-foreground">Som na impressora</p>
+                    </div>
+                  </div>
+                  <Switch checked={mindiBeepOnPrint} onCheckedChange={setMindiBeepOnPrint} />
+                </div>
 
-      </Tabs>
+                {/* Largura do papel Mindi */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-violet-100 dark:bg-violet-500/15 rounded-lg">
+                      <Ruler className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Largura do papel</Label>
+                      <p className="text-xs text-muted-foreground">Tamanho da bobina</p>
+                    </div>
+                  </div>
+                  <Select value={mindiPaperWidth} onValueChange={setMindiPaperWidth}>
+                    <SelectTrigger className="w-24 h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="58mm">58mm</SelectItem>
+                      <SelectItem value="80mm">80mm</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Divisores Mindi */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-emerald-100 dark:bg-emerald-500/15 rounded-lg">
+                      <SlidersHorizontal className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Divisores</Label>
+                      <p className="text-xs text-muted-foreground">Linhas tracejadas</p>
+                    </div>
+                  </div>
+                  <Switch checked={mindiShowDividers} onCheckedChange={setMindiShowDividers} />
+                </div>
+
+                {/* Estilo de borda Mindi */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/30">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-pink-100 dark:bg-pink-500/15 rounded-lg">
+                      <LayoutGrid className="h-4 w-4 text-pink-600 dark:text-pink-400" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <Label className="text-sm font-medium">Estilo dos itens</Label>
+                      <p className="text-xs text-muted-foreground">Aparência dos produtos</p>
+                    </div>
+                  </div>
+                  <Select value={mindiItemBorderStyle} onValueChange={(v) => setMindiItemBorderStyle(v as "rounded" | "dashed")}>
+                    <SelectTrigger className="w-36 h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rounded">Arredondadas</SelectItem>
+                      <SelectItem value="dashed">Tracejadas</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Espaçamento Mindi */}
+                <div className="space-y-2 px-1">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm">Espaçamento interno</Label>
+                    <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded">{mindiBoxPadding}px</span>
+                  </div>
+                  <Slider value={[mindiBoxPadding]} onValueChange={(v) => setMindiBoxPadding(v[0])} min={4} max={20} step={2} />
+                </div>
+              </div>
+            </SectionCard>
+          </div>
+
+          {/* Coluna direita - 60% - Fontes Mindi e Ações */}
+          <div className="w-full lg:flex-1 space-y-5">
+            <SectionCard
+              title="Fontes do Mindi Printer"
+              description="Ajuste o tamanho e peso das fontes no Mindi"
+              icon={<Type className="h-5 w-5 text-orange-600 dark:text-orange-400" />}
+              iconBg="bg-orange-100 dark:bg-orange-500/15"
+            >
+              <div className="space-y-5">
+                {/* Texto geral Mindi */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Texto geral</Label>
+                    <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded">{mindiFontSize}px / peso {mindiFontWeight}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-xs text-muted-foreground">Tamanho</span>
+                      <Slider value={[mindiFontSize]} onValueChange={(v) => setMindiFontSize(v[0])} min={8} max={18} step={1} className="mt-2" />
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground">Peso</span>
+                      <Slider value={[mindiFontWeight]} onValueChange={(v) => setMindiFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Títulos Mindi */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Títulos/Pedido</Label>
+                    <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded">{mindiTitleFontSize}px / peso {mindiTitleFontWeight}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-xs text-muted-foreground">Tamanho</span>
+                      <Slider value={[mindiTitleFontSize]} onValueChange={(v) => setMindiTitleFontSize(v[0])} min={12} max={24} step={1} className="mt-2" />
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground">Peso</span>
+                      <Slider value={[mindiTitleFontWeight]} onValueChange={(v) => setMindiTitleFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Itens Mindi */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Nome dos itens</Label>
+                    <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded">{mindiItemFontSize}px / peso {mindiItemFontWeight}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-xs text-muted-foreground">Tamanho</span>
+                      <Slider value={[mindiItemFontSize]} onValueChange={(v) => setMindiItemFontSize(v[0])} min={8} max={18} step={1} className="mt-2" />
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground">Peso</span>
+                      <Slider value={[mindiItemFontWeight]} onValueChange={(v) => setMindiItemFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Observações Mindi */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Observações/Complementos</Label>
+                    <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-0.5 rounded">{mindiObsFontSize}px / peso {mindiObsFontWeight}</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-xs text-muted-foreground">Tamanho</span>
+                      <Slider value={[mindiObsFontSize]} onValueChange={(v) => setMindiObsFontSize(v[0])} min={8} max={16} step={1} className="mt-2" />
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground">Peso</span>
+                      <Slider value={[mindiObsFontWeight]} onValueChange={(v) => setMindiObsFontWeight(v[0])} min={300} max={900} step={100} className="mt-2" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </SectionCard>
+
+            {/* Botões de ação Mindi */}
+            <div className="flex flex-wrap gap-3">
+              <Button onClick={handleSaveMindiSettings} disabled={saveSettingsMutation.isPending} className="rounded-xl">
+                <Save className="h-4 w-4 mr-2" />
+                {saveSettingsMutation.isPending ? "Salvando..." : "Salvar Mindi"}
+              </Button>
+              <Button variant="outline" onClick={resetMindiToDefaults} className="rounded-xl">
+                <RotateCcw className="h-4 w-4 mr-2" />
+                Restaurar Padrão
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== API TAB ==================== */}
+      {activeTab === "api" && (
+        <PrinterApiKeySection establishmentId={establishmentId} />
+      )}
     </div>
   );
 }
@@ -1477,25 +1455,23 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
   };
   
   return (
-    <div className="space-y-4">
-      <Card className="shadow-none">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Key className="h-5 w-5" />
-            Integração com App de Impressora
-          </CardTitle>
-          <CardDescription>
-            Gere uma API Key para conectar um app de impressora externo ao sistema via SSE (Server-Sent Events). O app receberá eventos de novos pedidos em tempo real, sem precisar de login.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+    <div className="flex flex-col lg:flex-row gap-5">
+      {/* Coluna esquerda - 40% - API Key e URLs */}
+      <div className="w-full lg:w-[40%] lg:sticky lg:top-4 shrink-0 space-y-5 self-start">
+        <SectionCard
+          title="Integração com App"
+          description="Conecte um app de impressora externo via SSE"
+          icon={<Key className="h-5 w-5 text-amber-600 dark:text-amber-400" />}
+          iconBg="bg-amber-100 dark:bg-amber-500/15"
+        >
           {!apiKey ? (
             <div className="text-center py-6 space-y-3">
-              <Unplug className="h-12 w-12 mx-auto text-muted-foreground" />
+              <Unplug className="h-12 w-12 mx-auto text-muted-foreground opacity-50" />
               <p className="text-sm text-muted-foreground">Nenhuma API Key configurada</p>
               <Button
                 onClick={() => generateMutation.mutate({ establishmentId })}
                 disabled={generateMutation.isPending}
+                className="rounded-xl"
               >
                 {generateMutation.isPending ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -1511,11 +1487,11 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
               <div className="space-y-2">
                 <Label className="text-xs font-medium text-muted-foreground">API Key</Label>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 bg-muted px-3 py-2 rounded text-xs font-mono break-all">
+                  <code className="flex-1 bg-muted px-3 py-2 rounded-lg text-xs font-mono break-all">
                     {apiKey}
                   </code>
-                  <Button size="icon" variant="outline" onClick={() => copyToClipboard(apiKey, 'API Key')}>
-                    <Copy className="h-4 w-4" />
+                  <Button size="icon" variant="outline" onClick={() => copyToClipboard(apiKey, 'API Key')} className="h-8 w-8 shrink-0">
+                    <Copy className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               </div>
@@ -1524,11 +1500,11 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
               <div className="space-y-2">
                 <Label className="text-xs font-medium text-muted-foreground">URL SSE (Stream de Pedidos)</Label>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 bg-muted px-3 py-2 rounded text-xs font-mono break-all">
+                  <code className="flex-1 bg-muted px-3 py-2 rounded-lg text-xs font-mono break-all">
                     {sseUrl}
                   </code>
-                  <Button size="icon" variant="outline" onClick={() => copyToClipboard(sseUrl!, 'URL SSE')}>
-                    <Copy className="h-4 w-4" />
+                  <Button size="icon" variant="outline" onClick={() => copyToClipboard(sseUrl!, 'URL SSE')} className="h-8 w-8 shrink-0">
+                    <Copy className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               </div>
@@ -1537,24 +1513,12 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
               <div className="space-y-2">
                 <Label className="text-xs font-medium text-muted-foreground">URL de Status (Healthcheck)</Label>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 bg-muted px-3 py-2 rounded text-xs font-mono break-all">
+                  <code className="flex-1 bg-muted px-3 py-2 rounded-lg text-xs font-mono break-all">
                     {statusUrl}
                   </code>
-                  <Button size="icon" variant="outline" onClick={() => copyToClipboard(statusUrl!, 'URL Status')}>
-                    <Copy className="h-4 w-4" />
+                  <Button size="icon" variant="outline" onClick={() => copyToClipboard(statusUrl!, 'URL Status')} className="h-8 w-8 shrink-0">
+                    <Copy className="h-3.5 w-3.5" />
                   </Button>
-                </div>
-              </div>
-              
-              {/* Eventos SSE */}
-              <div className="space-y-2">
-                <Label className="text-xs font-medium text-muted-foreground">Eventos SSE Disponíveis</Label>
-                <div className="bg-muted rounded p-3 space-y-1 text-xs font-mono">
-                  <p><span className="text-green-600 font-bold">connected</span> - Conexão estabelecida</p>
-                  <p><span className="text-blue-600 font-bold">new_order</span> - Novo pedido recebido</p>
-                  <p><span className="text-purple-600 font-bold">print_order</span> - Pedido para imprimir</p>
-                  <p><span className="text-orange-600 font-bold">order_update</span> - Atualização de pedido</p>
-                  <p><span className="text-gray-500 font-bold">heartbeat</span> - Keep-alive (a cada 30s)</p>
                 </div>
               </div>
               
@@ -1562,44 +1526,128 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
               <div className="flex gap-3 pt-2">
                 <Button
                   variant="outline"
+                  size="sm"
                   onClick={() => generateMutation.mutate({ establishmentId })}
                   disabled={generateMutation.isPending}
+                  className="rounded-xl"
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Regenerar Key
+                  Regenerar
                 </Button>
                 <Button
                   variant="destructive"
+                  size="sm"
                   onClick={() => {
                     if (confirm('Tem certeza? O app conectado perderá acesso imediatamente.')) {
                       revokeMutation.mutate({ establishmentId });
                     }
                   }}
                   disabled={revokeMutation.isPending}
+                  className="rounded-xl"
                 >
                   <Unplug className="h-4 w-4 mr-2" />
-                  Revogar Key
+                  Revogar
                 </Button>
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
-      
-      {/* Documentação rápida */}
-      <Card className="shadow-none">
-        <CardHeader>
-          <CardTitle className="text-sm">Documentação Rápida</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 text-xs text-muted-foreground">
-          <p><strong>1.</strong> Gere uma API Key acima e copie a URL SSE.</p>
-          <p><strong>2.</strong> No app da impressora, conecte usando a URL SSE como EventSource.</p>
-          <p><strong>3.</strong> Escute o evento <code className="bg-muted px-1 rounded">print_order</code> para receber dados do pedido.</p>
-          <p><strong>4.</strong> Use <code className="bg-muted px-1 rounded">/api/printer/receipt/{'{'}&lt;orderId&gt;{'}'}?key={'{'}&lt;apiKey&gt;{'}'}</code> para buscar o HTML do recibo.</p>
-          <p><strong>5.</strong> Adicione <code className="bg-muted px-1 rounded">&format=text</code> na URL para receber em formato texto puro (ESC/POS).</p>
-          <p className="pt-2 text-amber-600">⚠️ Mantenha a API Key em segredo. Qualquer pessoa com a key pode receber os pedidos do seu estabelecimento.</p>
-        </CardContent>
-      </Card>
+        </SectionCard>
+      </div>
+
+      {/* Coluna direita - 60% - Documentação e Eventos */}
+      <div className="w-full lg:flex-1 space-y-5">
+        {/* Eventos SSE */}
+        <SectionCard
+          title="Eventos SSE"
+          description="Eventos disponíveis no stream de dados"
+          icon={<ScrollText className="h-5 w-5 text-purple-600 dark:text-purple-400" />}
+          iconBg="bg-purple-100 dark:bg-purple-500/15"
+        >
+          <div className="space-y-2">
+            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/30 border border-border/30">
+              <div className="p-1.5 bg-green-100 dark:bg-green-500/15 rounded-lg">
+                <div className="h-2 w-2 rounded-full bg-green-500" />
+              </div>
+              <div>
+                <span className="text-sm font-medium font-mono">connected</span>
+                <p className="text-xs text-muted-foreground">Conexão estabelecida</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/30 border border-border/30">
+              <div className="p-1.5 bg-blue-100 dark:bg-blue-500/15 rounded-lg">
+                <div className="h-2 w-2 rounded-full bg-blue-500" />
+              </div>
+              <div>
+                <span className="text-sm font-medium font-mono">new_order</span>
+                <p className="text-xs text-muted-foreground">Novo pedido recebido</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/30 border border-border/30">
+              <div className="p-1.5 bg-purple-100 dark:bg-purple-500/15 rounded-lg">
+                <div className="h-2 w-2 rounded-full bg-purple-500" />
+              </div>
+              <div>
+                <span className="text-sm font-medium font-mono">print_order</span>
+                <p className="text-xs text-muted-foreground">Pedido para imprimir</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/30 border border-border/30">
+              <div className="p-1.5 bg-orange-100 dark:bg-orange-500/15 rounded-lg">
+                <div className="h-2 w-2 rounded-full bg-orange-500" />
+              </div>
+              <div>
+                <span className="text-sm font-medium font-mono">order_update</span>
+                <p className="text-xs text-muted-foreground">Atualização de pedido</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/30 border border-border/30">
+              <div className="p-1.5 bg-gray-100 dark:bg-gray-500/15 rounded-lg">
+                <div className="h-2 w-2 rounded-full bg-gray-400" />
+              </div>
+              <div>
+                <span className="text-sm font-medium font-mono">heartbeat</span>
+                <p className="text-xs text-muted-foreground">Keep-alive (a cada 30s)</p>
+              </div>
+            </div>
+          </div>
+        </SectionCard>
+
+        {/* Documentação */}
+        <SectionCard
+          title="Documentação Rápida"
+          description="Como integrar o app de impressora"
+          icon={<FileText className="h-5 w-5 text-teal-600 dark:text-teal-400" />}
+          iconBg="bg-teal-100 dark:bg-teal-500/15"
+        >
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <div className="flex gap-3 items-start">
+              <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">1</span>
+              <p>Gere uma API Key e copie a URL SSE.</p>
+            </div>
+            <div className="flex gap-3 items-start">
+              <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">2</span>
+              <p>No app da impressora, conecte usando a URL SSE como EventSource.</p>
+            </div>
+            <div className="flex gap-3 items-start">
+              <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">3</span>
+              <p>Escute o evento <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">print_order</code> para receber dados do pedido.</p>
+            </div>
+            <div className="flex gap-3 items-start">
+              <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">4</span>
+              <p>Use <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/api/printer/receipt/{'{'}&lt;orderId&gt;{'}'}?key={'{'}&lt;apiKey&gt;{'}'}</code> para buscar o HTML do recibo.</p>
+            </div>
+            <div className="flex gap-3 items-start">
+              <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">5</span>
+              <p>Adicione <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">&format=text</code> na URL para formato texto puro (ESC/POS).</p>
+            </div>
+            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-lg">
+              <p className="text-sm text-amber-700 dark:text-amber-400">
+                Mantenha a API Key em segredo. Qualquer pessoa com a key pode receber os pedidos do seu estabelecimento.
+              </p>
+            </div>
+          </div>
+        </SectionCard>
+      </div>
     </div>
   );
 }
