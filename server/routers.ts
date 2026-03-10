@@ -280,6 +280,22 @@ export const appRouter = router({
         
         await db.updateEstablishment(id, data);
         
+        // Invalidate OG image cache when visual fields change
+        const visualFieldsChanged = data.name !== undefined || data.logo !== undefined || data.coverImage !== undefined || data.city !== undefined || data.state !== undefined || data.allowsDelivery !== undefined || data.allowsPickup !== undefined || data.allowsDineIn !== undefined || data.deliveryTimeMin !== undefined || data.deliveryTimeMax !== undefined;
+        if (visualFieldsChanged) {
+          try {
+            const { invalidateOGCache } = await import("./og-image");
+            // Get the slug for this establishment
+            const est = await db.getEstablishmentById(id);
+            if (est?.menuSlug) {
+              invalidateOGCache(est.menuSlug);
+              console.log(`[OG-Cache] Invalidated cache for establishment ${id} (slug: ${est.menuSlug})`);
+            }
+          } catch (err) {
+            console.error('[OG-Cache] Error invalidating cache (non-blocking):', err);
+          }
+        }
+        
         // PREVENÇÃO: Ao ativar o bot, garantir que existe API key não-global para o N8N
         if (data.whatsappBotEnabled === true) {
           try {

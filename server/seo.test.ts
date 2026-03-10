@@ -120,10 +120,11 @@ describe("SEO Module", () => {
     });
   });
 
-  describe("OG Image Dynamic Endpoint", () => {
-    it("should inject og:image pointing to dynamic /api/og-image/:slug endpoint", () => {
+  describe("OG Image with S3 Cache", () => {
+    it("should inject og:image with proper dimensions and type", () => {
       const html = `<!DOCTYPE html><html><head><title>Cardápio Admin</title><meta name="description" content="Sistema de gerenciamento de pedidos e cardápio digital" /></head><body></body></html>`;
-      const ogImageUrl = "https://v2.mindi.com.br/api/og-image/lanche-ps";
+      // Can be either CDN URL or dynamic endpoint URL
+      const ogImageUrl = "https://d2xsxph8kpxj0f.cloudfront.net/og-cache/lanche-ps-abc123.jpg";
       const metaTags = `<title>Lanche PS | Cardápio Digital</title>
     <meta property="og:image" content="${ogImageUrl}" />
     <meta property="og:image:type" content="image/jpeg" />
@@ -133,39 +134,39 @@ describe("SEO Module", () => {
 
       const result = injectSEOIntoHTML(html, metaTags, schemaOrg);
 
-      expect(result).toContain("/api/og-image/lanche-ps");
+      expect(result).toContain('og:image');
       expect(result).toContain('og:image:width');
       expect(result).toContain('og:image:height');
       expect(result).toContain('og:image:type');
       expect(result).toContain('image/jpeg');
     });
 
-    it("should use dynamic og:image URL with restaurant slug", () => {
+    it("should support CDN URL for cached OG images", () => {
       const html = `<!DOCTYPE html><html><head><title>Cardápio Admin</title><meta name="description" content="Sistema de gerenciamento de pedidos e cardápio digital" /></head><body></body></html>`;
-      const ogImageUrl = "https://v2.mindi.com.br/api/og-image/burger-house-gourmet";
+      const cdnUrl = "https://d2xsxph8kpxj0f.cloudfront.net/og-cache/burger-house-gourmet-f52cb1d7003c.jpg";
       const metaTags = `<title>Burger House | Cardápio Digital</title>
-    <meta property="og:image" content="${ogImageUrl}" />
+    <meta property="og:image" content="${cdnUrl}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />`;
       const schemaOrg = `<script type="application/ld+json">{}</script>`;
 
       const result = injectSEOIntoHTML(html, metaTags, schemaOrg);
 
-      expect(result).toContain("/api/og-image/burger-house-gourmet");
+      expect(result).toContain(cdnUrl);
       expect(result).not.toContain("og-fallback-restaurant");
     });
 
-    it("should always include og:image:width and og:image:height for proper WhatsApp preview", () => {
+    it("should fallback to dynamic endpoint URL when no cache exists", () => {
       const html = `<!DOCTYPE html><html><head><title>Cardápio Admin</title><meta name="description" content="Sistema de gerenciamento de pedidos e cardápio digital" /></head><body></body></html>`;
-      const ogImageUrl = "https://v2.mindi.com.br/api/og-image/test-restaurant";
+      const dynamicUrl = "https://v2.mindi.com.br/api/og-image/test-restaurant";
       const metaTags = `<title>Test | Cardápio Digital</title>
-    <meta property="og:image" content="${ogImageUrl}" />
+    <meta property="og:image" content="${dynamicUrl}" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Test" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="${ogImageUrl}" />`;
+    <meta name="twitter:image" content="${dynamicUrl}" />`;
       const schemaOrg = ``;
 
       const result = injectSEOIntoHTML(html, metaTags, schemaOrg);
@@ -177,6 +178,8 @@ describe("SEO Module", () => {
       // Must have twitter card for Telegram/Twitter
       expect(result).toContain('summary_large_image');
       expect(result).toContain('twitter:image');
+      // Dynamic endpoint as fallback
+      expect(result).toContain('/api/og-image/test-restaurant');
     });
   });
 

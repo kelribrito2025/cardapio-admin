@@ -9,6 +9,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { getEstablishmentBySlug, getDb } from "./db";
 import { categories, products } from "../drizzle/schema";
 import { eq, asc } from "drizzle-orm";
+import { getOGImageUrl } from "./og-image";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -105,8 +106,9 @@ function generateMetaTags(est: EstablishmentSEO, menuUrl: string): string {
     ? `Faça seu pedido online no ${name}. ${serviceTypes} em ${city || location}. Cardápio completo com preços atualizados. Peça agora!`
     : `Faça seu pedido online no ${name}. ${serviceTypes}. Cardápio completo com preços atualizados. Peça agora!`;
 
-  // Use dynamic OG image endpoint that composes cover + logo + text
-  const ogImage = `${menuUrl.replace(/\/menu\/.*$/, '')}/api/og-image/${est.menuSlug || ''}`;
+  // Use cached S3 URL if available, otherwise fallback to dynamic endpoint
+  const baseUrl = menuUrl.replace(/\/menu\/.*$/, '');
+  const ogImage = getOGImageUrl(est.menuSlug || '', baseUrl);
 
   const tags: string[] = [
     // Basic SEO

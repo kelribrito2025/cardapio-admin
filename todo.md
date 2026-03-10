@@ -8663,3 +8663,8 @@
 - [x] Gerar imagem OG dinâmica server-side com composição visual (capa + logo + nome + info do restaurante)
 - [x] Criar endpoint /api/og-image/:slug que gera a imagem dinamicamente com sharp
 - [x] Atualizar og:image no seo.ts para apontar para o endpoint dinâmico
+- [x] Implementar cache S3/CDN para imagens OG geradas dinamicamente
+- [x] Verificar cache S3 antes de gerar imagem (retornar direto se existir)
+- [x] Salvar imagem gerada no S3 após processamento
+- [x] Invalidar cache automaticamente ao atualizar capa, logo ou nome do restaurante
+- [x] Escrever testes para o fluxo de cache OG

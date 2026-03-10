@@ -1,21 +1,42 @@
 /**
- * Dynamic OG Image Generator
+ * Dynamic OG Image Generator with S3 Cache
  * 
  * Generates a 1200x630 Open Graph image for /menu/:slug pages.
  * Composition: cover image as background + logo overlay + restaurant name + service info.
  * Uses sharp for image processing with SVG overlay for text/layout.
+ * 
+ * Cache strategy:
+ * - Images are cached in S3 under og-cache/{slug}-{hash}.jpg
+ * - Hash is computed from visual data (name, coverImage, logo, city, state, rating, services)
+ * - On hit: redirect to CDN URL (fast, no processing)
+ * - On miss: generate image, upload to S3, return image + save URL
+ * - Invalidation: call invalidateOGCache(slug) when restaurant updates visual fields
  */
 
 import type { Express, Request, Response } from "express";
 import sharp from "sharp";
+import crypto from "crypto";
 import { getEstablishmentBySlug } from "./db";
+import { storagePut } from "./storage";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
-const CACHE_DURATION = 60 * 60; // 1 hour in seconds
+const CACHE_DURATION = 60 * 60 * 24 * 7; // 7 days (CDN cache, since we invalidate on change)
 const FALLBACK_IMAGE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/og-fallback-restaurant-59Pg6eq6bi2fQgZCkkFtJp.png";
+const OG_CACHE_PREFIX = "og-cache";
+
+// ─── In-memory URL cache (slug → { url, hash }) ────────────────────────────
+
+interface CacheEntry {
+  url: string;
+  hash: string;
+  timestamp: number;
+}
+
+const memoryCache = new Map<string, CacheEntry>();
+const MEMORY_CACHE_TTL = 60 * 60 * 1000; // 1 hour in ms
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -45,6 +66,45 @@ function buildServiceBadges(est: {
   return types.length > 0 ? types : ["Delivery"];
 }
 
+/**
+ * Compute a hash of the visual data that affects the OG image.
+ * When any of these fields change, the hash changes → cache miss → new image generated.
+ */
+function computeVisualHash(est: {
+  name: string;
+  logo: string | null;
+  coverImage: string | null;
+  city: string | null;
+  state: string | null;
+  rating: string | null;
+  reviewCount: number;
+  allowsDelivery: boolean;
+  allowsPickup: boolean;
+  allowsDineIn: boolean;
+  deliveryTimeMin: number | null;
+  deliveryTimeMax: number | null;
+}): string {
+  const data = JSON.stringify({
+    n: est.name,
+    l: est.logo || "",
+    c: est.coverImage || "",
+    ci: est.city || "",
+    st: est.state || "",
+    r: est.rating || "",
+    rc: est.reviewCount,
+    d: est.allowsDelivery,
+    p: est.allowsPickup,
+    di: est.allowsDineIn,
+    tmin: est.deliveryTimeMin,
+    tmax: est.deliveryTimeMax,
+  });
+  return crypto.createHash("md5").update(data).digest("hex").substring(0, 12);
+}
+
+function getCacheKey(slug: string, hash: string): string {
+  return `${OG_CACHE_PREFIX}/${slug}-${hash}.jpg`;
+}
+
 async function fetchImageBuffer(url: string): Promise<Buffer | null> {
   try {
     const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
@@ -69,6 +129,83 @@ async function processLogo(buffer: Buffer, size: number): Promise<Buffer> {
     .resize(size, size, { fit: "contain", background: { r: 255, g: 255, b: 255, alpha: 0 } })
     .png()
     .toBuffer();
+}
+
+// ─── S3 Cache Operations ────────────────────────────────────────────────────
+
+/**
+ * Try to get cached OG image URL from memory cache.
+ * Returns the CDN URL if cached and hash matches, null otherwise.
+ */
+function getFromMemoryCache(slug: string, hash: string): string | null {
+  const entry = memoryCache.get(slug);
+  if (!entry) return null;
+  
+  // Check if hash matches (data hasn't changed)
+  if (entry.hash !== hash) {
+    memoryCache.delete(slug);
+    return null;
+  }
+  
+  // Check TTL
+  if (Date.now() - entry.timestamp > MEMORY_CACHE_TTL) {
+    memoryCache.delete(slug);
+    return null;
+  }
+  
+  return entry.url;
+}
+
+/**
+ * Upload generated OG image to S3 and cache the URL.
+ */
+async function uploadToS3Cache(slug: string, hash: string, imageBuffer: Buffer): Promise<string> {
+  const cacheKey = getCacheKey(slug, hash);
+  
+  try {
+    const { url } = await storagePut(cacheKey, imageBuffer, "image/jpeg");
+    
+    // Save to memory cache
+    memoryCache.set(slug, {
+      url,
+      hash,
+      timestamp: Date.now(),
+    });
+    
+    console.log(`[OG-Image] Cached to S3: ${cacheKey} → ${url}`);
+    return url;
+  } catch (error) {
+    console.error("[OG-Image] Failed to upload to S3:", error);
+    // Return empty string to indicate cache failure (image will still be served directly)
+    return "";
+  }
+}
+
+/**
+ * Invalidate OG image cache for a specific restaurant slug.
+ * Called when restaurant updates visual fields (name, logo, coverImage).
+ */
+export function invalidateOGCache(slug: string): void {
+  const deleted = memoryCache.delete(slug);
+  if (deleted) {
+    console.log(`[OG-Image] Memory cache invalidated for slug: ${slug}`);
+  }
+  // Note: S3 cache is automatically invalidated by hash change.
+  // Old S3 files become orphaned but won't be served (hash won't match).
+  // They can be cleaned up periodically if needed.
+}
+
+/**
+ * Get the cached OG image URL for use in meta tags.
+ * Returns the S3 CDN URL if cached, or the dynamic endpoint URL as fallback.
+ */
+export function getOGImageUrl(slug: string, baseUrl: string): string {
+  const entry = memoryCache.get(slug);
+  if (entry && (Date.now() - entry.timestamp < MEMORY_CACHE_TTL)) {
+    return entry.url;
+  }
+  // Fallback to dynamic endpoint (will generate + cache on first access)
+  return `${baseUrl}/api/og-image/${slug}`;
 }
 
 // ─── SVG Overlay (with cover background) ────────────────────────────────────
@@ -321,8 +458,27 @@ export function registerOGImageRoute(app: Express): void {
         return;
       }
 
-      const imageBuffer = await composeOGImage(establishment as any);
+      const est = establishment as any;
+      const hash = computeVisualHash(est);
 
+      // 1. Check memory cache first
+      const cachedUrl = getFromMemoryCache(slug, hash);
+      if (cachedUrl) {
+        console.log(`[OG-Image] Memory cache HIT for ${slug} (hash: ${hash})`);
+        res.redirect(302, cachedUrl);
+        return;
+      }
+
+      // 2. Cache miss → generate image
+      console.log(`[OG-Image] Cache MISS for ${slug} (hash: ${hash}), generating...`);
+      const imageBuffer = await composeOGImage(est);
+
+      // 3. Upload to S3 in background (don't block response)
+      uploadToS3Cache(slug, hash, imageBuffer).catch((err) => {
+        console.error("[OG-Image] Background S3 upload failed:", err);
+      });
+
+      // 4. Return the generated image directly
       res.set({
         "Content-Type": "image/jpeg",
         "Cache-Control": `public, max-age=${CACHE_DURATION}, s-maxage=${CACHE_DURATION}`,
