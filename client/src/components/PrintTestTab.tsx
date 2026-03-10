@@ -1508,19 +1508,7 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
                   </Button>
                 </div>
               </div>
-              
-              {/* Status URL */}
-              <div className="space-y-2">
-                <Label className="text-xs font-medium text-muted-foreground">URL de Status (Healthcheck)</Label>
-                <div className="flex items-center gap-2">
-                  <code className="flex-1 bg-muted px-3 py-2 rounded-lg text-xs font-mono break-all">
-                    {statusUrl}
-                  </code>
-                  <Button size="icon" variant="outline" onClick={() => copyToClipboard(statusUrl!, 'URL Status')} className="h-8 w-8 shrink-0">
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
+
               
               {/* Ações */}
               <div className="flex gap-3 pt-2">
@@ -1554,64 +1542,8 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
         </SectionCard>
       </div>
 
-      {/* Coluna direita - 60% - Documentação e Eventos */}
+      {/* Coluna direita - 60% - Documentação */}
       <div className="w-full lg:flex-1 space-y-5">
-        {/* Eventos SSE */}
-        <SectionCard
-          title="Eventos SSE"
-          description="Eventos disponíveis no stream de dados"
-          icon={<ScrollText className="h-5 w-5 text-purple-600 dark:text-purple-400" />}
-          iconBg="bg-purple-100 dark:bg-purple-500/15"
-        >
-          <div className="space-y-2">
-            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/30 border border-border/30">
-              <div className="p-1.5 bg-green-100 dark:bg-green-500/15 rounded-lg">
-                <div className="h-2 w-2 rounded-full bg-green-500" />
-              </div>
-              <div>
-                <span className="text-sm font-medium font-mono">connected</span>
-                <p className="text-xs text-muted-foreground">Conexão estabelecida</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/30 border border-border/30">
-              <div className="p-1.5 bg-blue-100 dark:bg-blue-500/15 rounded-lg">
-                <div className="h-2 w-2 rounded-full bg-blue-500" />
-              </div>
-              <div>
-                <span className="text-sm font-medium font-mono">new_order</span>
-                <p className="text-xs text-muted-foreground">Novo pedido recebido</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/30 border border-border/30">
-              <div className="p-1.5 bg-purple-100 dark:bg-purple-500/15 rounded-lg">
-                <div className="h-2 w-2 rounded-full bg-purple-500" />
-              </div>
-              <div>
-                <span className="text-sm font-medium font-mono">print_order</span>
-                <p className="text-xs text-muted-foreground">Pedido para imprimir</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/30 border border-border/30">
-              <div className="p-1.5 bg-orange-100 dark:bg-orange-500/15 rounded-lg">
-                <div className="h-2 w-2 rounded-full bg-orange-500" />
-              </div>
-              <div>
-                <span className="text-sm font-medium font-mono">order_update</span>
-                <p className="text-xs text-muted-foreground">Atualização de pedido</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/30 border border-border/30">
-              <div className="p-1.5 bg-gray-100 dark:bg-gray-500/15 rounded-lg">
-                <div className="h-2 w-2 rounded-full bg-gray-400" />
-              </div>
-              <div>
-                <span className="text-sm font-medium font-mono">heartbeat</span>
-                <p className="text-xs text-muted-foreground">Keep-alive (a cada 30s)</p>
-              </div>
-            </div>
-          </div>
-        </SectionCard>
-
         {/* Documentação */}
         <SectionCard
           title="Documentação Rápida"
