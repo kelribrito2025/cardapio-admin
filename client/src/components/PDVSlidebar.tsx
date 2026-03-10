@@ -2297,7 +2297,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       return (
                         <div key={group.id} id={`pdv-complement-group-${group.id}`} className={`transition-all duration-300 rounded-xl border ${isGroupComplete ? 'border-red-200 dark:border-red-800' : 'border-border'}`}>
                           {/* Header do Grupo - Sticky */}
-                          <div className={`px-4 py-3 border-b transition-colors duration-300 sticky z-20 shadow-sm rounded-t-xl ${isGroupComplete ? 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800' : 'bg-muted/50 border-border'}`} style={{paddingTop: '8px', top: 0}}>
+                          <div className={`px-4 py-3 border-b transition-colors duration-300 sticky z-20 shadow-sm rounded-t-xl ${isGroupComplete ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`} style={{paddingTop: '8px', top: 0}}>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <h4 className={`font-semibold transition-colors duration-300 ${isGroupComplete ? 'text-red-600 dark:text-red-400' : 'text-foreground'}`}>{group.name}</h4>
