@@ -1495,19 +1495,7 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
                   </Button>
                 </div>
               </div>
-              
-              {/* SSE URL */}
-              <div className="space-y-2">
-                <Label className="text-xs font-medium text-muted-foreground">URL SSE (Stream de Pedidos)</Label>
-                <div className="flex items-center gap-2">
-                  <code className="flex-1 bg-muted px-3 py-2 rounded-lg text-xs font-mono break-all">
-                    {sseUrl}
-                  </code>
-                  <Button size="icon" variant="outline" onClick={() => copyToClipboard(sseUrl!, 'URL SSE')} className="h-8 w-8 shrink-0">
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
+
 
               
               {/* Ações */}
@@ -1554,11 +1542,11 @@ function PrinterApiKeySection({ establishmentId }: { establishmentId: number }) 
           <div className="space-y-3 text-sm text-muted-foreground">
             <div className="flex gap-3 items-start">
               <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">1</span>
-              <p>Gere uma API Key e copie a URL SSE.</p>
+              <p>Gere uma API Key para conectar o app de impressora.</p>
             </div>
             <div className="flex gap-3 items-start">
               <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">2</span>
-              <p>No app da impressora, conecte usando a URL SSE como EventSource.</p>
+              <p>No app da impressora, insira a API Key para conectar.</p>
             </div>
             <div className="flex gap-3 items-start">
               <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">3</span>

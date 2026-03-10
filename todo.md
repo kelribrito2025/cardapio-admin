@@ -8613,3 +8613,4 @@
 - [x] Padronizar aba Pagamento Online com SectionCards e layout em colunas
 - [x] Padronizar aba Integrações com SectionCards e layout em colunas
 - [x] Remover card Eventos SSE e URL de Status (Healthcheck) da aba Impressora e Teste > API (informações técnicas irrelevantes para o cliente)
+- [x] Remover URL SSE (Stream de Pedidos) da aba Impressora e Teste > API (informação técnica irrelevante para o cliente)
