@@ -473,6 +473,7 @@ export default function Configuracoes() {
 
   // Estado para rastrear campos salvos com sucesso (indicador visual)
   const [savedFields, setSavedFields] = useState<Set<string>>(new Set());
+  const [savingFields, setSavingFields] = useState<Set<string>>(new Set());
   const savedTimersRef = useRef<Record<string, NodeJS.Timeout>>({});
 
   // Marca campos como salvos e remove após 2s
@@ -495,8 +496,33 @@ export default function Configuracoes() {
     });
   }, []);
 
-  // Componente indicador de campo salvo
+  // Funções para marcar campos como "salvando" (spinner)
+  const markFieldsSaving = useCallback((fields: string[]) => {
+    setSavingFields(prev => {
+      const next = new Set(prev);
+      fields.forEach(f => next.add(f));
+      return next;
+    });
+  }, []);
+
+  const clearFieldsSaving = useCallback((fields: string[]) => {
+    setSavingFields(prev => {
+      const next = new Set(prev);
+      fields.forEach(f => next.delete(f));
+      return next;
+    });
+  }, []);
+
+  // Componente indicador de campo salvando/salvo
   const SavedCheck = ({ field }: { field: string }) => {
+    if (savingFields.has(field)) {
+      return (
+        <span className="inline-flex items-center gap-1 text-muted-foreground text-xs font-medium animate-in fade-in duration-200 ml-1.5">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          <span>Salvando</span>
+        </span>
+      );
+    }
     if (!savedFields.has(field)) return null;
     return (
       <span className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 text-xs font-medium animate-in fade-in slide-in-from-left-1 duration-300 ml-1.5">
@@ -521,10 +547,14 @@ export default function Configuracoes() {
       refetch();
       // Marcar campos salvos para indicador visual (excluir id)
       const fieldKeys = Object.keys(variables).filter(k => k !== 'id');
-      if (fieldKeys.length > 0) markFieldsSaved(fieldKeys);
+      if (fieldKeys.length > 0) {
+        clearFieldsSaving(fieldKeys);
+        markFieldsSaved(fieldKeys);
+      }
       toast.success("Configurações salvas com sucesso");
     },
     onError: (error) => {
+      setSavingFields(new Set());
       if (error.message.includes("link já está em uso")) {
         toast.error("Este link já está em uso por outro restaurante. Escolha outro.");
       } else {
@@ -537,6 +567,7 @@ export default function Configuracoes() {
     onSuccess: () => {
       setInitialDataLoaded(false);
       utils.establishment.get.invalidate();
+      clearFieldsSaving(['publicNote']);
       markFieldsSaved(['publicNote']);
       toast.success("Nota salva com sucesso! Ela ficará visível por 24 horas.");
     },
@@ -559,6 +590,7 @@ export default function Configuracoes() {
       setInitialBusinessHoursLoaded(false);
       refetchBusinessHours();
       utils.dashboard.onboardingChecklist.invalidate();
+      clearFieldsSaving(['businessHours']);
       markFieldsSaved(['businessHours']);
       toast.success("Horários de funcionamento salvos com sucesso");
     },
@@ -600,9 +632,10 @@ export default function Configuracoes() {
         fee: f.fee,
       })));
       setInitialNeighborhoodFeesLoaded(true);
+      clearFieldsSaving(['neighborhoodFees']);
       markFieldsSaved(['neighborhoodFees']);
     },
-    onError: () => toast.error("Erro ao salvar taxas por bairro"),
+    onError: () => { setSavingFields(new Set()); toast.error("Erro ao salvar taxas por bairro"); },
   });
   
   // Printer mutations
@@ -1005,6 +1038,8 @@ export default function Configuracoes() {
       toast.error("Crie o estabelecimento primeiro");
       return;
     }
+    const fieldKeys = Object.keys(fields);
+    markFieldsSaving(fieldKeys);
     updateMutation.mutate({ id: establishment.id, ...fields });
   };
 
@@ -1016,6 +1051,8 @@ export default function Configuracoes() {
   // Auto-save com debounce para campos de texto/numéricos
   const autoSaveFieldDebounced = useCallback((fields: Record<string, any>, debounceKey: string, delay = 800) => {
     if (!establishment) return;
+    // Mostrar spinner imediatamente
+    markFieldsSaving([debounceKey]);
     // Limpar timer anterior para esta chave
     if (debounceTimerRef.current[debounceKey]) {
       clearTimeout(debounceTimerRef.current[debounceKey]);
@@ -1024,11 +1061,12 @@ export default function Configuracoes() {
       updateMutation.mutate({ id: establishment.id, ...fields });
       delete debounceTimerRef.current[debounceKey];
     }, delay);
-  }, [establishment, updateMutation]);
+  }, [establishment, updateMutation, markFieldsSaving]);
 
   // Auto-save debounced para horários de funcionamento
   const autoSaveBusinessHours = useCallback((hours: typeof businessHours) => {
     if (!establishment?.id) return;
+    markFieldsSaving(['businessHours']);
     if (businessHoursDebounceRef.current) {
       clearTimeout(businessHoursDebounceRef.current);
     }
@@ -1044,11 +1082,12 @@ export default function Configuracoes() {
       });
       businessHoursDebounceRef.current = null;
     }, 800);
-  }, [establishment, saveBusinessHoursMutation]);
+  }, [establishment, saveBusinessHoursMutation, markFieldsSaving]);
 
   // Auto-save debounced para taxas por bairro
   const autoSaveNeighborhoodFees = useCallback((fees: typeof neighborhoodFees) => {
     if (!establishment?.id) return;
+    markFieldsSaving(['neighborhoodFees']);
     if (neighborhoodFeesDebounceRef.current) {
       clearTimeout(neighborhoodFeesDebounceRef.current);
     }
@@ -1065,7 +1104,7 @@ export default function Configuracoes() {
       });
       neighborhoodFeesDebounceRef.current = null;
     }, 1200);
-  }, [establishment, syncNeighborhoodFeesMutation]);
+  }, [establishment, syncNeighborhoodFeesMutation, markFieldsSaving]);
 
   // Cleanup debounce timers on unmount
   useEffect(() => {
@@ -1691,6 +1730,7 @@ export default function Configuracoes() {
                         setPublicNote(val);
                         if (val.trim() && establishment) {
                           // Debounce auto-save da nota
+                          markFieldsSaving(['publicNote']);
                           if (debounceTimerRef.current['publicNote']) clearTimeout(debounceTimerRef.current['publicNote']);
                           debounceTimerRef.current['publicNote'] = setTimeout(() => {
                             saveNoteMutation.mutate({ id: establishment.id, note: val.trim(), noteStyle, validityDays: noteValidityDays });
@@ -1735,6 +1775,7 @@ export default function Configuracoes() {
                         setShowSuggestions(false);
                         // Auto-save imediato ao selecionar sugestão
                         if (establishment) {
+                          markFieldsSaving(['publicNote']);
                           if (debounceTimerRef.current['publicNote']) clearTimeout(debounceTimerRef.current['publicNote']);
                           saveNoteMutation.mutate({ id: establishment.id, note: suggestion.trim(), noteStyle, validityDays: noteValidityDays });
                         }

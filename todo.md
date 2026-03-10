@@ -8628,4 +8628,4 @@
 - [x] Implementar auto-save com debounce na aba Estabelecimento (nome, endereço, WhatsApp, Instagram, link do cardápio, nota do restaurante)
 - [x] Adicionar indicador visual checkmark verde temporário ao lado de cada campo após auto-save confirmar sucesso
 - [x] Implementar auto-save com debounce na aba Conta e Segurança (dados do estabelecimento e do responsável)
-- [ ] Adicionar spinner animado durante o processo de salvamento (antes do checkmark verde) para feedback imediato em todas as abas com auto-save
+- [x] Adicionar spinner animado durante o processo de salvamento (antes do checkmark verde) para feedback imediato em todas as abas com auto-save

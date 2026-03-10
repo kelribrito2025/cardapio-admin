@@ -39,8 +39,9 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [twoFactorEmail, setTwoFactorEmail] = useState("");
   
-  // Estado para indicador visual de campos salvos
+  // Estado para indicador visual de campos salvos e em salvamento
   const [savedFields, setSavedFields] = useState<Set<string>>(new Set());
+  const [savingFields, setSavingFields] = useState<Set<string>>(new Set());
   const savedTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   
   // Refs para debounce
@@ -72,8 +73,33 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
     });
   }, []);
   
-  // Componente inline de indicador "Salvo"
+  // Funções para marcar campos como "salvando" (spinner)
+  const markFieldsSaving = useCallback((fields: string[]) => {
+    setSavingFields(prev => {
+      const next = new Set(prev);
+      fields.forEach(f => next.add(f));
+      return next;
+    });
+  }, []);
+
+  const clearFieldsSaving = useCallback((fields: string[]) => {
+    setSavingFields(prev => {
+      const next = new Set(prev);
+      fields.forEach(f => next.delete(f));
+      return next;
+    });
+  }, []);
+
+  // Componente inline de indicador "Salvando..." / "Salvo"
   const SavedCheck = ({ field }: { field: string }) => {
+    if (savingFields.has(field)) {
+      return (
+        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground font-medium ml-2 animate-in fade-in duration-200">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          Salvando
+        </span>
+      );
+    }
     if (!savedFields.has(field)) return null;
     return (
       <span className="inline-flex items-center gap-0.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium ml-2 animate-in fade-in duration-300">
@@ -93,6 +119,7 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
       if (variables.responsibleName !== undefined) fields.push("responsibleName");
       if (variables.responsiblePhone !== undefined) fields.push("responsiblePhone");
       if (fields.length === 0) fields.push("account");
+      clearFieldsSaving(fields);
       markFieldsSaved(fields);
       
       toast.success("Dados salvos com sucesso!");
@@ -102,6 +129,8 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
       await utils.establishment.get.invalidate();
     },
     onError: (error) => {
+      // Limpar spinner em caso de erro
+      setSavingFields(new Set());
       toast.error(error.message || "Erro ao atualizar dados da conta");
     },
   });
@@ -122,10 +151,12 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
   
   const toggleTwoFactorMutation = trpc.establishment.toggleTwoFactor.useMutation({
     onSuccess: () => {
+      clearFieldsSaving(["twoFactor", "twoFactorEmail"]);
       toast.success(twoFactorEnabled ? "Verificação em duas etapas ativada" : "Verificação em duas etapas desativada");
       markFieldsSaved(["twoFactor"]);
     },
     onError: (error) => {
+      clearFieldsSaving(["twoFactor", "twoFactorEmail"]);
       toast.error(error.message || "Erro ao alterar configuração de 2FA");
       setTwoFactorEnabled(!twoFactorEnabled);
     },
@@ -166,6 +197,9 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
       clearTimeout(debounceTimersRef.current[field]);
     }
     
+    // Mostrar spinner imediatamente ao começar a digitar
+    markFieldsSaving([field]);
+    
     debounceTimersRef.current[field] = setTimeout(() => {
       // Enviar apenas o campo alterado para evitar sobrescrever outros campos
       const payload: Record<string, unknown> = { establishmentId };
@@ -189,6 +223,9 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
     if (twoFactorEmailDebounceRef.current) {
       clearTimeout(twoFactorEmailDebounceRef.current);
     }
+    
+    // Mostrar spinner imediatamente
+    markFieldsSaving(["twoFactorEmail"]);
     
     twoFactorEmailDebounceRef.current = setTimeout(() => {
       toggleTwoFactorMutation.mutate({
@@ -227,6 +264,7 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
     if (!establishmentId) return;
     
     setTwoFactorEnabled(enabled);
+    markFieldsSaving(["twoFactor"]);
     toggleTwoFactorMutation.mutate({
       establishmentId,
       enabled,
