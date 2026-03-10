@@ -1010,7 +1010,7 @@ export default function MesasComandas() {
 
         {/* Grid de Mesas */}
         {!isLoading && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4">
             {filteredTables.map((table) => {
               // Status derivado baseado em itens no carrinho ou comanda
               const derivedStatus = getDerivedStatus(table);
@@ -1029,12 +1029,12 @@ export default function MesasComandas() {
                   className="relative"
                 >
                   {/* Botão ⋮ no canto superior direito */}
-                  <div className="absolute top-2 right-2 z-10">
+                  <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button
                           onClick={(e) => e.stopPropagation()}
-                          className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                          className="h-6 w-6 sm:h-7 sm:w-7 flex items-center justify-center rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
                         >
                           <MoreVertical className="h-4 w-4" />
                         </button>
@@ -1124,18 +1124,18 @@ export default function MesasComandas() {
                     }}
                     onClick={() => handleTableClick(table)}
                     className={cn(
-                      "w-full bg-card rounded-xl border border-border/50 p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
-                      "border-l-4 min-h-[120px]",
+                      "w-full bg-card rounded-xl border border-border/50 p-2.5 sm:p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
+                      "border-l-4 min-h-[90px] sm:min-h-[120px]",
                       statusConfig.borderColor,
                       isDragging && "opacity-50 scale-95",
                       isDropTarget && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50"
                     )}
                   >
-                    <div className="flex items-start justify-between" style={{ marginTop: "-5px" }}>
+                    <div className="flex items-start justify-between" style={{ marginTop: "-3px" }}>
                       <div>
-                        <span className="text-3xl font-bold text-foreground">{displayNumber}</span>
+                        <span className="text-xl sm:text-3xl font-bold text-foreground">{displayNumber}</span>
                         {/* Indicador de mesa combinada */}
-                        <div className="min-h-[20px]">
+                        <div className="min-h-[16px] sm:min-h-[20px]">
                           {isMergedTable ? (
                             <div className="group/merged relative w-fit">
                               <span className="text-xs text-blue-600 font-medium flex items-center gap-1 md:group-hover/merged:opacity-0 transition-opacity">
@@ -1183,14 +1183,14 @@ export default function MesasComandas() {
                       </div>
                       {/* Contador de tempo para mesas ocupadas */}
                       {hasItems && table.occupiedAt && (
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground mr-6">
+                        <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground mr-6">
                           <Clock className="h-3.5 w-3.5" />
                           <span>{formatDuration(table.occupiedAt)}</span>
                         </div>
                       )}
                       {/* Horário da reserva no topo (ao lado do ⋮) */}
                       {derivedStatus === "reserved" && !hasItems && table.reservedFor && (
-                        <div className="flex items-center gap-1 text-sm text-blue-600 font-semibold mr-6">
+                        <div className="flex items-center gap-1 text-xs sm:text-sm text-blue-600 font-semibold mr-6">
                           <Clock className="h-3.5 w-3.5" />
                           <span>{formatTime(table.reservedFor)}</span>
                         </div>
@@ -1199,7 +1199,7 @@ export default function MesasComandas() {
                     
                     {/* Informações da mesa ocupada */}
                     {hasItems && (
-                      <div className="space-y-1 text-sm text-muted-foreground">
+                      <div className="space-y-0.5 sm:space-y-1 text-xs sm:text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Receipt className="h-3.5 w-3.5" />
                           <span>{itemsCount} {itemsCount === 1 ? 'item' : 'itens'}</span>
@@ -1214,7 +1214,7 @@ export default function MesasComandas() {
 
                     {/* Informações da mesa reservada */}
                     {derivedStatus === "reserved" && !hasItems && (
-                         <div className="space-y-1 text-sm text-muted-foreground">
+                         <div className="space-y-0.5 sm:space-y-1 text-xs sm:text-sm text-muted-foreground">
                         {table.reservedName && (
                           <div className="flex items-center gap-1">
                             <UserRound className="h-3.5 w-3.5" />
