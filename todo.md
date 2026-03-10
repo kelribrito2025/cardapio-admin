@@ -8633,3 +8633,5 @@
 - [x] Atualizar modal de detalhes do item no PDV para seguir o mesmo modelo do menu público (grupo sticky no topo, seleção com círculos vermelhos em vez de checkboxes azuis, mesmo layout visual)
 - [x] Aplicar mesmas alterações visuais do modal de complementos na página /pdv (Frente de Caixa): grupo sticky, círculos vermelhos, controles +/-, fundo rosa
 - [x] Corrigir transparência do grupo sticky de complementos no PDV.tsx e PDVSlidebar.tsx (deve ter fundo sólido branco/opaco igual ao menu público)
+- [x] Corrigir espaçamentos do footer (botões +/- e Adicionar) no modal de detalhes do item no PDV.tsx e PDVSlidebar.tsx para igualar ao menu público
+- [x] Unificar o componente de complementos num único componente reutilizável (ComplementGroups) para PublicMenu, PDV e PDVSlidebar
