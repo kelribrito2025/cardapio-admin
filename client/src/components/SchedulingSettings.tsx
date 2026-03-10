@@ -1,19 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { trpc } from "@/lib/trpc";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { SectionCard } from "@/components/shared";
-import { CalendarClock, Clock, Timer, Calendar, Info, Save } from "lucide-react";
+import { CalendarClock, Clock, Timer, Calendar, Info } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export function SchedulingSettings() {
   const { data: config, isLoading } = trpc.scheduling.getConfig.useQuery();
+  const utils = trpc.useUtils();
   const updateConfig = trpc.scheduling.updateConfig.useMutation({
     onSuccess: () => {
-      toast.success("Configurações de agendamento salvas com sucesso!");
+      toast.success("Configurações de agendamento salvas!");
+      utils.scheduling.getConfig.invalidate();
     },
     onError: (err: any) => toast.error(err.message),
   });
@@ -24,6 +25,14 @@ export function SchedulingSettings() {
   const [interval, setIntervalVal] = useState(30);
   const [moveMinutes, setMoveMinutes] = useState(30);
 
+  // Track if initial load has happened to prevent auto-save on mount
+  const initialLoadDone = useRef(false);
+
+  // Debounce refs for sliders
+  const debounceMinAdvance = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debounceMaxDays = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debounceMoveMinutes = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     if (config) {
       setEnabled(config.schedulingEnabled);
@@ -31,17 +40,95 @@ export function SchedulingSettings() {
       setMaxDays(config.schedulingMaxDays);
       setIntervalVal(config.schedulingInterval);
       setMoveMinutes(config.schedulingMoveMinutes);
+      // Mark initial load as done after a short delay to avoid triggering auto-save
+      setTimeout(() => { initialLoadDone.current = true; }, 300);
     }
   }, [config]);
 
-  const handleSave = () => {
+  // Auto-save helper - saves all current values with an override for the changed field
+  const autoSave = useCallback((overrides: Record<string, any>) => {
+    if (!initialLoadDone.current) return;
     updateConfig.mutate({
-      schedulingEnabled: enabled,
+      schedulingEnabled: overrides.schedulingEnabled ?? enabled,
+      schedulingMinAdvance: overrides.schedulingMinAdvance ?? minAdvance,
+      schedulingMaxDays: overrides.schedulingMaxDays ?? maxDays,
+      schedulingInterval: overrides.schedulingInterval ?? interval,
+      schedulingMoveMinutes: overrides.schedulingMoveMinutes ?? moveMinutes,
+    });
+  }, [enabled, minAdvance, maxDays, interval, moveMinutes, updateConfig]);
+
+  // Toggle enabled - immediate save
+  const handleToggleEnabled = (val: boolean) => {
+    setEnabled(val);
+    if (!initialLoadDone.current) return;
+    updateConfig.mutate({
+      schedulingEnabled: val,
       schedulingMinAdvance: minAdvance,
       schedulingMaxDays: maxDays,
       schedulingInterval: interval,
       schedulingMoveMinutes: moveMinutes,
     });
+  };
+
+  // Interval buttons - immediate save
+  const handleIntervalChange = (val: number) => {
+    setIntervalVal(val);
+    if (!initialLoadDone.current) return;
+    updateConfig.mutate({
+      schedulingEnabled: enabled,
+      schedulingMinAdvance: minAdvance,
+      schedulingMaxDays: maxDays,
+      schedulingInterval: val,
+      schedulingMoveMinutes: moveMinutes,
+    });
+  };
+
+  // Slider: minAdvance - debounce 800ms
+  const handleMinAdvanceChange = ([v]: number[]) => {
+    setMinAdvance(v);
+    if (debounceMinAdvance.current) clearTimeout(debounceMinAdvance.current);
+    debounceMinAdvance.current = setTimeout(() => {
+      if (!initialLoadDone.current) return;
+      updateConfig.mutate({
+        schedulingEnabled: enabled,
+        schedulingMinAdvance: v,
+        schedulingMaxDays: maxDays,
+        schedulingInterval: interval,
+        schedulingMoveMinutes: moveMinutes,
+      });
+    }, 800);
+  };
+
+  // Slider: maxDays - debounce 800ms
+  const handleMaxDaysChange = ([v]: number[]) => {
+    setMaxDays(v);
+    if (debounceMaxDays.current) clearTimeout(debounceMaxDays.current);
+    debounceMaxDays.current = setTimeout(() => {
+      if (!initialLoadDone.current) return;
+      updateConfig.mutate({
+        schedulingEnabled: enabled,
+        schedulingMinAdvance: minAdvance,
+        schedulingMaxDays: v,
+        schedulingInterval: interval,
+        schedulingMoveMinutes: moveMinutes,
+      });
+    }, 800);
+  };
+
+  // Slider: moveMinutes - debounce 800ms
+  const handleMoveMinutesChange = ([v]: number[]) => {
+    setMoveMinutes(v);
+    if (debounceMoveMinutes.current) clearTimeout(debounceMoveMinutes.current);
+    debounceMoveMinutes.current = setTimeout(() => {
+      if (!initialLoadDone.current) return;
+      updateConfig.mutate({
+        schedulingEnabled: enabled,
+        schedulingMinAdvance: minAdvance,
+        schedulingMaxDays: maxDays,
+        schedulingInterval: interval,
+        schedulingMoveMinutes: v,
+      });
+    }, 800);
   };
 
   const formatMinutes = (mins: number) => {
@@ -86,7 +173,7 @@ export function SchedulingSettings() {
               </p>
             </div>
           </div>
-          <Switch checked={enabled} onCheckedChange={setEnabled} />
+          <Switch checked={enabled} onCheckedChange={handleToggleEnabled} />
         </div>
       </SectionCard>
 
@@ -113,7 +200,7 @@ export function SchedulingSettings() {
                 </div>
                 <Slider
                   value={[minAdvance]}
-                  onValueChange={([v]) => setMinAdvance(v)}
+                  onValueChange={handleMinAdvanceChange}
                   min={15}
                   max={480}
                   step={15}
@@ -137,7 +224,7 @@ export function SchedulingSettings() {
                 </div>
                 <Slider
                   value={[maxDays]}
-                  onValueChange={([v]) => setMaxDays(v)}
+                  onValueChange={handleMaxDaysChange}
                   min={1}
                   max={30}
                   step={1}
@@ -163,7 +250,7 @@ export function SchedulingSettings() {
                   <button
                     key={val}
                     type="button"
-                    onClick={() => setIntervalVal(val)}
+                    onClick={() => handleIntervalChange(val)}
                     className={cn(
                       "flex items-center gap-2 p-3 rounded-xl border-2 transition-all cursor-pointer",
                       interval === val
@@ -206,7 +293,7 @@ export function SchedulingSettings() {
               </div>
               <Slider
                 value={[moveMinutes]}
-                onValueChange={([v]) => setMoveMinutes(v)}
+                onValueChange={handleMoveMinutesChange}
                 min={5}
                 max={120}
                 step={5}
@@ -222,18 +309,6 @@ export function SchedulingSettings() {
           </SectionCard>
         </>
       )}
-
-      {/* Botão salvar */}
-      <div className="flex justify-center pt-2">
-        <Button
-          onClick={handleSave}
-          disabled={updateConfig.isPending}
-          className="flex-1 rounded-xl shadow-sm h-11 text-base font-semibold"
-        >
-          <Save className="h-4 w-4 mr-2" />
-          {updateConfig.isPending ? "Salvando..." : "Salvar Configurações de Agendamento"}
-        </Button>
-      </div>
     </div>
   );
 }

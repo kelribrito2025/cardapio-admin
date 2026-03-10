@@ -8624,3 +8624,4 @@
 - [x] PDV: Adicionar campo de filtro/pesquisa na seleção de bairros para buscar rapidamente
 - [x] PDV: Reduzir tamanho dos botões de seleção de bairro (padding, texto e radio button menores)
 - [x] PDV: Ajustar espaçamento do título "Selecione o Bairro" mais próximo do topo
+- [x] Implementar auto-save no Agendamento de Pedidos na aba Atendimento
