@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { SectionCard } from "@/components/shared";
 import { toast } from "sonner";
-import { Building2, User, Lock, Shield, Eye, EyeOff, Loader2, Save, Mail, Phone, FileText, KeyRound } from "lucide-react";
+import { Building2, User, Lock, Shield, Eye, EyeOff, Loader2, Mail, Phone, FileText, KeyRound, Check } from "lucide-react";
 
 interface AccountSecuritySectionProps {
   establishmentId: number;
@@ -39,16 +39,63 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [twoFactorEmail, setTwoFactorEmail] = useState("");
   
+  // Estado para indicador visual de campos salvos
+  const [savedFields, setSavedFields] = useState<Set<string>>(new Set());
+  const savedTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  
+  // Refs para debounce
+  const debounceTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const twoFactorEmailDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
   // Query para obter dados da conta
   const { data: accountInfo, isLoading: isLoadingAccount } = trpc.establishment.getAccountData.useQuery(
     { establishmentId },
     { enabled: !!establishmentId }
   );
   
+  // Função para marcar campos como salvos com indicador visual temporário
+  const markFieldsSaved = useCallback((fields: string[]) => {
+    setSavedFields(prev => {
+      const next = new Set(prev);
+      fields.forEach(f => next.add(f));
+      return next;
+    });
+    fields.forEach(field => {
+      if (savedTimersRef.current[field]) clearTimeout(savedTimersRef.current[field]);
+      savedTimersRef.current[field] = setTimeout(() => {
+        setSavedFields(prev => {
+          const next = new Set(prev);
+          next.delete(field);
+          return next;
+        });
+      }, 2000);
+    });
+  }, []);
+  
+  // Componente inline de indicador "Salvo"
+  const SavedCheck = ({ field }: { field: string }) => {
+    if (!savedFields.has(field)) return null;
+    return (
+      <span className="inline-flex items-center gap-0.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium ml-2 animate-in fade-in duration-300">
+        <Check className="h-3 w-3" />
+        Salvo
+      </span>
+    );
+  };
+  
   // Mutations
   const updateAccountMutation = trpc.establishment.updateAccountData.useMutation({
-    onSuccess: async () => {
-      toast.success("Dados da conta atualizados com sucesso!");
+    onSuccess: async (_data, variables) => {
+      // Determinar quais campos foram salvos com base nas variáveis
+      const fields: string[] = [];
+      if (variables.name !== undefined) fields.push("name");
+      if (variables.cnpj !== undefined) fields.push("cnpj");
+      if (variables.responsibleName !== undefined) fields.push("responsibleName");
+      if (variables.responsiblePhone !== undefined) fields.push("responsiblePhone");
+      if (fields.length === 0) fields.push("account");
+      markFieldsSaved(fields);
+      
+      toast.success("Dados salvos com sucesso!");
       await utils.auth.me.invalidate();
       await utils.auth.me.refetch();
       await utils.establishment.getAccountData.invalidate();
@@ -75,7 +122,8 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
   
   const toggleTwoFactorMutation = trpc.establishment.toggleTwoFactor.useMutation({
     onSuccess: () => {
-      toast.success(twoFactorEnabled ? "Verificação em duas etapas desativada" : "Verificação em duas etapas ativada");
+      toast.success(twoFactorEnabled ? "Verificação em duas etapas ativada" : "Verificação em duas etapas desativada");
+      markFieldsSaved(["twoFactor"]);
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao alterar configuração de 2FA");
@@ -98,18 +146,63 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
     }
   }, [accountInfo]);
   
-  // Handlers
-  const handleSaveAccountData = () => {
+  // Cleanup dos timers ao desmontar
+  useEffect(() => {
+    return () => {
+      Object.values(debounceTimersRef.current).forEach(t => clearTimeout(t));
+      Object.values(savedTimersRef.current).forEach(t => clearTimeout(t));
+      if (twoFactorEmailDebounceRef.current) clearTimeout(twoFactorEmailDebounceRef.current);
+    };
+  }, []);
+  
+  // Auto-save com debounce para campos da conta
+  const autoSaveAccountField = useCallback((field: string, value: string) => {
     if (!establishmentId) return;
     
-    updateAccountMutation.mutate({
-      establishmentId,
-      name: accountData.name,
-      email: accountData.email || null,
-      cnpj: accountData.cnpj || null,
-      responsibleName: accountData.responsibleName || null,
-      responsiblePhone: accountData.responsiblePhone || null,
-    });
+    // Não salvar name vazio (validação min 1 no servidor)
+    if (field === "name" && !value.trim()) return;
+    
+    if (debounceTimersRef.current[field]) {
+      clearTimeout(debounceTimersRef.current[field]);
+    }
+    
+    debounceTimersRef.current[field] = setTimeout(() => {
+      // Enviar apenas o campo alterado para evitar sobrescrever outros campos
+      const payload: Record<string, unknown> = { establishmentId };
+      if (field === "name") {
+        payload.name = value;
+      } else if (field === "cnpj") {
+        payload.cnpj = value || null;
+      } else if (field === "responsibleName") {
+        payload.responsibleName = value || null;
+      } else if (field === "responsiblePhone") {
+        payload.responsiblePhone = value || null;
+      }
+      updateAccountMutation.mutate(payload as any);
+    }, 800);
+  }, [establishmentId, updateAccountMutation]);
+  
+  // Auto-save para email de 2FA
+  const autoSaveTwoFactorEmail = useCallback((email: string) => {
+    if (!establishmentId) return;
+    
+    if (twoFactorEmailDebounceRef.current) {
+      clearTimeout(twoFactorEmailDebounceRef.current);
+    }
+    
+    twoFactorEmailDebounceRef.current = setTimeout(() => {
+      toggleTwoFactorMutation.mutate({
+        establishmentId,
+        enabled: twoFactorEnabled,
+        email: email || undefined,
+      });
+    }, 800);
+  }, [establishmentId, twoFactorEnabled, toggleTwoFactorMutation]);
+  
+  // Handlers com auto-save
+  const handleAccountFieldChange = (field: keyof typeof accountData, value: string) => {
+    setAccountData(prev => ({ ...prev, [field]: value }));
+    autoSaveAccountField(field, value);
   };
   
   const handleChangePassword = () => {
@@ -191,21 +284,27 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
         >
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">Nome do estabelecimento</Label>
+              <Label htmlFor="name" className="text-sm font-medium">
+                Nome do estabelecimento
+                <SavedCheck field="name" />
+              </Label>
               <Input
                 id="name"
                 value={accountData.name}
-                onChange={(e) => setAccountData({ ...accountData, name: e.target.value })}
+                onChange={(e) => handleAccountFieldChange("name", e.target.value)}
                 placeholder="Nome do seu estabelecimento"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="cnpj" className="text-sm font-medium">CNPJ</Label>
+              <Label htmlFor="cnpj" className="text-sm font-medium">
+                CNPJ
+                <SavedCheck field="cnpj" />
+              </Label>
               <Input
                 id="cnpj"
                 value={accountData.cnpj}
-                onChange={(e) => setAccountData({ ...accountData, cnpj: formatCNPJ(e.target.value) })}
+                onChange={(e) => handleAccountFieldChange("cnpj", formatCNPJ(e.target.value))}
                 placeholder="00.000.000/0000-00"
                 maxLength={18}
               />
@@ -237,41 +336,33 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
         >
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="responsibleName" className="text-sm font-medium">Nome do responsável</Label>
+              <Label htmlFor="responsibleName" className="text-sm font-medium">
+                Nome do responsável
+                <SavedCheck field="responsibleName" />
+              </Label>
               <Input
                 id="responsibleName"
                 value={accountData.responsibleName}
-                onChange={(e) => setAccountData({ ...accountData, responsibleName: e.target.value })}
+                onChange={(e) => handleAccountFieldChange("responsibleName", e.target.value)}
                 placeholder="Nome completo"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="responsiblePhone" className="text-sm font-medium">Celular do responsável</Label>
+              <Label htmlFor="responsiblePhone" className="text-sm font-medium">
+                Celular do responsável
+                <SavedCheck field="responsiblePhone" />
+              </Label>
               <Input
                 id="responsiblePhone"
                 value={accountData.responsiblePhone}
-                onChange={(e) => setAccountData({ ...accountData, responsiblePhone: formatPhone(e.target.value) })}
+                onChange={(e) => handleAccountFieldChange("responsiblePhone", formatPhone(e.target.value))}
                 placeholder="(00) 00000-0000"
                 maxLength={15}
               />
             </div>
           </div>
         </SectionCard>
-
-        {/* Botão Salvar dados */}
-        <Button 
-          onClick={handleSaveAccountData}
-          disabled={updateAccountMutation.isPending}
-          className="w-full rounded-xl"
-        >
-          {updateAccountMutation.isPending ? (
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-          ) : (
-            <Save className="h-4 w-4 mr-2" />
-          )}
-          Salvar dados da conta
-        </Button>
       </div>
 
       {/* Coluna direita - 60% - Segurança */}
@@ -404,6 +495,7 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
                 <div className="space-y-0.5">
                   <Label className="text-sm font-medium">
                     {twoFactorEnabled ? "Ativado" : "Desativado"}
+                    <SavedCheck field="twoFactor" />
                   </Label>
                   <p className="text-xs text-muted-foreground">
                     {twoFactorEnabled 
@@ -422,12 +514,18 @@ export function AccountSecuritySection({ establishmentId }: AccountSecuritySecti
             
             {twoFactorEnabled && (
               <div className="space-y-2 pt-2">
-                <Label htmlFor="twoFactorEmail" className="text-sm font-medium">E-mail para verificação</Label>
+                <Label htmlFor="twoFactorEmail" className="text-sm font-medium">
+                  E-mail para verificação
+                  <SavedCheck field="twoFactorEmail" />
+                </Label>
                 <Input
                   id="twoFactorEmail"
                   type="email"
                   value={twoFactorEmail}
-                  onChange={(e) => setTwoFactorEmail(e.target.value)}
+                  onChange={(e) => {
+                    setTwoFactorEmail(e.target.value);
+                    autoSaveTwoFactorEmail(e.target.value);
+                  }}
                   placeholder="email@exemplo.com"
                 />
                 <p className="text-xs text-muted-foreground">
