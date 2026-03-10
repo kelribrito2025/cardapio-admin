@@ -1,0 +1,40 @@
+{
+  "query": "SHOW TABLES LIKE '%item%'; SHOW TABLES LIKE '%complement%'; SHOW TABLES LIKE '%product%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SHOW TABLES LIKE '%item%'; SHOW TABLES LIKE '%complement%'; SHOW TABLES LIKE '%product%';",
+  "rows": [
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2 (%item%)": "comboGroupItems"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2 (%item%)": "complementItems"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2 (%item%)": "orderItems"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2 (%item%)": "stockItems"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2 (%item%)": "tabItems"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2 (%item%)": "Tables_in_enmWmXpAt34diouyKU4TE2 (%complement%)"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2 (%item%)": "complementGroups"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2 (%item%)": "complementItems"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2 (%item%)": "Tables_in_enmWmXpAt34diouyKU4TE2 (%product%)"
+    },
+    {
+      "Tables_in_enmWmXpAt34diouyKU4TE2 (%item%)": "products"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_enmWmXpAt34diouyKU4TE2 (%item%)\ncomboGroupItems\ncomplementItems\norderItems\nstockItems\ntabItems\nTables_in_enmWmXpAt34diouyKU4TE2 (%complement%)\ncomplementGroups\ncomplementItems\nTables_in_enmWmXpAt34diouyKU4TE2 (%product%)\nproducts\n",
+  "stderr": "",
+  "execution_time_ms": 69
+}

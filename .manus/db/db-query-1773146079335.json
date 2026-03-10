@@ -1,0 +1,60 @@
+{
+  "query": "SELECT p.id, p.name, COUNT(cg.id) as groups_count FROM products p JOIN complementGroups cg ON cg.productId = p.id GROUP BY p.id, p.name HAVING COUNT(cg.id) > 0 LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, COUNT(cg.id) as groups_count FROM products p JOIN complementGroups cg ON cg.productId = p.id GROUP BY p.id, p.name HAVING COUNT(cg.id) > 0 LIMIT 10;",
+  "rows": [
+    {
+      "id": "150024",
+      "name": "Big frango",
+      "groups_count": "2"
+    },
+    {
+      "id": "560041",
+      "name": "450ml - Consumo na loja",
+      "groups_count": "6"
+    },
+    {
+      "id": "680015",
+      "name": "Chopp",
+      "groups_count": "1"
+    },
+    {
+      "id": "680065",
+      "name": "Juriti",
+      "groups_count": "2"
+    },
+    {
+      "id": "680071",
+      "name": "Periquito",
+      "groups_count": "2"
+    },
+    {
+      "id": "150079",
+      "name": "Refrigerante 600 ml",
+      "groups_count": "1"
+    },
+    {
+      "id": "180018",
+      "name": "Açai zero 500ml",
+      "groups_count": "5"
+    },
+    {
+      "id": "680077",
+      "name": "Maguffin",
+      "groups_count": "2"
+    },
+    {
+      "id": "300012",
+      "name": "Prato Econômico  (Médio)",
+      "groups_count": "3"
+    },
+    {
+      "id": "590026",
+      "name": "300 ml",
+      "groups_count": "5"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tgroups_count\n150024\tBig frango\t2\n560041\t450ml - Consumo na loja\t6\n680015\tChopp\t1\n680065\tJuriti\t2\n680071\tPeriquito\t2\n150079\tRefrigerante 600 ml\t1\n180018\tAçai zero 500ml\t5\n680077\tMaguffin\t2\n300012\tPrato Econômico  (Médio)\t3\n590026\t300 ml\t5\n",
+  "stderr": "",
+  "execution_time_ms": 70
+}

@@ -1,0 +1,60 @@
+{
+  "query": "SELECT p.id, p.name, p.establishmentId FROM products p JOIN complementGroups cg ON cg.productId = p.id WHERE p.establishmentId = 30001 GROUP BY p.id, p.name, p.establishmentId HAVING COUNT(cg.id) > 0 LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.establishmentId FROM products p JOIN complementGroups cg ON cg.productId = p.id WHERE p.establishmentId = 30001 GROUP BY p.id, p.name, p.establishmentId HAVING COUNT(cg.id) > 0 LIMIT 10;",
+  "rows": [
+    {
+      "id": "120102",
+      "name": "Bebidas quentes",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "120063",
+      "name": "HARUMAKI (Rolinho primavera)",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "120085",
+      "name": "Caipirinhas",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "120050",
+      "name": "Yakissoba Individual",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "120094",
+      "name": "Cervejas",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "120077",
+      "name": "Sucos da fruta",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "120092",
+      "name": "Yakissoba P/ 2 Pessoas",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "120016",
+      "name": "EBITEN",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "120100",
+      "name": "Água mineral",
+      "establishmentId": "30001"
+    },
+    {
+      "id": "120093",
+      "name": "Caipvodkas",
+      "establishmentId": "30001"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\testablishmentId\n120102\tBebidas quentes\t30001\n120063\tHARUMAKI (Rolinho primavera)\t30001\n120085\tCaipirinhas\t30001\n120050\tYakissoba Individual\t30001\n120094\tCervejas\t30001\n120077\tSucos da fruta\t30001\n120092\tYakissoba P/ 2 Pessoas\t30001\n120016\tEBITEN\t30001\n120100\tÁgua mineral\t30001\n120093\tCaipvodkas\t30001\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}
