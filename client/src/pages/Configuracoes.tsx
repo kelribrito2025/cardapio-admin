@@ -73,7 +73,7 @@ import {
   StickyNote,
   CalendarClock,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -965,6 +965,74 @@ export default function Configuracoes() {
     updateMutation.mutate({ id: establishment.id, ...fields });
   };
 
+  // Debounce refs para auto-save de campos de texto/numéricos
+  const debounceTimerRef = useRef<Record<string, NodeJS.Timeout>>({});
+  const businessHoursDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const neighborhoodFeesDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto-save com debounce para campos de texto/numéricos
+  const autoSaveFieldDebounced = useCallback((fields: Record<string, any>, debounceKey: string, delay = 800) => {
+    if (!establishment) return;
+    // Limpar timer anterior para esta chave
+    if (debounceTimerRef.current[debounceKey]) {
+      clearTimeout(debounceTimerRef.current[debounceKey]);
+    }
+    debounceTimerRef.current[debounceKey] = setTimeout(() => {
+      updateMutation.mutate({ id: establishment.id, ...fields });
+      delete debounceTimerRef.current[debounceKey];
+    }, delay);
+  }, [establishment, updateMutation]);
+
+  // Auto-save debounced para horários de funcionamento
+  const autoSaveBusinessHours = useCallback((hours: typeof businessHours) => {
+    if (!establishment?.id) return;
+    if (businessHoursDebounceRef.current) {
+      clearTimeout(businessHoursDebounceRef.current);
+    }
+    businessHoursDebounceRef.current = setTimeout(() => {
+      saveBusinessHoursMutation.mutate({
+        establishmentId: establishment.id,
+        hours: hours.map(h => ({
+          dayOfWeek: h.dayOfWeek,
+          isActive: h.isActive,
+          openTime: h.openTime,
+          closeTime: h.closeTime,
+        })),
+      });
+      businessHoursDebounceRef.current = null;
+    }, 800);
+  }, [establishment, saveBusinessHoursMutation]);
+
+  // Auto-save debounced para taxas por bairro
+  const autoSaveNeighborhoodFees = useCallback((fees: typeof neighborhoodFees) => {
+    if (!establishment?.id) return;
+    if (neighborhoodFeesDebounceRef.current) {
+      clearTimeout(neighborhoodFeesDebounceRef.current);
+    }
+    neighborhoodFeesDebounceRef.current = setTimeout(() => {
+      syncNeighborhoodFeesMutation.mutate({
+        establishmentId: establishment.id,
+        fees: fees
+          .filter(f => f.neighborhood.trim())
+          .map(f => ({
+            id: f.id,
+            neighborhood: f.neighborhood,
+            fee: f.fee,
+          })),
+      });
+      neighborhoodFeesDebounceRef.current = null;
+    }, 1200);
+  }, [establishment, syncNeighborhoodFeesMutation]);
+
+  // Cleanup debounce timers on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(debounceTimerRef.current).forEach(clearTimeout);
+      if (businessHoursDebounceRef.current) clearTimeout(businessHoursDebounceRef.current);
+      if (neighborhoodFeesDebounceRef.current) clearTimeout(neighborhoodFeesDebounceRef.current);
+    };
+  }, []);
+
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   // Get full address
@@ -1850,7 +1918,7 @@ export default function Configuracoes() {
                       <Input
                         type="number"
                         value={deliveryTimeMin}
-                        onChange={(e) => setDeliveryTimeMin(parseInt(e.target.value) || 0)}
+                        onChange={(e) => { const val = parseInt(e.target.value) || 0; setDeliveryTimeMin(val); autoSaveFieldDebounced({ deliveryTimeMin: val }, 'deliveryTimeMin'); }}
                         className="flex-1 h-9 rounded-xl text-sm text-center"
                         min={0}
                       />
@@ -1858,7 +1926,7 @@ export default function Configuracoes() {
                       <Input
                         type="number"
                         value={deliveryTimeMax}
-                        onChange={(e) => setDeliveryTimeMax(parseInt(e.target.value) || 0)}
+                        onChange={(e) => { const val = parseInt(e.target.value) || 0; setDeliveryTimeMax(val); autoSaveFieldDebounced({ deliveryTimeMax: val }, 'deliveryTimeMax'); }}
                         className="flex-1 h-9 rounded-xl text-sm text-center"
                         min={0}
                       />
@@ -1888,7 +1956,7 @@ export default function Configuracoes() {
                       <Input
                         type="number"
                         value={minimumOrderValue}
-                        onChange={(e) => setMinimumOrderValue(e.target.value)}
+                        onChange={(e) => { const val = e.target.value; setMinimumOrderValue(val); autoSaveFieldDebounced({ minimumOrderValue: val }, 'minimumOrderValue'); }}
                         className="flex-1 h-9 rounded-xl text-sm"
                         min={0}
                         step="0.01"
@@ -1976,7 +2044,7 @@ export default function Configuracoes() {
                   <Input
                     id="pixKey"
                     value={pixKey}
-                    onChange={(e) => setPixKey(e.target.value)}
+                    onChange={(e) => { const val = e.target.value; setPixKey(val); autoSaveFieldDebounced({ pixKey: val || null }, 'pixKey'); }}
                     placeholder="CPF, CNPJ, email, telefone ou chave aleatória"
                     className="rounded-xl h-9"
                   />
@@ -2060,7 +2128,7 @@ export default function Configuracoes() {
                       <Input
                         type="number"
                         value={deliveryFeeFixed}
-                        onChange={(e) => setDeliveryFeeFixed(e.target.value)}
+                        onChange={(e) => { const val = e.target.value; setDeliveryFeeFixed(val); autoSaveFieldDebounced({ deliveryFeeFixed: val }, 'deliveryFeeFixed'); }}
                         className="w-24 h-9 rounded-xl text-sm"
                         min={0}
                         step="0.01"
@@ -2101,6 +2169,7 @@ export default function Configuracoes() {
                               const updated = [...neighborhoodFees];
                               updated[index].neighborhood = e.target.value;
                               setNeighborhoodFees(updated);
+                              autoSaveNeighborhoodFees(updated);
                             }}
                             className="flex-1 h-8 rounded-lg text-sm"
                           />
@@ -2114,6 +2183,7 @@ export default function Configuracoes() {
                                 const updated = [...neighborhoodFees];
                                 updated[index].fee = e.target.value;
                                 setNeighborhoodFees(updated);
+                                autoSaveNeighborhoodFees(updated);
                               }}
                               className="w-20 h-8 rounded-lg text-sm"
                               min={0}
@@ -2125,7 +2195,9 @@ export default function Configuracoes() {
                             variant="ghost"
                             size="icon"
                             onClick={() => {
-                              setNeighborhoodFees(neighborhoodFees.filter((_, i) => i !== index));
+                              const updated = neighborhoodFees.filter((_, i) => i !== index);
+                              setNeighborhoodFees(updated);
+                              autoSaveNeighborhoodFees(updated);
                             }}
                             className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg"
                           >
@@ -2159,7 +2231,7 @@ export default function Configuracoes() {
                 </div>
                 <select
                   value={timezone}
-                  onChange={(e) => setTimezone(e.target.value)}
+                  onChange={(e) => { const val = e.target.value; setTimezone(val); autoSaveField({ timezone: val }); }}
                   className="h-9 rounded-xl border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   {Object.entries(
@@ -2204,9 +2276,11 @@ export default function Configuracoes() {
                           type="checkbox"
                           checked={hourData?.isActive || false}
                           onChange={(e) => {
-                            setBusinessHours(prev => prev.map(h =>
+                            const newHours = businessHours.map(h =>
                               h.dayOfWeek === day ? { ...h, isActive: e.target.checked } : h
-                            ));
+                            );
+                            setBusinessHours(newHours);
+                            autoSaveBusinessHours(newHours);
                           }}
                           className="sr-only peer"
                         />
@@ -2226,9 +2300,11 @@ export default function Configuracoes() {
                             type="time"
                             value={hourData.openTime}
                             onChange={(e) => {
-                              setBusinessHours(prev => prev.map(h =>
+                              const newHours = businessHours.map(h =>
                                 h.dayOfWeek === day ? { ...h, openTime: e.target.value } : h
-                              ));
+                              );
+                              setBusinessHours(newHours);
+                              autoSaveBusinessHours(newHours);
                             }}
                             className="w-[100px] h-8 rounded-lg text-sm"
                           />
@@ -2237,9 +2313,11 @@ export default function Configuracoes() {
                             type="time"
                             value={hourData.closeTime}
                             onChange={(e) => {
-                              setBusinessHours(prev => prev.map(h =>
+                              const newHours = businessHours.map(h =>
                                 h.dayOfWeek === day ? { ...h, closeTime: e.target.value } : h
-                              ));
+                              );
+                              setBusinessHours(newHours);
+                              autoSaveBusinessHours(newHours);
                             }}
                             className="w-[100px] h-8 rounded-lg text-sm"
                           />
@@ -2257,34 +2335,7 @@ export default function Configuracoes() {
           </SectionCard>
           </div>
 
-          {/* Botão único Salvar tudo */}
-          <div className="flex gap-3 pt-2">
-            <Button
-              onClick={() => {
-                handleSaveServiceSettings();
-                if (establishment?.id) {
-                  updateMutation.mutate({
-                    id: establishment.id,
-                    timezone,
-                  });
-                }
-                saveBusinessHoursMutation.mutate({
-                  establishmentId: establishment?.id || 0,
-                  hours: businessHours.map(h => ({
-                    dayOfWeek: h.dayOfWeek,
-                    isActive: h.isActive,
-                    openTime: h.openTime,
-                    closeTime: h.closeTime,
-                  })),
-                });
-              }}
-              disabled={isPending || saveBusinessHoursMutation.isPending}
-              className="flex-1 rounded-xl shadow-sm h-11 text-base font-semibold"
-            >
-              <Save className="h-4 w-4 mr-2" />
-              {isPending || saveBusinessHoursMutation.isPending ? "Salvando..." : "Salvar todas as configurações"}
-            </Button>
-          </div>
+
           </div>
 
             </div>

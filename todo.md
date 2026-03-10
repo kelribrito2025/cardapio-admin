@@ -8614,3 +8614,8 @@
 - [x] Padronizar aba Integrações com SectionCards e layout em colunas
 - [x] Remover card Eventos SSE e URL de Status (Healthcheck) da aba Impressora e Teste > API (informações técnicas irrelevantes para o cliente)
 - [x] Remover URL SSE (Stream de Pedidos) da aba Impressora e Teste > API (informação técnica irrelevante para o cliente)
+- [x] Padronizar aba Estabelecimento com SectionCards e layout em colunas para completar uniformização (já estava padronizada)
+- [x] Auto-save com debounce nos campos de texto da aba Atendimento (chave Pix, valor taxa fixa, tempos entrega, pedido mínimo)
+- [x] Auto-save nos horários de funcionamento e fuso horário
+- [x] Auto-save nas taxas por bairro
+- [x] Remover botão "Salvar todas as configurações" da aba Atendimento (redundante após auto-save)
