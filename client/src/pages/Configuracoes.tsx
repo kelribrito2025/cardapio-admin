@@ -88,6 +88,7 @@ import { SettingsSidebar, SettingsSection } from "@/components/SettingsSidebar";
 import { SchedulingSettings } from "@/components/SchedulingSettings";
 import { AccountSecuritySection } from "@/components/AccountSecuritySection";
 import { OnlinePaymentTab } from "@/components/OnlinePaymentTab";
+import { TimeInput } from "@/components/TimeInput";
 import { SUPPORTED_TIMEZONES } from "../../../shared/const";
 
 export default function Configuracoes() {
@@ -2390,30 +2391,44 @@ export default function Configuracoes() {
                       
                       {hourData?.isActive && (
                         <div className="flex items-center gap-2 ml-auto">
-                          <Input
-                            type="time"
+                          <TimeInput
                             value={hourData.openTime}
-                            onChange={(e) => {
-                              const newHours = businessHours.map(h =>
-                                h.dayOfWeek === day ? { ...h, openTime: e.target.value } : h
+                            onChange={(val) => {
+                              let newHours = businessHours.map(h =>
+                                h.dayOfWeek === day ? { ...h, openTime: val } : h
                               );
+                              // Replicar horário de segunda-feira para dias vazios
+                              if (day === 1 && val) {
+                                newHours = newHours.map(h => {
+                                  if (h.dayOfWeek !== 1 && h.isActive && !h.openTime) {
+                                    return { ...h, openTime: val };
+                                  }
+                                  return h;
+                                });
+                              }
                               setBusinessHours(newHours);
                               autoSaveBusinessHours(newHours);
                             }}
-                            className="w-[100px] h-8 rounded-lg text-sm"
                           />
                           <span className="text-xs text-muted-foreground font-medium">até</span>
-                          <Input
-                            type="time"
+                          <TimeInput
                             value={hourData.closeTime}
-                            onChange={(e) => {
-                              const newHours = businessHours.map(h =>
-                                h.dayOfWeek === day ? { ...h, closeTime: e.target.value } : h
+                            onChange={(val) => {
+                              let newHours = businessHours.map(h =>
+                                h.dayOfWeek === day ? { ...h, closeTime: val } : h
                               );
+                              // Replicar horário de segunda-feira para dias vazios
+                              if (day === 1 && val) {
+                                newHours = newHours.map(h => {
+                                  if (h.dayOfWeek !== 1 && h.isActive && !h.closeTime) {
+                                    return { ...h, closeTime: val };
+                                  }
+                                  return h;
+                                });
+                              }
                               setBusinessHours(newHours);
                               autoSaveBusinessHours(newHours);
                             }}
-                            className="w-[100px] h-8 rounded-lg text-sm"
                           />
                         </div>
                       )}

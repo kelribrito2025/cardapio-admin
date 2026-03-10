@@ -8642,3 +8642,5 @@
 - [x] Remover efeito de parallax da imagem do modal de detalhes do item e restaurar apenas o shrink original nos 3 modais (PublicMenu, PDV, PDVSlidebar)
 - [x] Corrigir heatmap do card "Acessos ao Cardápio" para que as horas comecem às 8h e terminem às 7h (do dia seguinte), em vez de 0h-23h
 - [x] Corrigir bug nos Horários de Funcionamento: ao preencher horário de um dia, o horário do dia anterior é zerado/resetado
+- [x] Implementar autoformatação de horário com máscara HH:MM nos campos de horário de funcionamento (aceitar apenas números, formatar automaticamente, validar 00:00-23:59)
+- [x] Implementar replicação automática do horário de segunda-feira para os outros dias vazios ao preencher segunda
