@@ -285,6 +285,7 @@ export default function PDV() {
   const [changeAmount, setChangeAmount] = useState("");
   const [showDeliverySidebar, setShowDeliverySidebar] = useState(false);
   const [showNeighborhoodSelector, setShowNeighborhoodSelector] = useState(false);
+  const [pdvNeighborhoodSearch, setPdvNeighborhoodSearch] = useState("");
   const [selectedNeighborhoodFee, setSelectedNeighborhoodFee] = useState<{id: number; neighborhood: string; fee: string} | null>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -1980,39 +1981,66 @@ export default function PDV() {
             {/* Se for entrega por bairro e ainda não selecionou bairro, mostra apenas seleção de bairro */}
             {establishment?.deliveryFeeType === "byNeighborhood" && !selectedNeighborhoodFee ? (
               // Tela de seleção de bairro ocupando toda a sidebar
-              <div className="space-y-4">
-                <div className="text-center py-4">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
-                    <MapPin className="h-8 w-8 text-red-500" />
+              <div className="space-y-3 -mt-2">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-9 h-9 rounded-full bg-red-100 flex-shrink-0">
+                    <MapPin className="h-4.5 w-4.5 text-red-500" />
                   </div>
-                  <h3 className="text-lg font-bold text-foreground">Selecione o Bairro</h3>
-                  <p className="text-sm text-muted-foreground mt-1">Escolha o bairro para calcular a taxa de entrega</p>
+                  <div>
+                    <h3 className="text-base font-bold text-foreground">Selecione o Bairro</h3>
+                    <p className="text-xs text-muted-foreground">Escolha o bairro para calcular a taxa de entrega</p>
+                  </div>
                 </div>
+
+                {/* Campo de pesquisa */}
+                {neighborhoodFees && neighborhoodFees.length > 3 && (
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Buscar bairro..."
+                      value={pdvNeighborhoodSearch}
+                      onChange={(e) => setPdvNeighborhoodSearch(e.target.value)}
+                      className="h-9 pl-9 rounded-xl text-sm"
+                    />
+                  </div>
+                )}
                 
-                <div className="space-y-2">
+                <div className="space-y-1.5 max-h-[calc(100vh-280px)] overflow-y-auto">
                   {neighborhoodFees && neighborhoodFees.length > 0 ? (
-                    neighborhoodFees.map((fee) => (
-                      <button
-                        key={fee.id}
-                        onClick={() => {
-                          setSelectedNeighborhoodFee(fee);
-                          setDeliveryAddress({...deliveryAddress, neighborhood: fee.neighborhood});
-                        }}
-                        className="w-full flex items-center justify-between p-4 rounded-xl border-2 border-border bg-card hover:border-red-300 hover:bg-red-50/50 dark:hover:bg-red-950/20 transition-all"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-6 h-6 rounded-full border-2 border-border flex items-center justify-center">
-                          </div>
-                          <span className="font-medium text-foreground text-base">{fee.neighborhood}</span>
+                    (() => {
+                      const filtered = neighborhoodFees.filter((fee) =>
+                        !pdvNeighborhoodSearch || fee.neighborhood.toLowerCase().includes(pdvNeighborhoodSearch.toLowerCase())
+                      );
+                      return filtered.length > 0 ? (
+                        filtered.map((fee) => (
+                          <button
+                            key={fee.id}
+                            onClick={() => {
+                              setSelectedNeighborhoodFee(fee);
+                              setDeliveryAddress({...deliveryAddress, neighborhood: fee.neighborhood});
+                              setPdvNeighborhoodSearch("");
+                            }}
+                            className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg border border-border bg-card hover:border-red-300 hover:bg-red-50/50 dark:hover:bg-red-950/20 transition-all"
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="w-4 h-4 rounded-full border-2 border-muted-foreground/40 flex-shrink-0">
+                              </div>
+                              <span className="font-medium text-foreground text-sm">{fee.neighborhood}</span>
+                            </div>
+                            <span className="font-semibold text-red-500 text-sm">
+                              R$ {parseFloat(fee.fee).toFixed(2).replace(".", ",")}
+                            </span>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="text-center py-4">
+                          <p className="text-sm text-muted-foreground">Nenhum bairro encontrado para "{pdvNeighborhoodSearch}"</p>
                         </div>
-                        <span className="font-bold text-red-500 text-base">
-                          R$ {parseFloat(fee.fee).toFixed(2).replace(".", ",")}
-                        </span>
-                      </button>
-                    ))
+                      );
+                    })()
                   ) : (
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground">Nenhum bairro cadastrado</p>
+                    <div className="text-center py-6">
+                      <p className="text-muted-foreground text-sm">Nenhum bairro cadastrado</p>
                     </div>
                   )}
                 </div>
