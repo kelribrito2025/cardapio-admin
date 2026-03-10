@@ -8669,3 +8669,8 @@
 - [x] Invalidar cache automaticamente ao atualizar capa, logo ou nome do restaurante
 - [x] Escrever testes para o fluxo de cache OG
 - [x] Reduzir tamanho dos cards de mesas na versão desktop em 20%
+- [x] Redesign imagem OG: corrigir logo circular (não quadrado atrás do círculo)
+- [x] Redesign imagem OG: remover barra vermelha pesada, usar barra escura sutil com linha vermelha fina
+- [x] Redesign imagem OG: avaliação mais destacada (★ 4.7 • 287 avaliações)
+- [x] Redesign imagem OG: adicionar CTA "Peça online agora!" na parte inferior
+- [x] Redesign imagem OG: layout premium com gradiente escuro na parte inferior

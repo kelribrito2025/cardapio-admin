@@ -2,8 +2,8 @@
  * Dynamic OG Image Generator with S3 Cache
  * 
  * Generates a 1200x630 Open Graph image for /menu/:slug pages.
- * Composition: cover image as background + logo overlay + restaurant name + service info.
- * Uses sharp for image processing with SVG overlay for text/layout.
+ * Design: cover as full background + dark gradient bottom + circular logo + 
+ *         restaurant name + location + rating + CTA "Peça online agora!"
  * 
  * Cache strategy:
  * - Images are cached in S3 under og-cache/{slug}-{hash}.jpg
@@ -23,7 +23,7 @@ import { storagePut } from "./storage";
 
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
-const CACHE_DURATION = 60 * 60 * 24 * 7; // 7 days (CDN cache, since we invalidate on change)
+const CACHE_DURATION = 60 * 60 * 24 * 7; // 7 days
 const FALLBACK_IMAGE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663232987165/enmWmXpAt34diouyKU4TE2/og-fallback-restaurant-59Pg6eq6bi2fQgZCkkFtJp.png";
 const OG_CACHE_PREFIX = "og-cache";
 
@@ -51,7 +51,7 @@ function escapeXml(str: string): string {
 
 function truncate(str: string, maxLen: number): string {
   if (str.length <= maxLen) return str;
-  return str.substring(0, maxLen - 1) + "…";
+  return str.substring(0, maxLen - 1) + "\u2026";
 }
 
 function buildServiceBadges(est: {
@@ -68,7 +68,7 @@ function buildServiceBadges(est: {
 
 /**
  * Compute a hash of the visual data that affects the OG image.
- * When any of these fields change, the hash changes → cache miss → new image generated.
+ * Version bump (v:3) forces cache invalidation after redesign.
  */
 function computeVisualHash(est: {
   name: string;
@@ -97,6 +97,7 @@ function computeVisualHash(est: {
     di: est.allowsDineIn,
     tmin: est.deliveryTimeMin,
     tmax: est.deliveryTimeMax,
+    v: 3, // bump to invalidate old cached images
   });
   return crypto.createHash("md5").update(data).digest("hex").substring(0, 12);
 }
@@ -124,91 +125,70 @@ async function processCoverImage(buffer: Buffer): Promise<Buffer> {
     .toBuffer();
 }
 
-async function processLogo(buffer: Buffer, size: number): Promise<Buffer> {
-  return sharp(buffer)
-    .resize(size, size, { fit: "contain", background: { r: 255, g: 255, b: 255, alpha: 0 } })
+/**
+ * Process logo into a circular image with transparent background.
+ */
+async function processLogoCircular(buffer: Buffer, size: number): Promise<Buffer> {
+  const resized = await sharp(buffer)
+    .resize(size, size, { fit: "cover", position: "center" })
+    .png()
+    .toBuffer();
+
+  const circleMask = Buffer.from(
+    `<svg width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="white"/></svg>`
+  );
+
+  return sharp(resized)
+    .composite([{ input: circleMask, blend: "dest-in" }])
     .png()
     .toBuffer();
 }
 
 // ─── S3 Cache Operations ────────────────────────────────────────────────────
 
-/**
- * Try to get cached OG image URL from memory cache.
- * Returns the CDN URL if cached and hash matches, null otherwise.
- */
 function getFromMemoryCache(slug: string, hash: string): string | null {
   const entry = memoryCache.get(slug);
   if (!entry) return null;
-  
-  // Check if hash matches (data hasn't changed)
   if (entry.hash !== hash) {
     memoryCache.delete(slug);
     return null;
   }
-  
-  // Check TTL
   if (Date.now() - entry.timestamp > MEMORY_CACHE_TTL) {
     memoryCache.delete(slug);
     return null;
   }
-  
   return entry.url;
 }
 
-/**
- * Upload generated OG image to S3 and cache the URL.
- */
 async function uploadToS3Cache(slug: string, hash: string, imageBuffer: Buffer): Promise<string> {
   const cacheKey = getCacheKey(slug, hash);
-  
   try {
     const { url } = await storagePut(cacheKey, imageBuffer, "image/jpeg");
-    
-    // Save to memory cache
-    memoryCache.set(slug, {
-      url,
-      hash,
-      timestamp: Date.now(),
-    });
-    
-    console.log(`[OG-Image] Cached to S3: ${cacheKey} → ${url}`);
+    memoryCache.set(slug, { url, hash, timestamp: Date.now() });
+    console.log(`[OG-Image] Cached to S3: ${cacheKey} \u2192 ${url}`);
     return url;
   } catch (error) {
     console.error("[OG-Image] Failed to upload to S3:", error);
-    // Return empty string to indicate cache failure (image will still be served directly)
     return "";
   }
 }
 
-/**
- * Invalidate OG image cache for a specific restaurant slug.
- * Called when restaurant updates visual fields (name, logo, coverImage).
- */
 export function invalidateOGCache(slug: string): void {
   const deleted = memoryCache.delete(slug);
   if (deleted) {
     console.log(`[OG-Image] Memory cache invalidated for slug: ${slug}`);
   }
-  // Note: S3 cache is automatically invalidated by hash change.
-  // Old S3 files become orphaned but won't be served (hash won't match).
-  // They can be cleaned up periodically if needed.
 }
 
-/**
- * Get the cached OG image URL for use in meta tags.
- * Returns the S3 CDN URL if cached, or the dynamic endpoint URL as fallback.
- */
 export function getOGImageUrl(slug: string, baseUrl: string): string {
   const entry = memoryCache.get(slug);
   if (entry && (Date.now() - entry.timestamp < MEMORY_CACHE_TTL)) {
     return entry.url;
   }
-  // Fallback to dynamic endpoint (will generate + cache on first access)
   return `${baseUrl}/api/og-image/${slug}`;
 }
 
-// ─── SVG Overlay (with cover background) ────────────────────────────────────
+// ─── SVG Overlay (Premium Design with Cover) ───────────────────────────────
 
 function generateOverlaySVG(params: {
   name: string;
@@ -220,69 +200,80 @@ function generateOverlaySVG(params: {
   deliveryTimeMax: number | null;
   hasLogo: boolean;
 }): string {
-  const { name, location, services, rating, reviewCount, deliveryTimeMin, deliveryTimeMax, hasLogo } = params;
+  const { name, location, rating, reviewCount, hasLogo } = params;
 
   const displayName = escapeXml(truncate(name, 35));
   const displayLocation = location ? escapeXml(truncate(location, 50)) : "";
-  const serviceText = escapeXml(services.join("  ·  "));
 
-  let timeText = "";
-  if (deliveryTimeMin && deliveryTimeMax) {
-    timeText = `${deliveryTimeMin}-${deliveryTimeMax}min`;
-  } else if (deliveryTimeMin) {
-    timeText = `${deliveryTimeMin}min`;
-  }
-
+  // Rating: "★ 4.7 • 287 avaliações"
   let ratingText = "";
   if (rating && parseFloat(rating) > 0 && reviewCount > 0) {
-    ratingText = `★ ${parseFloat(rating).toFixed(1)} (${reviewCount})`;
+    const ratingNum = parseFloat(rating).toFixed(1);
+    const reviewWord = reviewCount === 1 ? "avalia\u00e7\u00e3o" : "avalia\u00e7\u00f5es";
+    ratingText = `\u2605 ${ratingNum} \u2022 ${reviewCount} ${reviewWord}`;
   }
 
-  const infoItems: string[] = [];
-  if (serviceText) infoItems.push(serviceText);
-  if (timeText) infoItems.push(timeText);
-  const infoBarText = escapeXml(infoItems.join("  |  "));
+  // Layout positions
+  const logoSize = 130;
+  const logoX = 50;
+  const logoY = 330;
+  const textX = hasLogo ? logoX + logoSize + 25 : 60;
+  const nameY = 420;
+  const locationY = nameY + 40;
+  const ratingY = displayLocation ? locationY + 35 : nameY + 40;
 
-  const logoAreaX = 60;
-  const logoAreaY = 340;
-  const logoSize = 120;
-  const textX = hasLogo ? logoAreaX + logoSize + 30 : 80;
-  const nameY = 410;
-  const locationY = nameY + 45;
-  const ratingY = locationY + (displayLocation ? 38 : 0);
+  // CTA bar
+  const ctaBarHeight = 55;
+  const ctaBarY = OG_HEIGHT - ctaBarHeight;
 
   return `<svg width="${OG_WIDTH}" height="${OG_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="darkOverlay" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="rgba(0,0,0,0)" />
-      <stop offset="40%" stop-color="rgba(0,0,0,0.1)" />
-      <stop offset="70%" stop-color="rgba(0,0,0,0.6)" />
-      <stop offset="100%" stop-color="rgba(0,0,0,0.85)" />
+      <stop offset="35%" stop-color="rgba(0,0,0,0.05)" />
+      <stop offset="55%" stop-color="rgba(0,0,0,0.35)" />
+      <stop offset="75%" stop-color="rgba(0,0,0,0.7)" />
+      <stop offset="100%" stop-color="rgba(0,0,0,0.92)" />
     </linearGradient>
-    <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#dc2626" />
-      <stop offset="100%" stop-color="#ef4444" />
+    <linearGradient id="ctaBar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="rgba(30,30,30,0.9)" />
+      <stop offset="100%" stop-color="rgba(40,40,40,0.85)" />
     </linearGradient>
     <filter id="textShadow" x="-5%" y="-5%" width="110%" height="110%">
-      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.5)" />
+      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.6)" />
     </filter>
-    ${hasLogo ? `<clipPath id="logoCircle"><circle cx="${logoAreaX + logoSize / 2}" cy="${logoAreaY + logoSize / 2}" r="${logoSize / 2}" /></clipPath>` : ""}
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.4)" />
+    </filter>
+    ${hasLogo ? `<clipPath id="logoCircle"><circle cx="${logoX + logoSize / 2}" cy="${logoY + logoSize / 2}" r="${logoSize / 2}" /></clipPath>` : ""}
   </defs>
 
+  <!-- Dark gradient overlay -->
   <rect width="${OG_WIDTH}" height="${OG_HEIGHT}" fill="url(#darkOverlay)" />
 
-  ${hasLogo ? `<circle cx="${logoAreaX + logoSize / 2}" cy="${logoAreaY + logoSize / 2}" r="${logoSize / 2 + 4}" fill="white" opacity="0.95" />` : ""}
+  <!-- Logo white border ring -->
+  ${hasLogo ? `<circle cx="${logoX + logoSize / 2}" cy="${logoY + logoSize / 2}" r="${logoSize / 2 + 5}" fill="white" opacity="0.95" filter="url(#softShadow)" />` : ""}
 
-  <text x="${textX}" y="${nameY}" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="bold" fill="white" filter="url(#textShadow)">${displayName}</text>
+  <!-- Restaurant name -->
+  <text x="${textX}" y="${nameY}" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="bold" fill="white" filter="url(#textShadow)">${displayName}</text>
 
+  <!-- Location -->
   ${displayLocation ? `<text x="${textX}" y="${locationY}" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="rgba(255,255,255,0.85)" filter="url(#textShadow)">${displayLocation}</text>` : ""}
 
-  ${ratingText ? `<text x="${textX}" y="${ratingY}" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#fbbf24" filter="url(#textShadow)">${escapeXml(ratingText)}</text>` : ""}
+  <!-- Rating -->
+  ${ratingText ? `<text x="${textX}" y="${ratingY}" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="bold" fill="#fbbf24" filter="url(#textShadow)">${escapeXml(ratingText)}</text>` : ""}
 
-  <rect x="0" y="${OG_HEIGHT - 65}" width="${OG_WIDTH}" height="65" fill="url(#barGradient)" opacity="0.95" />
-  <text x="${OG_WIDTH / 2}" y="${OG_HEIGHT - 25}" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="bold" fill="white" text-anchor="middle">${infoBarText}</text>
+  <!-- CTA bar at bottom -->
+  <rect x="0" y="${ctaBarY}" width="${OG_WIDTH}" height="${ctaBarHeight}" fill="url(#ctaBar)" />
+  <rect x="0" y="${ctaBarY}" width="${OG_WIDTH}" height="3" fill="#dc2626" />
 
-  <text x="${OG_WIDTH - 30}" y="35" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="rgba(255,255,255,0.7)" text-anchor="end">mindi.com.br</text>
+  <!-- CTA icon + text -->
+  <circle cx="${OG_WIDTH / 2 - 140}" cy="${ctaBarY + 28}" r="14" fill="#dc2626" />
+  <text x="${OG_WIDTH / 2 - 140}" y="${ctaBarY + 34}" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="white" text-anchor="middle" font-weight="bold">!</text>
+  <text x="${OG_WIDTH / 2}" y="${ctaBarY + 36}" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">Pe\u00e7a online agora!</text>
+
+  <!-- Branding -->
+  <text x="${OG_WIDTH - 30}" y="35" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="rgba(255,255,255,0.6)" text-anchor="end">mindi.com.br</text>
 </svg>`;
 }
 
@@ -297,28 +288,20 @@ function generateNoCoverSVG(params: {
   deliveryTimeMin: number | null;
   deliveryTimeMax: number | null;
 }): string {
-  const { name, location, services, rating, reviewCount, deliveryTimeMin, deliveryTimeMax } = params;
+  const { name, location, rating, reviewCount } = params;
 
   const displayName = escapeXml(truncate(name, 30));
   const displayLocation = location ? escapeXml(truncate(location, 50)) : "";
-  const serviceText = escapeXml(services.join("  ·  "));
-
-  let timeText = "";
-  if (deliveryTimeMin && deliveryTimeMax) {
-    timeText = `${deliveryTimeMin}-${deliveryTimeMax}min`;
-  } else if (deliveryTimeMin) {
-    timeText = `${deliveryTimeMin}min`;
-  }
 
   let ratingText = "";
   if (rating && parseFloat(rating) > 0 && reviewCount > 0) {
-    ratingText = `★ ${parseFloat(rating).toFixed(1)} (${reviewCount})`;
+    const ratingNum = parseFloat(rating).toFixed(1);
+    const reviewWord = reviewCount === 1 ? "avalia\u00e7\u00e3o" : "avalia\u00e7\u00f5es";
+    ratingText = `\u2605 ${ratingNum} \u2022 ${reviewCount} ${reviewWord}`;
   }
 
-  const infoItems: string[] = [];
-  if (serviceText) infoItems.push(serviceText);
-  if (timeText) infoItems.push(timeText);
-  const infoBarText = escapeXml(infoItems.join("  |  "));
+  const ctaBarHeight = 55;
+  const ctaBarY = OG_HEIGHT - ctaBarHeight;
 
   return `<svg width="${OG_WIDTH}" height="${OG_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -327,25 +310,25 @@ function generateNoCoverSVG(params: {
       <stop offset="50%" stop-color="#16213e" />
       <stop offset="100%" stop-color="#0f3460" />
     </linearGradient>
-    <linearGradient id="barGrad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#dc2626" />
-      <stop offset="100%" stop-color="#ef4444" />
-    </linearGradient>
   </defs>
 
   <rect width="${OG_WIDTH}" height="${OG_HEIGHT}" fill="url(#bgGrad)" />
   <circle cx="100" cy="100" r="200" fill="rgba(220,38,38,0.08)" />
   <circle cx="1100" cy="500" r="250" fill="rgba(220,38,38,0.06)" />
 
-  <text x="${OG_WIDTH / 2}" y="320" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="bold" fill="white" text-anchor="middle">${displayName}</text>
-  <text x="${OG_WIDTH / 2}" y="370" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="rgba(255,255,255,0.7)" text-anchor="middle">Cardápio Digital</text>
+  <text x="${OG_WIDTH / 2}" y="280" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="bold" fill="white" text-anchor="middle">${displayName}</text>
+  <text x="${OG_WIDTH / 2}" y="330" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="rgba(255,255,255,0.7)" text-anchor="middle">Card\u00e1pio Digital</text>
 
-  ${displayLocation ? `<text x="${OG_WIDTH / 2}" y="415" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="rgba(255,255,255,0.6)" text-anchor="middle">${displayLocation}</text>` : ""}
+  ${displayLocation ? `<text x="${OG_WIDTH / 2}" y="375" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="rgba(255,255,255,0.6)" text-anchor="middle">${displayLocation}</text>` : ""}
 
-  ${ratingText ? `<text x="${OG_WIDTH / 2}" y="${displayLocation ? 455 : 415}" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#fbbf24" text-anchor="middle">${escapeXml(ratingText)}</text>` : ""}
+  ${ratingText ? `<text x="${OG_WIDTH / 2}" y="${displayLocation ? 415 : 375}" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="bold" fill="#fbbf24" text-anchor="middle">${escapeXml(ratingText)}</text>` : ""}
 
-  <rect x="0" y="${OG_HEIGHT - 65}" width="${OG_WIDTH}" height="65" fill="url(#barGrad)" opacity="0.95" />
-  <text x="${OG_WIDTH / 2}" y="${OG_HEIGHT - 25}" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="bold" fill="white" text-anchor="middle">${infoBarText}</text>
+  <!-- CTA bar -->
+  <rect x="0" y="${ctaBarY}" width="${OG_WIDTH}" height="${ctaBarHeight}" fill="rgba(30,30,30,0.6)" />
+  <rect x="0" y="${ctaBarY}" width="${OG_WIDTH}" height="3" fill="#dc2626" />
+  <circle cx="${OG_WIDTH / 2 - 140}" cy="${ctaBarY + 28}" r="14" fill="#dc2626" />
+  <text x="${OG_WIDTH / 2 - 140}" y="${ctaBarY + 34}" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="white" text-anchor="middle" font-weight="bold">!</text>
+  <text x="${OG_WIDTH / 2}" y="${ctaBarY + 36}" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">Pe\u00e7a online agora!</text>
 
   <text x="${OG_WIDTH - 30}" y="35" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="rgba(255,255,255,0.5)" text-anchor="end">mindi.com.br</text>
 </svg>`;
@@ -382,17 +365,18 @@ async function composeOGImage(est: {
     }
   }
 
-  // Try to fetch logo
-  let logoBuffer: Buffer | null = null;
+  // Try to fetch logo and make it circular
+  let logoCircularBuffer: Buffer | null = null;
+  let rawLogoBuffer: Buffer | null = null;
   if (est.logo) {
-    logoBuffer = await fetchImageBuffer(est.logo);
-    if (logoBuffer) {
-      logoBuffer = await processLogo(logoBuffer, 120);
+    rawLogoBuffer = await fetchImageBuffer(est.logo);
+    if (rawLogoBuffer) {
+      logoCircularBuffer = await processLogoCircular(rawLogoBuffer, 130);
     }
   }
 
   const hasCover = !!coverBuffer;
-  const hasLogo = !!logoBuffer;
+  const hasLogo = !!logoCircularBuffer;
 
   if (hasCover) {
     const overlaySVG = generateOverlaySVG({
@@ -410,8 +394,9 @@ async function composeOGImage(est: {
       { input: Buffer.from(overlaySVG), top: 0, left: 0 },
     ];
 
-    if (logoBuffer) {
-      composites.push({ input: logoBuffer, top: 340, left: 60 });
+    if (logoCircularBuffer) {
+      // Place circular logo at the position matching the SVG white ring
+      composites.push({ input: logoCircularBuffer, top: 330, left: 50 });
     }
 
     return sharp(coverBuffer!)
@@ -433,8 +418,8 @@ async function composeOGImage(est: {
     const baseImage = sharp(Buffer.from(svgContent))
       .resize(OG_WIDTH, OG_HEIGHT);
 
-    if (logoBuffer) {
-      const logoSmall = await processLogo(logoBuffer, 100);
+    if (rawLogoBuffer) {
+      const logoSmall = await processLogoCircular(rawLogoBuffer, 100);
       return baseImage
         .composite([{ input: logoSmall, top: 100, left: Math.floor((OG_WIDTH - 100) / 2) }])
         .jpeg({ quality: 90 })
@@ -469,11 +454,11 @@ export function registerOGImageRoute(app: Express): void {
         return;
       }
 
-      // 2. Cache miss → generate image
+      // 2. Cache miss - generate image
       console.log(`[OG-Image] Cache MISS for ${slug} (hash: ${hash}), generating...`);
       const imageBuffer = await composeOGImage(est);
 
-      // 3. Upload to S3 in background (don't block response)
+      // 3. Upload to S3 in background
       uploadToS3Cache(slug, hash, imageBuffer).catch((err) => {
         console.error("[OG-Image] Background S3 upload failed:", err);
       });
