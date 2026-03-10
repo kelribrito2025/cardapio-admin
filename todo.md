@@ -8654,4 +8654,4 @@
 - [ ] Corrigir créditos de contas existentes que receberam 18 créditos indevidamente (race condition), ajustando para 4
 - [x] Corrigir menu/sidebar mobile para abrir maximizado (expandido) por padrão quando o utilizador clicar no ícone do menu
 - [x] Reduzir tamanho dos cards de mesas na versão mobile em 25% (feedback dos donos de restaurantes)
-- [ ] Mover campo Preço do produto do Passo 3 para o Passo 1 (abaixo do Nome) na slidebar mobile de edição de produto no /catalogo
+- [x] Mover campo Preço do produto do Passo 3 para o Passo 1 (abaixo do Nome) na slidebar mobile de edição de produto no /catalogo

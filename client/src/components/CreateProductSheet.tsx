@@ -742,6 +742,25 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
           />
         </div>
 
+        {/* Price - moved to Step 1 for quicker access */}
+        <div>
+          <Label className="text-sm font-semibold">Preço do produto *</Label>
+          <div className="relative mt-1.5">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">R$</span>
+            <Input
+              type="text"
+              inputMode="numeric"
+              value={price}
+              onChange={(e) => setPrice(formatPriceInputLocal(e.target.value))}
+              placeholder="0,00"
+              className="h-12 text-lg rounded-xl border-border/50 pl-10 font-semibold"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground mt-1.5">
+            Se o item não é vendido individualmente, deixe R$ 0,00
+          </p>
+        </div>
+
         {/* Description */}
         <div>
           <Label className="text-sm font-semibold">Descrição</Label>
@@ -1513,7 +1532,7 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white">Finalizar</h2>
-                <p className="text-sm text-white/80">Passo 3 de 3 — Preço e disponibilidade</p>
+                <p className="text-sm text-white/80">Passo 3 de 3 — Disponibilidade</p>
               </div>
             </div>
             <button
@@ -1532,25 +1551,6 @@ export default function CreateProductSheet({ open, onOpenChange, establishmentId
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-5 bg-card">
-          {/* Price */}
-          <div>
-            <Label className="text-sm font-semibold">Preço do produto *</Label>
-            <div className="relative mt-1.5">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">R$</span>
-              <Input
-                type="text"
-                inputMode="numeric"
-                value={price}
-                onChange={(e) => setPrice(formatPriceInputLocal(e.target.value))}
-                placeholder="0,00"
-                className="h-12 text-lg rounded-xl border-border/50 pl-10 font-semibold"
-              />
-            </div>
-            <p className="text-xs text-muted-foreground mt-1.5">
-              Se o item não é vendido individualmente, deixe R$ 0,00
-            </p>
-          </div>
-
           {/* Printer/Sector */}
           {printers && printers.length > 0 && (
             <div>
