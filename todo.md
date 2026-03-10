@@ -8674,3 +8674,6 @@
 - [x] Redesign imagem OG: avaliação mais destacada (★ 4.7 • 287 avaliações)
 - [x] Redesign imagem OG: adicionar CTA "Peça online agora!" na parte inferior
 - [x] Redesign imagem OG: layout premium com gradiente escuro na parte inferior
+- [x] Adicionar toggle Grid/Lista no mapa de mesas (estilo do toggle Kanban/Lista dos pedidos)
+- [x] Implementar visualização em lista/tabela como alternativa ao grid de cards
+- [x] Persistir preferência de visualização no localStorage

@@ -40,6 +40,7 @@ import {
   UserRound,
   Ban,
   LayoutGrid,
+  List,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -270,6 +271,13 @@ export default function MesasComandas() {
     if (table.status === "reserved") return "reserved";
     return "free";
   };
+  // Toggle Grid/Lista
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
+    try {
+      return (localStorage.getItem('mesas_viewMode') as 'grid' | 'list') || 'grid';
+    } catch { return 'grid'; }
+  });
+
   const [selectedSpaceId, setSelectedSpaceId] = useState<number | "all">("all");
   const [statusFilter, setStatusFilter] = useState<TableStatus | null>(null);
   const { searchQuery, setSearchQuery } = useSearch();
@@ -970,7 +978,8 @@ export default function MesasComandas() {
           </div>
         </div>
 
-        {/* Legenda de Status (clicável) */}
+        {/* Legenda de Status + Toggle Grid/Lista */}
+        <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
           <Filter className="h-5 w-5 text-muted-foreground/70" />
           {statusLegend.map((item, index) => (
@@ -1001,6 +1010,31 @@ export default function MesasComandas() {
           )}
         </div>
 
+          {/* Toggle Grid/Lista */}
+          <div className="hidden sm:flex items-center bg-muted rounded-lg p-1 gap-0.5">
+            <button
+              onClick={() => { setViewMode('grid'); localStorage.setItem('mesas_viewMode', 'grid'); }}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                viewMode === 'grid' ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <LayoutGrid className="h-3.5 w-3.5" />
+              Grid
+            </button>
+            <button
+              onClick={() => { setViewMode('list'); localStorage.setItem('mesas_viewMode', 'list'); }}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                viewMode === 'list' ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <List className="h-3.5 w-3.5" />
+              Lista
+            </button>
+          </div>
+        </div>
+
         {/* Loading */}
         {isLoading && (
           <div className="flex items-center justify-center py-20">
@@ -1009,7 +1043,7 @@ export default function MesasComandas() {
         )}
 
         {/* Grid de Mesas */}
-        {!isLoading && (
+        {!isLoading && viewMode === 'grid' && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2 sm:gap-3">
             {filteredTables.map((table) => {
               // Status derivado baseado em itens no carrinho ou comanda
@@ -1240,6 +1274,178 @@ export default function MesasComandas() {
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {/* Lista de Mesas */}
+        {!isLoading && viewMode === 'list' && filteredTables.length > 0 && (
+          <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border/50 bg-muted/30">
+                  <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Mesa</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden sm:table-cell">Espaço</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3">Status</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden md:table-cell">Tempo</th>
+                  <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden md:table-cell">Itens</th>
+                  <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3">Total</th>
+                  <th className="text-right text-xs font-medium text-muted-foreground px-4 py-3 w-10"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredTables.map((table) => {
+                  const derivedStatus = getDerivedStatus(table);
+                  const statusConfig = getStatusConfig(derivedStatus);
+                  const hasItems = tableHasItems(table.id);
+                  const itemsCount = getTableItemsCount(table.id);
+                  const tableTotal = getTableTotal(table.id);
+                  const displayNumber = table.displayNumber || table.number.toString();
+                  const isMergedTable = !!table.mergedTableIds;
+                  const spaceName = spaces.find(s => s.id === table.spaceId)?.name || '—';
+
+                  return (
+                    <tr
+                      key={table.id}
+                      onClick={() => handleTableClick(table)}
+                      className="border-b border-border/30 last:border-b-0 hover:bg-muted/30 cursor-pointer transition-colors"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className={cn(
+                            "w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0",
+                            statusConfig.color
+                          )}>
+                            {displayNumber}
+                          </div>
+                          <div>
+                            <span className="text-sm font-medium text-foreground">Mesa {displayNumber}</span>
+                            {isMergedTable && (
+                              <span className="text-xs text-blue-600 font-medium flex items-center gap-1 mt-0.5">
+                                <Link2 className="h-3 w-3" />
+                                Mesas unidas
+                              </span>
+                            )}
+                            {derivedStatus === 'reserved' && table.reservedName && (
+                              <span className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                                <UserRound className="h-3 w-3" />
+                                {table.reservedName}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 hidden sm:table-cell">
+                        <span className="text-sm text-muted-foreground">{spaceName}</span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={cn(
+                          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",
+                          derivedStatus === 'free' && "bg-emerald-50 text-emerald-700",
+                          derivedStatus === 'occupied' && "bg-red-50 text-red-700",
+                          derivedStatus === 'reserved' && "bg-blue-50 text-blue-700"
+                        )}>
+                          <div className={cn("w-1.5 h-1.5 rounded-full", statusConfig.color)} />
+                          {statusConfig.label}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 hidden md:table-cell">
+                        {hasItems && table.occupiedAt ? (
+                          <span className="text-sm text-muted-foreground flex items-center gap-1">
+                            <Clock className="h-3.5 w-3.5" />
+                            {formatDuration(table.occupiedAt)}
+                          </span>
+                        ) : derivedStatus === 'reserved' && table.reservedFor ? (
+                          <span className="text-sm text-blue-600 font-medium flex items-center gap-1">
+                            <Clock className="h-3.5 w-3.5" />
+                            {formatTime(table.reservedFor)}
+                          </span>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 hidden md:table-cell">
+                        {hasItems ? (
+                          <span className="text-sm text-muted-foreground flex items-center gap-1">
+                            <Receipt className="h-3.5 w-3.5" />
+                            {itemsCount} {itemsCount === 1 ? 'item' : 'itens'}
+                          </span>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {tableTotal > 0 ? (
+                          <span className="text-sm font-semibold text-foreground">{formatCurrency(tableTotal)}</span>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              onClick={(e) => e.stopPropagation()}
+                              className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            {derivedStatus === 'free' && (
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleOpenReserveDialog(table.id, displayNumber);
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <CalendarClock className="h-4 w-4 mr-2 text-blue-500" />
+                                Reservar mesa
+                              </DropdownMenuItem>
+                            )}
+                            {derivedStatus === 'reserved' && (
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCancelReservation(table.id, displayNumber);
+                                }}
+                                className="cursor-pointer text-red-600 focus:text-red-600"
+                              >
+                                <Ban className="h-4 w-4 mr-2" />
+                                Cancelar reserva
+                              </DropdownMenuItem>
+                            )}
+                            {derivedStatus === 'occupied' && (
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleClearTable(table as Table);
+                                }}
+                                className="cursor-pointer text-red-600 focus:text-red-600"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Limpar mesa
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteTable(table.id, table.number);
+                              }}
+                              className="cursor-pointer text-red-600 focus:text-red-600"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Excluir mesa
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
 
