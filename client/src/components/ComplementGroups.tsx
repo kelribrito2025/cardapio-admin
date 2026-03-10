@@ -1,4 +1,5 @@
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Check } from "lucide-react";
+import { useRef, useEffect, useState } from "react";
 
 // Types
 export interface ComplementItem {
@@ -34,6 +35,111 @@ interface ComplementGroupsProps {
   idPrefix?: string;
   /** Whether to hide groups after the first incomplete required group. Default: false */
   hideBlockedGroups?: boolean;
+}
+
+/** Animated checkbox/radio indicator */
+function SelectionIndicator({ isSelected, isRadio }: { isSelected: boolean; isRadio: boolean }) {
+  return (
+    <div
+      className={`w-5 h-5 ${isRadio ? "rounded-full" : "rounded-md"} border-2 flex items-center justify-center flex-shrink-0 transition-all duration-200 ease-out ${
+        isSelected
+          ? "border-red-500 bg-red-500 scale-110"
+          : "border-gray-300 bg-white scale-100"
+      }`}
+    >
+      <svg
+        className={`w-3 h-3 text-white transition-all duration-200 ease-out ${
+          isSelected ? "opacity-100 scale-100" : "opacity-0 scale-50"
+        }`}
+        viewBox="0 0 12 12"
+        fill="none"
+      >
+        <path
+          d="M2.5 6L5 8.5L9.5 3.5"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  );
+}
+
+/** Animated quantity controls with slide-in effect */
+function QuantityControls({
+  quantity,
+  onIncrement,
+  onDecrement,
+}: {
+  quantity: number;
+  onIncrement: (e: React.MouseEvent) => void;
+  onDecrement: (e: React.MouseEvent) => void;
+}) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Trigger animation on mount
+    requestAnimationFrame(() => setIsVisible(true));
+  }, []);
+
+  return (
+    <div
+      data-qty-controls
+      className={`flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1 transition-all duration-250 ease-out ${
+        isVisible
+          ? "opacity-100 translate-x-0 scale-100"
+          : "opacity-0 translate-x-2 scale-95"
+      }`}
+    >
+      <button
+        type="button"
+        onClick={onDecrement}
+        className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-all duration-150 active:scale-90"
+      >
+        <Minus className="w-4 h-4" />
+      </button>
+      <span
+        className="w-6 text-center text-sm font-medium text-gray-900 transition-all duration-150"
+        key={quantity}
+      >
+        {quantity}
+      </span>
+      <button
+        type="button"
+        onClick={onIncrement}
+        className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-all duration-150 active:scale-90"
+      >
+        <Plus className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
+/** Animated "Completo" badge */
+function CompleteBadge() {
+  return (
+    <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium animate-in fade-in slide-in-from-right-2 duration-300">
+      Completo
+    </span>
+  );
+}
+
+/** Animated checkmark icon for group completion */
+function CompleteCheckIcon() {
+  return (
+    <svg
+      className="w-4 h-4 text-red-500 animate-in fade-in zoom-in duration-300"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fillRule="evenodd"
+        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
 }
 
 export function ComplementGroups({
@@ -78,13 +184,13 @@ export function ComplementGroups({
           <div
             key={group.id}
             id={`${idPrefix}-group-${group.id}`}
-            className={`transition-all duration-300 rounded-xl border ${
-              isGroupComplete ? "border-red-200" : "border-gray-200"
+            className={`transition-all duration-300 ease-out rounded-xl border ${
+              isGroupComplete ? "border-red-200 shadow-sm shadow-red-100" : "border-gray-200"
             }`}
           >
             {/* Header do Grupo - Sticky */}
             <div
-              className={`px-4 py-3 border-b transition-colors duration-300 sticky z-20 shadow-sm rounded-t-xl ${
+              className={`px-4 py-3 border-b transition-all duration-300 ease-out sticky z-20 shadow-sm rounded-t-xl ${
                 isGroupComplete
                   ? "bg-red-50 border-red-200"
                   : "bg-gray-50 border-gray-200"
@@ -100,36 +206,20 @@ export function ComplementGroups({
                   >
                     {group.name}
                   </h4>
-                  {isGroupComplete && (
-                    <svg
-                      className="w-4 h-4 text-red-500 animate-in fade-in zoom-in duration-300"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  )}
+                  {isGroupComplete && <CompleteCheckIcon />}
                 </div>
                 <div className="flex items-center gap-2">
-                  {isGroupComplete && (
-                    <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
-                      Completo
-                    </span>
-                  )}
+                  {isGroupComplete && <CompleteBadge />}
                   {!isGroupComplete &&
                     (group.isRequired || group.minQuantity >= 1) && (
-                      <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
+                      <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium transition-opacity duration-200">
                         Obrigatório
                       </span>
                     )}
                   {!isGroupComplete &&
                     group.minQuantity === 0 &&
                     !group.isRequired && (
-                      <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">
+                      <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium transition-opacity duration-200">
                         Opcional
                       </span>
                     )}
@@ -198,7 +288,7 @@ export function ComplementGroups({
                                 behavior: "smooth",
                                 block: "start",
                               });
-                          }, 200);
+                          }, 300);
                         } else {
                           setTimeout(() => {
                             document
@@ -207,7 +297,7 @@ export function ComplementGroups({
                                 behavior: "smooth",
                                 block: "start",
                               });
-                          }, 200);
+                          }, 300);
                         }
                       }
                     }
@@ -255,10 +345,8 @@ export function ComplementGroups({
                       newMap.set(group.id, newGroupMap);
                       if (itemImageUrl) {
                         onComplementImageChange?.(itemImageUrl);
-                      } else {
-                        onComplementImageChange?.(null);
                       }
-                      // Auto-scroll para próximo grupo (radio sempre atinge max=1)
+                      // Auto-scroll para próximo grupo
                       const currentIndex = groups.findIndex(
                         (g) => g.id === group.id
                       );
@@ -273,7 +361,7 @@ export function ComplementGroups({
                               behavior: "smooth",
                               block: "start",
                             });
-                        }, 200);
+                        }, 300);
                       } else {
                         setTimeout(() => {
                           document
@@ -282,7 +370,7 @@ export function ComplementGroups({
                               behavior: "smooth",
                               block: "start",
                             });
-                        }, 200);
+                        }, 300);
                       }
                     } else {
                       if (isSelected) {
@@ -322,7 +410,7 @@ export function ComplementGroups({
                                     behavior: "smooth",
                                     block: "start",
                                   });
-                              }, 200);
+                              }, 300);
                             } else {
                               setTimeout(() => {
                                 document
@@ -331,7 +419,7 @@ export function ComplementGroups({
                                     behavior: "smooth",
                                     block: "start",
                                   });
-                              }, 200);
+                              }, 300);
                             }
                           }
                         }
@@ -352,39 +440,19 @@ export function ComplementGroups({
                         return;
                       handleToggle();
                     }}
-                    className={`flex flex-col px-4 py-3 transition-colors cursor-pointer ${
-                      isSelected ? "bg-red-50" : "hover:bg-gray-50"
+                    className={`flex flex-col px-4 py-3 cursor-pointer transition-all duration-200 ease-out ${
+                      isSelected
+                        ? "bg-red-50"
+                        : "hover:bg-gray-50"
                     }`}
                   >
                     {/* Linha 1: Checkbox + Nome + Badge + (Botões +/- se sem descrição) + Preço */}
                     <div className="flex items-center justify-between w-full">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div
-                          className={`w-5 h-5 rounded-${
-                            isRadio ? "full" : "md"
-                          } border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                            isSelected
-                              ? "border-red-500 bg-red-500"
-                              : "border-gray-300 bg-white"
-                          }`}
-                        >
-                          {isSelected && (
-                            <svg
-                              className="w-3 h-3 text-white"
-                              viewBox="0 0 12 12"
-                              fill="none"
-                            >
-                              <path
-                                d="M2.5 6L5 8.5L9.5 3.5"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          )}
-                        </div>
-                        <span className="text-sm text-gray-900 flex-1 min-w-0">
+                        <SelectionIndicator isSelected={isSelected} isRadio={isRadio} />
+                        <span className={`text-sm transition-colors duration-200 flex-1 min-w-0 ${
+                          isSelected ? "text-gray-900 font-medium" : "text-gray-900"
+                        }`}>
                           {item.name}
                         </span>
                         {item.badgeText && (
@@ -404,28 +472,11 @@ export function ComplementGroups({
                       <div className="flex items-center gap-3 flex-shrink-0 ml-2">
                         {/* Botões +/- na linha 1 APENAS quando NÃO tem descrição */}
                         {isSelected && !isRadio && !item.description && (
-                          <div
-                            data-qty-controls
-                            className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1"
-                          >
-                            <button
-                              type="button"
-                              onClick={handleDecrement}
-                              className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
-                            >
-                              <Minus className="w-4 h-4" />
-                            </button>
-                            <span className="w-6 text-center text-sm font-medium text-gray-900">
-                              {itemQuantity}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={handleIncrement}
-                              className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </button>
-                          </div>
+                          <QuantityControls
+                            quantity={itemQuantity}
+                            onIncrement={handleIncrement}
+                            onDecrement={handleDecrement}
+                          />
                         )}
                         {/* Preço */}
                         {(() => {
@@ -433,7 +484,9 @@ export function ComplementGroups({
                             const totalItemPrice =
                               displayPrice * (itemQuantity || 1);
                             return (
-                              <span className="text-sm text-gray-600 min-w-[70px] text-right">
+                              <span className={`text-sm min-w-[70px] text-right transition-all duration-200 ${
+                                isSelected ? "text-red-600 font-medium" : "text-gray-600"
+                              }`}>
                                 {isSelected && itemQuantity > 1
                                   ? `+ ${formatPrice(totalItemPrice)}`
                                   : `+ ${formatPrice(displayPrice)}`}
@@ -444,7 +497,7 @@ export function ComplementGroups({
                             item.priceMode === "free"
                           ) {
                             return (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full border border-green-200">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full border border-green-200 transition-all duration-200">
                                 <svg
                                   className="w-3 h-3"
                                   fill="currentColor"
@@ -474,28 +527,11 @@ export function ComplementGroups({
                           </span>
                         </div>
                         {isSelected && !isRadio && (
-                          <div
-                            data-qty-controls
-                            className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-1 flex-shrink-0 ml-2"
-                          >
-                            <button
-                              type="button"
-                              onClick={handleDecrement}
-                              className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
-                            >
-                              <Minus className="w-4 h-4" />
-                            </button>
-                            <span className="w-6 text-center text-sm font-medium text-gray-900">
-                              {itemQuantity}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={handleIncrement}
-                              className="w-7 h-7 flex items-center justify-center text-red-500 hover:bg-red-50 rounded transition-colors"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </button>
-                          </div>
+                          <QuantityControls
+                            quantity={itemQuantity}
+                            onIncrement={handleIncrement}
+                            onDecrement={handleDecrement}
+                          />
                         )}
                       </div>
                     )}
