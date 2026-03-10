@@ -1010,7 +1010,7 @@ export default function MesasComandas() {
 
         {/* Grid de Mesas */}
         {!isLoading && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2 sm:gap-3">
             {filteredTables.map((table) => {
               // Status derivado baseado em itens no carrinho ou comanda
               const derivedStatus = getDerivedStatus(table);
@@ -1124,8 +1124,8 @@ export default function MesasComandas() {
                     }}
                     onClick={() => handleTableClick(table)}
                     className={cn(
-                      "w-full bg-card rounded-xl border border-border/50 p-2.5 sm:p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
-                      "border-l-4 min-h-[90px] sm:min-h-[120px]",
+                      "w-full bg-card rounded-xl border border-border/50 p-2.5 sm:p-3 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
+                      "border-l-4 min-h-[90px] sm:min-h-[96px]",
                       statusConfig.borderColor,
                       isDragging && "opacity-50 scale-95",
                       isDropTarget && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50"
@@ -1133,7 +1133,7 @@ export default function MesasComandas() {
                   >
                     <div className="flex items-start justify-between" style={{ marginTop: "-3px" }}>
                       <div>
-                        <span className="text-xl sm:text-3xl font-bold text-foreground">{displayNumber}</span>
+                        <span className="text-xl sm:text-2xl font-bold text-foreground">{displayNumber}</span>
                         {/* Indicador de mesa combinada */}
                         <div className="min-h-[16px] sm:min-h-[20px]">
                           {isMergedTable ? (

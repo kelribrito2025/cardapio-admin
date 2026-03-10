@@ -8668,3 +8668,4 @@
 - [x] Salvar imagem gerada no S3 após processamento
 - [x] Invalidar cache automaticamente ao atualizar capa, logo ou nome do restaurante
 - [x] Escrever testes para o fluxo de cache OG
+- [x] Reduzir tamanho dos cards de mesas na versão desktop em 20%
