@@ -8776,3 +8776,11 @@
 - [x] Ocultar item Planos para colaboradores (dropdown do perfil)
 - [x] Ocultar badge/info de teste gratuito (trial) para colaboradores (header)
 - [x] Ocultar controle de som do sistema para colaboradores (header)
+
+## Desativar Mesa em vez de Excluir + Restauração
+- [x] Trocar "Excluir mesa" por "Desativar mesa" no menu de contexto da mesa
+- [x] Mesa desativada fica cinza/invisível no mapa (isActive = false)
+- [x] Exclusão permanente somente no modal Gerenciar Espaços
+- [x] Nova aba "Mesas Excluídas" no modal Gerenciar Espaços com opção de restaurar
+- [x] Backend: endpoint para desativar mesa (soft delete via isActive)
+- [x] Backend: endpoint para restaurar mesa desativada

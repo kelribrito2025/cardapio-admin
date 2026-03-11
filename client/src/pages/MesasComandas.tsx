@@ -45,6 +45,8 @@ import {
   GripVertical,
   Move,
   ArrowUpDown,
+  RotateCcw,
+  EyeOff,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -484,13 +486,39 @@ export default function MesasComandas() {
 
   const deleteTableMutation = trpc.tables.delete.useMutation({
     onSuccess: () => {
-      toast.success("Mesa excluída com sucesso!");
+      toast.success("Mesa excluída permanentemente!");
       refetch();
+      refetchDeactivated();
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao excluir mesa");
     },
   });
+
+  const deactivateTableMutation = trpc.tables.deactivate.useMutation({
+    onSuccess: () => {
+      toast.success("Mesa desativada! Você pode restaurá-la em Gerenciar Espaços > Mesas Excluídas.");
+      refetch();
+      refetchDeactivated();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao desativar mesa");
+    },
+  });
+
+  const restoreTableMutation = trpc.tables.restore.useMutation({
+    onSuccess: () => {
+      toast.success("Mesa restaurada com sucesso!");
+      refetch();
+      refetchDeactivated();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao restaurar mesa");
+    },
+  });
+
+  // Query para mesas desativadas
+  const { data: deactivatedTables = [], refetch: refetchDeactivated } = trpc.tables.listDeactivated.useQuery();
 
   // Mutation para juntar mesas
   const mergeTablesMutation = trpc.tables.merge.useMutation({
@@ -810,8 +838,14 @@ export default function MesasComandas() {
     }
   };
 
-  const handleDeleteTable = (tableId: number, tableNumber: number) => {
-    if (confirm(`Tem certeza que deseja excluir a Mesa ${tableNumber}? Todos os itens da comanda também serão excluídos.`)) {
+  const handleDeactivateTable = (tableId: number, tableNumber: number) => {
+    if (confirm(`Deseja desativar a Mesa ${tableNumber}? Ela ficará oculta no mapa mas poderá ser restaurada em Gerenciar Espaços > Mesas Excluídas.`)) {
+      deactivateTableMutation.mutate({ id: tableId });
+    }
+  };
+
+  const handleDeleteTablePermanently = (tableId: number, tableNumber: number) => {
+    if (confirm(`Tem certeza que deseja EXCLUIR PERMANENTEMENTE a Mesa ${tableNumber}? Esta ação não pode ser desfeita e todos os dados da comanda serão perdidos.`)) {
       deleteTableMutation.mutate({ id: tableId });
     }
   };
@@ -1400,12 +1434,12 @@ export default function MesasComandas() {
                         <DropdownMenuItem
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDeleteTable(table.id, table.number);
+                            handleDeactivateTable(table.id, table.number);
                           }}
                           className="cursor-pointer text-red-600 focus:text-red-600"
                         >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Excluir mesa
+                          <EyeOff className="h-4 w-4 mr-2" />
+                          Desativar mesa
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -1747,12 +1781,12 @@ export default function MesasComandas() {
                             <DropdownMenuItem
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleDeleteTable(table.id, table.number);
+                                handleDeactivateTable(table.id, table.number);
                               }}
                               className="cursor-pointer text-red-600 focus:text-red-600"
                             >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Excluir mesa
+                              <EyeOff className="h-4 w-4 mr-2" />
+                              Desativar mesa
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -2142,12 +2176,12 @@ export default function MesasComandas() {
               </div>
             )}
 
-            {/* Lista de mesas para excluir */}
+            {/* Lista de mesas ativas - exclusão permanente */}
             {tables.length > 0 && (
               <div className="mt-6 pt-4 border-t">
                 <h4 className="font-medium mb-3 flex items-center gap-2">
                   <Utensils className="h-4 w-4" />
-                  Mesas ({tables.length})
+                  Mesas Ativas ({tables.length})
                 </h4>
                 <div className="max-h-48 overflow-y-auto space-y-1">
                   {tables.map((table) => (
@@ -2157,11 +2191,52 @@ export default function MesasComandas() {
                         size="sm"
                         variant="ghost"
                         className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => handleDeleteTable(table.id, table.number)}
+                        onClick={() => handleDeleteTablePermanently(table.id, table.number)}
                         disabled={deleteTableMutation.isPending}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Lista de mesas desativadas - com opção de restaurar */}
+            {deactivatedTables.length > 0 && (
+              <div className="mt-6 pt-4 border-t">
+                <h4 className="font-medium mb-3 flex items-center gap-2 text-amber-600">
+                  <EyeOff className="h-4 w-4" />
+                  Mesas Excluídas ({deactivatedTables.length})
+                </h4>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Mesas desativadas podem ser restauradas ou excluídas permanentemente.
+                </p>
+                <div className="max-h-48 overflow-y-auto space-y-1">
+                  {deactivatedTables.map((table) => (
+                    <div key={table.id} className="flex items-center justify-between p-2 bg-amber-50 dark:bg-amber-950/20 rounded-lg text-sm">
+                      <span className="text-muted-foreground">Mesa {table.number}</span>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 px-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 text-xs gap-1"
+                          onClick={() => restoreTableMutation.mutate({ id: table.id })}
+                          disabled={restoreTableMutation.isPending}
+                        >
+                          <RotateCcw className="h-3.5 w-3.5" />
+                          Restaurar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => handleDeleteTablePermanently(table.id, table.number)}
+                          disabled={deleteTableMutation.isPending}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>

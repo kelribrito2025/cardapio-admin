@@ -7745,6 +7745,21 @@ export async function getTablesByEstablishment(establishmentId: number): Promise
 }
 
 /**
+ * Busca mesas desativadas de um estabelecimento
+ */
+export async function getDeactivatedTables(establishmentId: number): Promise<Table[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(tables)
+    .where(and(
+      eq(tables.establishmentId, establishmentId),
+      eq(tables.isActive, false)
+    ))
+    .orderBy(asc(tables.number));
+}
+
+/**
  * Busca uma mesa por ID
  */
 export async function getTableById(id: number): Promise<Table | undefined> {

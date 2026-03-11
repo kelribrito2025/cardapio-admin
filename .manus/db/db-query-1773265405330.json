@@ -1,0 +1,151 @@
+{
+  "query": "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'tables' ORDER BY ORDINAL_POSITION;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'tables' ORDER BY ORDINAL_POSITION;",
+  "rows": [
+    {
+      "COLUMN_NAME": "TABLE_CATALOG"
+    },
+    {
+      "COLUMN_NAME": "id"
+    },
+    {
+      "COLUMN_NAME": "establishmentId"
+    },
+    {
+      "COLUMN_NAME": "TABLE_SCHEMA"
+    },
+    {
+      "COLUMN_NAME": "number"
+    },
+    {
+      "COLUMN_NAME": "TABLE_NAME"
+    },
+    {
+      "COLUMN_NAME": "TABLE_TYPE"
+    },
+    {
+      "COLUMN_NAME": "name"
+    },
+    {
+      "COLUMN_NAME": "capacity"
+    },
+    {
+      "COLUMN_NAME": "ENGINE"
+    },
+    {
+      "COLUMN_NAME": "status"
+    },
+    {
+      "COLUMN_NAME": "VERSION"
+    },
+    {
+      "COLUMN_NAME": "currentGuests"
+    },
+    {
+      "COLUMN_NAME": "ROW_FORMAT"
+    },
+    {
+      "COLUMN_NAME": "TABLE_ROWS"
+    },
+    {
+      "COLUMN_NAME": "occupiedAt"
+    },
+    {
+      "COLUMN_NAME": "AVG_ROW_LENGTH"
+    },
+    {
+      "COLUMN_NAME": "reservedFor"
+    },
+    {
+      "COLUMN_NAME": "DATA_LENGTH"
+    },
+    {
+      "COLUMN_NAME": "reservedName"
+    },
+    {
+      "COLUMN_NAME": "MAX_DATA_LENGTH"
+    },
+    {
+      "COLUMN_NAME": "reservedPhone"
+    },
+    {
+      "COLUMN_NAME": "isActive"
+    },
+    {
+      "COLUMN_NAME": "INDEX_LENGTH"
+    },
+    {
+      "COLUMN_NAME": "DATA_FREE"
+    },
+    {
+      "COLUMN_NAME": "sortOrder"
+    },
+    {
+      "COLUMN_NAME": "createdAt"
+    },
+    {
+      "COLUMN_NAME": "AUTO_INCREMENT"
+    },
+    {
+      "COLUMN_NAME": "CREATE_TIME"
+    },
+    {
+      "COLUMN_NAME": "updatedAt"
+    },
+    {
+      "COLUMN_NAME": "UPDATE_TIME"
+    },
+    {
+      "COLUMN_NAME": "spaceId"
+    },
+    {
+      "COLUMN_NAME": "mergedIntoId"
+    },
+    {
+      "COLUMN_NAME": "CHECK_TIME"
+    },
+    {
+      "COLUMN_NAME": "mergedTableIds"
+    },
+    {
+      "COLUMN_NAME": "TABLE_COLLATION"
+    },
+    {
+      "COLUMN_NAME": "displayNumber"
+    },
+    {
+      "COLUMN_NAME": "CHECKSUM"
+    },
+    {
+      "COLUMN_NAME": "reservedGuests"
+    },
+    {
+      "COLUMN_NAME": "CREATE_OPTIONS"
+    },
+    {
+      "COLUMN_NAME": "label"
+    },
+    {
+      "COLUMN_NAME": "TABLE_COMMENT"
+    },
+    {
+      "COLUMN_NAME": "TIDB_TABLE_ID"
+    },
+    {
+      "COLUMN_NAME": "TIDB_ROW_ID_SHARDING_INFO"
+    },
+    {
+      "COLUMN_NAME": "TIDB_PK_TYPE"
+    },
+    {
+      "COLUMN_NAME": "TIDB_PLACEMENT_POLICY_NAME"
+    },
+    {
+      "COLUMN_NAME": "TIDB_STORAGE_CLASS"
+    }
+  ],
+  "messages": [],
+  "stdout": "COLUMN_NAME\nTABLE_CATALOG\nid\nestablishmentId\nTABLE_SCHEMA\nnumber\nTABLE_NAME\nTABLE_TYPE\nname\ncapacity\nENGINE\nstatus\nVERSION\ncurrentGuests\nROW_FORMAT\nTABLE_ROWS\noccupiedAt\nAVG_ROW_LENGTH\nreservedFor\nDATA_LENGTH\nreservedName\nMAX_DATA_LENGTH\nreservedPhone\nisActive\nINDEX_LENGTH\nDATA_FREE\nsortOrder\ncreatedAt\nAUTO_INCREMENT\nCREATE_TIME\nupdatedAt\nUPDATE_TIME\nspaceId\nmergedIntoId\nCHECK_TIME\nmergedTableIds\nTABLE_COLLATION\ndisplayNumber\nCHECKSUM\nreservedGuests\nCREATE_OPTIONS\nlabel\nTABLE_COMMENT\nTIDB_TABLE_ID\nTIDB_ROW_ID_SHARDING_INFO\nTIDB_PK_TYPE\nTIDB_PLACEMENT_POLICY_NAME\nTIDB_STORAGE_CLASS\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

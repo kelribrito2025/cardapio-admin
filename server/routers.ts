@@ -4486,7 +4486,30 @@ export const appRouter = router({
         return { success: true };
       }),
 
-    // Deletar mesa
+    // Desativar mesa (soft delete - marca isActive = false)
+    deactivate: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.updateTable(input.id, { isActive: false });
+        return { success: true };
+      }),
+
+    // Restaurar mesa desativada (marca isActive = true)
+    restore: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.updateTable(input.id, { isActive: true });
+        return { success: true };
+      }),
+
+    // Listar mesas desativadas do estabelecimento
+    listDeactivated: protectedProcedure.query(async ({ ctx }) => {
+      const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+      if (!establishment) return [];
+      return db.getDeactivatedTables(establishment.id);
+    }),
+
+    // Deletar mesa permanentemente (hard delete)
     delete: protectedProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {

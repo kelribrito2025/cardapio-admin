@@ -1,0 +1,30 @@
+{
+  "query": "SELECT id, number, name, capacity, status, isActive, spaceId, sortOrder FROM tables WHERE establishmentId = 210016 AND number IN (1, 2, 3) ORDER BY number;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, number, name, capacity, status, isActive, spaceId, sortOrder FROM tables WHERE establishmentId = 210016 AND number IN (1, 2, 3) ORDER BY number;",
+  "rows": [
+    {
+      "id": "180147",
+      "number": "2",
+      "name": "NULL",
+      "capacity": "4",
+      "status": "occupied",
+      "isActive": "1",
+      "spaceId": "150003",
+      "sortOrder": "1"
+    },
+    {
+      "id": "180148",
+      "number": "3",
+      "name": "NULL",
+      "capacity": "4",
+      "status": "free",
+      "isActive": "1",
+      "spaceId": "150003",
+      "sortOrder": "2"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tnumber\tname\tcapacity\tstatus\tisActive\tspaceId\tsortOrder\n180147\t2\tNULL\t4\toccupied\t1\t150003\t1\n180148\t3\tNULL\t4\tfree\t1\t150003\t2\n",
+  "stderr": "",
+  "execution_time_ms": 55
+}
