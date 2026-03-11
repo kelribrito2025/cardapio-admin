@@ -1162,7 +1162,7 @@ export default function MesasComandas() {
                     className={cn(
                       "w-full bg-card border border-border/50 p-2.5 sm:p-3 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
                       "border-l-4 min-h-[90px] sm:min-h-[96px]",
-                      table.label ? "rounded-t-xl" : "rounded-xl",
+                      "rounded-xl",
                       statusConfig.borderColor,
                       isDragging && "opacity-50 scale-95",
                       isDropTarget && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50"
@@ -1272,14 +1272,23 @@ export default function MesasComandas() {
                         )}
                       </div>
                     )}
+
+                    {/* Faixa inferior com identificação da mesa */}
+                    {table.label && (
+                      <div className="mt-1 mx-[-2px]">
+                        <div className={cn(
+                          "h-[1px] mx-1 rounded-full",
+                          derivedStatus === 'occupied' ? 'bg-gradient-to-r from-red-300 via-red-200 to-transparent' :
+                          derivedStatus === 'reserved' ? 'bg-gradient-to-r from-blue-300 via-blue-200 to-transparent' :
+                          'bg-gradient-to-r from-emerald-300 via-emerald-200 to-transparent'
+                        )} />
+                        <div className="flex items-center gap-2 pt-1.5">
+                          <div className={cn("w-[3px] h-4 rounded-full flex-shrink-0", statusConfig.color)} />
+                          <span className="text-foreground text-[11px] sm:text-xs truncate">{table.label}</span>
+                        </div>
+                      </div>
+                    )}
                   </button>
-                  {/* Faixa inferior com identificação e status da mesa */}
-                  {table.label && (
-                    <div className={cn("flex items-center justify-between bg-gray-100/80 px-3 py-2 rounded-b-xl -mt-[1px] border-t border-border/20 border-l-4", statusConfig.borderColor)}>
-                      <span className="font-bold text-foreground text-xs sm:text-sm truncate mr-2">{table.label}</span>
-                      <span className={cn("w-2.5 h-2.5 rounded-full flex-shrink-0", statusConfig.color)} />
-                    </div>
-                  )}
                 </div>
               );
             })}
