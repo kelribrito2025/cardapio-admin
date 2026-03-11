@@ -8710,3 +8710,9 @@
 - [x] Exibir label da mesa na visualização em lista
 - [x] Bug: label da mesa não atualiza no header do modal PDV em tempo real após edição (só com F5)
 - [x] Diminuir espaçamento entre filtros de status (Livre, Ocupada, Reservada) na página de mesas
+- [ ] Drag and drop: arrastar mesa sobre espaço = mover mesa para esse espaço
+- [ ] Drag and drop: arrastar mesa para reorganizar ordem dentro do mapa
+- [ ] Drag and drop: feedback visual durante arrasto ("Movendo mesa X", destacar área destino)
+- [x] Drag: arrastar mesa sobre espaço (Salão, Varanda) = mover mesa para esse espaço
+- [x] Drag: arrastar mesa entre mesas = reordenar com gap visual entre cards
+- [x] Drag: manter comportamento de juntar mesas ao arrastar sobre outra mesa (não alterar)

@@ -4785,6 +4785,34 @@ export const appRouter = router({
         await db.updateTable(input.id, { label: input.label });
         return { success: true };
       }),
+
+    // Mover mesa para outro espaço
+    moveToSpace: protectedProcedure
+      .input(z.object({
+        tableId: z.number(),
+        spaceId: z.number().nullable(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateTable(input.tableId, { spaceId: input.spaceId });
+        return { success: true };
+      }),
+
+    // Reordenar mesas (atualizar sortOrder de múltiplas mesas)
+    reorder: protectedProcedure
+      .input(z.object({
+        orders: z.array(z.object({
+          id: z.number(),
+          sortOrder: z.number(),
+        })),
+      }))
+      .mutation(async ({ input }) => {
+        await Promise.all(
+          input.orders.map(({ id, sortOrder }) =>
+            db.updateTable(id, { sortOrder })
+          )
+        );
+        return { success: true };
+      }),
   }),
 
   // ============ TABS (COMANDAS) ============

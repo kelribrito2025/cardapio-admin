@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { useSearch } from "@/contexts/SearchContext";
 import { PageHeader } from "@/components/shared";
@@ -41,6 +41,8 @@ import {
   Ban,
   LayoutGrid,
   List,
+  GripVertical,
+  Move,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -103,6 +105,7 @@ interface Table {
   reservedGuests?: number | null;
   spaceId?: number | null;
   label?: string | null;
+  sortOrder?: number;
   // Campos para mesas combinadas
   mergedIntoId?: number | null;
   mergedTableIds?: string | null;
@@ -508,9 +511,35 @@ export default function MesasComandas() {
     },
   });
 
+  // Mutation para mover mesa para outro espaço
+  const moveToSpaceMutation = trpc.tables.moveToSpace.useMutation({
+    onSuccess: () => {
+      toast.success('Mesa movida com sucesso!');
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Erro ao mover mesa');
+    },
+  });
+
+  // Mutation para reordenar mesas
+  const reorderMutation = trpc.tables.reorder.useMutation({
+    onSuccess: () => {
+      refetch();
+    },
+    onError: () => {
+      toast.error('Erro ao reordenar mesas');
+    },
+  });
+
   // Estados para drag and drop
   const [draggedTableId, setDraggedTableId] = useState<number | null>(null);
   const [dropTargetId, setDropTargetId] = useState<number | null>(null);
+  const [dropTargetSpaceId, setDropTargetSpaceId] = useState<number | 'all' | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  // Índice onde inserir a mesa arrastada (gap visual entre cards)
+  const [dropInsertIndex, setDropInsertIndex] = useState<number | null>(null);
+  const [isDragOverCard, setIsDragOverCard] = useState<boolean>(false);
 
   // Cálculos de resumo (usando status derivado baseado em itens do carrinho + comanda)
   const summary = useMemo(() => {
@@ -911,18 +940,48 @@ export default function MesasComandas() {
               <button
                 key={space.id}
                 onClick={() => setSelectedSpaceId(space.id)}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  if (draggedTableId) {
+                    const draggedTable = tables.find(t => t.id === draggedTableId);
+                    if (draggedTable && draggedTable.spaceId !== space.id) {
+                      setDropTargetSpaceId(space.id);
+                    }
+                  }
+                }}
+                onDragLeave={() => setDropTargetSpaceId(null)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (draggedTableId) {
+                    const draggedTable = tables.find(t => t.id === draggedTableId);
+                    if (draggedTable && draggedTable.spaceId !== space.id) {
+                      moveToSpaceMutation.mutate({ tableId: draggedTableId, spaceId: space.id });
+                      toast.success(`Mesa ${draggedTable.displayNumber || draggedTable.number} movida para ${space.name}`);
+                    }
+                  }
+                  setDraggedTableId(null);
+                  setDropTargetId(null);
+                  setDropTargetSpaceId(null);
+                  setDragOverIndex(null);
+                }}
                 className={cn(
                   "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 flex-shrink-0 whitespace-nowrap",
                   selectedSpaceId === space.id
                     ? "bg-red-500 text-white"
-                    : "bg-card border border-border text-muted-foreground hover:border-border/80"
+                    : "bg-card border border-border text-muted-foreground hover:border-border/80",
+                  dropTargetSpaceId === space.id && "ring-2 ring-amber-400 ring-offset-2 bg-amber-50 !text-amber-700 !border-amber-400 scale-105"
                 )}
               >
+                {dropTargetSpaceId === space.id ? (
+                  <Move className="h-4 w-4" />
+                ) : null}
                 {space.name}
                 <span className={cn(
                   "px-1.5 py-0.5 rounded-full text-xs font-semibold min-w-[20px] text-center",
-                  selectedSpaceId === space.id
+                  selectedSpaceId === space.id && dropTargetSpaceId !== space.id
                     ? "bg-white/20 text-white"
+                    : dropTargetSpaceId === space.id
+                    ? "bg-amber-200 text-amber-800"
                     : "bg-red-500 text-white"
                 )}>
                   {spaceTablesCount[space.id] || 0}
@@ -1043,10 +1102,53 @@ export default function MesasComandas() {
           </div>
         )}
 
+        {/* Banner flutuante durante drag */}
+        {draggedTableId && (() => {
+          const draggedTable = tables.find(t => t.id === draggedTableId);
+          if (!draggedTable) return null;
+          const dn = draggedTable.displayNumber || draggedTable.number.toString();
+          return (
+            <div className="sticky top-0 z-30 flex justify-center pointer-events-none mb-2">
+              <div className="bg-amber-50 border border-amber-300 text-amber-800 px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 text-sm font-medium animate-in fade-in slide-in-from-top-2 duration-200">
+                <Move className="h-4 w-4" />
+                Movendo mesa {dn}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Grid de Mesas */}
         {!isLoading && viewMode === 'grid' && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2 sm:gap-3">
-            {filteredTables.map((table) => {
+          <div
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2 sm:gap-3"
+            onDragOver={(e) => {
+              // Permitir drop no grid para reordenar no final
+              e.preventDefault();
+            }}
+            onDrop={(e) => {
+              // Drop no grid (não sobre um card) = reordenar no final
+              if (draggedTableId && dropInsertIndex !== null) {
+                const dragIdx = filteredTables.findIndex(t => t.id === draggedTableId);
+                if (dragIdx !== -1 && dropInsertIndex !== dragIdx) {
+                  const newOrder = [...filteredTables];
+                  const [moved] = newOrder.splice(dragIdx, 1);
+                  const insertAt = dropInsertIndex > dragIdx ? dropInsertIndex - 1 : dropInsertIndex;
+                  newOrder.splice(insertAt, 0, moved);
+                  const orders = newOrder.map((t, i) => ({ id: t.id, sortOrder: i }));
+                  reorderMutation.mutate({ orders });
+                  const draggedTable = tables.find(t => t.id === draggedTableId);
+                  toast.success(`Mesa ${draggedTable?.displayNumber || draggedTable?.number} reposicionada`);
+                }
+              }
+              setDraggedTableId(null);
+              setDropTargetId(null);
+              setDropTargetSpaceId(null);
+              setDragOverIndex(null);
+              setDropInsertIndex(null);
+              setIsDragOverCard(false);
+            }}
+          >
+            {filteredTables.map((table, tableIndex) => {
               // Status derivado baseado em itens no carrinho ou comanda
               const derivedStatus = getDerivedStatus(table);
               const statusConfig = getStatusConfig(derivedStatus);
@@ -1057,12 +1159,89 @@ export default function MesasComandas() {
               const displayNumber = table.displayNumber || table.number.toString();
               const isDragging = draggedTableId === table.id;
               const isDropTarget = dropTargetId === table.id && draggedTableId !== table.id;
+              const showInsertBefore = dropInsertIndex === tableIndex && draggedTableId !== null && draggedTableId !== table.id && !isDragOverCard;
               
               return (
                 <div
                   key={table.id}
-                  className="relative"
+                  className={cn(
+                    "relative transition-all duration-200",
+                    showInsertBefore && "ml-8 sm:ml-10"
+                  )}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!draggedTableId || draggedTableId === table.id) return;
+                    
+                    // Detectar posição do cursor no card
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const threshold = rect.width * 0.25; // 25% da borda esquerda
+                    
+                    if (x < threshold) {
+                      // Borda esquerda: inserir ANTES deste card
+                      setDropInsertIndex(tableIndex);
+                      setIsDragOverCard(false);
+                      setDropTargetId(null);
+                    } else if (x > rect.width - threshold) {
+                      // Borda direita: inserir DEPOIS deste card
+                      setDropInsertIndex(tableIndex + 1);
+                      setIsDragOverCard(false);
+                      setDropTargetId(null);
+                    } else {
+                      // Centro: juntar mesas
+                      setDropInsertIndex(null);
+                      setIsDragOverCard(true);
+                      setDropTargetId(table.id);
+                    }
+                  }}
+                  onDragLeave={(e) => {
+                    // Só limpar se realmente saiu do card (não entrou num filho)
+                    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                      setDropTargetId(null);
+                      setDropInsertIndex(null);
+                      setIsDragOverCard(false);
+                    }
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!draggedTableId || draggedTableId === table.id) return;
+                    
+                    if (isDragOverCard && dropTargetId === table.id) {
+                      // Soltar SOBRE o card = juntar mesas
+                      mergeTablesMutation.mutate({
+                        sourceTableId: draggedTableId,
+                        targetTableId: table.id,
+                      });
+                    } else if (dropInsertIndex !== null) {
+                      // Soltar na borda = reordenar
+                      const dragIdx = filteredTables.findIndex(t => t.id === draggedTableId);
+                      if (dragIdx !== -1 && dropInsertIndex !== dragIdx) {
+                        const newOrder = [...filteredTables];
+                        const [moved] = newOrder.splice(dragIdx, 1);
+                        const insertAt = dropInsertIndex > dragIdx ? dropInsertIndex - 1 : dropInsertIndex;
+                        newOrder.splice(insertAt, 0, moved);
+                        const orders = newOrder.map((t, i) => ({ id: t.id, sortOrder: i }));
+                        reorderMutation.mutate({ orders });
+                        const draggedTable = tables.find(t => t.id === draggedTableId);
+                        toast.success(`Mesa ${draggedTable?.displayNumber || draggedTable?.number} reposicionada`);
+                      }
+                    }
+                    setDraggedTableId(null);
+                    setDropTargetId(null);
+                    setDropTargetSpaceId(null);
+                    setDragOverIndex(null);
+                    setDropInsertIndex(null);
+                    setIsDragOverCard(false);
+                  }}
                 >
+                  {/* Indicador visual de inserção (barra vertical) */}
+                  {showInsertBefore && (
+                    <div className="absolute -left-5 sm:-left-6 top-0 bottom-0 flex items-center z-20">
+                      <div className="w-1 h-full rounded-full bg-amber-400 animate-pulse" />
+                    </div>
+                  )}
                   {/* Faixa inferior com identificação da mesa */}
                   {/* Botão ⋮ no canto superior direito */}
                   <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
@@ -1137,26 +1316,10 @@ export default function MesasComandas() {
                     onDragEnd={() => {
                       setDraggedTableId(null);
                       setDropTargetId(null);
-                    }}
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      if (draggedTableId && draggedTableId !== table.id) {
-                        setDropTargetId(table.id);
-                      }
-                    }}
-                    onDragLeave={() => {
-                      setDropTargetId(null);
-                    }}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      if (draggedTableId && draggedTableId !== table.id) {
-                        mergeTablesMutation.mutate({
-                          sourceTableId: draggedTableId,
-                          targetTableId: table.id,
-                        });
-                      }
-                      setDraggedTableId(null);
-                      setDropTargetId(null);
+                      setDropTargetSpaceId(null);
+                      setDragOverIndex(null);
+                      setDropInsertIndex(null);
+                      setIsDragOverCard(false);
                     }}
                     onClick={() => handleTableClick(table)}
                     className={cn(
@@ -1164,8 +1327,8 @@ export default function MesasComandas() {
                       "border-l-4 min-h-[90px] sm:min-h-[96px]",
                       "rounded-xl",
                       statusConfig.borderColor,
-                      isDragging && "opacity-50 scale-95",
-                      isDropTarget && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50"
+                      isDragging && "opacity-50 scale-95 ring-2 ring-amber-400",
+                      isDropTarget && isDragOverCard && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50 scale-105"
                     )}
                   >
                     <div className="flex items-start justify-between" style={{ marginTop: "-3px" }}>
