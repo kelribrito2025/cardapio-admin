@@ -8729,3 +8729,4 @@
 - [x] Mover mesa entre espaços desabilitado no modo reordenar
 - [x] Trocar cor do modo reordenar de amber/laranja para azul (botão, banner, card fantasma, borda dos cards)
 - [x] Corrigir visual do botão reordenar selecionado: remover ring/borda externa estranha
+- [x] Bug: reordenação não funciona ao arrastar card para posição adjacente (card volta para mesma posição)

@@ -1246,16 +1246,23 @@ export default function MesasComandas() {
                     
                     if (isReorderMode) {
                       // === MODO REORDENAR: calcular posição de inserção ===
+                      const dragIdx = filteredTables.findIndex(t => t.id === draggedTableId);
                       const rect = e.currentTarget.getBoundingClientRect();
                       const x = e.clientX - rect.left;
                       const half = rect.width / 2;
-                      const newIdx = x < half ? tableIndex : tableIndex + 1;
+                      let newIdx = x < half ? tableIndex : tableIndex + 1;
+                      
+                      // Ignorar posições que resultariam em nenhuma mudança
+                      // (inserir imediatamente antes ou depois da posição original)
+                      if (newIdx === dragIdx || newIdx === dragIdx + 1) {
+                        newIdx = -1; // Sinalizar que não há mudança
+                      }
                       
                       if (lastDropInsertRef.current !== newIdx) {
                         lastDropInsertRef.current = newIdx;
                         if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
                         dropDebounceRef.current = setTimeout(() => {
-                          setDropInsertIndex(newIdx);
+                          setDropInsertIndex(newIdx === -1 ? null : newIdx);
                           setDropTargetId(null);
                           setIsDragOverCard(false);
                         }, 60);
