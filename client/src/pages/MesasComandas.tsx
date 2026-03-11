@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import React from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { useSearch } from "@/contexts/SearchContext";
 import { PageHeader } from "@/components/shared";
@@ -1102,21 +1103,6 @@ export default function MesasComandas() {
           </div>
         )}
 
-        {/* Banner flutuante durante drag */}
-        {draggedTableId && (() => {
-          const draggedTable = tables.find(t => t.id === draggedTableId);
-          if (!draggedTable) return null;
-          const dn = draggedTable.displayNumber || draggedTable.number.toString();
-          return (
-            <div className="sticky top-0 z-30 flex justify-center pointer-events-none mb-2">
-              <div className="bg-amber-50 border border-amber-300 text-amber-800 px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 text-sm font-medium animate-in fade-in slide-in-from-top-2 duration-200">
-                <Move className="h-4 w-4" />
-                Movendo mesa {dn}
-              </div>
-            </div>
-          );
-        })()}
-
         {/* Grid de Mesas */}
         {!isLoading && viewMode === 'grid' && (
           <div
@@ -1162,11 +1148,19 @@ export default function MesasComandas() {
               const showInsertBefore = dropInsertIndex === tableIndex && draggedTableId !== null && draggedTableId !== table.id && !isDragOverCard;
               
               return (
+                <React.Fragment key={`frag-${table.id}`}>
+                  {/* Card pontilhado placeholder indicando posição de inserção */}
+                  {showInsertBefore && (
+                    <div className="border-2 border-dashed border-emerald-400 rounded-xl min-h-[90px] sm:min-h-[96px] flex items-center justify-center bg-emerald-50/50 animate-in fade-in duration-200">
+                      <div className="flex flex-col items-center gap-1 text-emerald-500">
+                        <Move className="h-5 w-5" />
+                        <span className="text-xs font-medium">Soltar aqui</span>
+                      </div>
+                    </div>
+                  )}
                 <div
-                  key={table.id}
                   className={cn(
-                    "relative transition-all duration-200",
-                    showInsertBefore && "ml-8 sm:ml-10"
+                    "relative transition-all duration-200"
                   )}
                   onDragOver={(e) => {
                     e.preventDefault();
@@ -1236,12 +1230,7 @@ export default function MesasComandas() {
                     setIsDragOverCard(false);
                   }}
                 >
-                  {/* Indicador visual de inserção (barra vertical) */}
-                  {showInsertBefore && (
-                    <div className="absolute -left-5 sm:-left-6 top-0 bottom-0 flex items-center z-20">
-                      <div className="w-1 h-full rounded-full bg-amber-400 animate-pulse" />
-                    </div>
-                  )}
+
                   {/* Faixa inferior com identificação da mesa */}
                   {/* Botão ⋮ no canto superior direito */}
                   <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
@@ -1453,6 +1442,7 @@ export default function MesasComandas() {
                     )}
                   </button>
                 </div>
+                </React.Fragment>
               );
             })}
           </div>

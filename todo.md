@@ -8716,3 +8716,4 @@
 - [x] Drag: arrastar mesa sobre espaço (Salão, Varanda) = mover mesa para esse espaço
 - [x] Drag: arrastar mesa entre mesas = reordenar com gap visual entre cards
 - [x] Drag: manter comportamento de juntar mesas ao arrastar sobre outra mesa (não alterar)
+- [x] Drag: substituir banner "Movendo mesa" e barra amber por card pontilhado placeholder no local de inserção
