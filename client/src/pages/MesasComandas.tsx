@@ -1063,14 +1063,7 @@ export default function MesasComandas() {
                   key={table.id}
                   className="relative"
                 >
-                  {/* Etiqueta de identificação estilo aba de pasta - fica ACIMA do card */}
-                  {table.label && (
-                    <div className="flex justify-end pr-3 sm:pr-4 -mb-[1px] relative z-[5]">
-                      <div className="bg-amber-100 text-amber-800 text-[10px] sm:text-xs font-semibold px-2.5 py-0.5 rounded-t-md border border-b-0 border-amber-300 max-w-[90px] sm:max-w-[110px] truncate">
-                        {table.label}
-                      </div>
-                    </div>
-                  )}
+                  {/* Faixa inferior com identificação da mesa */}
                   {/* Botão ⋮ no canto superior direito */}
                   <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
                     <DropdownMenu>
@@ -1167,8 +1160,9 @@ export default function MesasComandas() {
                     }}
                     onClick={() => handleTableClick(table)}
                     className={cn(
-                      "w-full bg-card rounded-xl border border-border/50 p-2.5 sm:p-3 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
+                      "w-full bg-card border border-border/50 p-2.5 sm:p-3 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
                       "border-l-4 min-h-[90px] sm:min-h-[96px]",
+                      table.label ? "rounded-t-xl" : "rounded-xl",
                       statusConfig.borderColor,
                       isDragging && "opacity-50 scale-95",
                       isDropTarget && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50"
@@ -1280,6 +1274,12 @@ export default function MesasComandas() {
                       </div>
                     )}
                   </button>
+                  {/* Faixa inferior com identificação da mesa */}
+                  {table.label && (
+                    <div className="bg-amber-500 text-white text-[10px] sm:text-xs font-semibold px-2.5 py-1 text-center rounded-b-xl truncate -mt-[1px]">
+                      {table.label}
+                    </div>
+                  )}
                 </div>
               );
             })}

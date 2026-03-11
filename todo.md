@@ -8703,3 +8703,4 @@
 - [x] Implementar etiqueta estilo aba de pasta no card de mesa no mapa
 - [x] Limpar label automaticamente ao fechar mesa
 - [x] Exibir label no header: Mobile "Mesa X | João | R$ Y" / Desktop "Mesa X | João"
+- [ ] Trocar etiqueta de identificação da mesa para estilo corner ribbon diagonal no canto superior direito
