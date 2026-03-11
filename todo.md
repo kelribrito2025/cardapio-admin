@@ -8733,3 +8733,12 @@
 - [x] Remover botão "Concluir" do banner de modo reordenar (reordenação já é salva automaticamente)
 - [x] Adicionar animação suave de transição quando os cards trocam de posição na reordenação
 - [x] Ao excluir um espaço no modal Gerenciar Espaços, excluir todas as mesas desse espaço
+- [x] Página Acessos: schema de colaboradores (nome, email, senha hash, establishmentId, permissões)
+- [x] Página Acessos: helpers de DB para CRUD de colaboradores
+- [x] Página Acessos: procedures tRPC para listar, criar, editar, excluir colaboradores
+- [x] Página Acessos: login por email/senha para colaboradores
+- [x] Página Acessos: página com lista de colaboradores e modal de criação/edição
+- [x] Página Acessos: checkboxes de permissões por página do sistema
+- [x] Página Acessos: filtrar sidebar baseado nas permissões do colaborador logado
+- [x] Página Acessos: proteger rotas no backend (validar permissão antes de servir dados)
+- [x] Página Acessos: adicionar item "Acessos" na seção SISTEMA do menu lateral

@@ -35,6 +35,7 @@ import Financas from "./pages/Financas";
 import EntregadorDetalhes from "./pages/EntregadorDetalhes";
 import BotWhatsApp from "./pages/BotWhatsApp";
 import Fidelizacao from "./pages/Fidelizacao";
+import Acessos from "./pages/Acessos";
 import { GlobalPDVHandle } from "./components/GlobalPDVHandle";
 import { OnboardingFAB } from "./components/OnboardingFAB";
 
@@ -96,6 +97,7 @@ function AdminRoutes() {
         <Route path="/ajuda" component={Ajuda} />
         <Route path="/bot-whatsapp" component={BotWhatsApp} />
         <Route path="/fidelizacao" component={Fidelizacao} />
+        <Route path="/acessos" component={Acessos} />
         
         
         <Route path="/404" component={NotFound} />

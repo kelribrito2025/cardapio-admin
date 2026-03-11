@@ -1191,3 +1191,20 @@ export const aiImageCreditLogs = mysqlTable("ai_image_credit_logs", {
 });
 export type AiImageCreditLog = typeof aiImageCreditLogs.$inferSelect;
 export type InsertAiImageCreditLog = typeof aiImageCreditLogs.$inferInsert;
+
+
+// Collaborators (staff access management)
+export const collaborators = mysqlTable("collaborators", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
+  permissions: json("permissions").$type<string[]>().notNull().default([]),
+  isActive: boolean("isActive").default(true).notNull(),
+  lastLoginAt: timestamp("lastLoginAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type Collaborator = typeof collaborators.$inferSelect;
+export type InsertCollaborator = typeof collaborators.$inferInsert;

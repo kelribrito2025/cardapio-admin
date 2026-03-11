@@ -51,8 +51,9 @@ import {
   X,
   Clapperboard,
   Heart,
+  Users,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNewOrders } from "@/contexts/NewOrdersContext";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -146,6 +147,7 @@ const menuSections = [
     title: "SISTEMA",
     items: [
       { icon: Bot, label: "Bot WhatsApp", href: "/bot-whatsapp", disabled: false },
+      { icon: Users, label: "Acessos", href: "/acessos", disabled: false },
       { icon: Settings, label: "Configurações", href: "/configuracoes", disabled: false },
     ]
   },
@@ -464,6 +466,38 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
+// Map href to permission key
+const HREF_TO_PERMISSION: Record<string, string> = {
+  '/': 'dashboard',
+  '/pdv': 'pdv',
+  '/mesas': 'mesas',
+  '/pedidos': 'pedidos',
+  '/agendados': 'pedidos',
+  '/entregadores': 'entregadores',
+  '/catalogo': 'catalogo',
+  '/complementos': 'complementos',
+  '/avaliacoes': 'avaliacoes',
+  '/estoque': 'estoque',
+  '/financas': 'financas',
+  '/stories': 'stories',
+  '/cupons': 'cupons',
+  '/campanhas': 'campanhas',
+  '/fidelizacao': 'fidelizacao',
+  '/bot-whatsapp': 'bot-whatsapp',
+  '/acessos': '__admin_only__',
+  '/configuracoes': '__admin_only__',
+  '/menu-parent': '__parent__',
+};
+
+function getCollaboratorSession(): { id: number; name: string; permissions: string[] } | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem('collaborator_session');
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
 export function AdminLayout({ children }: AdminLayoutProps) {
   const { user, loading: authLoading, logout } = useAuth();
   const [location, navigate] = useLocation();
@@ -472,6 +506,46 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { searchQuery, setSearchQuery } = useSearch();
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+
+  // Collaborator permissions
+  const collaboratorSession = getCollaboratorSession();
+  const isCollaborator = !!collaboratorSession;
+  const collaboratorPermissions = collaboratorSession?.permissions || [];
+
+  // Filter menu sections based on collaborator permissions
+  const filteredMenuSections = useMemo(() => {
+    if (!isCollaborator) return menuSections;
+    return menuSections.map(section => {
+      const filteredItems = section.items.filter((item: any) => {
+        const permKey = HREF_TO_PERMISSION[item.href];
+        // Admin-only pages (Acessos, Configurações) are hidden for collaborators
+        if (permKey === '__admin_only__') return false;
+        // Parent items: check if any child has permission
+        if (item.isParent && item.children) {
+          return item.children.some((child: any) => {
+            const childPerm = HREF_TO_PERMISSION[child.href];
+            return childPerm && collaboratorPermissions.includes(childPerm);
+          });
+        }
+        // Regular items
+        if (!permKey || permKey === '__parent__') return true;
+        return collaboratorPermissions.includes(permKey);
+      }).map((item: any) => {
+        // Also filter children of parent items
+        if (item.isParent && item.children) {
+          return {
+            ...item,
+            children: item.children.filter((child: any) => {
+              const childPerm = HREF_TO_PERMISSION[child.href];
+              return childPerm && collaboratorPermissions.includes(childPerm);
+            }),
+          };
+        }
+        return item;
+      });
+      return { ...section, items: filteredItems };
+    }).filter(section => section.items.length > 0);
+  }, [isCollaborator, collaboratorPermissions]);
   
   // Estado para submenus expandidos (Menu pai) - persistido no localStorage
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>(() => {
@@ -770,6 +844,25 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     return () => clearTimeout(timeout);
   }, []);
 
+  // Route protection for collaborators: redirect if no permission for current route
+  useEffect(() => {
+    if (!isCollaborator) return;
+    const permKey = HREF_TO_PERMISSION[location];
+    if (!permKey) return; // Unknown route, allow
+    if (permKey === '__parent__') return;
+    if (permKey === '__admin_only__') {
+      const firstAllowed = collaboratorPermissions[0];
+      const firstRoute = Object.entries(HREF_TO_PERMISSION).find(([, v]) => v === firstAllowed)?.[0] || '/';
+      navigate(firstRoute);
+      return;
+    }
+    if (!collaboratorPermissions.includes(permKey)) {
+      const firstAllowed = collaboratorPermissions[0];
+      const firstRoute = Object.entries(HREF_TO_PERMISSION).find(([, v]) => v === firstAllowed)?.[0] || '/';
+      navigate(firstRoute);
+    }
+  }, [location, isCollaborator, collaboratorPermissions]);
+
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
@@ -906,7 +999,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           "flex-1 py-4 overflow-y-auto transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
           sidebarCollapsed ? "px-1.5" : "px-3"
         )}>
-          {menuSections.map((section, sectionIndex) => (
+          {filteredMenuSections.map((section, sectionIndex) => (
             <div key={section.title} className={sectionIndex > 0 ? "mt-6" : ""} style={{marginBottom: '-5px'}}>
               {/* Título da seção */}
               {!sidebarCollapsed && (
@@ -1476,17 +1569,17 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     </Avatar>
                     <div className="hidden md:flex flex-col items-start">
                       <span className="text-xs font-semibold max-w-[100px] truncate">
-                        {establishment?.ownerDisplayName || user.name || "Usuário"}
+                        {isCollaborator ? collaboratorSession?.name : (establishment?.ownerDisplayName || user.name || "Usu\u00e1rio")}
                       </span>
-                      <span className="text-[10px] text-muted-foreground">Admin</span>
+                      <span className="text-[10px] text-muted-foreground">{isCollaborator ? 'Colaborador' : 'Admin'}</span>
                     </div>
                     <ChevronDown className="h-3.5 w-3.5 text-muted-foreground hidden md:block" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-52 rounded-xl shadow-elevated border-border/50">
                   <div className="px-3 py-2 border-b border-border/50">
-                    <p className="text-sm font-semibold">{establishment?.ownerDisplayName || user.name || "Usuário"}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    <p className="text-sm font-semibold">{isCollaborator ? collaboratorSession?.name : (establishment?.ownerDisplayName || user.name || "Usu\u00e1rio")}</p>
+                    <p className="text-xs text-muted-foreground truncate">{isCollaborator ? 'Colaborador' : user.email}</p>
                   </div>
                   {/* Container Aberto/Fechado - Combina horários automáticos com fechamento manual */}
                   {establishment && (
@@ -1588,7 +1681,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   <DropdownMenuSeparator className="bg-border/50" />
                   <div className="p-1">
                     <DropdownMenuItem
-                      onClick={() => logout()}
+                      onClick={() => {
+                        localStorage.removeItem('collaborator_session');
+                        logout();
+                      }}
                       className="text-destructive cursor-pointer rounded-lg focus:text-destructive"
                     >
                       <LogOut className="h-4 w-4 mr-2.5" />

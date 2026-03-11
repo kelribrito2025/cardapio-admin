@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, UtensilsCrossed } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, UtensilsCrossed, Users } from "lucide-react";
 import { AuthLayout } from "@/components/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +26,21 @@ export default function Login() {
       setRememberMe(true);
     }
   }, []);
+
+  const [isCollaboratorMode, setIsCollaboratorMode] = useState(false);
+
+  const collaboratorLoginMutation = trpc.collaborator.login.useMutation({
+    onSuccess: async (data) => {
+      // Save collaborator info in localStorage
+      localStorage.setItem('collaborator_session', JSON.stringify(data.collaborator));
+      toast.success(`Bem-vindo, ${data.collaborator.name}!`);
+      await utils.auth.me.invalidate();
+      window.location.href = "/";
+    },
+    onError: (error: { message?: string }) => {
+      toast.error(error.message || "Erro ao fazer login.");
+    },
+  });
 
   const loginMutation = trpc.auth.loginWithEmail.useMutation({
     onSuccess: async () => {
@@ -60,8 +75,14 @@ export default function Login() {
       toast.error("Por favor, preencha todos os campos.");
       return;
     }
-    loginMutation.mutate({ email, password, rememberMe });
+    if (isCollaboratorMode) {
+      collaboratorLoginMutation.mutate({ email, password });
+    } else {
+      loginMutation.mutate({ email, password, rememberMe });
+    }
   };
+
+  const isLoading = loginMutation.isPending || collaboratorLoginMutation.isPending;
 
   return (
     <AuthLayout>
@@ -75,8 +96,14 @@ export default function Login() {
 
       {/* Header */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-foreground mb-2">Acessar sua conta</h2>
-        <p className="text-muted-foreground">Entre com suas credenciais para acessar sua conta</p>
+        <h2 className="text-2xl font-bold text-foreground mb-2">
+          {isCollaboratorMode ? "Acesso Colaborador" : "Acessar sua conta"}
+        </h2>
+        <p className="text-muted-foreground">
+          {isCollaboratorMode 
+            ? "Entre com as credenciais fornecidas pelo administrador" 
+            : "Entre com suas credenciais para acessar sua conta"}
+        </p>
       </div>
 
       {/* Form */}
@@ -152,10 +179,10 @@ export default function Login() {
         {/* Submit button */}
         <Button
           type="submit"
-          disabled={loginMutation.isPending}
+          disabled={isLoading}
           className="w-full h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30 transition-all duration-200 text-base"
         >
-          {loginMutation.isPending ? (
+          {isLoading ? (
             <>
               <Loader2 className="h-5 w-5 mr-2 animate-spin" />
               Entrando...
@@ -168,6 +195,18 @@ export default function Login() {
           )}
         </Button>
       </form>
+
+      {/* Toggle collaborator mode */}
+      <div className="mt-4">
+        <button
+          type="button"
+          onClick={() => setIsCollaboratorMode(!isCollaboratorMode)}
+          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200"
+        >
+          <Users className="h-4 w-4" />
+          {isCollaboratorMode ? "Voltar ao login normal" : "Sou colaborador"}
+        </button>
+      </div>
 
       {/* Sign up link */}
       <div className="mt-6 text-center">

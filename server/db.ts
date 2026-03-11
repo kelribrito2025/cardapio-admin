@@ -55,7 +55,8 @@ import {
   stories, InsertStory, Story,
   storyViews, InsertStoryView, StoryView,
   storyEvents, InsertStoryEvent, StoryEvent,
-  aiImageCreditLogs, InsertAiImageCreditLog, AiImageCreditLog
+  aiImageCreditLogs, InsertAiImageCreditLog, AiImageCreditLog,
+  collaborators, InsertCollaborator, Collaborator
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 import crypto from 'crypto';
@@ -12669,4 +12670,59 @@ export async function grantFreeAiCredits(establishmentId: number, userId: number
     balanceAfter: newBalance,
     description: "Créditos grátis de boas-vindas",
   });
+}
+
+
+// ============ COLLABORATORS ============
+
+export async function getCollaboratorsByEstablishment(establishmentId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(collaborators).where(eq(collaborators.establishmentId, establishmentId)).orderBy(collaborators.name);
+}
+
+export async function getCollaboratorById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const rows = await db.select().from(collaborators).where(eq(collaborators.id, id)).limit(1);
+  return rows[0];
+}
+
+export async function getCollaboratorByEmail(establishmentId: number, email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const rows = await db.select().from(collaborators).where(and(eq(collaborators.establishmentId, establishmentId), eq(collaborators.email, email))).limit(1);
+  return rows[0];
+}
+
+export async function getCollaboratorByEmailGlobal(email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const rows = await db.select().from(collaborators).where(eq(collaborators.email, email)).limit(1);
+  return rows[0];
+}
+
+export async function createCollaborator(data: { establishmentId: number; name: string; email: string; passwordHash: string; permissions: string[] }) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  const result = await db.insert(collaborators).values(data);
+  return result[0].insertId;
+}
+
+export async function updateCollaborator(id: number, data: Partial<{ name: string; email: string; passwordHash: string; permissions: string[]; isActive: boolean }>) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(collaborators).set(data).where(eq(collaborators.id, id));
+}
+
+export async function deleteCollaborator(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(collaborators).where(eq(collaborators.id, id));
+}
+
+export async function updateCollaboratorLastLogin(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(collaborators).set({ lastLoginAt: new Date() }).where(eq(collaborators.id, id));
 }

@@ -18,7 +18,7 @@ import { adminRouter } from "./adminRouter";
 import { sendMenuPublicEvent } from "./_core/sse";
 
 import { buildDriverDeliveryMessage } from './driverMessage';
-import { botApiKeys } from '../drizzle/schema';
+import { botApiKeys, collaborators } from '../drizzle/schema';
 import crypto from 'crypto';
 
 export const appRouter = router({
@@ -6875,6 +6875,183 @@ export const appRouter = router({
           orderValue: input.orderValue ?? null,
           sessionId: input.sessionId ?? null,
         });
+      }),
+  }),
+
+  // ============ COLLABORATORS (Staff Access Management) ============
+  collaborator: router({
+    list: protectedProcedure
+      .input(z.object({ establishmentId: z.number() }))
+      .query(async ({ input }) => {
+        const collabs = await db.getCollaboratorsByEstablishment(input.establishmentId);
+        return collabs.map(({ passwordHash, ...rest }) => rest);
+      }),
+
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const collab = await db.getCollaboratorById(input.id);
+        if (!collab) return null;
+        const { passwordHash, ...rest } = collab;
+        return rest;
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        establishmentId: z.number(),
+        name: z.string().min(1, "Nome é obrigatório"),
+        email: z.string().email("Email inválido"),
+        password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+        permissions: z.array(z.string()),
+      }))
+      .mutation(async ({ input }) => {
+        // Check if email already exists for this establishment
+        const existing = await db.getCollaboratorByEmail(input.establishmentId, input.email);
+        if (existing) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Já existe um colaborador com este email.",
+          });
+        }
+        
+        const passwordHash = await bcrypt.hash(input.password, 10);
+        const id = await db.createCollaborator({
+          establishmentId: input.establishmentId,
+          name: input.name,
+          email: input.email,
+          passwordHash,
+          permissions: input.permissions,
+        });
+        return { id };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().min(1).optional(),
+        email: z.string().email().optional(),
+        password: z.string().min(6).optional(),
+        permissions: z.array(z.string()).optional(),
+        isActive: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, password, ...data } = input;
+        const updateData: any = { ...data };
+        if (password) {
+          updateData.passwordHash = await bcrypt.hash(password, 10);
+        }
+        await db.updateCollaborator(id, updateData);
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteCollaborator(input.id);
+        return { success: true };
+      }),
+
+    // Login as collaborator (email/password)
+    login: publicProcedure
+      .input(z.object({
+        email: z.string().email("Email inválido"),
+        password: z.string().min(1, "Senha é obrigatória"),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Find collaborator by email (global search)
+        const collab = await db.getCollaboratorByEmailGlobal(input.email);
+        if (!collab || !collab.passwordHash) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Email ou senha incorretos.",
+          });
+        }
+        
+        if (!collab.isActive) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Sua conta foi desativada. Contacte o administrador.",
+          });
+        }
+        
+        // Verify password
+        const isValid = await bcrypt.compare(input.password, collab.passwordHash);
+        if (!isValid) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Email ou senha incorretos.",
+          });
+        }
+        
+        // Find the establishment owner to create session as them
+        const establishment = await db.getEstablishmentById(collab.establishmentId);
+        if (!establishment) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Estabelecimento não encontrado.",
+          });
+        }
+        
+        // Get the owner user to create a session
+        const ownerUser = await db.getUserById(establishment.userId);
+        if (!ownerUser) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Proprietário não encontrado.",
+          });
+        }
+        
+        // Update last login
+        await db.updateCollaboratorLastLogin(collab.id);
+        
+        // Create JWT token as the owner user (so collaborator sees the same establishment)
+        const token = await sdk.createSessionToken(ownerUser.openId, {
+          name: collab.name,
+          expiresInMs: 12 * 60 * 60 * 1000, // 12 hours
+        });
+        
+        // Set cookie
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, {
+          ...cookieOptions,
+          maxAge: 12 * 60 * 60 * 1000,
+        });
+        
+        // Also set a collaborator info cookie for the frontend
+        ctx.res.cookie('collaborator_info', JSON.stringify({
+          id: collab.id,
+          name: collab.name,
+          permissions: collab.permissions,
+          establishmentId: collab.establishmentId,
+        }), {
+          ...cookieOptions,
+          maxAge: 12 * 60 * 60 * 1000,
+          httpOnly: false, // Frontend needs to read this
+        });
+        
+        return {
+          success: true,
+          collaborator: {
+            id: collab.id,
+            name: collab.name,
+            permissions: collab.permissions,
+          },
+        };
+      }),
+
+    // Get current collaborator info (if logged in as collaborator)
+    me: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        const collab = await db.getCollaboratorById(input.id);
+        if (!collab) return null;
+        return {
+          id: collab.id,
+          name: collab.name,
+          email: collab.email,
+          permissions: collab.permissions,
+          isActive: collab.isActive,
+        };
       }),
   }),
 });
