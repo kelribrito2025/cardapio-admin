@@ -1146,12 +1146,6 @@ export default function MesasComandas() {
             <ArrowUpDown className="h-4 w-4 flex-shrink-0" />
             <span className="text-sm font-medium">Modo reordenar ativo</span>
             <span className="text-xs text-blue-600">Arraste as mesas para reorganizar a ordem</span>
-            <button
-              onClick={() => setIsReorderMode(false)}
-              className="ml-auto text-xs font-medium text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-lg transition-colors"
-            >
-              Concluir
-            </button>
           </div>
         )}
 
