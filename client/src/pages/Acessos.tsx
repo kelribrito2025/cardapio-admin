@@ -725,7 +725,7 @@ export default function Acessos() {
           <EmptyState
             icon={Users}
             title="Nenhum colaborador cadastrado"
-            description="Crie acessos para seus funcionários com permissões específicas. Cada colaborador terá acesso apenas às páginas autorizadas."
+            description="Adicione colaboradores e defina quais páginas cada um pode acessar."
             action={{ label: "Novo colaborador", onClick: handleNew }}
           />
         ) : filteredCollaborators.length === 0 ? (
