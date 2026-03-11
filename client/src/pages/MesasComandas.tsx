@@ -541,6 +541,8 @@ export default function MesasComandas() {
   // Índice onde inserir a mesa arrastada (gap visual entre cards)
   const [dropInsertIndex, setDropInsertIndex] = useState<number | null>(null);
   const [isDragOverCard, setIsDragOverCard] = useState<boolean>(false);
+  const lastDropInsertRef = useRef<number | null>(null);
+  const dropDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Cálculos de resumo (usando status derivado baseado em itens do carrinho + comanda)
   const summary = useMemo(() => {
@@ -1132,6 +1134,8 @@ export default function MesasComandas() {
               setDragOverIndex(null);
               setDropInsertIndex(null);
               setIsDragOverCard(false);
+              lastDropInsertRef.current = null;
+              if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
             }}
           >
             {filteredTables.map((table, tableIndex) => {
@@ -1170,20 +1174,38 @@ export default function MesasComandas() {
                     // Detectar posição do cursor no card
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = e.clientX - rect.left;
-                    const threshold = rect.width * 0.25; // 25% da borda esquerda
+                    const threshold = rect.width * 0.3; // 30% das bordas
                     
                     if (x < threshold) {
                       // Borda esquerda: inserir ANTES deste card
-                      setDropInsertIndex(tableIndex);
-                      setIsDragOverCard(false);
-                      setDropTargetId(null);
+                      const newIdx = tableIndex;
+                      if (lastDropInsertRef.current !== newIdx) {
+                        lastDropInsertRef.current = newIdx;
+                        if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
+                        dropDebounceRef.current = setTimeout(() => {
+                          setDropInsertIndex(newIdx);
+                          setIsDragOverCard(false);
+                          setDropTargetId(null);
+                        }, 50);
+                      }
                     } else if (x > rect.width - threshold) {
                       // Borda direita: inserir DEPOIS deste card
-                      setDropInsertIndex(tableIndex + 1);
-                      setIsDragOverCard(false);
-                      setDropTargetId(null);
+                      const newIdx = tableIndex + 1;
+                      if (lastDropInsertRef.current !== newIdx) {
+                        lastDropInsertRef.current = newIdx;
+                        if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
+                        dropDebounceRef.current = setTimeout(() => {
+                          setDropInsertIndex(newIdx);
+                          setIsDragOverCard(false);
+                          setDropTargetId(null);
+                        }, 50);
+                      }
                     } else {
                       // Centro: juntar mesas
+                      if (lastDropInsertRef.current !== null) {
+                        lastDropInsertRef.current = null;
+                        if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
+                      }
                       setDropInsertIndex(null);
                       setIsDragOverCard(true);
                       setDropTargetId(table.id);
@@ -1195,6 +1217,8 @@ export default function MesasComandas() {
                       setDropTargetId(null);
                       setDropInsertIndex(null);
                       setIsDragOverCard(false);
+                      lastDropInsertRef.current = null;
+                      if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
                     }
                   }}
                   onDrop={(e) => {
@@ -1228,6 +1252,8 @@ export default function MesasComandas() {
                     setDragOverIndex(null);
                     setDropInsertIndex(null);
                     setIsDragOverCard(false);
+                    lastDropInsertRef.current = null;
+                    if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
                   }}
                 >
 
