@@ -8742,3 +8742,6 @@
 - [x] Página Acessos: filtrar sidebar baseado nas permissões do colaborador logado
 - [x] Página Acessos: proteger rotas no backend (validar permissão antes de servir dados)
 - [x] Página Acessos: adicionar item "Acessos" na seção SISTEMA do menu lateral
+- [x] Refazer visual da página Acessos seguindo o estilo da página Entregadores
+- [x] Mostrar contagem de permissões no card do colaborador (ex: "1 permissão" ou "3 permissões")
+- [x] Melhorar texto explicativo: "Colaboradores acessam o painel usando email e senha cadastrados aqui. Eles verão apenas as páginas autorizadas."

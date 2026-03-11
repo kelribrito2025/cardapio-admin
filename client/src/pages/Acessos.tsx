@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 import { AdminLayout } from "@/components/AdminLayout";
+import { PageHeader, StatCard, EmptyState, TableSkeleton } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,17 +9,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+  Sheet,
+  SheetContent,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,7 +46,10 @@ import {
   Search,
   UserCheck,
   UserX,
-  Copy,
+  MoreHorizontal,
+  X,
+  ShieldCheck,
+  Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -100,101 +104,69 @@ const PERMISSION_GROUPS = [
 
 const ALL_PERMISSIONS = PERMISSION_GROUPS.flatMap((g) => g.permissions.map((p) => p.key));
 
-// Permission key to label map
 const PERMISSION_LABEL_MAP: Record<string, string> = {};
 PERMISSION_GROUPS.forEach((g) => g.permissions.forEach((p) => { PERMISSION_LABEL_MAP[p.key] = p.label; }));
 
-export default function Acessos() {
-  const { data: establishment } = trpc.establishment.get.useQuery();
-  const estId = establishment?.id;
+function pluralPermissions(count: number) {
+  return count === 1 ? "1 permissão" : `${count} permissões`;
+}
 
-  const { data: collaborators, refetch } = trpc.collaborator.list.useQuery(
-    { establishmentId: estId! },
-    { enabled: !!estId }
-  );
-
-  const [showModal, setShowModal] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // Form state
+// ---- Collaborator Form Sheet ----
+function CollaboratorFormSheet({
+  open,
+  onOpenChange,
+  editingCollab,
+  establishmentId,
+  onSuccess,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  editingCollab: any | null;
+  establishmentId: number | undefined;
+  onSuccess: () => void;
+}) {
   const [formName, setFormName] = useState("");
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");
   const [formPermissions, setFormPermissions] = useState<string[]>([]);
   const [formIsActive, setFormIsActive] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const createMutation = trpc.collaborator.create.useMutation({
-    onSuccess: () => {
-      toast.success("Colaborador criado com sucesso!");
-      refetch();
-      closeModal();
-    },
-    onError: (err) => {
-      toast.error(err.message || "Erro ao criar colaborador.");
-    },
+  const createMutation = trpc.collaborator.create.useMutation();
+  const updateMutation = trpc.collaborator.update.useMutation();
+
+  // Sync form when editingCollab or open changes
+  useState(() => {
+    // This is handled in the useEffect below
   });
 
-  const updateMutation = trpc.collaborator.update.useMutation({
-    onSuccess: () => {
-      toast.success("Colaborador atualizado com sucesso!");
-      refetch();
-      closeModal();
-    },
-    onError: (err) => {
-      toast.error(err.message || "Erro ao atualizar colaborador.");
-    },
-  });
+  // Reset form when opening
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen && editingCollab) {
+      setFormName(editingCollab.name || "");
+      setFormEmail(editingCollab.email || "");
+      setFormPassword("");
+      setFormPermissions(editingCollab.permissions || []);
+      setFormIsActive(editingCollab.isActive ?? true);
+      setShowPassword(false);
+    } else if (isOpen) {
+      setFormName("");
+      setFormEmail("");
+      setFormPassword("");
+      setFormPermissions([]);
+      setFormIsActive(true);
+      setShowPassword(false);
+    }
+    onOpenChange(isOpen);
+  };
 
-  const deleteMutation = trpc.collaborator.delete.useMutation({
-    onSuccess: () => {
-      toast.success("Colaborador removido com sucesso!");
-      refetch();
-      setDeleteId(null);
-    },
-    onError: (err) => {
-      toast.error(err.message || "Erro ao remover colaborador.");
-    },
-  });
-
-  const filteredCollaborators = useMemo(() => {
-    if (!collaborators) return [];
-    if (!searchQuery.trim()) return collaborators;
-    const q = searchQuery.toLowerCase();
-    return collaborators.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        c.email.toLowerCase().includes(q)
-    );
-  }, [collaborators, searchQuery]);
-
-  function openCreateModal() {
-    setEditingId(null);
-    setFormName("");
-    setFormEmail("");
-    setFormPassword("");
-    setFormPermissions([]);
-    setFormIsActive(true);
-    setShowPassword(false);
-    setShowModal(true);
-  }
-
-  function openEditModal(collab: any) {
-    setEditingId(collab.id);
-    setFormName(collab.name);
-    setFormEmail(collab.email);
-    setFormPassword("");
-    setFormPermissions(collab.permissions || []);
-    setFormIsActive(collab.isActive);
-    setShowPassword(false);
-    setShowModal(true);
-  }
-
-  function closeModal() {
-    setShowModal(false);
-    setEditingId(null);
+  // Initialize form when sheet opens
+  if (open && formName === "" && editingCollab) {
+    setFormName(editingCollab.name || "");
+    setFormEmail(editingCollab.email || "");
+    setFormPermissions(editingCollab.permissions || []);
+    setFormIsActive(editingCollab.isActive ?? true);
   }
 
   function togglePermission(key: string) {
@@ -211,266 +183,118 @@ export default function Acessos() {
     setFormPermissions([]);
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!estId) return;
+  async function handleSave() {
+    if (!establishmentId) return;
 
     if (!formName.trim()) {
-      toast.error("Nome é obrigatório.");
+      toast.error("Nome é obrigatório");
       return;
     }
     if (!formEmail.trim()) {
-      toast.error("Email é obrigatório.");
+      toast.error("Email é obrigatório");
       return;
     }
-    if (!editingId && formPassword.length < 8) {
-      toast.error("Senha deve ter pelo menos 8 caracteres.");
+    if (!editingCollab && formPassword.length < 8) {
+      toast.error("Senha deve ter pelo menos 8 caracteres");
       return;
     }
-    if (editingId && formPassword && formPassword.length < 8) {
-      toast.error("Senha deve ter pelo menos 8 caracteres.");
+    if (editingCollab && formPassword && formPassword.length < 8) {
+      toast.error("Senha deve ter pelo menos 8 caracteres");
       return;
     }
     if (formPermissions.length === 0) {
-      toast.error("Selecione pelo menos uma permissão.");
+      toast.error("Selecione pelo menos uma permissão");
       return;
     }
 
-    if (editingId) {
-      const updateData: any = {
-        id: editingId,
-        name: formName.trim(),
-        email: formEmail.trim(),
-        permissions: formPermissions,
-        isActive: formIsActive,
-      };
-      if (formPassword) {
-        updateData.password = formPassword;
+    setSaving(true);
+    try {
+      if (editingCollab) {
+        const updateData: any = {
+          id: editingCollab.id,
+          name: formName.trim(),
+          email: formEmail.trim(),
+          permissions: formPermissions,
+          isActive: formIsActive,
+        };
+        if (formPassword) {
+          updateData.password = formPassword;
+        }
+        await updateMutation.mutateAsync(updateData);
+        toast.success("Colaborador atualizado com sucesso");
+      } else {
+        await createMutation.mutateAsync({
+          establishmentId,
+          name: formName.trim(),
+          email: formEmail.trim(),
+          password: formPassword,
+          permissions: formPermissions,
+        });
+        toast.success("Colaborador cadastrado com sucesso");
       }
-      updateMutation.mutate(updateData);
-    } else {
-      createMutation.mutate({
-        establishmentId: estId,
-        name: formName.trim(),
-        email: formEmail.trim(),
-        password: formPassword,
-        permissions: formPermissions,
-      });
+      onSuccess();
+      onOpenChange(false);
+    } catch (error: any) {
+      toast.error("Erro ao salvar", { description: error.message });
+    } finally {
+      setSaving(false);
     }
   }
 
-  const isSubmitting = createMutation.isPending || updateMutation.isPending;
-  const deleteTarget = collaborators?.find((c) => c.id === deleteId);
-
   return (
-    <AdminLayout>
-      <div className="space-y-5">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-              <Users className="h-7 w-7 text-primary" />
-              Acessos
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Gerencie os colaboradores e suas permissões de acesso ao painel
-            </p>
-          </div>
-          <Button onClick={openCreateModal} className="gap-2">
-            <Plus className="h-4 w-4" />
-            Novo Colaborador
-          </Button>
-        </div>
-
-        {/* Search */}
-        {collaborators && collaborators.length > 0 && (
-          <div className="relative max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar colaborador..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-        )}
-
-        {/* Collaborators list */}
-        {!collaborators ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : collaborators.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                <Users className="h-8 w-8 text-muted-foreground" />
+    <Sheet open={open} onOpenChange={handleOpenChange}>
+      <SheetContent side="right" className="w-full sm:max-w-[420px] !p-0 !gap-0 !h-dvh" hideCloseButton>
+        <SheetTitle className="sr-only">{editingCollab ? "Editar Colaborador" : "Novo Colaborador"}</SheetTitle>
+        <div className="flex flex-col h-full">
+          {/* Header - gradient style */}
+          <div className="p-4 border-b border-border/50 bg-gradient-to-r from-red-500 to-red-600">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-white">
+                  {editingCollab ? "Editar Colaborador" : "Novo Colaborador"}
+                </h2>
+                <p className="text-sm text-white/80">
+                  {editingCollab ? "Atualize os dados e permissões" : "Cadastre um novo colaborador"}
+                </p>
               </div>
-              <h3 className="text-lg font-semibold mb-2">Nenhum colaborador cadastrado</h3>
-              <p className="text-muted-foreground mb-6 max-w-md">
-                Crie acessos para seus funcionários com permissões específicas. Cada colaborador terá acesso apenas às páginas autorizadas.
-              </p>
-              <Button onClick={openCreateModal} className="gap-2">
-                <Plus className="h-4 w-4" />
-                Criar Primeiro Colaborador
-              </Button>
-            </CardContent>
-          </Card>
-        ) : filteredCollaborators.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-              <Search className="h-8 w-8 text-muted-foreground mb-3" />
-              <p className="text-muted-foreground">Nenhum colaborador encontrado para "{searchQuery}"</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-3">
-            {filteredCollaborators.map((collab) => (
-              <Card key={collab.id} className={cn("transition-all", !collab.isActive && "opacity-60")}>
-                <CardContent className="p-4">
-                  <div className="flex items-start sm:items-center justify-between gap-4 flex-col sm:flex-row">
-                    {/* Info */}
-                    <div className="flex items-start gap-3 min-w-0 flex-1">
-                      <div className={cn(
-                        "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
-                        collab.isActive ? "bg-primary/10" : "bg-muted"
-                      )}>
-                        {collab.isActive ? (
-                          <UserCheck className="h-5 w-5 text-primary" />
-                        ) : (
-                          <UserX className="h-5 w-5 text-muted-foreground" />
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-semibold text-foreground">{collab.name}</h3>
-                          {!collab.isActive && (
-                            <Badge variant="secondary" className="text-xs">Inativo</Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground truncate">{collab.email}</p>
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                          {(collab.permissions as string[]).slice(0, 5).map((perm) => (
-                            <Badge key={perm} variant="outline" className="text-xs font-normal">
-                              {PERMISSION_LABEL_MAP[perm] || perm}
-                            </Badge>
-                          ))}
-                          {(collab.permissions as string[]).length > 5 && (
-                            <Badge variant="outline" className="text-xs font-normal">
-                              +{(collab.permissions as string[]).length - 5}
-                            </Badge>
-                          )}
-                        </div>
-                        {collab.lastLoginAt && (
-                          <p className="text-xs text-muted-foreground mt-1.5">
-                            Último acesso: {new Date(collab.lastLoginAt).toLocaleString("pt-BR")}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEditModal(collab)}
-                        className="gap-1.5"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                        Editar
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setDeleteId(collab.id)}
-                        className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10 hover:border-destructive/30"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+              <button
+                onClick={() => onOpenChange(false)}
+                className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+              >
+                <X className="h-5 w-5 text-white" />
+              </button>
+            </div>
           </div>
-        )}
 
-        {/* Info card */}
-        {collaborators && collaborators.length > 0 && (
-          <Card className="bg-blue-50/50 dark:bg-blue-950/20 border-blue-200/50 dark:border-blue-800/30">
-            <CardContent className="p-4">
-              <div className="flex gap-3">
-                <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-                <div className="text-sm">
-                  <p className="font-medium text-blue-900 dark:text-blue-300">Como funciona o acesso de colaboradores?</p>
-                  <p className="text-blue-700/80 dark:text-blue-400/70 mt-1">
-                    Colaboradores fazem login na tela de login clicando em "Sou colaborador" e usando o email e senha cadastrados aqui. 
-                    Eles terão acesso apenas às páginas autorizadas. Os menus não autorizados ficam ocultos na sidebar.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-
-      {/* Create/Edit Modal */}
-      <Dialog open={showModal} onOpenChange={(open) => !open && closeModal()}>
-        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {editingId ? (
-                <>
-                  <Pencil className="h-5 w-5 text-primary" />
-                  Editar Colaborador
-                </>
-              ) : (
-                <>
-                  <Plus className="h-5 w-5 text-primary" />
-                  Novo Colaborador
-                </>
-              )}
-            </DialogTitle>
-            <DialogDescription>
-              {editingId
-                ? "Atualize as informações e permissões do colaborador."
-                : "Preencha os dados do novo colaborador e selecione as permissões de acesso."}
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleSubmit} className="space-y-5 mt-2">
-            {/* Name */}
+          {/* Content - scrollable */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-5">
+            {/* Nome */}
             <div className="space-y-2">
-              <Label htmlFor="collab-name" className="text-sm font-medium">
-                Nome
-              </Label>
+              <Label htmlFor="collab-name" className="text-sm font-medium">Nome completo *</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="collab-name"
-                  placeholder="Nome do colaborador"
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  className="pl-9"
+                  placeholder="Nome do colaborador"
+                  className="h-10 rounded-xl bg-background border-border/50 pl-9"
                 />
               </div>
             </div>
 
             {/* Email */}
             <div className="space-y-2">
-              <Label htmlFor="collab-email" className="text-sm font-medium">
-                Email
-              </Label>
+              <Label htmlFor="collab-email" className="text-sm font-medium">Email *</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="collab-email"
                   type="email"
-                  placeholder="email@exemplo.com"
                   value={formEmail}
                   onChange={(e) => setFormEmail(e.target.value)}
-                  className="pl-9"
+                  placeholder="email@exemplo.com"
+                  className="h-10 rounded-xl bg-background border-border/50 pl-9"
                 />
               </div>
             </div>
@@ -478,17 +302,17 @@ export default function Acessos() {
             {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="collab-password" className="text-sm font-medium">
-                {editingId ? "Nova Senha (deixe vazio para manter)" : "Senha"}
+                {editingCollab ? "Nova Senha (deixe vazio para manter)" : "Senha *"}
               </Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="collab-password"
                   type={showPassword ? "text" : "password"}
-                  placeholder={editingId ? "Deixe vazio para manter a senha atual" : "Mínimo 8 caracteres"}
                   value={formPassword}
                   onChange={(e) => setFormPassword(e.target.value)}
-                  className="pl-9 pr-10"
+                  placeholder={editingCollab ? "Deixe vazio para manter" : "Mínimo 8 caracteres"}
+                  className="h-10 rounded-xl bg-background border-border/50 pl-9 pr-10"
                 />
                 <button
                   type="button"
@@ -501,12 +325,12 @@ export default function Acessos() {
             </div>
 
             {/* Active toggle (only for editing) */}
-            {editingId && (
-              <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
+            {editingCollab && (
+              <div className="flex items-center justify-between p-3 rounded-xl border bg-muted/30">
                 <div>
-                  <Label className="text-sm font-medium">Status do Colaborador</Label>
+                  <Label className="text-sm font-medium">Status</Label>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    {formIsActive ? "O colaborador pode fazer login" : "O colaborador não pode fazer login"}
+                    {formIsActive ? "Colaborador pode fazer login" : "Colaborador bloqueado"}
                   </p>
                 </div>
                 <Switch
@@ -542,7 +366,7 @@ export default function Acessos() {
                 </div>
               </div>
 
-              <div className="space-y-4 p-3 rounded-lg border bg-muted/20">
+              <div className="space-y-4 p-3 rounded-xl border bg-muted/20">
                 {PERMISSION_GROUPS.map((group) => (
                   <div key={group.title}>
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
@@ -553,7 +377,7 @@ export default function Acessos() {
                         <label
                           key={perm.key}
                           className={cn(
-                            "flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer transition-colors text-sm",
+                            "flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors text-sm",
                             formPermissions.includes(perm.key)
                               ? "bg-primary/10 text-primary border border-primary/20"
                               : "bg-card hover:bg-muted border border-transparent"
@@ -576,34 +400,367 @@ export default function Acessos() {
                 {formPermissions.length} de {ALL_PERMISSIONS.length} permissões selecionadas
               </p>
             </div>
+          </div>
 
-            <DialogFooter className="gap-2 sm:gap-0">
-              <Button type="button" variant="outline" onClick={closeModal}>
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={isSubmitting} className="gap-2">
-                {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                {editingId ? "Salvar Alterações" : "Criar Colaborador"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+          {/* Footer */}
+          <div className="p-4 border-t border-border/50 bg-card">
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              className="w-full rounded-xl h-11"
+              style={{ backgroundColor: '#db262f', color: 'white' }}
+            >
+              {saving ? "Salvando..." : editingCollab ? "Salvar Alterações" : "Cadastrar Colaborador"}
+            </Button>
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+// ---- Main Page ----
+export default function Acessos() {
+  const { data: establishment } = trpc.establishment.get.useQuery();
+  const estId = establishment?.id;
+
+  const { data: collaborators, isLoading, refetch } = trpc.collaborator.list.useQuery(
+    { establishmentId: estId! },
+    { enabled: !!estId }
+  );
+
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [editingCollab, setEditingCollab] = useState<any | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [collabToDelete, setCollabToDelete] = useState<any | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const deleteMutation = trpc.collaborator.delete.useMutation();
+  const toggleMutation = trpc.collaborator.update.useMutation();
+
+  const filteredCollaborators = useMemo(() => {
+    if (!collaborators) return [];
+    if (!searchQuery.trim()) return collaborators;
+    const q = searchQuery.toLowerCase();
+    return collaborators.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        c.email.toLowerCase().includes(q)
+    );
+  }, [collaborators, searchQuery]);
+
+  // Metrics
+  const totalCollabs = collaborators?.length ?? 0;
+  const activeCollabs = collaborators?.filter((c) => c.isActive).length ?? 0;
+  const inactiveCollabs = collaborators?.filter((c) => !c.isActive).length ?? 0;
+
+  const handleNew = () => {
+    setEditingCollab(null);
+    setSheetOpen(true);
+  };
+
+  const handleEdit = (collab: any) => {
+    setEditingCollab(collab);
+    setSheetOpen(true);
+  };
+
+  const handleRefresh = () => {
+    refetch();
+  };
+
+  const handleDelete = async () => {
+    if (!collabToDelete) return;
+    try {
+      await deleteMutation.mutateAsync({ id: collabToDelete.id });
+      toast.success("Colaborador removido");
+      handleRefresh();
+    } catch (error: any) {
+      toast.error("Erro ao remover", { description: error.message });
+    }
+    setDeleteDialogOpen(false);
+    setCollabToDelete(null);
+  };
+
+  const handleToggleActive = async (collab: any) => {
+    try {
+      await toggleMutation.mutateAsync({ id: collab.id, isActive: !collab.isActive });
+      toast.success(collab.isActive ? "Colaborador desativado" : "Colaborador ativado");
+      handleRefresh();
+    } catch (error: any) {
+      toast.error("Erro", { description: error.message });
+    }
+  };
+
+  return (
+    <AdminLayout>
+      <PageHeader
+        title="Acessos"
+        description="Colaboradores acessam o painel usando email e senha cadastrados aqui. Eles verão apenas as páginas autorizadas."
+        icon={<Users className="h-6 w-6 text-blue-600" />}
+        actions={
+          <Button onClick={handleNew} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Novo colaborador
+          </Button>
+        }
+      />
+
+      {/* Metrics Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+        <StatCard
+          title="Cadastrados"
+          value={isLoading ? "..." : totalCollabs}
+          icon={Users}
+          variant="blue"
+          loading={isLoading}
+        />
+        <StatCard
+          title="Ativos"
+          value={isLoading ? "..." : activeCollabs}
+          icon={UserCheck}
+          variant="emerald"
+          loading={isLoading}
+        />
+        <StatCard
+          title="Desativados"
+          value={isLoading ? "..." : inactiveCollabs}
+          icon={UserX}
+          variant="gray"
+          loading={isLoading}
+        />
+      </div>
+
+      {/* Search */}
+      {collaborators && collaborators.length > 0 && (
+        <div className="relative max-w-sm mt-6">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar colaborador..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+      )}
+
+      {/* Collaborators Table */}
+      <div className="mt-6">
+        {isLoading ? (
+          <TableSkeleton rows={5} columns={5} />
+        ) : !collaborators || collaborators.length === 0 ? (
+          <EmptyState
+            icon={Users}
+            title="Nenhum colaborador cadastrado"
+            description="Crie acessos para seus funcionários com permissões específicas. Cada colaborador terá acesso apenas às páginas autorizadas."
+            action={{ label: "Novo colaborador", onClick: handleNew }}
+          />
+        ) : filteredCollaborators.length === 0 ? (
+          <EmptyState
+            icon={Search}
+            title="Nenhum resultado"
+            description={`Nenhum colaborador encontrado para "${searchQuery}"`}
+          />
+        ) : (
+          <div className="bg-card rounded-xl border border-border/50 overflow-hidden">
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border/50 bg-muted/30">
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Colaborador</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Permissões</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
+                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Último acesso</th>
+                    <th className="text-right p-4 text-sm font-medium text-muted-foreground">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredCollaborators.map((collab) => {
+                    const perms = collab.permissions as string[];
+                    return (
+                      <tr
+                        key={collab.id}
+                        className="border-b border-border/30 hover:bg-muted/20 transition-colors"
+                      >
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold text-sm ${collab.isActive ? "bg-blue-500" : "bg-gray-400"}`}>
+                              {collab.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="font-medium">{collab.name}</p>
+                              <p className="text-xs text-muted-foreground">{collab.email}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex flex-wrap gap-1.5 items-center">
+                            {perms.slice(0, 3).map((perm) => (
+                              <Badge key={perm} variant="outline" className="text-xs font-normal">
+                                {PERMISSION_LABEL_MAP[perm] || perm}
+                              </Badge>
+                            ))}
+                            {perms.length > 3 && (
+                              <Badge variant="secondary" className="text-xs">
+                                +{perms.length - 3}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {pluralPermissions(perms.length)}
+                          </p>
+                        </td>
+                        <td className="p-4">
+                          <Badge
+                            variant={collab.isActive ? "default" : "secondary"}
+                            className={collab.isActive ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100" : ""}
+                          >
+                            {collab.isActive ? "Ativo" : "Inativo"}
+                          </Badge>
+                        </td>
+                        <td className="p-4">
+                          {collab.lastLoginAt ? (
+                            <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                              <Clock className="h-3.5 w-3.5" />
+                              {new Date(collab.lastLoginAt).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" })}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">Nunca acessou</span>
+                          )}
+                        </td>
+                        <td className="p-4 text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleEdit(collab)}>
+                                <Pencil className="h-4 w-4 mr-2" />
+                                Editar
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleToggleActive(collab)}>
+                                {collab.isActive ? <UserX className="h-4 w-4 mr-2" /> : <UserCheck className="h-4 w-4 mr-2" />}
+                                {collab.isActive ? "Desativar" : "Ativar"}
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => {
+                                  setCollabToDelete(collab);
+                                  setDeleteDialogOpen(true);
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Excluir
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-border/30">
+              {filteredCollaborators.map((collab) => {
+                const perms = collab.permissions as string[];
+                return (
+                  <div key={collab.id} className="p-4 hover:bg-muted/20 transition-colors">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold text-sm ${collab.isActive ? "bg-blue-500" : "bg-gray-400"}`}>
+                          {collab.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-medium">{collab.name}</p>
+                          <p className="text-xs text-muted-foreground">{collab.email}</p>
+                        </div>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleEdit(collab)}>
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Editar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleToggleActive(collab)}>
+                            {collab.isActive ? <UserX className="h-4 w-4 mr-2" /> : <UserCheck className="h-4 w-4 mr-2" />}
+                            {collab.isActive ? "Desativar" : "Ativar"}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => {
+                              setCollabToDelete(collab);
+                              setDeleteDialogOpen(true);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Excluir
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge
+                        variant={collab.isActive ? "default" : "secondary"}
+                        className={collab.isActive ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100" : ""}
+                      >
+                        {collab.isActive ? "Ativo" : "Inativo"}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs font-normal">
+                        <ShieldCheck className="h-3 w-3 mr-1" />
+                        {pluralPermissions(perms.length)}
+                      </Badge>
+                      {collab.lastLoginAt && (
+                        <span className="text-xs text-muted-foreground ml-auto">
+                          {new Date(collab.lastLoginAt).toLocaleDateString("pt-BR")}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Collaborator Form Sheet */}
+      <CollaboratorFormSheet
+        open={sheetOpen}
+        onOpenChange={(open) => {
+          setSheetOpen(open);
+          if (!open) setEditingCollab(null);
+        }}
+        editingCollab={editingCollab}
+        establishmentId={estId}
+        onSuccess={handleRefresh}
+      />
 
       {/* Delete confirmation */}
-      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+      <AlertDialog open={deleteDialogOpen} onOpenChange={(open) => { if (!open) { setDeleteDialogOpen(false); setCollabToDelete(null); } }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Remover colaborador?</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja remover <strong>{deleteTarget?.name}</strong>? 
+              Tem certeza que deseja remover <strong>{collabToDelete?.name}</strong>?
               Esta ação não pode ser desfeita e o colaborador perderá o acesso ao painel imediatamente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteId && deleteMutation.mutate({ id: deleteId })}
+              onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               {deleteMutation.isPending ? (
