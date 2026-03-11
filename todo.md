@@ -8789,3 +8789,4 @@
 - [x] Fix busca intermitente: Eliminar state intermediário establishmentId (usar establishment?.id direto)
 - [x] Fix busca intermitente: Adicionar staleTime na query de produtos (cache 30s)
 - [x] Fix busca intermitente: Mostrar loading state na busca enquanto produtos carregam
+- [x] Remover window.confirm nativo ao desativar mesa (desativar diretamente sem confirmação)

@@ -847,9 +847,7 @@ export default function MesasComandas() {
   };
 
   const handleDeactivateTable = (tableId: number, tableNumber: number) => {
-    if (confirm(`Deseja desativar a Mesa ${tableNumber}? Ela ficará oculta no mapa mas poderá ser restaurada em Gerenciar Espaços > Mesas Excluídas.`)) {
-      deactivateTableMutation.mutate({ id: tableId });
-    }
+    deactivateTableMutation.mutate({ id: tableId });
   };
 
   const handleDeleteTablePermanently = (tableId: number, tableNumber: number) => {
