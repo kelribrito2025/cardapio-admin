@@ -1033,7 +1033,7 @@ export default function MesasComandas() {
                   className={cn(
                     "hidden md:flex px-3 py-2 rounded-lg text-sm font-medium transition-all items-center gap-1.5",
                     isReorderMode
-                      ? "bg-blue-500 text-white hover:bg-blue-600 ring-2 ring-blue-300"
+                      ? "bg-blue-500 text-white hover:bg-blue-600"
                       : "bg-card border border-border text-muted-foreground hover:border-border/80 hover:text-foreground"
                   )}
                 >
@@ -1067,7 +1067,7 @@ export default function MesasComandas() {
               className={cn(
                 "md:hidden px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 flex-shrink-0",
                 isReorderMode
-                  ? "bg-blue-500 text-white hover:bg-blue-600 ring-2 ring-blue-300"
+                  ? "bg-blue-500 text-white hover:bg-blue-600"
                   : "bg-card border border-border text-muted-foreground hover:border-border/80 hover:text-foreground"
               )}
             >

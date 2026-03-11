@@ -8728,3 +8728,4 @@
 - [x] Clicar na mesa no modo reordenar NÃO abre o PDV
 - [x] Mover mesa entre espaços desabilitado no modo reordenar
 - [x] Trocar cor do modo reordenar de amber/laranja para azul (botão, banner, card fantasma, borda dos cards)
+- [x] Corrigir visual do botão reordenar selecionado: remover ring/borda externa estranha
