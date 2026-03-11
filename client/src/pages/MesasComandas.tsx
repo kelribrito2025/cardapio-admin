@@ -1275,12 +1275,9 @@ export default function MesasComandas() {
                   </button>
                   {/* Faixa inferior com identificação e status da mesa */}
                   {table.label && (
-                    <div className="flex items-center justify-between bg-muted/60 px-3 py-2 rounded-b-xl -mt-[1px] border-t border-border/30">
+                    <div className="flex items-center justify-between bg-gray-100/80 px-3 py-2 rounded-br-xl -mt-[1px] border-t border-border/20 ml-1">
                       <span className="font-bold text-foreground text-xs sm:text-sm truncate mr-2">{table.label}</span>
-                      <span className={cn("flex items-center gap-1.5 text-[10px] sm:text-xs font-medium whitespace-nowrap", statusConfig.textColor)}>
-                        <span className={cn("w-2 h-2 rounded-full", statusConfig.color)} />
-                        {statusConfig.label}
-                      </span>
+                      <span className={cn("w-2.5 h-2.5 rounded-full flex-shrink-0", statusConfig.color)} />
                     </div>
                   )}
                 </div>
