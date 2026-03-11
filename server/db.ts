@@ -8159,9 +8159,8 @@ export async function closeTable(
     }
   }
   
-  // Liberar mesa e limpar label
+  // Liberar mesa
   await updateTableStatus(tableId, "free");
-  await updateTable(tableId, { label: null });
 }
 
 /**

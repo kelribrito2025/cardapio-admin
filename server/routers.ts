@@ -4774,17 +4774,6 @@ export const appRouter = router({
         
         return { success: true };
       }),
-
-    // Atualizar label (identificação) da mesa
-    updateLabel: protectedProcedure
-      .input(z.object({
-        id: z.number(),
-        label: z.string().max(15).nullable(),
-      }))
-      .mutation(async ({ input }) => {
-        await db.updateTable(input.id, { label: input.label });
-        return { success: true };
-      }),
   }),
 
   // ============ TABS (COMANDAS) ============

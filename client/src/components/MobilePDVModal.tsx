@@ -74,7 +74,6 @@ interface MobilePDVModalProps {
   onOrderCreated?: () => void;
   tabItemsCount?: number;
   tableTotal?: number;
-  tableLabel?: string | null;
 }
 
 export function MobilePDVModal({
@@ -88,28 +87,10 @@ export function MobilePDVModal({
   onOrderCreated,
   tabItemsCount = 0,
   tableTotal = 0,
-  tableLabel,
 }: MobilePDVModalProps) {
   const tableDisplayName = displayNumber || tableNumber.toString();
   const { data: establishment } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
-
-  // Label (identificação) da mesa
-  const [isEditingLabel, setIsEditingLabel] = useState(false);
-  const [labelValue, setLabelValue] = useState(tableLabel || '');
-  const labelInputRef = useRef<HTMLInputElement>(null);
-  const utils = trpc.useUtils();
-  const updateLabelMutation = trpc.tables.updateLabel.useMutation({
-    onSuccess: () => {
-      utils.tables.list.invalidate();
-      setIsEditingLabel(false);
-    },
-    onError: () => toast.error('Erro ao salvar identificação'),
-  });
-
-  useEffect(() => {
-    setLabelValue(tableLabel || '');
-  }, [tableLabel]);
 
   useEffect(() => {
     if (establishment) setEstablishmentId(establishment.id);
@@ -130,6 +111,8 @@ export function MobilePDVModal({
     { establishmentId: establishmentId ?? 0 },
     { enabled: !!establishmentId && establishmentId > 0 }
   );
+
+  const utils = trpc.useUtils();
 
   // --- Carrinho por mesa ---
   const [cartsPerTable, setCartsPerTable] = useState<Record<number, CartItem[]>>(() => {
@@ -634,74 +617,18 @@ export function MobilePDVModal({
         <div className="bg-muted-foreground/20 flex flex-col w-full h-full overflow-hidden">
 
           {/* Header */}
-          <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex flex-col gap-1" style={{ minHeight: '68px' }}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 rounded-xl">
-                  <UtensilsCrossed className="h-5 w-5 text-red-500" />
-                </div>
-                <h2 className="text-lg font-bold text-foreground">
-                  Mesa {tableDisplayName}
-                  {tableLabel && !isEditingLabel && (
-                    <span className="text-muted-foreground font-normal"> | </span>
-                  )}
-                  {tableLabel && !isEditingLabel && (
-                    <span className="text-amber-700 font-semibold">{tableLabel}</span>
-                  )}
-                  <span className="text-muted-foreground font-normal"> | </span>
-                  <span className="text-red-600">{formatCurrency(getDisplayTotal())}</span>
-                </h2>
+          <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex items-center justify-between" style={{ height: '68px' }}>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-red-100 rounded-xl">
+                <UtensilsCrossed className="h-5 w-5 text-red-500" />
               </div>
-              <button onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors">
-                <X className="h-5 w-5 text-muted-foreground" />
-              </button>
+              <h2 className="text-lg font-bold text-foreground">
+                Mesa {tableDisplayName} <span className="text-muted-foreground font-normal">|</span> <span className="text-red-600">{formatCurrency(getDisplayTotal())}</span>
+              </h2>
             </div>
-            {/* Campo de identificação inline */}
-            {tableId && (
-              <div className="flex items-center gap-2 ml-12">
-                {isEditingLabel ? (
-                  <>
-                    <input
-                      ref={labelInputRef}
-                      type="text"
-                      value={labelValue}
-                      onChange={(e) => setLabelValue(e.target.value.slice(0, 15))}
-                      placeholder="Identificação..."
-                      className="text-sm border border-border rounded px-2 py-0.5 w-32 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-red-400"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          updateLabelMutation.mutate({ id: tableId!, label: labelValue.trim() || null });
-                        } else if (e.key === 'Escape') {
-                          setLabelValue(tableLabel || '');
-                          setIsEditingLabel(false);
-                        }
-                      }}
-                      autoFocus
-                    />
-                    <button
-                      onClick={() => updateLabelMutation.mutate({ id: tableId!, label: labelValue.trim() || null })}
-                      className="p-1 text-green-600 hover:bg-green-50 rounded transition-colors"
-                    >
-                      <Check className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => { setLabelValue(tableLabel || ''); setIsEditingLabel(false); }}
-                      className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={() => { setIsEditingLabel(true); setTimeout(() => labelInputRef.current?.focus(), 50); }}
-                    className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
-                  >
-                    <Pencil className="h-3 w-3" />
-                    {tableLabel ? 'Editar identificação' : 'Adicionar identificação'}
-                  </button>
-                )}
-              </div>
-            )}
+            <button onClick={onClose} className="p-2 hover:bg-muted rounded-full transition-colors">
+              <X className="h-5 w-5 text-muted-foreground" />
+            </button>
           </div>
 
           {/* Tabs: Consumo / Comanda */}
