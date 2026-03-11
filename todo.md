@@ -8769,3 +8769,4 @@
 - [x] Fix: Tooltip não aparece no hover do item Menu na sidebar colapsada (precisa combinar Tooltip + Popover)
 - [x] Fix: Corrigir formatação da mensagem WhatsApp do colaborador (quebras de linha entre blocos + link v2.mindi.com.br)
 - [ ] Desativar item Bot WhatsApp do menu lateral (sem badge, apenas remover do menu)
+- [x] Desabilitar clique no item Bot WhatsApp na sidebar (manter visível, sem navegação)

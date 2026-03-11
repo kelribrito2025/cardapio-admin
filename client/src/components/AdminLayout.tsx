@@ -146,7 +146,7 @@ const menuSections = [
   {
     title: "SISTEMA",
     items: [
-      { icon: Bot, label: "Bot WhatsApp", href: "/bot-whatsapp", disabled: false },
+      { icon: Bot, label: "Bot WhatsApp", href: "/bot-whatsapp", disabled: true },
       { icon: Users, label: "Acessos", href: "/acessos", disabled: false },
       { icon: Settings, label: "Configurações", href: "/configuracoes", disabled: false },
     ]
