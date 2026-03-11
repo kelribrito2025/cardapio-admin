@@ -158,7 +158,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   const currentTableData = tables.find(t => t.number === tableNumber);
   const isCurrentTableReserved = currentTableData?.status === "reserved";
   const { data: establishment } = trpc.establishment.get.useQuery();
-  const [establishmentId, setEstablishmentId] = useState<number | null>(null);
+  const establishmentId = establishment?.id ?? null;
 
   // Label (identificação) da mesa
   const [isEditingLabel, setIsEditingLabel] = useState(false);
@@ -171,12 +171,6 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
     setDisplayLabel(tableLabel || '');
   }, [tableLabel]);
 
-  useEffect(() => {
-    if (establishment) {
-      setEstablishmentId(establishment.id);
-    }
-  }, [establishment]);
-
   // Buscar categorias e produtos
   const { data: categories, isLoading: categoriesLoading } = trpc.category.list.useQuery(
     { establishmentId: establishmentId! },
@@ -185,7 +179,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
 
   const { data: products, isLoading: productsLoading } = trpc.product.list.useQuery(
     { establishmentId: establishmentId! },
-    { enabled: !!establishmentId }
+    { enabled: !!establishmentId, staleTime: 30_000 }
   );
 
   // Query para buscar configurações de impressão
@@ -1586,6 +1580,11 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                       </div>
                     </div>
                   ))}
+                </div>
+              ) : productsLoading ? (
+                <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-red-500 border-t-transparent mb-3" />
+                  <p className="text-sm font-medium">Carregando produtos...</p>
                 </div>
               ) : filteredProducts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-muted-foreground">

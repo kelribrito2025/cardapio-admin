@@ -8786,3 +8786,6 @@
 - [x] Backend: endpoint para restaurar mesa desativada
 - [x] Mesas desativadas devem continuar visíveis no mapa com aparência cinza/opaca (não desaparecer)
 - [x] Bug: Erro de validação ao cadastrar entregador com mesmo número de WhatsApp de colaborador - repasseStrategy inválido (adicionado 'none' ao enum)
+- [x] Fix busca intermitente: Eliminar state intermediário establishmentId (usar establishment?.id direto)
+- [x] Fix busca intermitente: Adicionar staleTime na query de produtos (cache 30s)
+- [x] Fix busca intermitente: Mostrar loading state na busca enquanto produtos carregam

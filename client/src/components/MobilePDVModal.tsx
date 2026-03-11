@@ -92,7 +92,7 @@ export function MobilePDVModal({
 }: MobilePDVModalProps) {
   const tableDisplayName = displayNumber || tableNumber.toString();
   const { data: establishment } = trpc.establishment.get.useQuery();
-  const [establishmentId, setEstablishmentId] = useState<number | null>(null);
+  const establishmentId = establishment?.id ?? null;
 
   // Label (identificação) da mesa
   const [isEditingLabel, setIsEditingLabel] = useState(false);
@@ -114,18 +114,14 @@ export function MobilePDVModal({
     setDisplayLabel(tableLabel || '');
   }, [tableLabel]);
 
-  useEffect(() => {
-    if (establishment) setEstablishmentId(establishment.id);
-  }, [establishment]);
-
   // Buscar categorias e produtos
   const { data: categories } = trpc.category.list.useQuery(
     { establishmentId: establishmentId! },
     { enabled: !!establishmentId }
   );
-  const { data: products } = trpc.product.list.useQuery(
+  const { data: products, isLoading: productsLoading } = trpc.product.list.useQuery(
     { establishmentId: establishmentId! },
-    { enabled: !!establishmentId }
+    { enabled: !!establishmentId, staleTime: 30_000 }
   );
 
   // Query para buscar configurações de impressão
@@ -798,10 +794,17 @@ export function MobilePDVModal({
                       </div>
                     )}
 
-                    {/* Mensagem de nenhum resultado */}
+                    {/* Loading ou nenhum resultado */}
                     {searchQuery.trim() && filteredProducts.length === 0 && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-card rounded-lg shadow-lg border border-border p-4 z-[60]">
-                        <p className="text-sm text-muted-foreground text-center">Nenhum produto encontrado</p>
+                        {productsLoading ? (
+                          <div className="flex items-center justify-center gap-2">
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-500 border-t-transparent" />
+                            <p className="text-sm text-muted-foreground">Carregando produtos...</p>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-muted-foreground text-center">Nenhum produto encontrado</p>
+                        )}
                       </div>
                     )}
                   </div>
