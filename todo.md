@@ -8755,3 +8755,8 @@
 - [x] Mensagem formatada com nome, email, senha, link e instruções de acesso
 - [x] Toast de confirmação: "Acesso criado e enviado via WhatsApp ao colaborador."
 - [x] Feedback diferenciado: sucesso com envio / sucesso sem envio (WhatsApp desconectado) / sucesso sem número
+
+## Melhorias na Página de Acessos (Colaboradores)
+- [x] Substituir tags de permissões na tabela por texto "Ver permissões" clicável que abre sidebar de edição com scroll automático até permissões
+- [x] Colocar campos Nome e Email lado a lado no modal de editar/criar colaborador
+- [x] Adicionar validação de WhatsApp em tempo real via UAZAPI (igual página de entregadores)

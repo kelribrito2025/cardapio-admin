@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { AdminLayout } from "@/components/AdminLayout";
 import { PageHeader, StatCard, EmptyState, TableSkeleton } from "@/components/shared";
@@ -52,6 +52,8 @@ import {
   Clock,
   MessageSquare,
   Phone,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -120,12 +122,14 @@ function CollaboratorFormSheet({
   editingCollab,
   establishmentId,
   onSuccess,
+  scrollToPermissions,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   editingCollab: any | null;
   establishmentId: number | undefined;
   onSuccess: () => void;
+  scrollToPermissions?: boolean;
 }) {
   const [formName, setFormName] = useState("");
   const [formEmail, setFormEmail] = useState("");
@@ -135,14 +139,38 @@ function CollaboratorFormSheet({
   const [formWhatsapp, setFormWhatsapp] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [whatsappStatus, setWhatsappStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid' | 'error'>('idle');
+  const [whatsappName, setWhatsappName] = useState<string | null>(null);
+  const checkTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const permissionsRef = useRef<HTMLDivElement>(null);
 
   const createMutation = trpc.collaborator.create.useMutation();
   const updateMutation = trpc.collaborator.update.useMutation();
+  const checkWhatsAppMutation = trpc.driver.checkWhatsApp.useMutation();
 
-  // Sync form when editingCollab or open changes
-  useState(() => {
-    // This is handled in the useEffect below
-  });
+  // Debounced WhatsApp validation
+  const checkWhatsApp = useCallback(async (phone: string) => {
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length < 10) {
+      setWhatsappStatus('idle');
+      setWhatsappName(null);
+      return;
+    }
+    setWhatsappStatus('checking');
+    try {
+      const result = await checkWhatsAppMutation.mutateAsync({ phone: digits });
+      if (result.exists) {
+        setWhatsappStatus('valid');
+        setWhatsappName(result.verifiedName || null);
+      } else {
+        setWhatsappStatus('invalid');
+        setWhatsappName(null);
+      }
+    } catch {
+      setWhatsappStatus('error');
+      setWhatsappName(null);
+    }
+  }, []);
 
   // Reset form when opening
   const handleOpenChange = (isOpen: boolean) => {
@@ -154,6 +182,8 @@ function CollaboratorFormSheet({
       setFormIsActive(editingCollab.isActive ?? true);
       setFormWhatsapp("");
       setShowPassword(false);
+      setWhatsappStatus('idle');
+      setWhatsappName(null);
     } else if (isOpen) {
       setFormName("");
       setFormEmail("");
@@ -162,17 +192,46 @@ function CollaboratorFormSheet({
       setFormIsActive(true);
       setFormWhatsapp("");
       setShowPassword(false);
+      setWhatsappStatus('idle');
+      setWhatsappName(null);
     }
     onOpenChange(isOpen);
   };
 
-  // Initialize form when sheet opens
-  if (open && formName === "" && editingCollab) {
-    setFormName(editingCollab.name || "");
-    setFormEmail(editingCollab.email || "");
-    setFormPermissions(editingCollab.permissions || []);
-    setFormIsActive(editingCollab.isActive ?? true);
-  }
+  // Initialize form when sheet opens (use effect to avoid render-phase setState)
+  useEffect(() => {
+    if (open && editingCollab) {
+      setFormName(editingCollab.name || "");
+      setFormEmail(editingCollab.email || "");
+      setFormPassword("");
+      setFormPermissions(editingCollab.permissions || []);
+      setFormIsActive(editingCollab.isActive ?? true);
+      setFormWhatsapp("");
+      setShowPassword(false);
+      setWhatsappStatus('idle');
+      setWhatsappName(null);
+    } else if (open && !editingCollab) {
+      setFormName("");
+      setFormEmail("");
+      setFormPassword("");
+      setFormPermissions([]);
+      setFormIsActive(true);
+      setFormWhatsapp("");
+      setShowPassword(false);
+      setWhatsappStatus('idle');
+      setWhatsappName(null);
+    }
+  }, [open, editingCollab]);
+
+  // Scroll to permissions when requested
+  useEffect(() => {
+    if (open && scrollToPermissions && permissionsRef.current) {
+      const timer = setTimeout(() => {
+        permissionsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [open, scrollToPermissions]);
 
   function togglePermission(key: string) {
     setFormPermissions((prev) =>
@@ -187,6 +246,31 @@ function CollaboratorFormSheet({
   function clearAllPermissions() {
     setFormPermissions([]);
   }
+
+  const handleWhatsappChange = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    let masked = digits;
+    if (digits.length > 6) {
+      masked = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    } else if (digits.length > 2) {
+      masked = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    } else if (digits.length > 0) {
+      masked = `(${digits}`;
+    }
+    setFormWhatsapp(masked);
+
+    // Reset status when clearing
+    if (digits.length < 10) {
+      setWhatsappStatus('idle');
+      setWhatsappName(null);
+    }
+
+    // Debounce: wait 800ms after typing stops
+    if (checkTimeoutRef.current) clearTimeout(checkTimeoutRef.current);
+    if (digits.length >= 10) {
+      checkTimeoutRef.current = setTimeout(() => checkWhatsApp(masked), 800);
+    }
+  };
 
   async function handleSave() {
     if (!establishmentId) return;
@@ -244,7 +328,7 @@ function CollaboratorFormSheet({
           });
         } else if (cleanWhatsapp.length >= 10) {
           toast.success("Colaborador cadastrado com sucesso", {
-            description: "N\u00e3o foi poss\u00edvel enviar via WhatsApp. Verifique se o WhatsApp est\u00e1 conectado.",
+            description: "Não foi possível enviar via WhatsApp. Verifique se o WhatsApp está conectado.",
           });
         } else {
           toast.success("Colaborador cadastrado com sucesso");
@@ -286,35 +370,38 @@ function CollaboratorFormSheet({
 
           {/* Content - scrollable */}
           <div className="flex-1 overflow-y-auto p-4 space-y-5">
-            {/* Nome */}
-            <div className="space-y-2">
-              <Label htmlFor="collab-name" className="text-sm font-medium">Nome completo *</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="collab-name"
-                  value={formName}
-                  onChange={(e) => setFormName(e.target.value.slice(0, 10))}
+            {/* Nome + Email side by side */}
+            <div className="grid grid-cols-2 gap-3">
+              {/* Nome */}
+              <div className="space-y-2">
+                <Label htmlFor="collab-name" className="text-sm font-medium">Nome *</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="collab-name"
+                    value={formName}
+                    onChange={(e) => setFormName(e.target.value.slice(0, 10))}
                     maxLength={10}
-                  placeholder="Nome do colaborador"
-                  className="h-10 rounded-xl bg-background border-border/50 pl-9"
-                />
+                    placeholder="Nome"
+                    className="h-10 rounded-xl bg-background border-border/50 pl-9"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Email */}
-            <div className="space-y-2">
-              <Label htmlFor="collab-email" className="text-sm font-medium">Email *</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="collab-email"
-                  type="email"
-                  value={formEmail}
-                  onChange={(e) => setFormEmail(e.target.value)}
-                  placeholder="email@exemplo.com"
-                  className="h-10 rounded-xl bg-background border-border/50 pl-9"
-                />
+              {/* Email */}
+              <div className="space-y-2">
+                <Label htmlFor="collab-email" className="text-sm font-medium">Email *</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="collab-email"
+                    type="email"
+                    value={formEmail}
+                    onChange={(e) => setFormEmail(e.target.value)}
+                    placeholder="email@exemplo.com"
+                    className="h-10 rounded-xl bg-background border-border/50 pl-9"
+                  />
+                </div>
               </div>
             </div>
 
@@ -328,27 +415,58 @@ function CollaboratorFormSheet({
                     id="collab-whatsapp"
                     type="tel"
                     value={formWhatsapp}
-                    onChange={(e) => {
-                      let v = e.target.value.replace(/\D/g, '').slice(0, 11);
-                      if (v.length > 6) {
-                        v = `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7)}`;
-                      } else if (v.length > 2) {
-                        v = `(${v.slice(0, 2)}) ${v.slice(2)}`;
-                      } else if (v.length > 0) {
-                        v = `(${v}`;
-                      }
-                      setFormWhatsapp(v);
-                    }}
+                    onChange={(e) => handleWhatsappChange(e.target.value)}
                     placeholder="(00) 00000-0000"
-                    className="h-10 rounded-xl bg-background border-border/50 pl-9"
+                    className={`h-10 rounded-xl bg-background pl-9 pr-10 ${
+                      whatsappStatus === 'valid' ? 'border-green-500 focus-visible:ring-green-500' :
+                      whatsappStatus === 'invalid' ? 'border-red-500 focus-visible:ring-red-500' :
+                      'border-border/50'
+                    }`}
                   />
+                  {/* Validation indicator */}
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {whatsappStatus === 'checking' && (
+                      <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
+                    )}
+                    {whatsappStatus === 'valid' && (
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    )}
+                    {whatsappStatus === 'invalid' && (
+                      <XCircle className="h-4 w-4 text-red-500" />
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-start gap-2 p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/50 dark:border-emerald-800/30">
-                  <MessageSquare className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
-                  <p className="text-xs text-emerald-700 dark:text-emerald-300">
-                    O colaborador receberá automaticamente os dados de acesso via WhatsApp
+                {/* Validation feedback */}
+                {whatsappStatus === 'valid' && (
+                  <p className="text-xs text-green-600 flex items-center gap-1">
+                    <CheckCircle2 className="h-3 w-3" />
+                    Número válido no WhatsApp{whatsappName ? ` — ${whatsappName}` : ''}
                   </p>
-                </div>
+                )}
+                {whatsappStatus === 'invalid' && (
+                  <p className="text-xs text-red-500 flex items-center gap-1">
+                    <XCircle className="h-3 w-3" />
+                    Número não encontrado no WhatsApp
+                  </p>
+                )}
+                {whatsappStatus === 'error' && (
+                  <p className="text-xs text-amber-500">
+                    Não foi possível verificar. WhatsApp pode não estar conectado.
+                  </p>
+                )}
+                {whatsappStatus === 'checking' && (
+                  <p className="text-xs text-muted-foreground">
+                    Verificando número no WhatsApp...
+                  </p>
+                )}
+                {whatsappStatus === 'idle' && (
+                  <div className="flex items-start gap-2 p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/50 dark:border-emerald-800/30">
+                    <MessageSquare className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                    <p className="text-xs text-emerald-700 dark:text-emerald-300">
+                      O colaborador receberá automaticamente os dados de acesso via WhatsApp
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -394,7 +512,7 @@ function CollaboratorFormSheet({
             )}
 
             {/* Permissions */}
-            <div className="space-y-3">
+            <div ref={permissionsRef} className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label className="text-sm font-medium flex items-center gap-1.5">
                   <Shield className="h-4 w-4 text-primary" />
@@ -484,6 +602,7 @@ export default function Acessos() {
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editingCollab, setEditingCollab] = useState<any | null>(null);
+  const [scrollToPerms, setScrollToPerms] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [collabToDelete, setCollabToDelete] = useState<any | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -509,11 +628,13 @@ export default function Acessos() {
 
   const handleNew = () => {
     setEditingCollab(null);
+    setScrollToPerms(false);
     setSheetOpen(true);
   };
 
-  const handleEdit = (collab: any) => {
+  const handleEdit = (collab: any, scrollToPermissions = false) => {
     setEditingCollab(collab);
+    setScrollToPerms(scrollToPermissions);
     setSheetOpen(true);
   };
 
@@ -647,21 +768,13 @@ export default function Acessos() {
                           </div>
                         </td>
                         <td className="p-4">
-                          <div className="flex flex-wrap gap-1.5 items-center">
-                            {perms.slice(0, 3).map((perm) => (
-                              <Badge key={perm} variant="outline" className="text-xs font-normal">
-                                {PERMISSION_LABEL_MAP[perm] || perm}
-                              </Badge>
-                            ))}
-                            {perms.length > 3 && (
-                              <Badge variant="secondary" className="text-xs">
-                                +{perms.length - 3}
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {pluralPermissions(perms.length)}
-                          </p>
+                          <button
+                            onClick={() => handleEdit(collab, true)}
+                            className="text-sm text-primary hover:underline flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <Shield className="h-3.5 w-3.5" />
+                            Ver permissões ({perms.length})
+                          </button>
                         </td>
                         <td className="p-4">
                           <Badge
@@ -770,10 +883,13 @@ export default function Acessos() {
                       >
                         {collab.isActive ? "Ativo" : "Inativo"}
                       </Badge>
-                      <Badge variant="outline" className="text-xs font-normal">
-                        <ShieldCheck className="h-3 w-3 mr-1" />
-                        {pluralPermissions(perms.length)}
-                      </Badge>
+                      <button
+                        onClick={() => handleEdit(collab, true)}
+                        className="text-xs text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <Shield className="h-3 w-3" />
+                        Ver permissões ({perms.length})
+                      </button>
                       {collab.lastLoginAt && (
                         <span className="text-xs text-muted-foreground ml-auto">
                           {new Date(collab.lastLoginAt).toLocaleDateString("pt-BR")}
@@ -793,11 +909,15 @@ export default function Acessos() {
         open={sheetOpen}
         onOpenChange={(open) => {
           setSheetOpen(open);
-          if (!open) setEditingCollab(null);
+          if (!open) {
+            setEditingCollab(null);
+            setScrollToPerms(false);
+          }
         }}
         editingCollab={editingCollab}
         establishmentId={estId}
         onSuccess={handleRefresh}
+        scrollToPermissions={scrollToPerms}
       />
 
       {/* Delete confirmation */}
