@@ -8695,3 +8695,13 @@
 
 ## UX - Botão + Mesas Mobile
 - [x] Aumentar área clicável do botão + no lado direito do card de produto na página de mesas mobile (estilo: preço + botão como zona de toque única maior)
+
+## Identificação de Mesas (Label)
+- [x] Adicionar campo label (varchar 15, opcional) na tabela de mesas + endpoint para atualizar
+- [x] Implementar edição inline do label no MobilePDVModal (mobile)
+- [x] Implementar edição inline do label no PDVSlidebar (desktop)
+- [x] Implementar etiqueta estilo aba de pasta no card de mesa no mapa
+- [x] Limpar label automaticamente ao fechar mesa
+- [x] Exibir label no header: Mobile "Mesa X | João | R$ Y" / Desktop "Mesa X | João"
+- [ ] Trocar etiqueta de identificação da mesa para estilo corner ribbon diagonal no canto superior direito
+- [x] Redesenhar faixa inferior do card de mesa: label à esquerda + status (Ocupada/Livre/Reservada) à direita, fundo cinza claro

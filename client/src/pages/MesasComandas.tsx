@@ -102,6 +102,7 @@ interface Table {
   reservedPhone?: string | null;
   reservedGuests?: number | null;
   spaceId?: number | null;
+  label?: string | null;
   // Campos para mesas combinadas
   mergedIntoId?: number | null;
   mergedTableIds?: string | null;
@@ -1062,6 +1063,7 @@ export default function MesasComandas() {
                   key={table.id}
                   className="relative"
                 >
+                  {/* Faixa inferior com identificação da mesa */}
                   {/* Botão ⋮ no canto superior direito */}
                   <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
                     <DropdownMenu>
@@ -1158,8 +1160,9 @@ export default function MesasComandas() {
                     }}
                     onClick={() => handleTableClick(table)}
                     className={cn(
-                      "w-full bg-card rounded-xl border border-border/50 p-2.5 sm:p-3 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
+                      "w-full bg-card border border-border/50 p-2.5 sm:p-3 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
                       "border-l-4 min-h-[90px] sm:min-h-[96px]",
+                      table.label ? "rounded-t-xl" : "rounded-xl",
                       statusConfig.borderColor,
                       isDragging && "opacity-50 scale-95",
                       isDropTarget && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50"
@@ -1233,15 +1236,14 @@ export default function MesasComandas() {
                     
                     {/* Informações da mesa ocupada */}
                     {hasItems && (
-                      <div className="space-y-0.5 sm:space-y-1 text-xs sm:text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Receipt className="h-3.5 w-3.5" />
-                          <span>{itemsCount} {itemsCount === 1 ? 'item' : 'itens'}</span>
-                        </div>
+                      <div className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground flex-wrap">
+                        <Receipt className="h-3.5 w-3.5" />
+                        <span>{itemsCount} {itemsCount === 1 ? 'item' : 'itens'}</span>
                         {tableTotal > 0 && (
-                          <div className="font-semibold text-foreground">
-                            {formatCurrency(tableTotal)}
-                          </div>
+                          <>
+                            <span className="text-muted-foreground/50">|</span>
+                            <span className="font-semibold text-foreground">{formatCurrency(tableTotal)}</span>
+                          </>
                         )}
                       </div>
                     )}
@@ -1271,6 +1273,13 @@ export default function MesasComandas() {
                       </div>
                     )}
                   </button>
+                  {/* Faixa inferior com identificação e status da mesa */}
+                  {table.label && (
+                    <div className={cn("flex items-center justify-between bg-gray-100/80 px-3 py-2 rounded-b-xl -mt-[1px] border-t border-border/20 border-l-4", statusConfig.borderColor)}>
+                      <span className="font-bold text-foreground text-xs sm:text-sm truncate mr-2">{table.label}</span>
+                      <span className={cn("w-2.5 h-2.5 rounded-full flex-shrink-0", statusConfig.color)} />
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -1969,6 +1978,7 @@ export default function MesasComandas() {
           onOrderCreated={handleOrderCreated}
           tabItemsCount={selectedTable?.items?.length || 0}
           tableTotal={selectedTable?.id ? getTableTotal(selectedTable.id) : 0}
+          tableLabel={selectedTable?.label}
         />
       )}
 
@@ -1983,6 +1993,7 @@ export default function MesasComandas() {
         onOrderCreated={handleOrderCreated}
         showHandle={true}
         displayNumber={selectedTable?.displayNumber}
+        tableLabel={selectedTable?.label}
         tables={tables.map(t => ({
           id: t.id,
           number: t.number,

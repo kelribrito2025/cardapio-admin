@@ -911,6 +911,13 @@
       "when": 1773060260174,
       "tag": "0129_acoustic_gladiator",
       "breakpoints": true
+    },
+    {
+      "idx": 130,
+      "version": "5",
+      "when": 1773199109885,
+      "tag": "0130_bouncy_scrambler",
+      "breakpoints": true
     }
   ]
 }
