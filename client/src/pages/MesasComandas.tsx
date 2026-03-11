@@ -981,7 +981,7 @@ export default function MesasComandas() {
 
         {/* Legenda de Status + Toggle Grid/Lista */}
         <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap">
           <Filter className="h-5 w-5 text-muted-foreground/70" />
           {statusLegend.filter((item) => item.status !== 'reserved' || statusCounts.reserved > 0).map((item, index) => (
             <button
