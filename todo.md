@@ -8687,3 +8687,11 @@
 
 ## Correção Meta Tags OG - Menu Público
 - [x] Corrigir meta tags OG nas páginas de menu público para mostrar imagem/descrição do restaurante em vez do screenshot do dashboard admin
+
+## UX - Botão + Mesas Mobile
+- [ ] Aumentar área clicável do botão + no card de produto (lado direito: preço + botão) na página de mesas mobile
+- [ ] Sem complemento: clicar na área direita adiciona direto ao pedido
+- [ ] Com complemento: clicar na área direita abre modal de detalhes para selecionar complementos
+
+## UX - Botão + Mesas Mobile
+- [x] Aumentar área clicável do botão + no lado direito do card de produto na página de mesas mobile (estilo: preço + botão como zona de toque única maior)

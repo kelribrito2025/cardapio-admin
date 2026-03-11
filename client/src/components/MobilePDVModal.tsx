@@ -703,15 +703,15 @@ export function MobilePDVModal({
                                 <p className="text-xs text-muted-foreground truncate mt-0.5">{product.description}</p>
                               )}
                             </div>
-                            <div className="flex items-center gap-2 flex-shrink-0">
+                            <button
+                              onMouseDown={(e) => { e.preventDefault(); handleQuickAdd(product, e as any); }}
+                              className="flex items-center gap-2 flex-shrink-0 pl-3 pr-1 py-2 -my-2 -mr-1 rounded-r-lg hover:bg-red-50 active:bg-red-100 transition-colors cursor-pointer"
+                            >
                               <span className="text-sm font-semibold text-red-600">{formatCurrency(parseFloat(product.price))}</span>
-                              <button
-                                onMouseDown={(e) => { e.preventDefault(); handleQuickAdd(product, e as any); }}
-                                className="bg-red-50 hover:bg-red-100 rounded-full transition-colors flex items-center justify-center" style={{width: '30px', height: '30px', padding: '7px'}}
-                              >
-                                <Plus className="h-3.5 w-3.5 text-red-500" />
-                              </button>
-                            </div>
+                              <div className="bg-red-50 rounded-full flex items-center justify-center" style={{width: '32px', height: '32px', minWidth: '32px'}}>
+                                <Plus className="h-4 w-4 text-red-500" />
+                              </div>
+                            </button>
                           </div>
                         ))}
                         {filteredProducts.length > 15 && (

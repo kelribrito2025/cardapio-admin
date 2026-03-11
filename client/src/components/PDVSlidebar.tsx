@@ -1609,21 +1609,19 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                         <p className="text-[11px] text-muted-foreground line-clamp-2 mb-1 flex-1">
                           {product.description || ''}
                         </p>
-                        <div className="flex items-center justify-between mt-auto gap-1">
+                        <button
+                          className="flex items-center justify-between mt-auto gap-1 w-full rounded-lg px-2 py-1.5 -mx-1 hover:bg-red-50 active:bg-red-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                          onClick={(e) => handleQuickAdd(product, e)}
+                          disabled={product.hasStock && product.stockQuantity != null && product.stockQuantity <= 0}
+                        >
                           <span className="text-red-600 font-bold text-sm whitespace-nowrap">
                             {formatCurrency(parseFloat(product.price))}
                           </span>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-7 px-2 text-[11px] border-red-200 text-red-600 hover:bg-red-50 shrink-0"
-                            onClick={(e) => handleQuickAdd(product, e)}
-                            disabled={product.hasStock && product.stockQuantity != null && product.stockQuantity <= 0}
-                          >
-                            <Plus className="h-3.5 w-3.5 mr-1" />
+                          <div className="flex items-center gap-1 text-[11px] font-medium text-red-600 border border-red-200 rounded-md px-2 py-1 shrink-0">
+                            <Plus className="h-3.5 w-3.5" />
                             Adicionar
-                          </Button>
-                        </div>
+                          </div>
+                        </button>
                       </div>
                     </div>
                   ))}
