@@ -669,7 +669,7 @@ export default function Acessos() {
     <AdminLayout>
       <PageHeader
         title="Acessos"
-        description="Colaboradores acessam o painel usando email e senha cadastrados aqui. Eles verão apenas as páginas autorizadas."
+        description="Colaboradores entram com email e senha e acessam apenas páginas autorizadas."
         icon={<Users className="h-6 w-6 text-blue-600" />}
         actions={
           <Button onClick={handleNew} className="gap-2">
