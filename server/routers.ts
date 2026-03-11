@@ -5538,7 +5538,7 @@ export const appRouter = router({
         email: z.string().email().optional().or(z.literal('')),
         whatsapp: z.string().min(1, 'WhatsApp é obrigatório'),
         isActive: z.boolean().default(true),
-        repasseStrategy: z.enum(['neighborhood', 'fixed', 'percentage']).default('neighborhood'),
+        repasseStrategy: z.enum(['none', 'neighborhood', 'fixed', 'percentage']).default('neighborhood'),
         fixedValue: z.string().optional(),
         percentageValue: z.string().optional(),
       }))
@@ -5567,7 +5567,7 @@ export const appRouter = router({
         email: z.string().email().optional().or(z.literal('')),
         whatsapp: z.string().min(1).optional(),
         isActive: z.boolean().optional(),
-        repasseStrategy: z.enum(['neighborhood', 'fixed', 'percentage']).optional(),
+        repasseStrategy: z.enum(['none', 'neighborhood', 'fixed', 'percentage']).optional(),
         fixedValue: z.string().optional().nullable(),
         percentageValue: z.string().optional().nullable(),
       }))

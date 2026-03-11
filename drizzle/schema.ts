@@ -897,7 +897,7 @@ export const drivers = mysqlTable("drivers", {
   whatsapp: varchar("whatsapp", { length: 30 }).notNull(),
   isActive: boolean("isActive").default(true).notNull(),
   // Repasse strategy: "neighborhood" = valor por bairro, "fixed" = valor fixo, "percentage" = percentual da taxa
-  repasseStrategy: mysqlEnum("repasseStrategy", ["neighborhood", "fixed", "percentage"]).default("neighborhood").notNull(),
+  repasseStrategy: mysqlEnum("repasseStrategy", ["none", "neighborhood", "fixed", "percentage"]).default("neighborhood").notNull(),
   fixedValue: decimal("fixedValue", { precision: 10, scale: 2 }),
   percentageValue: decimal("percentageValue", { precision: 5, scale: 2 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

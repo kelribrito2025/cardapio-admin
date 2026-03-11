@@ -8785,3 +8785,4 @@
 - [x] Backend: endpoint para desativar mesa (soft delete via isActive)
 - [x] Backend: endpoint para restaurar mesa desativada
 - [x] Mesas desativadas devem continuar visíveis no mapa com aparência cinza/opaca (não desaparecer)
+- [x] Bug: Erro de validação ao cadastrar entregador com mesmo número de WhatsApp de colaborador - repasseStrategy inválido (adicionado 'none' ao enum)
