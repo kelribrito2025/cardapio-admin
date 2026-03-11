@@ -1102,32 +1102,65 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     );
 
                     if (sidebarCollapsed) {
-                      // Quando colapsado, clicar no menu pai expande a sidebar e abre o submenu
+                      // Quando colapsado, abrir popover flutuante com os filhos
                       return (
                         <div key={item.href}>
-                          <Tooltip delayDuration={0}>
-                            <TooltipTrigger asChild>
-                              <div
-                                className={parentClassName}
-                                onClick={() => {
-                                  setSidebarCollapsed(false);
-                                  setExpandedMenus(prev => ({ ...prev, [item.href]: true }));
-                                }}
-                              >
-                                <div className="relative">
-                                  <item.icon className="h-4 w-4 flex-shrink-0 mx-auto" />
-                                  {totalBadge > 0 && (
-                                    <span className="absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse bg-red-500 text-white">
-                                      {totalBadge > 9 ? "9+" : totalBadge}
-                                    </span>
-                                  )}
-                                </div>
+                          <Popover>
+                            <Tooltip delayDuration={0}>
+                              <TooltipTrigger asChild>
+                                <PopoverTrigger asChild>
+                                  <div
+                                    className={cn(parentClassName, "cursor-pointer")}
+                                  >
+                                    <div className="relative">
+                                      <item.icon className="h-4 w-4 flex-shrink-0 mx-auto" />
+                                      {totalBadge > 0 && (
+                                        <span className="absolute -top-1.5 -right-1.5 text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse bg-red-500 text-white">
+                                          {totalBadge > 9 ? "9+" : totalBadge}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </PopoverTrigger>
+                              </TooltipTrigger>
+                              <TooltipContent side="right" className="font-medium">
+                                {item.label}
+                              </TooltipContent>
+                            </Tooltip>
+                            <PopoverContent side="right" align="start" className="w-44 p-1.5 rounded-xl shadow-lg border border-border/50" sideOffset={8}>
+                              <div className="space-y-0.5">
+                                {visibleChildren.map((child: any) => {
+                                  const childActive = location === child.href || (child.href !== '/' && location.startsWith(child.href));
+                                  const childBadge = child.badgeKey === 'reviews' && reviewsEnabled && typeof unreadReviewCount === 'number' && unreadReviewCount > 0 ? unreadReviewCount 
+                                    : child.href === '/agendados' && scheduledPendingCount > 0 ? scheduledPendingCount 
+                                    : 0;
+                                  return (
+                                    <Link
+                                      key={child.href}
+                                      href={child.href}
+                                      onClick={() => handleNavClick(child.href)}
+                                      className={cn(
+                                        "flex items-center gap-2.5 py-2 px-3 text-sm font-medium rounded-lg transition-colors",
+                                        childActive
+                                          ? "bg-primary/10 text-primary"
+                                          : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                                      )}
+                                    >
+                                      <child.icon className="h-4 w-4 flex-shrink-0" />
+                                      <span className="flex items-center gap-2 flex-1">
+                                        {child.label}
+                                        {childBadge > 0 && (
+                                          <span className="text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center bg-red-500 text-white">
+                                            {childBadge > 99 ? "99+" : childBadge}
+                                          </span>
+                                        )}
+                                      </span>
+                                    </Link>
+                                  );
+                                })}
                               </div>
-                            </TooltipTrigger>
-                            <TooltipContent side="right" className="font-medium">
-                              <p>{item.label}</p>
-                            </TooltipContent>
-                          </Tooltip>
+                            </PopoverContent>
+                          </Popover>
                         </div>
                       );
                     }

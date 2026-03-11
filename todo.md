@@ -8760,3 +8760,10 @@
 - [x] Substituir tags de permissões na tabela por texto "Ver permissões" clicável que abre sidebar de edição com scroll automático até permissões
 - [x] Colocar campos Nome e Email lado a lado no modal de editar/criar colaborador
 - [x] Adicionar validação de WhatsApp em tempo real via UAZAPI (igual página de entregadores)
+
+## Popover no Menu da Sidebar Minimizada
+- [x] Quando sidebar minimizada, clique em "Menu" abre popover flutuante (não expande sidebar)
+- [x] Popover lista: Cardápio, Grupos, Avaliações
+- [x] Sidebar expandida mantém comportamento atual (submenu expandido)
+- [x] Popover aparece ao lado do ícone Menu
+- [x] Fix: Tooltip não aparece no hover do item Menu na sidebar colapsada (precisa combinar Tooltip + Popover)
