@@ -163,10 +163,12 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   // Label (identificação) da mesa
   const [isEditingLabel, setIsEditingLabel] = useState(false);
   const [labelValue, setLabelValue] = useState(tableLabel || '');
+  const [displayLabel, setDisplayLabel] = useState(tableLabel || '');
   const labelInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setLabelValue(tableLabel || '');
+    setDisplayLabel(tableLabel || '');
   }, [tableLabel]);
 
   useEffect(() => {
@@ -197,6 +199,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   // Mutation para atualizar label da mesa
   const updateLabelMutation = trpc.tables.updateLabel.useMutation({
     onSuccess: () => {
+      setDisplayLabel(labelValue.trim());
       utils.tables.list.invalidate();
       setIsEditingLabel(false);
     },
@@ -1660,9 +1663,9 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                     <div>
                       <h3 className="text-xl font-bold text-foreground leading-tight">
                         Mesa {tableDisplayName}
-                        {tableLabel && !isEditingLabel && (
-                          <span className="text-amber-700"> | {tableLabel}</span>
-                        )}
+                        {displayLabel && !isEditingLabel && (
+                           <span className="text-amber-700"> | {displayLabel}</span>
+                         )}
                       </h3>
                       {/* Campo de identificação inline */}
                       {tableId && (
@@ -1680,8 +1683,8 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                                   if (e.key === 'Enter') {
                                     updateLabelMutation.mutate({ id: tableId!, label: labelValue.trim() || null });
                                   } else if (e.key === 'Escape') {
-                                    setLabelValue(tableLabel || '');
-                                    setIsEditingLabel(false);
+                          setLabelValue(displayLabel || '');
+                          setIsEditingLabel(false);
                                   }
                                 }}
                                 autoFocus
@@ -1693,7 +1696,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                                 <Check className="h-3.5 w-3.5" />
                               </button>
                               <button
-                                onClick={() => { setLabelValue(tableLabel || ''); setIsEditingLabel(false); }}
+                                onClick={() => { setLabelValue(displayLabel || ''); setIsEditingLabel(false); }}
                                 className="p-0.5 text-red-500 hover:bg-red-50 rounded transition-colors"
                               >
                                 <X className="h-3.5 w-3.5" />
@@ -1705,7 +1708,7 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                               className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
                             >
                               <Pencil className="h-3 w-3" />
-                              {tableLabel ? 'Editar identificação' : 'Adicionar identificação'}
+                              {displayLabel ? 'Editar identificação' : 'Adicionar identificação'}
                             </button>
                           )}
                         </div>

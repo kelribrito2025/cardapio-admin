@@ -8708,3 +8708,4 @@
 
 - [x] Esconder tag "Reservada" no filtro de status quando não houver mesas reservadas (count = 0)
 - [x] Exibir label da mesa na visualização em lista
+- [x] Bug: label da mesa não atualiza no header do modal PDV em tempo real após edição (só com F5)

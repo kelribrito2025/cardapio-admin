@@ -97,10 +97,12 @@ export function MobilePDVModal({
   // Label (identificação) da mesa
   const [isEditingLabel, setIsEditingLabel] = useState(false);
   const [labelValue, setLabelValue] = useState(tableLabel || '');
+  const [displayLabel, setDisplayLabel] = useState(tableLabel || '');
   const labelInputRef = useRef<HTMLInputElement>(null);
   const utils = trpc.useUtils();
   const updateLabelMutation = trpc.tables.updateLabel.useMutation({
     onSuccess: () => {
+      setDisplayLabel(labelValue.trim());
       utils.tables.list.invalidate();
       setIsEditingLabel(false);
     },
@@ -109,6 +111,7 @@ export function MobilePDVModal({
 
   useEffect(() => {
     setLabelValue(tableLabel || '');
+    setDisplayLabel(tableLabel || '');
   }, [tableLabel]);
 
   useEffect(() => {
@@ -642,11 +645,11 @@ export function MobilePDVModal({
                 </div>
                 <h2 className="text-lg font-bold text-foreground">
                   Mesa {tableDisplayName}
-                  {tableLabel && !isEditingLabel && (
+                  {displayLabel && !isEditingLabel && (
                     <span className="text-muted-foreground font-normal"> | </span>
                   )}
-                  {tableLabel && !isEditingLabel && (
-                    <span className="text-amber-700 font-semibold">{tableLabel}</span>
+                  {displayLabel && !isEditingLabel && (
+                    <span className="text-amber-700 font-semibold">{displayLabel}</span>
                   )}
                   <span className="text-muted-foreground font-normal"> | </span>
                   <span className="text-red-600">{formatCurrency(getDisplayTotal())}</span>
@@ -672,7 +675,7 @@ export function MobilePDVModal({
                         if (e.key === 'Enter') {
                           updateLabelMutation.mutate({ id: tableId!, label: labelValue.trim() || null });
                         } else if (e.key === 'Escape') {
-                          setLabelValue(tableLabel || '');
+                          setLabelValue(displayLabel || '');
                           setIsEditingLabel(false);
                         }
                       }}
@@ -685,7 +688,7 @@ export function MobilePDVModal({
                       <Check className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => { setLabelValue(tableLabel || ''); setIsEditingLabel(false); }}
+                      onClick={() => { setLabelValue(displayLabel || ''); setIsEditingLabel(false); }}
                       className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors"
                     >
                       <X className="h-4 w-4" />
@@ -697,7 +700,7 @@ export function MobilePDVModal({
                     className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
                   >
                     <Pencil className="h-3 w-3" />
-                    {tableLabel ? 'Editar identificação' : 'Adicionar identificação'}
+                    {displayLabel ? 'Editar identificação' : 'Adicionar identificação'}
                   </button>
                 )}
               </div>
