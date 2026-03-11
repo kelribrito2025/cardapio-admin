@@ -8707,3 +8707,4 @@
 - [x] Redesenhar faixa inferior do card de mesa: label à esquerda + status (Ocupada/Livre/Reservada) à direita, fundo cinza claro
 
 - [x] Esconder tag "Reservada" no filtro de status quando não houver mesas reservadas (count = 0)
+- [x] Exibir label da mesa na visualização em lista

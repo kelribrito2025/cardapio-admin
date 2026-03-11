@@ -1349,6 +1349,12 @@ export default function MesasComandas() {
                                 {table.reservedName}
                               </span>
                             )}
+                            {table.label && derivedStatus !== 'reserved' && (
+                              <div className="flex items-center gap-1.5 mt-0.5">
+                                <div className={cn("w-[3px] h-3 rounded-full flex-shrink-0", statusConfig.color)} />
+                                <span className="text-[11px] text-muted-foreground truncate">{table.label}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </td>
