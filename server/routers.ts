@@ -6899,7 +6899,7 @@ export const appRouter = router({
     create: protectedProcedure
       .input(z.object({
         establishmentId: z.number(),
-        name: z.string().min(1, "Nome é obrigatório"),
+        name: z.string().min(1, "Nome é obrigatório").max(10, "Nome deve ter no máximo 10 caracteres"),
         email: z.string().email("Email inválido"),
         password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
         permissions: z.array(z.string()),
@@ -6928,7 +6928,7 @@ export const appRouter = router({
     update: protectedProcedure
       .input(z.object({
         id: z.number(),
-        name: z.string().min(1).optional(),
+        name: z.string().min(1).max(10).optional(),
         email: z.string().email().optional(),
         password: z.string().min(6).optional(),
         permissions: z.array(z.string()).optional(),

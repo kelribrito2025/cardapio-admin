@@ -276,7 +276,8 @@ function CollaboratorFormSheet({
                 <Input
                   id="collab-name"
                   value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
+                  onChange={(e) => setFormName(e.target.value.slice(0, 10))}
+                    maxLength={10}
                   placeholder="Nome do colaborador"
                   className="h-10 rounded-xl bg-background border-border/50 pl-9"
                 />
