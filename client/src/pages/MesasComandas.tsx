@@ -1236,15 +1236,14 @@ export default function MesasComandas() {
                     
                     {/* Informações da mesa ocupada */}
                     {hasItems && (
-                      <div className="space-y-0.5 sm:space-y-1 text-xs sm:text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Receipt className="h-3.5 w-3.5" />
-                          <span>{itemsCount} {itemsCount === 1 ? 'item' : 'itens'}</span>
-                        </div>
+                      <div className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground flex-wrap">
+                        <Receipt className="h-3.5 w-3.5" />
+                        <span>{itemsCount} {itemsCount === 1 ? 'item' : 'itens'}</span>
                         {tableTotal > 0 && (
-                          <div className="font-semibold text-foreground">
-                            {formatCurrency(tableTotal)}
-                          </div>
+                          <>
+                            <span className="text-muted-foreground/50">|</span>
+                            <span className="font-semibold text-foreground">{formatCurrency(tableTotal)}</span>
+                          </>
                         )}
                       </div>
                     )}
