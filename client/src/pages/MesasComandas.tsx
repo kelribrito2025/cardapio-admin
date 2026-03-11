@@ -1276,7 +1276,7 @@ export default function MesasComandas() {
                   </button>
                   {/* Faixa inferior com identificação da mesa */}
                   {table.label && (
-                    <div className="bg-emerald-600 text-white text-[10px] sm:text-xs font-semibold px-2.5 py-1 text-center rounded-b-xl truncate -mt-[1px]">
+                    <div className={cn("text-white text-[10px] sm:text-xs font-semibold px-2.5 py-1 text-center rounded-b-xl truncate -mt-[1px]", statusConfig.color)}>
                       {table.label}
                     </div>
                   )}
