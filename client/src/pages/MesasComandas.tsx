@@ -1061,12 +1061,12 @@ export default function MesasComandas() {
               return (
                 <div
                   key={table.id}
-                  className={cn("relative", table.label && "mt-3")}
+                  className="relative"
                 >
-                  {/* Etiqueta de identificação estilo aba de pasta */}
+                  {/* Etiqueta de identificação estilo aba de pasta - fica ACIMA do card */}
                   {table.label && (
-                    <div className="absolute -top-3 right-6 sm:right-8 z-[5] pointer-events-none">
-                      <div className="bg-amber-100 text-amber-800 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-t-md border border-b-0 border-amber-300 shadow-sm max-w-[80px] sm:max-w-[100px] truncate">
+                    <div className="flex justify-end pr-3 sm:pr-4 -mb-[1px] relative z-[5]">
+                      <div className="bg-amber-100 text-amber-800 text-[10px] sm:text-xs font-semibold px-2.5 py-0.5 rounded-t-md border border-b-0 border-amber-300 max-w-[90px] sm:max-w-[110px] truncate">
                         {table.label}
                       </div>
                     </div>
