@@ -8770,3 +8770,9 @@
 - [x] Fix: Corrigir formatação da mensagem WhatsApp do colaborador (quebras de linha entre blocos + link v2.mindi.com.br)
 - [ ] Desativar item Bot WhatsApp do menu lateral (sem badge, apenas remover do menu)
 - [x] Desabilitar clique no item Bot WhatsApp na sidebar (manter visível, sem navegação)
+
+## Permissões de Colaborador - Ocultar Opções de Admin
+- [x] Ocultar toggle abrir/fechar restaurante para colaboradores (header e dropdown)
+- [x] Ocultar item Planos para colaboradores (dropdown do perfil)
+- [x] Ocultar badge/info de teste gratuito (trial) para colaboradores (header)
+- [x] Ocultar controle de som do sistema para colaboradores (header)

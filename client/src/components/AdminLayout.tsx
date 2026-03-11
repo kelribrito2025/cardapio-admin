@@ -1462,8 +1462,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 </Tooltip>
               )}
 
-              {/* Badge Trial */}
-              {trialInfo?.isTrial && (
+              {/* Badge Trial - apenas admin */}
+              {trialInfo?.isTrial && !isCollaborator && (
                 <Popover>
                   <Tooltip open={trialTooltipDismissed ? false : undefined}>
                     <TooltipTrigger asChild>
@@ -1530,8 +1530,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 </Popover>
               )}
 
-              {/* Botão de Som de Notificação */}
-              <Tooltip>
+              {/* Botão de Som de Notificação - apenas admin */}
+              {!isCollaborator && <Tooltip>
                 <TooltipTrigger asChild>
                   <div 
                     className="flex items-center gap-2 px-3 py-1.5 rounded-full cursor-pointer transition-all hover:bg-accent bg-card"
@@ -1589,7 +1589,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     : "Som desativado - clique para ativar"
                   }
                 </TooltipContent>
-              </Tooltip>
+              </Tooltip>}
 
               {/* User menu */}
               <DropdownMenu>
@@ -1615,7 +1615,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <p className="text-xs text-muted-foreground truncate">{isCollaborator ? 'Colaborador' : user.email}</p>
                   </div>
                   {/* Container Aberto/Fechado - Combina horários automáticos com fechamento manual */}
-                  {establishment && (
+                  {establishment && !isCollaborator && (
                     <div className="px-3 py-2 border-b border-border/50">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -1684,13 +1684,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       <MessageSquarePlus className="h-4 w-4 mr-2.5" />
                       Enviar Feedback
                     </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      className="rounded-lg cursor-pointer" 
-                      onSelect={() => window.location.href = '/planos'}
-                    >
-                      <Crown className="h-4 w-4 mr-2.5" />
-                      Planos
-                    </DropdownMenuItem>
+                    {!isCollaborator && (
+                      <DropdownMenuItem 
+                        className="rounded-lg cursor-pointer" 
+                        onSelect={() => window.location.href = '/planos'}
+                      >
+                        <Crown className="h-4 w-4 mr-2.5" />
+                        Planos
+                      </DropdownMenuItem>
+                    )}
                   </div>
                   <DropdownMenuSeparator className="bg-border/50" />
                   {/* Tema */}
@@ -1747,9 +1749,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         establishmentName={establishment?.name}
       />
 
-      {/* Modal obrigatório de upgrade quando trial expira */}
+      {/* Modal obrigatório de upgrade quando trial expira - apenas admin */}
       {/* Não mostra na página de planos (exceção) */}
-      {trialInfo?.trialExpired && location !== "/planos" && (
+      {trialInfo?.trialExpired && location !== "/planos" && !isCollaborator && (
         <TrialExpiredModal />
       )}
     </div>
