@@ -6932,8 +6932,7 @@ export const appRouter = router({
             const whatsappConfig = await db.getWhatsappConfig(input.establishmentId);
             if (whatsappConfig?.instanceToken && whatsappConfig.status === 'connected') {
               const { sendTextMessage } = await import('./_core/uazapi');
-              const loginUrl = process.env.VITE_APP_URL || 'https://mindi.manus.space';
-              const message = `Olá ${input.name} 👋\nSeu acesso ao painel do estabelecimento *${establishment?.name || 'Restaurante'}* foi criado.\n\n🔐 *Dados de acesso*\nEmail: ${input.email}\nSenha: ${input.password}\n\nAcesse pelo link:\n${loginUrl}/login\n\nApós entrar no link, clique em \"Sou colaborador\" para acessar o sistema.\nVocê terá acesso apenas às páginas autorizadas pelo administrador.\n\nSe tiver dúvidas, fale com o responsável do restaurante.`;
+              const message = `Olá ${input.name} 👋\n\nSeu acesso ao painel do estabelecimento *${establishment?.name || 'Restaurante'}* foi criado.\n\n🔐 *Dados de acesso*\n\nEmail: ${input.email}\nSenha: ${input.password}\n\nAcesse pelo link: v2.mindi.com.br\n\nApós entrar no link, clique em \"Sou colaborador\" para acessar o sistema.\nVocê terá acesso apenas às páginas autorizadas pelo administrador.\n\nSe tiver dúvidas, fale com o responsável do restaurante.`;
               await sendTextMessage(whatsappConfig.instanceToken, input.whatsapp, message);
               whatsappSent = true;
               console.log(`[Collaborator] Dados de acesso enviados via WhatsApp para ${input.whatsapp}`);

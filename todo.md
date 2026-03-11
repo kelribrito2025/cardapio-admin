@@ -8767,3 +8767,5 @@
 - [x] Sidebar expandida mantém comportamento atual (submenu expandido)
 - [x] Popover aparece ao lado do ícone Menu
 - [x] Fix: Tooltip não aparece no hover do item Menu na sidebar colapsada (precisa combinar Tooltip + Popover)
+- [x] Fix: Corrigir formatação da mensagem WhatsApp do colaborador (quebras de linha entre blocos + link v2.mindi.com.br)
+- [ ] Desativar item Bot WhatsApp do menu lateral (sem badge, apenas remover do menu)
