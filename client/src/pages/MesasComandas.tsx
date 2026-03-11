@@ -473,8 +473,9 @@ export default function MesasComandas() {
 
   const deleteSpaceMutation = trpc.tableSpaces.delete.useMutation({
     onSuccess: () => {
-      toast.success("Espaço removido!");
+      toast.success("Espaço e todas as mesas removidos!");
       refetchSpaces();
+      refetch();
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao remover espaço");
@@ -524,13 +525,37 @@ export default function MesasComandas() {
     },
   });
 
-  // Mutation para reordenar mesas
+  // Utils do tRPC para optimistic updates
+  const utils = trpc.useUtils();
+
+  // Mutation para reordenar mesas (com optimistic update para animação suave)
   const reorderMutation = trpc.tables.reorder.useMutation({
-    onSuccess: () => {
-      refetch();
+    onMutate: async ({ orders }) => {
+      // Cancelar queries pendentes para evitar sobrescrever o optimistic update
+      await utils.tables.list.cancel();
+      const previousTables = utils.tables.list.getData();
+      
+      // Aplicar a nova ordem otimisticamente
+      utils.tables.list.setData(undefined, (old) => {
+        if (!old) return old;
+        const orderMap = new Map(orders.map(o => [o.id, o.sortOrder]));
+        return old.map(t => {
+          const newSort = orderMap.get(t.id);
+          return newSort !== undefined ? { ...t, sortOrder: newSort } : t;
+        }).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+      });
+      
+      return { previousTables };
     },
-    onError: () => {
+    onError: (_err, _vars, context) => {
+      // Rollback em caso de erro
+      if (context?.previousTables) {
+        utils.tables.list.setData(undefined, context.previousTables);
+      }
       toast.error('Erro ao reordenar mesas');
+    },
+    onSettled: () => {
+      utils.tables.list.invalidate();
     },
   });
 
@@ -778,7 +803,9 @@ export default function MesasComandas() {
   };
 
   const handleDeleteSpace = (id: number) => {
-    if (confirm("Tem certeza que deseja remover este espaço? As mesas não serão excluídas.")) {
+    const spaceToDelete = spaces.find(s => s.id === id);
+    const mesasCount = tables.filter(t => t.spaceId === id).length;
+    if (confirm(`Tem certeza que deseja remover o espaço "${spaceToDelete?.name || ''}"? Todas as ${mesasCount} mesa(s) deste espaço também serão excluídas.`)) {
       deleteSpaceMutation.mutate({ id });
     }
   };
@@ -1229,8 +1256,9 @@ export default function MesasComandas() {
               return (
                 <div
                   key={table.id}
+                  style={{ viewTransitionName: `table-${table.id}` }}
                   className={cn(
-                    "relative transition-all duration-200",
+                    "relative transition-all duration-300 ease-in-out",
                     isDragging && "opacity-40 scale-90"
                   )}
                   onDragOver={(e) => {

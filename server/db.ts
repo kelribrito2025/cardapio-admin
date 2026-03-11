@@ -7707,15 +7707,23 @@ export async function updateTableSpace(id: number, data: Partial<InsertTableSpac
 }
 
 /**
- * Deleta um espaço (soft delete - marca como inativo)
+ * Deleta um espaço e todas as mesas associadas (hard delete)
  */
 export async function deleteTableSpace(id: number): Promise<void> {
   const db = await getDb();
   if (!db) return;
   
-  await db.update(tableSpaces)
-    .set({ isActive: false, updatedAt: new Date() })
-    .where(eq(tableSpaces.id, id));
+  // Buscar todas as mesas deste espaço
+  const spaceTables = await db.select().from(tables)
+    .where(eq(tables.spaceId, id));
+  
+  // Deletar cada mesa e seus dados associados (comanda + itens)
+  for (const table of spaceTables) {
+    await deleteTable(table.id);
+  }
+  
+  // Deletar o espaço (hard delete)
+  await db.delete(tableSpaces).where(eq(tableSpaces.id, id));
 }
 
 // ============ TABLES (MESAS) ============

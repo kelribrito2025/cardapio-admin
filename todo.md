@@ -8731,3 +8731,5 @@
 - [x] Corrigir visual do botão reordenar selecionado: remover ring/borda externa estranha
 - [x] Bug: reordenação não funciona ao arrastar card para posição adjacente (card volta para mesma posição)
 - [x] Remover botão "Concluir" do banner de modo reordenar (reordenação já é salva automaticamente)
+- [x] Adicionar animação suave de transição quando os cards trocam de posição na reordenação
+- [x] Ao excluir um espaço no modal Gerenciar Espaços, excluir todas as mesas desse espaço
