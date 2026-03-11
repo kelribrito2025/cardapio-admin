@@ -8747,3 +8747,11 @@
 - [x] Melhorar texto explicativo: "Colaboradores acessam o painel usando email e senha cadastrados aqui. Eles verão apenas as páginas autorizadas."
 - [x] Limitar campo nome do colaborador a no máximo 10 caracteres
 - [x] Modal de confirmação antes de excluir colaborador: "Você realmente deseja excluir este colaborador?"
+
+## WhatsApp no Formulário de Colaborador
+- [x] Campo WhatsApp opcional no formulário de novo colaborador com máscara (00) 00000-0000
+- [x] Texto informativo abaixo do campo: "O colaborador receberá automaticamente os dados de acesso via WhatsApp."
+- [x] Envio automático via UAZAPI dos dados de acesso ao criar colaborador (se WhatsApp preenchido)
+- [x] Mensagem formatada com nome, email, senha, link e instruções de acesso
+- [x] Toast de confirmação: "Acesso criado e enviado via WhatsApp ao colaborador."
+- [x] Feedback diferenciado: sucesso com envio / sucesso sem envio (WhatsApp desconectado) / sucesso sem número

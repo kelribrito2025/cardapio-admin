@@ -6903,6 +6903,7 @@ export const appRouter = router({
         email: z.string().email("Email inválido"),
         password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
         permissions: z.array(z.string()),
+        whatsapp: z.string().optional(),
       }))
       .mutation(async ({ input }) => {
         // Check if email already exists for this establishment
@@ -6922,7 +6923,27 @@ export const appRouter = router({
           passwordHash,
           permissions: input.permissions,
         });
-        return { id };
+
+        // Enviar dados de acesso via WhatsApp se número informado
+        let whatsappSent = false;
+        if (input.whatsapp && input.whatsapp.replace(/\D/g, '').length >= 10) {
+          try {
+            const establishment = await db.getEstablishmentById(input.establishmentId);
+            const whatsappConfig = await db.getWhatsappConfig(input.establishmentId);
+            if (whatsappConfig?.instanceToken && whatsappConfig.status === 'connected') {
+              const { sendTextMessage } = await import('./_core/uazapi');
+              const loginUrl = process.env.VITE_APP_URL || 'https://mindi.manus.space';
+              const message = `Olá ${input.name} 👋\nSeu acesso ao painel do estabelecimento *${establishment?.name || 'Restaurante'}* foi criado.\n\n🔐 *Dados de acesso*\nEmail: ${input.email}\nSenha: ${input.password}\n\nAcesse pelo link:\n${loginUrl}/login\n\nApós entrar no link, clique em \"Sou colaborador\" para acessar o sistema.\nVocê terá acesso apenas às páginas autorizadas pelo administrador.\n\nSe tiver dúvidas, fale com o responsável do restaurante.`;
+              await sendTextMessage(whatsappConfig.instanceToken, input.whatsapp, message);
+              whatsappSent = true;
+              console.log(`[Collaborator] Dados de acesso enviados via WhatsApp para ${input.whatsapp}`);
+            }
+          } catch (err) {
+            console.error('[Collaborator] Erro ao enviar WhatsApp:', err);
+          }
+        }
+
+        return { id, whatsappSent };
       }),
 
     update: protectedProcedure

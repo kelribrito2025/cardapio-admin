@@ -50,6 +50,8 @@ import {
   X,
   ShieldCheck,
   Clock,
+  MessageSquare,
+  Phone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -130,6 +132,7 @@ function CollaboratorFormSheet({
   const [formPassword, setFormPassword] = useState("");
   const [formPermissions, setFormPermissions] = useState<string[]>([]);
   const [formIsActive, setFormIsActive] = useState(true);
+  const [formWhatsapp, setFormWhatsapp] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -149,6 +152,7 @@ function CollaboratorFormSheet({
       setFormPassword("");
       setFormPermissions(editingCollab.permissions || []);
       setFormIsActive(editingCollab.isActive ?? true);
+      setFormWhatsapp("");
       setShowPassword(false);
     } else if (isOpen) {
       setFormName("");
@@ -156,6 +160,7 @@ function CollaboratorFormSheet({
       setFormPassword("");
       setFormPermissions([]);
       setFormIsActive(true);
+      setFormWhatsapp("");
       setShowPassword(false);
     }
     onOpenChange(isOpen);
@@ -223,14 +228,27 @@ function CollaboratorFormSheet({
         await updateMutation.mutateAsync(updateData);
         toast.success("Colaborador atualizado com sucesso");
       } else {
-        await createMutation.mutateAsync({
+        const cleanWhatsapp = formWhatsapp.replace(/\D/g, '');
+        const result = await createMutation.mutateAsync({
           establishmentId,
           name: formName.trim(),
           email: formEmail.trim(),
           password: formPassword,
           permissions: formPermissions,
+          whatsapp: cleanWhatsapp.length >= 10 ? cleanWhatsapp : undefined,
         });
-        toast.success("Colaborador cadastrado com sucesso");
+        if (result.whatsappSent) {
+          toast.success("Acesso criado e enviado via WhatsApp ao colaborador", {
+            description: `Dados de acesso enviados para ${formWhatsapp}`,
+            duration: 5000,
+          });
+        } else if (cleanWhatsapp.length >= 10) {
+          toast.success("Colaborador cadastrado com sucesso", {
+            description: "N\u00e3o foi poss\u00edvel enviar via WhatsApp. Verifique se o WhatsApp est\u00e1 conectado.",
+          });
+        } else {
+          toast.success("Colaborador cadastrado com sucesso");
+        }
       }
       onSuccess();
       onOpenChange(false);
@@ -299,6 +317,40 @@ function CollaboratorFormSheet({
                 />
               </div>
             </div>
+
+            {/* WhatsApp (only for new collaborator) */}
+            {!editingCollab && (
+              <div className="space-y-2">
+                <Label htmlFor="collab-whatsapp" className="text-sm font-medium">WhatsApp</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="collab-whatsapp"
+                    type="tel"
+                    value={formWhatsapp}
+                    onChange={(e) => {
+                      let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+                      if (v.length > 6) {
+                        v = `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7)}`;
+                      } else if (v.length > 2) {
+                        v = `(${v.slice(0, 2)}) ${v.slice(2)}`;
+                      } else if (v.length > 0) {
+                        v = `(${v}`;
+                      }
+                      setFormWhatsapp(v);
+                    }}
+                    placeholder="(00) 00000-0000"
+                    className="h-10 rounded-xl bg-background border-border/50 pl-9"
+                  />
+                </div>
+                <div className="flex items-start gap-2 p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/50 dark:border-emerald-800/30">
+                  <MessageSquare className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                  <p className="text-xs text-emerald-700 dark:text-emerald-300">
+                    O colaborador receberá automaticamente os dados de acesso via WhatsApp
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Password */}
             <div className="space-y-2">
