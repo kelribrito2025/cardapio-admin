@@ -1273,10 +1273,11 @@ export default function MesasComandas() {
                       </div>
                     )}
                   </button>
-                  {/* Faixa inferior com identificação da mesa */}
+                  {/* Faixa inferior com identificação e status da mesa */}
                   {table.label && (
-                    <div className={cn("text-white text-[10px] sm:text-xs font-semibold px-2.5 py-1 text-center rounded-b-xl truncate -mt-[1px]", statusConfig.color)}>
-                      {table.label}
+                    <div className="flex items-center justify-between bg-muted/80 text-[10px] sm:text-xs px-2.5 py-1.5 rounded-b-xl -mt-[1px] border-t border-border/30">
+                      <span className="font-semibold text-foreground truncate mr-2">{table.label}</span>
+                      <span className={cn("w-2 h-2 rounded-full flex-shrink-0", statusConfig.color)} />
                     </div>
                   )}
                 </div>

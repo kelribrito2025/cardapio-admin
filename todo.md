@@ -8704,3 +8704,4 @@
 - [x] Limpar label automaticamente ao fechar mesa
 - [x] Exibir label no header: Mobile "Mesa X | João | R$ Y" / Desktop "Mesa X | João"
 - [ ] Trocar etiqueta de identificação da mesa para estilo corner ribbon diagonal no canto superior direito
+- [x] Redesenhar faixa inferior do card de mesa: label à esquerda + status (Ocupada/Livre/Reservada) à direita, fundo cinza claro
