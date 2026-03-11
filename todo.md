@@ -8784,3 +8784,4 @@
 - [x] Nova aba "Mesas Excluídas" no modal Gerenciar Espaços com opção de restaurar
 - [x] Backend: endpoint para desativar mesa (soft delete via isActive)
 - [x] Backend: endpoint para restaurar mesa desativada
+- [x] Mesas desativadas devem continuar visíveis no mapa com aparência cinza/opaca (não desaparecer)

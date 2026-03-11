@@ -114,6 +114,7 @@ interface Table {
   mergedIntoId?: number | null;
   mergedTableIds?: string | null;
   displayNumber?: string | null;
+  isActive?: boolean;
   tab?: Tab;
   items?: TabItem[];
 }
@@ -275,6 +276,8 @@ export default function MesasComandas() {
 
   // Função para obter status derivado da mesa
   const getDerivedStatus = (table: typeof tables[number]): TableStatus => {
+    // Mesas desativadas são sempre "free" (cinza no visual)
+    if (table.isActive === false) return "free";
     if (tableHasItems(table.id)) return "occupied";
     if (table.status === "reserved") return "reserved";
     return "free";
@@ -608,6 +611,8 @@ export default function MesasComandas() {
     let totalRevenue = 0;
     
     tables.forEach((t) => {
+      // Ignorar mesas desativadas na contagem
+      if (t.isActive === false) return;
       const tabItemsCount = t.items?.length || 0;
       const hasItems = tabItemsCount > 0;
       
@@ -642,6 +647,8 @@ export default function MesasComandas() {
     let reserved = 0;
     
     tables.forEach((t) => {
+      // Ignorar mesas desativadas na contagem
+      if (t.isActive === false) return;
       // Verificar apenas itens enviados (comanda), não carrinho local
       const tabItems = t.items?.length || 0;
       const hasItems = tabItems > 0;
@@ -682,12 +689,13 @@ export default function MesasComandas() {
 
   // Contagem de mesas por espaço
   const spaceTablesCount = useMemo(() => {
-    const counts: Record<string | number, number> = { all: tables.length };
+    const activeTables = tables.filter(t => t.isActive !== false);
+    const counts: Record<string | number, number> = { all: activeTables.length };
     spaces.forEach(space => {
-      counts[space.id] = tables.filter(t => t.spaceId === space.id).length;
+      counts[space.id] = activeTables.filter(t => t.spaceId === space.id).length;
     });
     // Mesas sem espaço definido
-    const noSpaceCount = tables.filter(t => !t.spaceId).length;
+    const noSpaceCount = activeTables.filter(t => !t.spaceId).length;
     counts.noSpace = noSpaceCount;
     return counts;
   }, [tables, spaces]);
@@ -1277,6 +1285,7 @@ export default function MesasComandas() {
                 
                 const table = item.table;
                 const tableIndex = item.originalIndex;
+                const isDeactivated = table.isActive === false;
                 const derivedStatus = getDerivedStatus(table);
                 const statusConfig = getStatusConfig(derivedStatus);
                 const hasItems = tableHasItems(table.id);
@@ -1381,8 +1390,8 @@ export default function MesasComandas() {
                   }}
                 >
 
-                  {/* Botão ⋮ no canto superior direito - oculto no modo reordenar */}
-                  {!isReorderMode && (
+                  {/* Botão ⋮ no canto superior direito - oculto no modo reordenar e para mesas desativadas */}
+                  {!isReorderMode && !isDeactivated && (
                   <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -1446,6 +1455,25 @@ export default function MesasComandas() {
                   </div>
                   )}
 
+                  {/* Badge desativada com botão reativar */}
+                  {!isReorderMode && isDeactivated && (
+                    <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 px-1.5 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 gap-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          restoreTableMutation.mutate({ id: table.id });
+                        }}
+                        disabled={restoreTableMutation.isPending}
+                      >
+                        <RotateCcw className="h-3 w-3" />
+                        Ativar
+                      </Button>
+                    </div>
+                  )}
+
                   {/* Ícone de grip no modo reordenar */}
                   {isReorderMode && (
                     <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
@@ -1456,8 +1484,9 @@ export default function MesasComandas() {
                   )}
 
                   <button
-                    draggable
+                    draggable={!isDeactivated}
                     onDragStart={(e) => {
+                      if (isDeactivated) { e.preventDefault(); return; }
                       setDraggedTableId(table.id);
                       e.dataTransfer.effectAllowed = 'move';
                       e.dataTransfer.setData('text/plain', table.id.toString());
@@ -1473,6 +1502,7 @@ export default function MesasComandas() {
                       if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
                     }}
                     onClick={() => {
+                      if (isDeactivated) return;
                       if (!isReorderMode) {
                         handleTableClick(table);
                       }
@@ -1481,8 +1511,9 @@ export default function MesasComandas() {
                       "w-full bg-card border border-border/50 p-2.5 sm:p-3 text-left transition-all",
                       "border-l-4 min-h-[90px] sm:min-h-[96px]",
                       "rounded-xl",
-                      statusConfig.borderColor,
-                      !isReorderMode && "hover:shadow-md hover:-translate-y-0.5",
+                      isDeactivated ? "border-l-gray-300 opacity-50 grayscale" : statusConfig.borderColor,
+                      !isReorderMode && !isDeactivated && "hover:shadow-md hover:-translate-y-0.5",
+                      isDeactivated && "cursor-default",
                       isDragging && "opacity-50 scale-95 ring-2 ring-blue-400",
                       // Modo normal: highlight azul ao arrastar sobre (merge)
                       !isReorderMode && isDropTarget && isDragOverCard && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50 scale-105",
@@ -1539,6 +1570,12 @@ export default function MesasComandas() {
                             <span className="text-xs font-medium text-blue-600 flex items-center gap-1">
                               <CalendarClock className="h-3 w-3" />
                               Reservada
+                            </span>
+                          )}
+                          {isDeactivated && (
+                            <span className="text-xs font-medium text-gray-400 flex items-center gap-1">
+                              <EyeOff className="h-3 w-3" />
+                              Desativada
                             </span>
                           )}
                         </div>
@@ -1638,6 +1675,7 @@ export default function MesasComandas() {
               </thead>
               <tbody>
                 {filteredTables.map((table) => {
+                  const isDeactivatedRow = table.isActive === false;
                   const derivedStatus = getDerivedStatus(table);
                   const statusConfig = getStatusConfig(derivedStatus);
                   const hasItems = tableHasItems(table.id);
@@ -1650,14 +1688,17 @@ export default function MesasComandas() {
                   return (
                     <tr
                       key={table.id}
-                      onClick={() => handleTableClick(table)}
-                      className="border-b border-border/30 last:border-b-0 hover:bg-muted/30 cursor-pointer transition-colors"
+                      onClick={() => { if (!isDeactivatedRow) handleTableClick(table); }}
+                      className={cn(
+                        "border-b border-border/30 last:border-b-0 transition-colors",
+                        isDeactivatedRow ? "opacity-50 grayscale cursor-default" : "hover:bg-muted/30 cursor-pointer"
+                      )}
                     >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2.5">
                           <div className={cn(
                             "w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0",
-                            statusConfig.color
+                            isDeactivatedRow ? "bg-gray-300" : statusConfig.color
                           )}>
                             {displayNumber}
                           </div>
@@ -1688,15 +1729,22 @@ export default function MesasComandas() {
                         <span className="text-sm text-muted-foreground">{spaceName}</span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={cn(
-                          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",
-                          derivedStatus === 'free' && "bg-emerald-50 text-emerald-700",
-                          derivedStatus === 'occupied' && "bg-red-50 text-red-700",
-                          derivedStatus === 'reserved' && "bg-blue-50 text-blue-700"
-                        )}>
-                          <div className={cn("w-1.5 h-1.5 rounded-full", statusConfig.color)} />
-                          {statusConfig.label}
-                        </span>
+                        {isDeactivatedRow ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                            <EyeOff className="h-3 w-3" />
+                            Desativada
+                          </span>
+                        ) : (
+                          <span className={cn(
+                            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",
+                            derivedStatus === 'free' && "bg-emerald-50 text-emerald-700",
+                            derivedStatus === 'occupied' && "bg-red-50 text-red-700",
+                            derivedStatus === 'reserved' && "bg-blue-50 text-blue-700"
+                          )}>
+                            <div className={cn("w-1.5 h-1.5 rounded-full", statusConfig.color)} />
+                            {statusConfig.label}
+                          </span>
+                        )}
                       </td>
                       <td className="px-4 py-3 hidden md:table-cell">
                         {hasItems && table.occupiedAt ? (
@@ -1731,6 +1779,21 @@ export default function MesasComandas() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-right">
+                        {isDeactivatedRow ? (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 px-2 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 gap-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              restoreTableMutation.mutate({ id: table.id });
+                            }}
+                            disabled={restoreTableMutation.isPending}
+                          >
+                            <RotateCcw className="h-3 w-3" />
+                            Ativar
+                          </Button>
+                        ) : (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <button
@@ -1790,6 +1853,7 @@ export default function MesasComandas() {
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
+                        )}
                       </td>
                     </tr>
                   );

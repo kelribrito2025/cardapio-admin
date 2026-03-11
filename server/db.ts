@@ -8237,11 +8237,14 @@ export async function getTablesWithTabs(establishmentId: number): Promise<Array<
   const db = await getDb();
   if (!db) return [];
   
-  // Buscar todas as mesas
-  const tablesList = await getTablesByEstablishment(establishmentId);
+  // Buscar mesas ativas
+  const activeTablesList = await getTablesByEstablishment(establishmentId);
   
-  // Para cada mesa, buscar a comanda ativa e seus itens
-  const result = await Promise.all(tablesList.map(async (table) => {
+  // Buscar mesas desativadas
+  const deactivatedTablesList = await getDeactivatedTables(establishmentId);
+  
+  // Para cada mesa ativa, buscar a comanda ativa e seus itens
+  const activeResult = await Promise.all(activeTablesList.map(async (table) => {
     const tab = await getActiveTabByTable(table.id);
     let items: TabItem[] = [];
     
@@ -8252,7 +8255,14 @@ export async function getTablesWithTabs(establishmentId: number): Promise<Array<
     return { ...table, tab, items };
   }));
   
-  return result;
+  // Mesas desativadas não têm comanda
+  const deactivatedResult = deactivatedTablesList.map(table => ({
+    ...table,
+    tab: undefined,
+    items: [],
+  }));
+  
+  return [...activeResult, ...deactivatedResult];
 }
 
 
