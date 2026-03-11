@@ -102,6 +102,7 @@ interface Table {
   reservedPhone?: string | null;
   reservedGuests?: number | null;
   spaceId?: number | null;
+  label?: string | null;
   // Campos para mesas combinadas
   mergedIntoId?: number | null;
   mergedTableIds?: string | null;
@@ -1060,8 +1061,16 @@ export default function MesasComandas() {
               return (
                 <div
                   key={table.id}
-                  className="relative"
+                  className={cn("relative", table.label && "mt-3")}
                 >
+                  {/* Etiqueta de identificação estilo aba de pasta */}
+                  {table.label && (
+                    <div className="absolute -top-3 right-6 sm:right-8 z-[5] pointer-events-none">
+                      <div className="bg-amber-100 text-amber-800 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-t-md border border-b-0 border-amber-300 shadow-sm max-w-[80px] sm:max-w-[100px] truncate">
+                        {table.label}
+                      </div>
+                    </div>
+                  )}
                   {/* Botão ⋮ no canto superior direito */}
                   <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
                     <DropdownMenu>
@@ -1969,6 +1978,7 @@ export default function MesasComandas() {
           onOrderCreated={handleOrderCreated}
           tabItemsCount={selectedTable?.items?.length || 0}
           tableTotal={selectedTable?.id ? getTableTotal(selectedTable.id) : 0}
+          tableLabel={selectedTable?.label}
         />
       )}
 
@@ -1983,6 +1993,7 @@ export default function MesasComandas() {
         onOrderCreated={handleOrderCreated}
         showHandle={true}
         displayNumber={selectedTable?.displayNumber}
+        tableLabel={selectedTable?.label}
         tables={tables.map(t => ({
           id: t.id,
           number: t.number,

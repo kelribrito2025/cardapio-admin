@@ -147,10 +147,11 @@ interface PDVSlidebarProps {
   showHandle?: boolean;
   tables?: TableShortcut[];
   onTableChange?: (table: TableShortcut) => void;
-  displayNumber?: string | null; // Número de exibição para mesas combinadas (ex: "3-4-5")
+  displayNumber?: string | null;
+  tableLabel?: string | null;
 }
 
-export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, tabId, onOrderCreated, showHandle = false, tables = [], onTableChange, displayNumber }: PDVSlidebarProps) {
+export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, tabId, onOrderCreated, showHandle = false, tables = [], onTableChange, displayNumber, tableLabel }: PDVSlidebarProps) {
   // Número de exibição da mesa (usa displayNumber se for mesa combinada, senão usa tableNumber)
   const tableDisplayName = displayNumber || tableNumber.toString();
   // Verificar se a mesa atual está reservada
@@ -158,6 +159,15 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   const isCurrentTableReserved = currentTableData?.status === "reserved";
   const { data: establishment } = trpc.establishment.get.useQuery();
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
+
+  // Label (identificação) da mesa
+  const [isEditingLabel, setIsEditingLabel] = useState(false);
+  const [labelValue, setLabelValue] = useState(tableLabel || '');
+  const labelInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setLabelValue(tableLabel || '');
+  }, [tableLabel]);
 
   useEffect(() => {
     if (establishment) {
@@ -183,6 +193,15 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
   );
 
   const utils = trpc.useUtils();
+
+  // Mutation para atualizar label da mesa
+  const updateLabelMutation = trpc.tables.updateLabel.useMutation({
+    onSuccess: () => {
+      utils.tables.list.invalidate();
+      setIsEditingLabel(false);
+    },
+    onError: () => toast.error('Erro ao salvar identificação'),
+  });
 
   // Mutation para atualizar método de impressão favorito
   const updatePrintMethodMutation = trpc.printer.saveSettings.useMutation({
@@ -1639,12 +1658,65 @@ export function PDVSlidebar({ isOpen, onClose, onToggle, tableNumber, tableId, t
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div>
-                      <h3 className="text-xl font-bold text-foreground leading-tight">Mesa {tableDisplayName}</h3>
-                      <p className="text-sm text-muted-foreground leading-tight mt-0.5">
-                        {cart.length === 0
-                          ? 'Adicione produtos para iniciar um pedido.'
-                          : 'Revise os itens e envie para a comanda.'}
-                      </p>
+                      <h3 className="text-xl font-bold text-foreground leading-tight">
+                        Mesa {tableDisplayName}
+                        {tableLabel && !isEditingLabel && (
+                          <span className="text-amber-700"> | {tableLabel}</span>
+                        )}
+                      </h3>
+                      {/* Campo de identificação inline */}
+                      {tableId && (
+                        <div className="flex items-center gap-2 mt-0.5">
+                          {isEditingLabel ? (
+                            <div className="flex items-center gap-1">
+                              <input
+                                ref={labelInputRef}
+                                type="text"
+                                value={labelValue}
+                                onChange={(e) => setLabelValue(e.target.value.slice(0, 15))}
+                                placeholder="Identificação..."
+                                className="text-sm border border-border rounded px-2 py-0.5 w-28 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-red-400"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    updateLabelMutation.mutate({ id: tableId!, label: labelValue.trim() || null });
+                                  } else if (e.key === 'Escape') {
+                                    setLabelValue(tableLabel || '');
+                                    setIsEditingLabel(false);
+                                  }
+                                }}
+                                autoFocus
+                              />
+                              <button
+                                onClick={() => updateLabelMutation.mutate({ id: tableId!, label: labelValue.trim() || null })}
+                                className="p-0.5 text-green-600 hover:bg-green-50 rounded transition-colors"
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                onClick={() => { setLabelValue(tableLabel || ''); setIsEditingLabel(false); }}
+                                className="p-0.5 text-red-500 hover:bg-red-50 rounded transition-colors"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => { setIsEditingLabel(true); setTimeout(() => labelInputRef.current?.focus(), 50); }}
+                              className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                            >
+                              <Pencil className="h-3 w-3" />
+                              {tableLabel ? 'Editar identificação' : 'Adicionar identificação'}
+                            </button>
+                          )}
+                        </div>
+                      )}
+                      {!tableId && (
+                        <p className="text-sm text-muted-foreground leading-tight mt-0.5">
+                          {cart.length === 0
+                            ? 'Adicione produtos para iniciar um pedido.'
+                            : 'Revise os itens e envie para a comanda.'}
+                        </p>
+                      )}
                     </div>
                   </div>
                   {(() => {
