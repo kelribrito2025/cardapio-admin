@@ -44,6 +44,7 @@ import {
   List,
   GripVertical,
   Move,
+  ArrowUpDown,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -534,6 +535,7 @@ export default function MesasComandas() {
   });
 
   // Estados para drag and drop
+  const [isReorderMode, setIsReorderMode] = useState(false);
   const [draggedTableId, setDraggedTableId] = useState<number | null>(null);
   const [dropTargetId, setDropTargetId] = useState<number | null>(null);
   const [dropTargetSpaceId, setDropTargetSpaceId] = useState<number | 'all' | null>(null);
@@ -945,7 +947,8 @@ export default function MesasComandas() {
                 onClick={() => setSelectedSpaceId(space.id)}
                 onDragOver={(e) => {
                   e.preventDefault();
-                  if (draggedTableId) {
+                  // Mover mesa entre espaços: apenas no modo normal (não no modo reordenar)
+                  if (draggedTableId && !isReorderMode) {
                     const draggedTable = tables.find(t => t.id === draggedTableId);
                     if (draggedTable && draggedTable.spaceId !== space.id) {
                       setDropTargetSpaceId(space.id);
@@ -955,7 +958,7 @@ export default function MesasComandas() {
                 onDragLeave={() => setDropTargetSpaceId(null)}
                 onDrop={(e) => {
                   e.preventDefault();
-                  if (draggedTableId) {
+                  if (draggedTableId && !isReorderMode) {
                     const draggedTable = tables.find(t => t.id === draggedTableId);
                     if (draggedTable && draggedTable.spaceId !== space.id) {
                       moveToSpaceMutation.mutate({ tableId: draggedTableId, spaceId: space.id });
@@ -1021,6 +1024,26 @@ export default function MesasComandas() {
                 <p>Gerenciar espaços</p>
               </TooltipContent>
             </Tooltip>
+
+            {/* Botão Reordenar - desktop */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setIsReorderMode(!isReorderMode)}
+                  className={cn(
+                    "hidden md:flex px-3 py-2 rounded-lg text-sm font-medium transition-all items-center gap-1.5",
+                    isReorderMode
+                      ? "bg-amber-500 text-white hover:bg-amber-600 ring-2 ring-amber-300"
+                      : "bg-card border border-border text-muted-foreground hover:border-border/80 hover:text-foreground"
+                  )}
+                >
+                  <GripVertical className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>{isReorderMode ? 'Sair do modo reordenar' : 'Reordenar mesas'}</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
 
           {/* Botões no mobile */}
@@ -1037,6 +1060,18 @@ export default function MesasComandas() {
               className="md:hidden px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-card border border-border text-muted-foreground hover:border-border/80 hover:text-foreground flex-shrink-0"
             >
               <Settings className="h-4 w-4" />
+            </button>
+            {/* Botão Reordenar - mobile */}
+            <button
+              onClick={() => setIsReorderMode(!isReorderMode)}
+              className={cn(
+                "md:hidden px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 flex-shrink-0",
+                isReorderMode
+                  ? "bg-amber-500 text-white hover:bg-amber-600 ring-2 ring-amber-300"
+                  : "bg-card border border-border text-muted-foreground hover:border-border/80 hover:text-foreground"
+              )}
+            >
+              <GripVertical className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -1105,17 +1140,34 @@ export default function MesasComandas() {
           </div>
         )}
 
+        {/* Banner de modo reordenar */}
+        {isReorderMode && (
+          <div className="flex items-center gap-3 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-800">
+            <ArrowUpDown className="h-4 w-4 flex-shrink-0" />
+            <span className="text-sm font-medium">Modo reordenar ativo</span>
+            <span className="text-xs text-amber-600">Arraste as mesas para reorganizar a ordem</span>
+            <button
+              onClick={() => setIsReorderMode(false)}
+              className="ml-auto text-xs font-medium text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-lg transition-colors"
+            >
+              Concluir
+            </button>
+          </div>
+        )}
+
         {/* Grid de Mesas */}
         {!isLoading && viewMode === 'grid' && (
           <div
             className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2 sm:gap-3"
             onDragOver={(e) => {
-              // Permitir drop no grid para reordenar no final
               e.preventDefault();
+              if (!isReorderMode || !draggedTableId) return;
+              // No modo reordenar, ao arrastar sobre o grid (fora dos cards), manter o último insert index
             }}
             onDrop={(e) => {
-              // Drop no grid (não sobre um card) = reordenar no final
-              if (draggedTableId && dropInsertIndex !== null) {
+              e.preventDefault();
+              // Executar reorder se estiver no modo reordenar e tiver um insert index
+              if (isReorderMode && draggedTableId && dropInsertIndex !== null) {
                 const dragIdx = filteredTables.findIndex(t => t.id === draggedTableId);
                 if (dragIdx !== -1 && dropInsertIndex !== dragIdx) {
                   const newOrder = [...filteredTables];
@@ -1128,6 +1180,7 @@ export default function MesasComandas() {
                   toast.success(`Mesa ${draggedTable?.displayNumber || draggedTable?.number} reposicionada`);
                 }
               }
+              // Reset all drag states
               setDraggedTableId(null);
               setDropTargetId(null);
               setDropTargetSpaceId(null);
@@ -1138,11 +1191,10 @@ export default function MesasComandas() {
               if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
             }}
           >
-            {/* Construir lista com card fantasma inserido na posição correta */}
+            {/* Construir lista: no modo reordenar, inserir card fantasma na posição */}
             {(() => {
-              // Montar array de items: mesas + card fantasma na posição de inserção
               const items: Array<{ type: 'table'; table: typeof filteredTables[0]; originalIndex: number } | { type: 'ghost' }> = [];
-              const showGhost = dropInsertIndex !== null && draggedTableId !== null && !isDragOverCard;
+              const showGhost = isReorderMode && dropInsertIndex !== null && draggedTableId !== null;
               
               filteredTables.forEach((table, idx) => {
                 if (showGhost && idx === dropInsertIndex) {
@@ -1150,7 +1202,6 @@ export default function MesasComandas() {
                 }
                 items.push({ type: 'table', table, originalIndex: idx });
               });
-              // Ghost no final
               if (showGhost && dropInsertIndex === filteredTables.length) {
                 items.push({ type: 'ghost' });
               }
@@ -1160,10 +1211,10 @@ export default function MesasComandas() {
                   return (
                     <div
                       key="ghost-placeholder"
-                      className="border-2 border-dashed border-emerald-400/60 rounded-xl min-h-[90px] sm:min-h-[96px] flex items-center justify-center bg-emerald-50/30 pointer-events-none transition-all duration-200 animate-in fade-in"
+                      className="border-2 border-dashed border-amber-400/60 rounded-xl min-h-[90px] sm:min-h-[96px] flex items-center justify-center bg-amber-50/40 pointer-events-none transition-all duration-200 animate-in fade-in"
                     >
-                      <div className="flex flex-col items-center gap-1 text-emerald-400">
-                        <Move className="h-5 w-5" />
+                      <div className="flex flex-col items-center gap-1 text-amber-400">
+                        <ArrowUpDown className="h-5 w-5" />
                       </div>
                     </div>
                   );
@@ -1171,16 +1222,15 @@ export default function MesasComandas() {
                 
                 const table = item.table;
                 const tableIndex = item.originalIndex;
-              // Status derivado baseado em itens no carrinho ou comanda
-              const derivedStatus = getDerivedStatus(table);
-              const statusConfig = getStatusConfig(derivedStatus);
-              const hasItems = tableHasItems(table.id);
-              const itemsCount = getTableItemsCount(table.id);
-              const tableTotal = getTableTotal(table.id);
-              const isMergedTable = !!table.mergedTableIds;
-              const displayNumber = table.displayNumber || table.number.toString();
-              const isDragging = draggedTableId === table.id;
-              const isDropTarget = dropTargetId === table.id && draggedTableId !== table.id;
+                const derivedStatus = getDerivedStatus(table);
+                const statusConfig = getStatusConfig(derivedStatus);
+                const hasItems = tableHasItems(table.id);
+                const itemsCount = getTableItemsCount(table.id);
+                const tableTotal = getTableTotal(table.id);
+                const isMergedTable = !!table.mergedTableIds;
+                const displayNumber = table.displayNumber || table.number.toString();
+                const isDragging = draggedTableId === table.id;
+                const isDropTarget = dropTargetId === table.id && draggedTableId !== table.id;
               
               return (
                 <div
@@ -1194,53 +1244,37 @@ export default function MesasComandas() {
                     e.stopPropagation();
                     if (!draggedTableId || draggedTableId === table.id) return;
                     
-                    // Detectar posição do cursor no card
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const centerThreshold = rect.width * 0.35;
-                    
-                    if (x < centerThreshold) {
-                      // Borda esquerda: inserir ANTES deste card
-                      const newIdx = tableIndex;
+                    if (isReorderMode) {
+                      // === MODO REORDENAR: calcular posição de inserção ===
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = e.clientX - rect.left;
+                      const half = rect.width / 2;
+                      const newIdx = x < half ? tableIndex : tableIndex + 1;
+                      
                       if (lastDropInsertRef.current !== newIdx) {
                         lastDropInsertRef.current = newIdx;
                         if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
                         dropDebounceRef.current = setTimeout(() => {
                           setDropInsertIndex(newIdx);
-                          setIsDragOverCard(false);
                           setDropTargetId(null);
-                        }, 80);
-                      }
-                    } else if (x > rect.width - centerThreshold) {
-                      // Borda direita: inserir DEPOIS deste card
-                      const newIdx = tableIndex + 1;
-                      if (lastDropInsertRef.current !== newIdx) {
-                        lastDropInsertRef.current = newIdx;
-                        if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
-                        dropDebounceRef.current = setTimeout(() => {
-                          setDropInsertIndex(newIdx);
                           setIsDragOverCard(false);
-                          setDropTargetId(null);
-                        }, 80);
+                        }, 60);
                       }
                     } else {
-                      // Centro: juntar mesas
-                      if (lastDropInsertRef.current !== null) {
-                        lastDropInsertRef.current = null;
-                        if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
-                      }
-                      setDropInsertIndex(null);
-                      setIsDragOverCard(true);
+                      // === MODO NORMAL: juntar mesas (merge) ===
                       setDropTargetId(table.id);
+                      setIsDragOverCard(true);
+                      setDropInsertIndex(null);
                     }
                   }}
                   onDragLeave={(e) => {
                     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                      setDropTargetId(null);
-                      setDropInsertIndex(null);
-                      setIsDragOverCard(false);
-                      lastDropInsertRef.current = null;
-                      if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
+                      if (!isReorderMode) {
+                        setDropTargetId(null);
+                        setIsDragOverCard(false);
+                      }
+                      // No modo reordenar, não limpar dropInsertIndex no dragLeave
+                      // para evitar flickering quando move entre cards
                     }
                   }}
                   onDrop={(e) => {
@@ -1248,26 +1282,31 @@ export default function MesasComandas() {
                     e.stopPropagation();
                     if (!draggedTableId || draggedTableId === table.id) return;
                     
-                    if (isDragOverCard && dropTargetId === table.id) {
-                      // Soltar SOBRE o card = juntar mesas
-                      mergeTablesMutation.mutate({
-                        sourceTableId: draggedTableId,
-                        targetTableId: table.id,
-                      });
-                    } else if (dropInsertIndex !== null) {
-                      // Soltar na borda = reordenar
-                      const dIdx = filteredTables.findIndex(t => t.id === draggedTableId);
-                      if (dIdx !== -1 && dropInsertIndex !== dIdx) {
-                        const newOrder = [...filteredTables];
-                        const [moved] = newOrder.splice(dIdx, 1);
-                        const insertAt = dropInsertIndex > dIdx ? dropInsertIndex - 1 : dropInsertIndex;
-                        newOrder.splice(insertAt, 0, moved);
-                        const orders = newOrder.map((t, i) => ({ id: t.id, sortOrder: i }));
-                        reorderMutation.mutate({ orders });
-                        const draggedTable = tables.find(t => t.id === draggedTableId);
-                        toast.success(`Mesa ${draggedTable?.displayNumber || draggedTable?.number} reposicionada`);
+                    if (isReorderMode) {
+                      // === MODO REORDENAR: reposicionar mesa ===
+                      if (dropInsertIndex !== null) {
+                        const dIdx = filteredTables.findIndex(t => t.id === draggedTableId);
+                        if (dIdx !== -1 && dropInsertIndex !== dIdx) {
+                          const newOrder = [...filteredTables];
+                          const [moved] = newOrder.splice(dIdx, 1);
+                          const insertAt = dropInsertIndex > dIdx ? dropInsertIndex - 1 : dropInsertIndex;
+                          newOrder.splice(insertAt, 0, moved);
+                          const orders = newOrder.map((t, i) => ({ id: t.id, sortOrder: i }));
+                          reorderMutation.mutate({ orders });
+                          const draggedTable = tables.find(t => t.id === draggedTableId);
+                          toast.success(`Mesa ${draggedTable?.displayNumber || draggedTable?.number} reposicionada`);
+                        }
+                      }
+                    } else {
+                      // === MODO NORMAL: juntar mesas ===
+                      if (dropTargetId === table.id) {
+                        mergeTablesMutation.mutate({
+                          sourceTableId: draggedTableId,
+                          targetTableId: table.id,
+                        });
                       }
                     }
+                    // Reset all drag states
                     setDraggedTableId(null);
                     setDropTargetId(null);
                     setDropTargetSpaceId(null);
@@ -1279,8 +1318,8 @@ export default function MesasComandas() {
                   }}
                 >
 
-                  {/* Faixa inferior com identificação da mesa */}
-                  {/* Botão ⋮ no canto superior direito */}
+                  {/* Botão ⋮ no canto superior direito - oculto no modo reordenar */}
+                  {!isReorderMode && (
                   <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -1342,6 +1381,16 @@ export default function MesasComandas() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
+                  )}
+
+                  {/* Ícone de grip no modo reordenar */}
+                  {isReorderMode && (
+                    <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
+                      <div className="h-6 w-6 sm:h-7 sm:w-7 flex items-center justify-center text-amber-500">
+                        <GripVertical className="h-4 w-4" />
+                      </div>
+                    </div>
+                  )}
 
                   <button
                     draggable
@@ -1357,15 +1406,28 @@ export default function MesasComandas() {
                       setDragOverIndex(null);
                       setDropInsertIndex(null);
                       setIsDragOverCard(false);
+                      lastDropInsertRef.current = null;
+                      if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
                     }}
-                    onClick={() => handleTableClick(table)}
+                    onClick={() => {
+                      if (!isReorderMode) {
+                        handleTableClick(table);
+                      }
+                    }}
                     className={cn(
-                      "w-full bg-card border border-border/50 p-2.5 sm:p-3 text-left transition-all hover:shadow-md hover:-translate-y-0.5",
+                      "w-full bg-card border border-border/50 p-2.5 sm:p-3 text-left transition-all",
                       "border-l-4 min-h-[90px] sm:min-h-[96px]",
                       "rounded-xl",
                       statusConfig.borderColor,
+                      !isReorderMode && "hover:shadow-md hover:-translate-y-0.5",
                       isDragging && "opacity-50 scale-95 ring-2 ring-amber-400",
-                      isDropTarget && isDragOverCard && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50 scale-105"
+                      // Modo normal: highlight azul ao arrastar sobre (merge)
+                      !isReorderMode && isDropTarget && isDragOverCard && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50 scale-105",
+                      // Modo reordenar: cursor grab
+                      isReorderMode && !isDragging && "cursor-grab",
+                      isReorderMode && isDragging && "cursor-grabbing",
+                      // Borda amber sutil no modo reordenar
+                      isReorderMode && !isDragging && "ring-1 ring-amber-200/50"
                     )}
                   >
                     <div className="flex items-start justify-between" style={{ marginTop: "-3px" }}>
@@ -1384,14 +1446,14 @@ export default function MesasComandas() {
                                 tabIndex={0}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  if (!splitTablesMutation.isPending) {
+                                  if (!isReorderMode && !splitTablesMutation.isPending) {
                                     splitTablesMutation.mutate({ tableId: table.id });
                                   }
                                 }}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' || e.key === ' ') {
                                     e.stopPropagation();
-                                    if (!splitTablesMutation.isPending) {
+                                    if (!isReorderMode && !splitTablesMutation.isPending) {
                                       splitTablesMutation.mutate({ tableId: table.id });
                                     }
                                   }
@@ -1400,7 +1462,7 @@ export default function MesasComandas() {
                                   "text-xs text-red-500 hover:text-red-600 hover:bg-red-50 px-1.5 py-0.5 rounded transition-all inline-flex items-center gap-1 cursor-pointer w-fit",
                                   "md:absolute md:top-0 md:left-0 md:opacity-0 md:group-hover/merged:opacity-100",
                                   "max-md:mt-1",
-                                  splitTablesMutation.isPending && "opacity-50 cursor-not-allowed"
+                                  (splitTablesMutation.isPending || isReorderMode) && "opacity-50 cursor-not-allowed"
                                 )}
                                 title="Separar mesas"
                               >

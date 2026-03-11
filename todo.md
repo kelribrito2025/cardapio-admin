@@ -8719,3 +8719,11 @@
 - [x] Drag: substituir banner "Movendo mesa" e barra amber por card pontilhado placeholder no local de inserção
 - [x] Bug: drag and drop treme e card pontilhado não aparece corretamente (loop de layout)
 - [x] Drag: cards devem se afastar suavemente com animação CSS para abrir espaço ao arrastar mesa entre eles
+- [x] Separar drag em dois modos: modo normal (juntar) e modo reordenar (botão, só reordena com gap visual)
+- [x] Botão "Reordenar" ao lado dos botões + e engrenagem para ativar modo reordenar
+- [x] No modo reordenar: arrastar NÃO junta mesas, apenas reordena com card fantasma pontilhado
+- [x] No modo normal: arrastar sobre mesa = juntar (comportamento original)
+- [x] Banner "Modo reordenar ativo" com botão "Concluir" para desativar
+- [x] Ícone de grip nos cards no modo reordenar, menu ⋮ oculto
+- [x] Clicar na mesa no modo reordenar NÃO abre o PDV
+- [x] Mover mesa entre espaços desabilitado no modo reordenar
