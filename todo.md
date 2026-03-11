@@ -8727,3 +8727,4 @@
 - [x] Ícone de grip nos cards no modo reordenar, menu ⋮ oculto
 - [x] Clicar na mesa no modo reordenar NÃO abre o PDV
 - [x] Mover mesa entre espaços desabilitado no modo reordenar
+- [x] Trocar cor do modo reordenar de amber/laranja para azul (botão, banner, card fantasma, borda dos cards)

@@ -975,7 +975,7 @@ export default function MesasComandas() {
                   selectedSpaceId === space.id
                     ? "bg-red-500 text-white"
                     : "bg-card border border-border text-muted-foreground hover:border-border/80",
-                  dropTargetSpaceId === space.id && "ring-2 ring-amber-400 ring-offset-2 bg-amber-50 !text-amber-700 !border-amber-400 scale-105"
+                  dropTargetSpaceId === space.id && "ring-2 ring-blue-400 ring-offset-2 bg-blue-50 !text-blue-700 !border-blue-400 scale-105"
                 )}
               >
                 {dropTargetSpaceId === space.id ? (
@@ -987,7 +987,7 @@ export default function MesasComandas() {
                   selectedSpaceId === space.id && dropTargetSpaceId !== space.id
                     ? "bg-white/20 text-white"
                     : dropTargetSpaceId === space.id
-                    ? "bg-amber-200 text-amber-800"
+                    ? "bg-blue-200 text-blue-800"
                     : "bg-red-500 text-white"
                 )}>
                   {spaceTablesCount[space.id] || 0}
@@ -1033,7 +1033,7 @@ export default function MesasComandas() {
                   className={cn(
                     "hidden md:flex px-3 py-2 rounded-lg text-sm font-medium transition-all items-center gap-1.5",
                     isReorderMode
-                      ? "bg-amber-500 text-white hover:bg-amber-600 ring-2 ring-amber-300"
+                      ? "bg-blue-500 text-white hover:bg-blue-600 ring-2 ring-blue-300"
                       : "bg-card border border-border text-muted-foreground hover:border-border/80 hover:text-foreground"
                   )}
                 >
@@ -1067,7 +1067,7 @@ export default function MesasComandas() {
               className={cn(
                 "md:hidden px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 flex-shrink-0",
                 isReorderMode
-                  ? "bg-amber-500 text-white hover:bg-amber-600 ring-2 ring-amber-300"
+                  ? "bg-blue-500 text-white hover:bg-blue-600 ring-2 ring-blue-300"
                   : "bg-card border border-border text-muted-foreground hover:border-border/80 hover:text-foreground"
               )}
             >
@@ -1142,13 +1142,13 @@ export default function MesasComandas() {
 
         {/* Banner de modo reordenar */}
         {isReorderMode && (
-          <div className="flex items-center gap-3 px-4 py-2.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-800">
+          <div className="flex items-center gap-3 px-4 py-2.5 bg-blue-50 border border-blue-200 rounded-xl text-blue-800">
             <ArrowUpDown className="h-4 w-4 flex-shrink-0" />
             <span className="text-sm font-medium">Modo reordenar ativo</span>
-            <span className="text-xs text-amber-600">Arraste as mesas para reorganizar a ordem</span>
+            <span className="text-xs text-blue-600">Arraste as mesas para reorganizar a ordem</span>
             <button
               onClick={() => setIsReorderMode(false)}
-              className="ml-auto text-xs font-medium text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-lg transition-colors"
+              className="ml-auto text-xs font-medium text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-lg transition-colors"
             >
               Concluir
             </button>
@@ -1211,9 +1211,9 @@ export default function MesasComandas() {
                   return (
                     <div
                       key="ghost-placeholder"
-                      className="border-2 border-dashed border-amber-400/60 rounded-xl min-h-[90px] sm:min-h-[96px] flex items-center justify-center bg-amber-50/40 pointer-events-none transition-all duration-200 animate-in fade-in"
+                      className="border-2 border-dashed border-blue-400/60 rounded-xl min-h-[90px] sm:min-h-[96px] flex items-center justify-center bg-blue-50/40 pointer-events-none transition-all duration-200 animate-in fade-in"
                     >
-                      <div className="flex flex-col items-center gap-1 text-amber-400">
+                      <div className="flex flex-col items-center gap-1 text-blue-400">
                         <ArrowUpDown className="h-5 w-5" />
                       </div>
                     </div>
@@ -1386,7 +1386,7 @@ export default function MesasComandas() {
                   {/* Ícone de grip no modo reordenar */}
                   {isReorderMode && (
                     <div className="absolute top-1 right-1 sm:top-2 sm:right-2 z-10">
-                      <div className="h-6 w-6 sm:h-7 sm:w-7 flex items-center justify-center text-amber-500">
+                      <div className="h-6 w-6 sm:h-7 sm:w-7 flex items-center justify-center text-blue-500">
                         <GripVertical className="h-4 w-4" />
                       </div>
                     </div>
@@ -1420,14 +1420,14 @@ export default function MesasComandas() {
                       "rounded-xl",
                       statusConfig.borderColor,
                       !isReorderMode && "hover:shadow-md hover:-translate-y-0.5",
-                      isDragging && "opacity-50 scale-95 ring-2 ring-amber-400",
+                      isDragging && "opacity-50 scale-95 ring-2 ring-blue-400",
                       // Modo normal: highlight azul ao arrastar sobre (merge)
                       !isReorderMode && isDropTarget && isDragOverCard && "ring-2 ring-blue-500 ring-offset-2 bg-blue-50 scale-105",
                       // Modo reordenar: cursor grab
                       isReorderMode && !isDragging && "cursor-grab",
                       isReorderMode && isDragging && "cursor-grabbing",
-                      // Borda amber sutil no modo reordenar
-                      isReorderMode && !isDragging && "ring-1 ring-amber-200/50"
+                      // Borda azul sutil no modo reordenar
+                      isReorderMode && !isDragging && "ring-1 ring-blue-200/50"
                     )}
                   >
                     <div className="flex items-start justify-between" style={{ marginTop: "-3px" }}>
@@ -1892,7 +1892,7 @@ export default function MesasComandas() {
                     </Button>
                     <Button 
                       variant="outline" 
-                      className="w-full border-amber-300 text-amber-600 hover:bg-amber-50"
+                      className="w-full border-blue-300 text-blue-600 hover:bg-blue-50"
                       onClick={() => handleRequestBill(selectedTable)}
                       disabled={requestBillMutation.isPending}
                     >
