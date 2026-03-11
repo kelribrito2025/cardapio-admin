@@ -8684,3 +8684,6 @@
 - [x] Inserir categorias no estabelecimento ID 210017
 - [x] Inserir produtos com fotos, preços e descrições no estabelecimento ID 210017
 - [x] Migrar imagens dos produtos do Google Storage para S3 do novo sistema
+
+## Correção Meta Tags OG - Menu Público
+- [x] Corrigir meta tags OG nas páginas de menu público para mostrar imagem/descrição do restaurante em vez do screenshot do dashboard admin

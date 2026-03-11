@@ -311,29 +311,36 @@ export function injectSEOIntoHTML(
   metaTags: string,
   schemaOrg: string
 ): string {
-  // Replace the static title and add meta tags after it
-  // Find the closing </title> and inject after it
+  // Find the title block to replace
   const titleEndIndex = html.indexOf("</title>");
   if (titleEndIndex === -1) return html;
-
-  // Find the opening <title> to replace the whole title block
   const titleStartIndex = html.indexOf("<title>");
   if (titleStartIndex === -1) return html;
 
-  // Remove old title and description meta
   let modified = html;
-  
-  // Replace old title with new meta tags (which include the new title)
-  const oldTitleBlock = modified.substring(titleStartIndex, titleEndIndex + "</title>".length);
-  modified = modified.replace(oldTitleBlock, metaTags);
 
-  // Remove old static description meta tag
+  // STEP 1: Remove any existing OG/Twitter meta tags FIRST (before injecting ours)
+  // These may come from the hosting platform or previous static tags
+  modified = modified.replace(/<meta\s+property="og:[^"]*"\s+content="[^"]*"\s*\/?>/gi, "");
+  modified = modified.replace(/<meta\s+name="twitter:[^"]*"\s+content="[^"]*"\s*\/?>/gi, "");
+  modified = modified.replace(/<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/gi, "");
+
+  // STEP 2: Remove old static description meta tag
   modified = modified.replace(
     /<meta name="description" content="Sistema de gerenciamento de pedidos e card[^"]*" \/>/,
     ""
   );
 
-  // Inject Schema.org JSON-LD before closing </head>
+  // STEP 3: Replace old title with new meta tags (which include title + OG + Twitter + canonical)
+  // Need to re-find title position after removals above
+  const newTitleEnd = modified.indexOf("</title>");
+  const newTitleStart = modified.indexOf("<title>");
+  if (newTitleStart !== -1 && newTitleEnd !== -1) {
+    const oldTitleBlock = modified.substring(newTitleStart, newTitleEnd + "</title>".length);
+    modified = modified.replace(oldTitleBlock, metaTags);
+  }
+
+  // STEP 4: Inject Schema.org JSON-LD before closing </head>
   modified = modified.replace("</head>", `    ${schemaOrg}\n  </head>`);
 
   return modified;
