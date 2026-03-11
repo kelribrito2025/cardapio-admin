@@ -752,10 +752,9 @@ export default function Acessos() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={(open) => { if (!open) { setDeleteDialogOpen(false); setCollabToDelete(null); } }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remover colaborador?</AlertDialogTitle>
+            <AlertDialogTitle>Excluir colaborador</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja remover <strong>{collabToDelete?.name}</strong>?
-              Esta ação não pode ser desfeita e o colaborador perderá o acesso ao painel imediatamente.
+              Você realmente deseja excluir este colaborador? <strong>{collabToDelete?.name}</strong> perderá o acesso ao painel imediatamente. Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

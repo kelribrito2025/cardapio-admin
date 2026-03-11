@@ -8746,3 +8746,4 @@
 - [x] Mostrar contagem de permissões no card do colaborador (ex: "1 permissão" ou "3 permissões")
 - [x] Melhorar texto explicativo: "Colaboradores acessam o painel usando email e senha cadastrados aqui. Eles verão apenas as páginas autorizadas."
 - [x] Limitar campo nome do colaborador a no máximo 10 caracteres
+- [x] Modal de confirmação antes de excluir colaborador: "Você realmente deseja excluir este colaborador?"
