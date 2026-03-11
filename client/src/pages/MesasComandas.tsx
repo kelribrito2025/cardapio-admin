@@ -1138,7 +1138,39 @@ export default function MesasComandas() {
               if (dropDebounceRef.current) clearTimeout(dropDebounceRef.current);
             }}
           >
-            {filteredTables.map((table, tableIndex) => {
+            {/* Construir lista com card fantasma inserido na posição correta */}
+            {(() => {
+              // Montar array de items: mesas + card fantasma na posição de inserção
+              const items: Array<{ type: 'table'; table: typeof filteredTables[0]; originalIndex: number } | { type: 'ghost' }> = [];
+              const showGhost = dropInsertIndex !== null && draggedTableId !== null && !isDragOverCard;
+              
+              filteredTables.forEach((table, idx) => {
+                if (showGhost && idx === dropInsertIndex) {
+                  items.push({ type: 'ghost' });
+                }
+                items.push({ type: 'table', table, originalIndex: idx });
+              });
+              // Ghost no final
+              if (showGhost && dropInsertIndex === filteredTables.length) {
+                items.push({ type: 'ghost' });
+              }
+              
+              return items.map((item, renderIdx) => {
+                if (item.type === 'ghost') {
+                  return (
+                    <div
+                      key="ghost-placeholder"
+                      className="border-2 border-dashed border-emerald-400/60 rounded-xl min-h-[90px] sm:min-h-[96px] flex items-center justify-center bg-emerald-50/30 pointer-events-none transition-all duration-200 animate-in fade-in"
+                    >
+                      <div className="flex flex-col items-center gap-1 text-emerald-400">
+                        <Move className="h-5 w-5" />
+                      </div>
+                    </div>
+                  );
+                }
+                
+                const table = item.table;
+                const tableIndex = item.originalIndex;
               // Status derivado baseado em itens no carrinho ou comanda
               const derivedStatus = getDerivedStatus(table);
               const statusConfig = getStatusConfig(derivedStatus);
@@ -1149,22 +1181,13 @@ export default function MesasComandas() {
               const displayNumber = table.displayNumber || table.number.toString();
               const isDragging = draggedTableId === table.id;
               const isDropTarget = dropTargetId === table.id && draggedTableId !== table.id;
-              const showInsertBefore = dropInsertIndex === tableIndex && draggedTableId !== null && draggedTableId !== table.id && !isDragOverCard;
               
               return (
-                <React.Fragment key={`frag-${table.id}`}>
-                  {/* Card pontilhado placeholder indicando posição de inserção */}
-                  {showInsertBefore && (
-                    <div className="border-2 border-dashed border-emerald-400 rounded-xl min-h-[90px] sm:min-h-[96px] flex items-center justify-center bg-emerald-50/50 animate-in fade-in duration-200">
-                      <div className="flex flex-col items-center gap-1 text-emerald-500">
-                        <Move className="h-5 w-5" />
-                        <span className="text-xs font-medium">Soltar aqui</span>
-                      </div>
-                    </div>
-                  )}
                 <div
+                  key={table.id}
                   className={cn(
-                    "relative transition-all duration-200"
+                    "relative transition-all duration-200",
+                    isDragging && "opacity-40 scale-90"
                   )}
                   onDragOver={(e) => {
                     e.preventDefault();
@@ -1174,9 +1197,9 @@ export default function MesasComandas() {
                     // Detectar posição do cursor no card
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = e.clientX - rect.left;
-                    const threshold = rect.width * 0.3; // 30% das bordas
+                    const centerThreshold = rect.width * 0.35;
                     
-                    if (x < threshold) {
+                    if (x < centerThreshold) {
                       // Borda esquerda: inserir ANTES deste card
                       const newIdx = tableIndex;
                       if (lastDropInsertRef.current !== newIdx) {
@@ -1186,9 +1209,9 @@ export default function MesasComandas() {
                           setDropInsertIndex(newIdx);
                           setIsDragOverCard(false);
                           setDropTargetId(null);
-                        }, 50);
+                        }, 80);
                       }
-                    } else if (x > rect.width - threshold) {
+                    } else if (x > rect.width - centerThreshold) {
                       // Borda direita: inserir DEPOIS deste card
                       const newIdx = tableIndex + 1;
                       if (lastDropInsertRef.current !== newIdx) {
@@ -1198,7 +1221,7 @@ export default function MesasComandas() {
                           setDropInsertIndex(newIdx);
                           setIsDragOverCard(false);
                           setDropTargetId(null);
-                        }, 50);
+                        }, 80);
                       }
                     } else {
                       // Centro: juntar mesas
@@ -1212,7 +1235,6 @@ export default function MesasComandas() {
                     }
                   }}
                   onDragLeave={(e) => {
-                    // Só limpar se realmente saiu do card (não entrou num filho)
                     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
                       setDropTargetId(null);
                       setDropInsertIndex(null);
@@ -1234,11 +1256,11 @@ export default function MesasComandas() {
                       });
                     } else if (dropInsertIndex !== null) {
                       // Soltar na borda = reordenar
-                      const dragIdx = filteredTables.findIndex(t => t.id === draggedTableId);
-                      if (dragIdx !== -1 && dropInsertIndex !== dragIdx) {
+                      const dIdx = filteredTables.findIndex(t => t.id === draggedTableId);
+                      if (dIdx !== -1 && dropInsertIndex !== dIdx) {
                         const newOrder = [...filteredTables];
-                        const [moved] = newOrder.splice(dragIdx, 1);
-                        const insertAt = dropInsertIndex > dragIdx ? dropInsertIndex - 1 : dropInsertIndex;
+                        const [moved] = newOrder.splice(dIdx, 1);
+                        const insertAt = dropInsertIndex > dIdx ? dropInsertIndex - 1 : dropInsertIndex;
                         newOrder.splice(insertAt, 0, moved);
                         const orders = newOrder.map((t, i) => ({ id: t.id, sortOrder: i }));
                         reorderMutation.mutate({ orders });
@@ -1468,9 +1490,9 @@ export default function MesasComandas() {
                     )}
                   </button>
                 </div>
-                </React.Fragment>
               );
-            })}
+              });
+            })()}
           </div>
         )}
 

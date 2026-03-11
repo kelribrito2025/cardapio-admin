@@ -8717,4 +8717,5 @@
 - [x] Drag: arrastar mesa entre mesas = reordenar com gap visual entre cards
 - [x] Drag: manter comportamento de juntar mesas ao arrastar sobre outra mesa (não alterar)
 - [x] Drag: substituir banner "Movendo mesa" e barra amber por card pontilhado placeholder no local de inserção
-- [ ] Bug: drag and drop treme e card pontilhado não aparece corretamente (loop de layout)
+- [x] Bug: drag and drop treme e card pontilhado não aparece corretamente (loop de layout)
+- [x] Drag: cards devem se afastar suavemente com animação CSS para abrir espaço ao arrastar mesa entre eles
