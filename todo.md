@@ -8790,3 +8790,23 @@
 - [x] Fix busca intermitente: Adicionar staleTime na query de produtos (cache 30s)
 - [x] Fix busca intermitente: Mostrar loading state na busca enquanto produtos carregam
 - [x] Remover window.confirm nativo ao desativar mesa (desativar diretamente sem confirmação)
+- [x] Mesas desativadas não devem aparecer em "Mesas Excluídas" - separar conceitos desativada vs excluída
+
+## Separação Mesas Desativadas vs Excluídas (deletedAt)
+- [x] Adicionar campo deletedAt (timestamp) à tabela tables no schema
+- [x] Migração aplicada no banco de dados
+- [x] Backend: getTablesByEstablishment filtra deletedAt IS NULL
+- [x] Backend: getDeactivatedTables filtra isActive=false AND deletedAt IS NULL
+- [x] Backend: nova função getDeletedTables filtra deletedAt IS NOT NULL
+- [x] Backend: nova função softDeleteTable (marca deletedAt + isActive=false)
+- [x] Backend: nova função restoreDeletedTable (limpa deletedAt + isActive=true)
+- [x] Backend: endpoint delete usa softDeleteTable (soft delete com deletedAt)
+- [x] Backend: novo endpoint deletePermanently (hard delete real)
+- [x] Backend: novo endpoint listDeleted (mesas com deletedAt)
+- [x] Backend: novo endpoint restoreDeleted (restaurar mesa excluída)
+- [x] Frontend: "Excluir" no Gerenciar Espaços usa soft delete (deletedAt)
+- [x] Frontend: "Mesas Excluídas" mostra apenas mesas com deletedAt (não desativadas)
+- [x] Frontend: Restaurar em "Mesas Excluídas" usa restoreDeleted
+- [x] Frontend: Excluir permanentemente usa deletePermanently
+- [x] Frontend: Mesas desativadas continuam visíveis no mapa como cinza (sem deletedAt)
+- [x] Testes vitest: 16 testes passando para separação desativada/excluída

@@ -489,20 +489,29 @@ export default function MesasComandas() {
 
   const deleteTableMutation = trpc.tables.delete.useMutation({
     onSuccess: () => {
-      toast.success("Mesa excluída permanentemente!");
+      toast.success("Mesa excluída! Você pode restaurá-la em Gerenciar Espaços > Mesas Excluídas.");
       refetch();
-      refetchDeactivated();
+      refetchDeleted();
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao excluir mesa");
     },
   });
 
+  const deletePermanentlyMutation = trpc.tables.deletePermanently.useMutation({
+    onSuccess: () => {
+      toast.success("Mesa excluída permanentemente!");
+      refetchDeleted();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao excluir mesa permanentemente");
+    },
+  });
+
   const deactivateTableMutation = trpc.tables.deactivate.useMutation({
     onSuccess: () => {
-      toast.success("Mesa desativada! Você pode restaurá-la em Gerenciar Espaços > Mesas Excluídas.");
+      toast.success("Mesa desativada!");
       refetch();
-      refetchDeactivated();
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao desativar mesa");
@@ -513,15 +522,25 @@ export default function MesasComandas() {
     onSuccess: () => {
       toast.success("Mesa restaurada com sucesso!");
       refetch();
-      refetchDeactivated();
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao restaurar mesa");
     },
   });
 
-  // Query para mesas desativadas
-  const { data: deactivatedTables = [], refetch: refetchDeactivated } = trpc.tables.listDeactivated.useQuery();
+  // Query para mesas excluídas (soft deleted)
+  const { data: deletedTables = [], refetch: refetchDeleted } = trpc.tables.listDeleted.useQuery();
+
+  const restoreDeletedMutation = trpc.tables.restoreDeleted.useMutation({
+    onSuccess: () => {
+      toast.success("Mesa restaurada com sucesso!");
+      refetch();
+      refetchDeleted();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao restaurar mesa");
+    },
+  });
 
   // Mutation para juntar mesas
   const mergeTablesMutation = trpc.tables.merge.useMutation({
@@ -852,7 +871,7 @@ export default function MesasComandas() {
 
   const handleDeleteTablePermanently = (tableId: number, tableNumber: number) => {
     if (confirm(`Tem certeza que deseja EXCLUIR PERMANENTEMENTE a Mesa ${tableNumber}? Esta ação não pode ser desfeita e todos os dados da comanda serão perdidos.`)) {
-      deleteTableMutation.mutate({ id: tableId });
+      deletePermanentlyMutation.mutate({ id: tableId });
     }
   };
 
@@ -2238,22 +2257,22 @@ export default function MesasComandas() {
               </div>
             )}
 
-            {/* Lista de mesas ativas - exclusão permanente */}
+            {/* Lista de mesas ativas - exclusão (soft delete) */}
             {tables.length > 0 && (
               <div className="mt-6 pt-4 border-t">
                 <h4 className="font-medium mb-3 flex items-center gap-2">
                   <Utensils className="h-4 w-4" />
-                  Mesas Ativas ({tables.length})
+                  Mesas Ativas ({tables.filter(t => t.isActive !== false).length})
                 </h4>
                 <div className="max-h-48 overflow-y-auto space-y-1">
-                  {tables.map((table) => (
+                  {tables.filter(t => t.isActive !== false).map((table) => (
                     <div key={table.id} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg text-sm">
                       <span>Mesa {table.number}</span>
                       <Button
                         size="sm"
                         variant="ghost"
                         className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => handleDeleteTablePermanently(table.id, table.number)}
+                        onClick={() => deleteTableMutation.mutate({ id: table.id })}
                         disabled={deleteTableMutation.isPending}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -2264,18 +2283,18 @@ export default function MesasComandas() {
               </div>
             )}
 
-            {/* Lista de mesas desativadas - com opção de restaurar */}
-            {deactivatedTables.length > 0 && (
+            {/* Lista de mesas excluídas (soft deleted) - com opção de restaurar ou excluir permanentemente */}
+            {deletedTables.length > 0 && (
               <div className="mt-6 pt-4 border-t">
                 <h4 className="font-medium mb-3 flex items-center gap-2 text-amber-600">
                   <EyeOff className="h-4 w-4" />
-                  Mesas Excluídas ({deactivatedTables.length})
+                  Mesas Excluídas ({deletedTables.length})
                 </h4>
                 <p className="text-xs text-muted-foreground mb-3">
-                  Mesas desativadas podem ser restauradas ou excluídas permanentemente.
+                  Mesas excluídas podem ser restauradas ou removidas permanentemente.
                 </p>
                 <div className="max-h-48 overflow-y-auto space-y-1">
-                  {deactivatedTables.map((table) => (
+                  {deletedTables.map((table) => (
                     <div key={table.id} className="flex items-center justify-between p-2 bg-amber-50 dark:bg-amber-950/20 rounded-lg text-sm">
                       <span className="text-muted-foreground">Mesa {table.number}</span>
                       <div className="flex items-center gap-1">
@@ -2283,8 +2302,8 @@ export default function MesasComandas() {
                           size="sm"
                           variant="ghost"
                           className="h-7 px-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 text-xs gap-1"
-                          onClick={() => restoreTableMutation.mutate({ id: table.id })}
-                          disabled={restoreTableMutation.isPending}
+                          onClick={() => restoreDeletedMutation.mutate({ id: table.id })}
+                          disabled={restoreDeletedMutation.isPending}
                         >
                           <RotateCcw className="h-3.5 w-3.5" />
                           Restaurar
@@ -2294,7 +2313,7 @@ export default function MesasComandas() {
                           variant="ghost"
                           className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
                           onClick={() => handleDeleteTablePermanently(table.id, table.number)}
-                          disabled={deleteTableMutation.isPending}
+                          disabled={deletePermanentlyMutation.isPending}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>

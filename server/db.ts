@@ -1,4 +1,4 @@
-import { eq, desc, asc, and, like, notLike, sql, gte, lte, lt, gt, or, ne, inArray, isNotNull, getTableColumns } from "drizzle-orm";
+import { eq, desc, asc, and, like, notLike, sql, gte, lte, lt, gt, or, ne, inArray, isNull, isNotNull, getTableColumns } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { notifyNewOrder, notifyOrderUpdate, notifyOrderStatusUpdate, notifyPrintOrder, getPrinterConnectionCount } from "./_core/sse";
 import { sendOrderReadySMS, isValidPhoneNumber } from "./_core/sms";
@@ -7718,9 +7718,9 @@ export async function deleteTableSpace(id: number): Promise<void> {
   const spaceTables = await db.select().from(tables)
     .where(eq(tables.spaceId, id));
   
-  // Deletar cada mesa e seus dados associados (comanda + itens)
+  // Soft delete de cada mesa do espaço
   for (const table of spaceTables) {
-    await deleteTable(table.id);
+    await softDeleteTable(table.id);
   }
   
   // Deletar o espaço (hard delete)
@@ -7739,7 +7739,8 @@ export async function getTablesByEstablishment(establishmentId: number): Promise
   return db.select().from(tables)
     .where(and(
       eq(tables.establishmentId, establishmentId),
-      eq(tables.isActive, true)
+      eq(tables.isActive, true),
+      isNull(tables.deletedAt)
     ))
     .orderBy(asc(tables.sortOrder), asc(tables.number));
 }
@@ -7754,7 +7755,23 @@ export async function getDeactivatedTables(establishmentId: number): Promise<Tab
   return db.select().from(tables)
     .where(and(
       eq(tables.establishmentId, establishmentId),
-      eq(tables.isActive, false)
+      eq(tables.isActive, false),
+      isNull(tables.deletedAt)
+    ))
+    .orderBy(asc(tables.number));
+}
+
+/**
+ * Busca mesas excluídas (soft delete) de um estabelecimento
+ */
+export async function getDeletedTables(establishmentId: number): Promise<Table[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(tables)
+    .where(and(
+      eq(tables.establishmentId, establishmentId),
+      isNotNull(tables.deletedAt)
     ))
     .orderBy(asc(tables.number));
 }
@@ -7833,7 +7850,42 @@ export async function updateTableStatus(
 }
 
 /**
- * Deleta uma mesa e todos os dados associados (comanda e itens)
+ * Marca uma mesa como excluída (soft delete com deletedAt)
+ */
+export async function softDeleteTable(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  // Fechar comanda ativa se houver
+  const activeTab = await getActiveTabByTable(id);
+  if (activeTab) {
+    await db.delete(tabItems).where(eq(tabItems.tabId, activeTab.id));
+    await db.delete(tabs).where(eq(tabs.id, activeTab.id));
+  }
+  
+  // Soft delete: marcar deletedAt e desativar
+  await db.update(tables).set({
+    deletedAt: new Date(),
+    isActive: false,
+    status: "free",
+  }).where(eq(tables.id, id));
+}
+
+/**
+ * Restaura uma mesa excluída (limpa deletedAt e reativa)
+ */
+export async function restoreDeletedTable(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  await db.update(tables).set({
+    deletedAt: null,
+    isActive: true,
+  }).where(eq(tables.id, id));
+}
+
+/**
+ * Deleta uma mesa permanentemente (hard delete)
  */
 export async function deleteTable(id: number): Promise<void> {
   const db = await getDb();

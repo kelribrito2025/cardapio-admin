@@ -4486,7 +4486,7 @@ export const appRouter = router({
         return { success: true };
       }),
 
-    // Desativar mesa (soft delete - marca isActive = false)
+    // Desativar mesa (marca isActive = false, continua visível no mapa como cinza)
     deactivate: protectedProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
@@ -4502,18 +4502,41 @@ export const appRouter = router({
         return { success: true };
       }),
 
-    // Listar mesas desativadas do estabelecimento
+    // Listar mesas desativadas do estabelecimento (visíveis no mapa como cinza)
     listDeactivated: protectedProcedure.query(async ({ ctx }) => {
       const establishment = await db.getEstablishmentByUserId(ctx.user.id);
       if (!establishment) return [];
       return db.getDeactivatedTables(establishment.id);
     }),
 
-    // Deletar mesa permanentemente (hard delete)
+    // Excluir mesa (soft delete com deletedAt - some do mapa, aparece em Mesas Excluídas)
     delete: protectedProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
+        await db.softDeleteTable(input.id);
+        return { success: true };
+      }),
+
+    // Excluir mesa permanentemente (hard delete - remove do banco)
+    deletePermanently: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
         await db.deleteTable(input.id);
+        return { success: true };
+      }),
+
+    // Listar mesas excluídas (soft deleted) do estabelecimento
+    listDeleted: protectedProcedure.query(async ({ ctx }) => {
+      const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+      if (!establishment) return [];
+      return db.getDeletedTables(establishment.id);
+    }),
+
+    // Restaurar mesa excluída (limpa deletedAt e reativa)
+    restoreDeleted: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.restoreDeletedTable(input.id);
         return { success: true };
       }),
 

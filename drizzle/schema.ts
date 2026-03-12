@@ -744,6 +744,7 @@ export const tables = mysqlTable("tables", {
   reservedPhone: varchar("reservedPhone", { length: 30 }), // Telefone da reserva
   reservedGuests: int("reservedGuests"), // Quantidade de pessoas da reserva
   isActive: boolean("isActive").default(true).notNull(), // Se a mesa está ativa
+  deletedAt: timestamp("deletedAt"), // Quando a mesa foi excluída (soft delete)
   sortOrder: int("sortOrder").default(0).notNull(), // Ordem de exibição
   label: varchar("label", { length: 15 }), // Identificação opcional da mesa (ex: "João", "Aniversário")
   // Campos para mesas combinadas
