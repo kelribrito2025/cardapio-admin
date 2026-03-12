@@ -8830,3 +8830,7 @@
 - [x] Frontend: toast de sucesso após transferência
 - [x] Frontend: refetch automático das mesas após transferência
 - [x] Testes vitest para a funcionalidade de transferência (17 testes passando)
+
+## Bug: Scroll no drawer mobile rola conteúdo de fundo
+- [x] Corrigir scroll no drawer mobile: ao fazer scroll no menu lateral, o conteúdo por trás é que rola
+- [x] Adicionar overflow-y-auto + overscroll-contain no container do drawer e bloquear scroll do body quando drawer aberto
