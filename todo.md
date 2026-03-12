@@ -8834,3 +8834,10 @@
 ## Bug: Scroll no drawer mobile rola conteúdo de fundo
 - [x] Corrigir scroll no drawer mobile: ao fazer scroll no menu lateral, o conteúdo por trás é que rola
 - [x] Adicionar overflow-y-auto + overscroll-contain no container do drawer e bloquear scroll do body quando drawer aberto
+
+## Correção Atômica: orderNumber para requisições paralelas
+- [x] Criar tabela order_counters no schema (establishmentId, date, counter)
+- [x] Aplicar migração no banco
+- [x] Atualizar getNextDailyOrderNumber para usar INSERT ON DUPLICATE KEY UPDATE atômico com fallback
+- [x] Escrever testes vitest para concorrência (14 testes passando)
+- [x] Verificar que formato #P1, #P2 continua igual

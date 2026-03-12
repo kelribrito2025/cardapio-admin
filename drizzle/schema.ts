@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, decimal, json } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, decimal, json, date, uniqueIndex } from "drizzle-orm/mysql-core";
 
 // User table (from template)
 export const users = mysqlTable("users", {
@@ -1209,3 +1209,16 @@ export const collaborators = mysqlTable("collaborators", {
 });
 export type Collaborator = typeof collaborators.$inferSelect;
 export type InsertCollaborator = typeof collaborators.$inferInsert;
+
+// Order counters for atomic order number generation
+export const orderCounters = mysqlTable("order_counters", {
+  id: int("id").autoincrement().primaryKey(),
+  establishmentId: int("establishmentId").notNull(),
+  counterDate: varchar("counterDate", { length: 10 }).notNull(), // YYYY-MM-DD
+  counter: int("counter").notNull().default(0),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => [
+  uniqueIndex("uniq_est_date").on(table.establishmentId, table.counterDate),
+]);
+export type OrderCounter = typeof orderCounters.$inferSelect;
+export type InsertOrderCounter = typeof orderCounters.$inferInsert;

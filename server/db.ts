@@ -56,7 +56,8 @@ import {
   storyViews, InsertStoryView, StoryView,
   storyEvents, InsertStoryEvent, StoryEvent,
   aiImageCreditLogs, InsertAiImageCreditLog, AiImageCreditLog,
-  collaborators, InsertCollaborator, Collaborator
+  collaborators, InsertCollaborator, Collaborator,
+  orderCounters, InsertOrderCounter, OrderCounter
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 import crypto from 'crypto';
@@ -1844,21 +1845,45 @@ async function getNextDailyOrderNumber(establishmentId: number): Promise<string>
     .limit(1);
   const timezone = estResult.length > 0 ? estResult[0].timezone : 'America/Sao_Paulo';
 
-  // Calcular início do dia atual no fuso horário do estabelecimento
+  // Calcular data atual no fuso horário do estabelecimento (YYYY-MM-DD)
   const now = new Date();
   const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit' });
-  const todayStr = formatter.format(now); // formato YYYY-MM-DD
-  // Converter início do dia local para UTC
-  const startOfDayLocal = new Date(`${todayStr}T00:00:00`);
-  // Obter offset do timezone para converter para UTC
+  const todayStr = formatter.format(now);
+
+  try {
+    // Método atômico: INSERT ... ON DUPLICATE KEY UPDATE counter = counter + 1
+    // Isso garante que mesmo com requisições paralelas, cada uma recebe um número único
+    await db.execute(
+      sql`INSERT INTO order_counters (establishmentId, counterDate, counter)
+          VALUES (${establishmentId}, ${todayStr}, 1)
+          ON DUPLICATE KEY UPDATE counter = counter + 1`
+    );
+
+    // Ler o valor atualizado
+    const [result] = await db.select({ counter: orderCounters.counter })
+      .from(orderCounters)
+      .where(and(
+        eq(orderCounters.establishmentId, establishmentId),
+        eq(orderCounters.counterDate, todayStr)
+      ))
+      .limit(1);
+
+    if (result) {
+      return `#P${result.counter}`;
+    }
+  } catch (atomicError) {
+    console.error('[getNextDailyOrderNumber] Erro no método atômico, usando fallback:', atomicError);
+  }
+
+  // Fallback: método antigo (não atômico, mas funciona se a tabela order_counters não existir)
   const utcFormatter = new Intl.DateTimeFormat('en-US', { timeZone: timezone, hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const parts = utcFormatter.formatToParts(now);
   const localTimeStr = `${parts.find(p => p.type === 'year')?.value}-${parts.find(p => p.type === 'month')?.value}-${parts.find(p => p.type === 'day')?.value}T${parts.find(p => p.type === 'hour')?.value}:${parts.find(p => p.type === 'minute')?.value}:${parts.find(p => p.type === 'second')?.value}`;
   const localTime = new Date(localTimeStr);
+  const startOfDayLocal = new Date(`${todayStr}T00:00:00`);
   const offsetMs = now.getTime() - localTime.getTime();
   const startOfDayUTC = new Date(startOfDayLocal.getTime() + offsetMs);
 
-  // Buscar último pedido do dia atual para o estabelecimento
   const lastOrderResult = await db.select({ orderNumber: orders.orderNumber })
     .from(orders)
     .where(and(

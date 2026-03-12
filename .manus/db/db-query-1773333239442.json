@@ -1,0 +1,100 @@
+{
+  "query": "SELECT id, name, apiKey, establishmentId, isActive, isGlobal, createdAt FROM botApiKeys WHERE isActive = true ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT id, name, apiKey, establishmentId, isActive, isGlobal, createdAt FROM botApiKeys WHERE isActive = true ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "150002",
+      "name": "Bot Gastro Bar",
+      "apiKey": "bot_19bbc50ed27cf1e55765f17f7789276b029c530992942a7c7345c25f49bedb37",
+      "establishmentId": "210016",
+      "isActive": "1",
+      "isGlobal": "0",
+      "createdAt": "2026-03-10 22:35:47"
+    },
+    {
+      "id": "150001",
+      "name": "Bot Gastro Bar",
+      "apiKey": "bot_global_dd99ae1d0b2df1731cc4f19e5850143bfe0e2a6986677bcd0a33b380520d5844",
+      "establishmentId": "210016",
+      "isActive": "1",
+      "isGlobal": "1",
+      "createdAt": "2026-03-10 20:58:07"
+    },
+    {
+      "id": "120012",
+      "name": "Bot Delivorando",
+      "apiKey": "bot_4f9a791604836a9d95b2f352f344a0f9cd1c998365e5c9c6ae8f17ea4bf45c3e",
+      "establishmentId": "210008",
+      "isActive": "1",
+      "isGlobal": "0",
+      "createdAt": "2026-03-06 19:50:04"
+    },
+    {
+      "id": "120011",
+      "name": "Bot Delivorando",
+      "apiKey": "bot_global_713ea150a7a7ed6adb43667d687116fddf2dab6cdeb43de7f7d9bdf04ef4f64e",
+      "establishmentId": "210008",
+      "isActive": "1",
+      "isGlobal": "1",
+      "createdAt": "2026-03-06 19:49:30"
+    },
+    {
+      "id": "120010",
+      "name": "Bot sdfsd",
+      "apiKey": "bot_e2d374d625f5fc207716f2d0964e265d5d3e00a42c4395bfb24a870b3be2465b",
+      "establishmentId": "210014",
+      "isActive": "1",
+      "isGlobal": "0",
+      "createdAt": "2026-03-06 19:04:59"
+    },
+    {
+      "id": "120009",
+      "name": "Bot sdfsd",
+      "apiKey": "bot_global_b1b24f28aeca744ebdc2ac70ff62be27bf441a3cf09bbe1f0bb9fd8a221f4212",
+      "establishmentId": "210014",
+      "isActive": "1",
+      "isGlobal": "1",
+      "createdAt": "2026-03-06 19:04:41"
+    },
+    {
+      "id": "120008",
+      "name": "Bot ertert",
+      "apiKey": "bot_4b722a01403b2752a79eaf4c3de7a699727d2d10e98b422f718cddb69ef4f40a",
+      "establishmentId": "210013",
+      "isActive": "1",
+      "isGlobal": "0",
+      "createdAt": "2026-03-06 19:00:44"
+    },
+    {
+      "id": "120007",
+      "name": "Bot ertert",
+      "apiKey": "bot_global_9ceb52e14a19382362acdc651ffd9161169ad34da8b2a6386f71e3b4e324002c",
+      "establishmentId": "210013",
+      "isActive": "1",
+      "isGlobal": "1",
+      "createdAt": "2026-03-06 19:00:33"
+    },
+    {
+      "id": "120006",
+      "name": "Bot dfsdfdsasd",
+      "apiKey": "bot_21eb62ee55a6da88646f63f79cf3c991ac3affb2235c6617aab147958a9cb5d9",
+      "establishmentId": "210009",
+      "isActive": "1",
+      "isGlobal": "0",
+      "createdAt": "2026-03-06 17:01:47"
+    },
+    {
+      "id": "120005",
+      "name": "Bot fdsfdsf",
+      "apiKey": "bot_042694bf7ddf79af5ec22e4ef6c37c7c4d089142392043d47856683a338dc686",
+      "establishmentId": "210011",
+      "isActive": "1",
+      "isGlobal": "0",
+      "createdAt": "2026-03-06 16:43:57"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tapiKey\testablishmentId\tisActive\tisGlobal\tcreatedAt\n150002\tBot Gastro Bar\tbot_19bbc50ed27cf1e55765f17f7789276b029c530992942a7c7345c25f49bedb37\t210016\t1\t0\t2026-03-10 22:35:47\n150001\tBot Gastro Bar\tbot_global_dd99ae1d0b2df1731cc4f19e5850143bfe0e2a6986677bcd0a33b380520d5844\t210016\t1\t1\t2026-03-10 20:58:07\n120012\tBot Delivorando\tbot_4f9a791604836a9d95b2f352f344a0f9cd1c998365e5c9c6ae8f17ea4bf45c3e\t210008\t1\t0\t2026-03-06 19:50:04\n120011\tBot Delivorando\tbot_global_713ea150a7a7ed6adb43667d687116fddf2dab6cdeb43de7f7d9bdf04ef4f64e\t210008\t1\t1\t2026-03-06 19:49:30\n120010\tBot sdfsd\tbot_e2d374d625f5fc207716f2d0964e265d5d3e00a42c4395bfb24a870b3be2465b\t210014\t1\t0\t2026-03-06 19:04:59\n120009\tBot sdfsd\tbot_global_b1b24f28aeca744ebdc2ac70ff62be27bf441a3cf09bbe1f0bb9fd8a221f4212\t210014\t1\t1\t2026-03-06 19:04:41\n120008\tBot ertert\tbot_4b722a01403b2752a79eaf4c3de7a699727d2d10e98b422f718cddb69ef4f40a\t210013\t1\t0\t2026-03-06 19:00:44\n120007\tBot ertert\tbot_global_9ceb52e14a19382362acdc651ffd9161169ad34da8b2a6386f71e3b4e324002c\t210013\t1\t1\t2026-03-06 19:00:33\n120006\tBot dfsdfdsasd\tbot_21eb62ee55a6da88646f63f79cf3c991ac3affb2235c6617aab147958a9cb5d9\t210009\t1\t0\t2026-03-06 17:01:47\n120005\tBot fdsfdsf\tbot_042694bf7ddf79af5ec22e4ef6c37c7c4d089142392043d47856683a338dc686\t210011\t1\t0\t2026-03-06 16:43:57\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}
