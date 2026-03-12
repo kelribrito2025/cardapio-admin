@@ -8810,3 +8810,8 @@
 - [x] Frontend: Excluir permanentemente usa deletePermanently
 - [x] Frontend: Mesas desativadas continuam visíveis no mapa como cinza (sem deletedAt)
 - [x] Testes vitest: 16 testes passando para separação desativada/excluída
+
+## Bug: Coluna deletedAt não existe no banco de dados
+- [x] Verificar se a migração do campo deletedAt foi aplicada ao banco
+- [x] Aplicar migração com ALTER TABLE diretamente (pnpm db:push não aplicou no banco de produção)
+- [x] Confirmar que as queries com deletedAt funcionam sem erro
