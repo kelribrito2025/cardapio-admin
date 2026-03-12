@@ -86,8 +86,62 @@ function sendError(res: Response, status: number, message: string) {
 
 export function createBotApiRouter(): Router {
   const router = Router();
+  const startTime = Date.now();
 
-  // Aplicar middleware de autenticação em todas as rotas
+  // ──────────────────────────────────────────────
+  // GET /api/bot/health — Health check público (sem autenticação)
+  // ──────────────────────────────────────────────
+  router.get("/health", async (_req: Request, res: Response) => {
+    const uptime = Math.floor((Date.now() - startTime) / 1000);
+    const uptimeFormatted = `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m ${uptime % 60}s`;
+
+    // Verificar conexão com o banco de dados
+    let dbStatus: "connected" | "disconnected" = "disconnected";
+    let dbLatencyMs = 0;
+    try {
+      const dbStart = Date.now();
+      const dbInstance = await db.getDb();
+      if (dbInstance) {
+        await dbInstance.execute(sql`SELECT 1`);
+        dbStatus = "connected";
+        dbLatencyMs = Date.now() - dbStart;
+      }
+    } catch {
+      dbStatus = "disconnected";
+    }
+
+    const status = dbStatus === "connected" ? "healthy" : "degraded";
+
+    return res.status(status === "healthy" ? 200 : 503).json({
+      status,
+      version: "2.0.0",
+      timestamp: new Date().toISOString(),
+      uptime: uptimeFormatted,
+      uptimeSeconds: uptime,
+      services: {
+        api: "running",
+        database: dbStatus,
+        databaseLatencyMs: dbLatencyMs,
+      },
+      endpoints: {
+        establishment: "GET /api/bot/establishment",
+        menu: "GET /api/bot/menu",
+        menuLink: "GET /api/bot/menu-link",
+        orders: "POST /api/bot/orders",
+        ordersByPhone: "GET /api/bot/orders?phone={phone}",
+        orderById: "GET /api/bot/orders/:id",
+        orderStatus: "PUT /api/bot/orders/:id/status",
+        products: "GET /api/bot/products/:id",
+        search: "GET /api/bot/search?q={query}",
+        stock: "GET /api/bot/stock/:productId",
+        deliveryFee: "GET /api/bot/delivery-fee?neighborhood={name}",
+        couponValidate: "POST /api/bot/coupons/validate",
+        health: "GET /api/bot/health",
+      },
+    });
+  });
+
+  // Aplicar middleware de autenticação em todas as rotas abaixo
   router.use(botApiAuth as any);
 
   // ──────────────────────────────────────────────
