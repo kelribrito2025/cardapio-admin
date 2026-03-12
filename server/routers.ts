@@ -4843,6 +4843,56 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    // Transferir itens de uma mesa para outra
+    transferItems: protectedProcedure
+      .input(z.object({
+        sourceTableId: z.number(),
+        targetTableId: z.number(),
+        itemIds: z.array(z.number()).min(1),
+        transferLabel: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const establishment = await db.getEstablishmentByUserId(ctx.user.id);
+        if (!establishment) throw new TRPCError({ code: "NOT_FOUND", message: "Estabelecimento não encontrado" });
+        
+        // Buscar as duas mesas
+        const sourceTable = await db.getTableById(input.sourceTableId);
+        const targetTable = await db.getTableById(input.targetTableId);
+        
+        if (!sourceTable || !targetTable) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Mesa não encontrada" });
+        }
+        
+        // Buscar comanda ativa da mesa de origem
+        const sourceTab = await db.getActiveTabByTable(input.sourceTableId);
+        if (!sourceTab) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Mesa de origem não tem comanda aberta" });
+        }
+        
+        // Buscar ou criar comanda na mesa de destino
+        let targetTab = await db.getActiveTabByTable(input.targetTableId);
+        if (!targetTab) {
+          // Abrir a mesa de destino (cria comanda)
+          const result = await db.openTable(establishment.id, input.targetTableId, 1);
+          targetTab = await db.getTabById(result.tabId);
+          if (!targetTab) {
+            throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Erro ao criar comanda na mesa de destino" });
+          }
+        }
+        
+        // Transferir os itens
+        const { sourceEmpty } = await db.transferTabItems(
+          sourceTab.id,
+          targetTab.id,
+          input.itemIds,
+          input.sourceTableId,
+          input.targetTableId,
+          input.transferLabel ?? false
+        );
+        
+        return { success: true, sourceEmpty };
+      }),
+
     // Reordenar mesas (atualizar sortOrder de múltiplas mesas)
     reorder: protectedProcedure
       .input(z.object({

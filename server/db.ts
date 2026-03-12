@@ -8355,8 +8355,65 @@ export async function updateTableMerge(id: number, data: {
 }
 
 /**
- * Cancela uma comanda (marca como cancelada)
+ * Transfere itens selecionados de uma comanda para outra.
+ * Move os itens (update tabId), recalcula totais de ambas as comandas.
+ * Se a comanda de origem ficar sem itens ativos, fecha-a e libera a mesa.
  */
+export async function transferTabItems(
+  sourceTabId: number,
+  targetTabId: number,
+  itemIds: number[],
+  sourceTableId: number,
+  targetTableId: number,
+  transferLabel: boolean = false
+): Promise<{ sourceEmpty: boolean }> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Mover os itens selecionados para a comanda de destino
+  await db.update(tabItems)
+    .set({ tabId: targetTabId, updatedAt: new Date() })
+    .where(and(
+      inArray(tabItems.id, itemIds),
+      eq(tabItems.tabId, sourceTabId)
+    ));
+  
+  // Recalcular totais de ambas as comandas
+  await recalculateTabTotals(sourceTabId);
+  await recalculateTabTotals(targetTabId);
+  
+  // Verificar se a comanda de origem ficou sem itens ativos
+  const remainingItems = await db.select().from(tabItems)
+    .where(and(
+      eq(tabItems.tabId, sourceTabId),
+      ne(tabItems.status, "cancelled")
+    ));
+  
+  const sourceEmpty = remainingItems.length === 0;
+  
+  if (sourceEmpty) {
+    // Fechar a comanda de origem (cancelar)
+    await cancelTab(sourceTabId);
+    
+    // Liberar a mesa de origem
+    await updateTableStatus(sourceTableId, "free");
+    
+    // Se transferLabel, mover o label da mesa de origem para a de destino
+    if (transferLabel) {
+      const sourceTable = await getTableById(sourceTableId);
+      if (sourceTable?.label) {
+        await updateTable(targetTableId, { label: sourceTable.label });
+        await updateTable(sourceTableId, { label: null });
+      }
+    }
+    
+    // Limpar label da mesa de origem
+    await updateTable(sourceTableId, { label: null });
+  }
+  
+  return { sourceEmpty };
+}
+
 export async function cancelTab(tabId: number): Promise<void> {
   const db = await getDb();
   if (!db) return;

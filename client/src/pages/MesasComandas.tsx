@@ -47,6 +47,8 @@ import {
   ArrowUpDown,
   RotateCcw,
   EyeOff,
+  ArrowRightLeft,
+  Check,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -56,6 +58,8 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Tipos
 type TableStatus = "free" | "occupied" | "reserved";
@@ -311,6 +315,14 @@ export default function MesasComandas() {
   // Estado para forçar re-render do timer de ocupação das mesas a cada minuto
   const [, setTimerTick] = useState(0);
   
+  // Estados para transferência de itens entre mesas
+  const [showTransferDialog, setShowTransferDialog] = useState(false);
+  const [transferSourceTable, setTransferSourceTable] = useState<typeof tables[number] | null>(null);
+  const [transferSelectedItems, setTransferSelectedItems] = useState<number[]>([]);
+  const [transferTargetTableId, setTransferTargetTableId] = useState<number | null>(null);
+  const [transferLabel, setTransferLabel] = useState(false);
+  const [showTransferConfirm, setShowTransferConfirm] = useState(false);
+  
   // Estados para gerenciar espaços
   const [editingSpaceId, setEditingSpaceId] = useState<number | null>(null);
   const [editingSpaceName, setEditingSpaceName] = useState("");
@@ -561,6 +573,26 @@ export default function MesasComandas() {
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao separar mesas");
+    },
+  });
+
+  // Mutation para transferir itens entre mesas
+  const transferItemsMutation = trpc.tables.transferItems.useMutation({
+    onSuccess: (data) => {
+      const sourceNum = transferSourceTable?.displayNumber || transferSourceTable?.number;
+      const targetTable = tables.find(t => t.id === transferTargetTableId);
+      const targetNum = targetTable?.displayNumber || targetTable?.number;
+      toast.success(`${transferSelectedItems.length} ${transferSelectedItems.length === 1 ? 'item transferido' : 'itens transferidos'} da Mesa ${sourceNum} para a Mesa ${targetNum}`);
+      setShowTransferDialog(false);
+      setShowTransferConfirm(false);
+      setTransferSourceTable(null);
+      setTransferSelectedItems([]);
+      setTransferTargetTableId(null);
+      setTransferLabel(false);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao transferir itens");
     },
   });
 
@@ -867,6 +899,44 @@ export default function MesasComandas() {
 
   const handleDeactivateTable = (tableId: number, tableNumber: number) => {
     deactivateTableMutation.mutate({ id: tableId });
+  };
+
+  // Abrir modal de transferência de itens
+  const handleOpenTransferDialog = (table: typeof tables[number]) => {
+    setTransferSourceTable(table);
+    setTransferSelectedItems([]);
+    setTransferTargetTableId(null);
+    setTransferLabel(!!table.label);
+    setShowTransferConfirm(false);
+    setShowTransferDialog(true);
+  };
+
+  // Confirmar transferência de itens
+  const handleConfirmTransfer = () => {
+    if (!transferSourceTable || !transferTargetTableId || transferSelectedItems.length === 0) return;
+    transferItemsMutation.mutate({
+      sourceTableId: transferSourceTable.id,
+      targetTableId: transferTargetTableId,
+      itemIds: transferSelectedItems,
+      transferLabel: transferLabel,
+    });
+  };
+
+  // Toggle seleção de item para transferência
+  const handleToggleTransferItem = (itemId: number) => {
+    setTransferSelectedItems(prev =>
+      prev.includes(itemId) ? prev.filter(id => id !== itemId) : [...prev, itemId]
+    );
+  };
+
+  // Selecionar/desselecionar todos os itens
+  const handleToggleAllTransferItems = (items: TabItem[]) => {
+    const activeItems = items.filter(i => i.status !== 'cancelled');
+    if (transferSelectedItems.length === activeItems.length) {
+      setTransferSelectedItems([]);
+    } else {
+      setTransferSelectedItems(activeItems.map(i => i.id));
+    }
   };
 
   const handleDeleteTablePermanently = (tableId: number, tableNumber: number) => {
@@ -1420,6 +1490,18 @@ export default function MesasComandas() {
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
+                        {derivedStatus === "occupied" && hasItems && (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenTransferDialog(table);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            <ArrowRightLeft className="h-4 w-4 mr-2 text-orange-500" />
+                            Transferir itens
+                          </DropdownMenuItem>
+                        )}
                         {derivedStatus === "free" && (
                           <DropdownMenuItem
                             onClick={(e) => {
@@ -1821,6 +1903,18 @@ export default function MesasComandas() {
                             </button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-48">
+                            {derivedStatus === 'occupied' && hasItems && (
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleOpenTransferDialog(table);
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <ArrowRightLeft className="h-4 w-4 mr-2 text-orange-500" />
+                                Transferir itens
+                              </DropdownMenuItem>
+                            )}
                             {derivedStatus === 'free' && (
                               <DropdownMenuItem
                                 onClick={(e) => {
@@ -2424,6 +2518,233 @@ export default function MesasComandas() {
               )}
               Reservar
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog para transferir itens entre mesas */}
+      <Dialog open={showTransferDialog} onOpenChange={(open) => {
+        if (!open) {
+          setShowTransferDialog(false);
+          setShowTransferConfirm(false);
+        }
+      }}>
+        <DialogContent
+          className="max-w-md p-0 overflow-hidden border-t-4 border-t-orange-500"
+          style={{ borderRadius: '16px' }}
+        >
+          <DialogTitle className="sr-only">Transferir Itens</DialogTitle>
+          <DialogDescription className="sr-only">Selecione os itens e a mesa de destino para transferir</DialogDescription>
+          <div className="px-6 pt-5 pb-6">
+            {/* Header */}
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2.5 rounded-xl flex-shrink-0 bg-orange-100 dark:bg-orange-950/50">
+                <ArrowRightLeft className="h-6 w-6 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  Transferir Itens — Mesa {transferSourceTable?.displayNumber || transferSourceTable?.number}
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                  Selecione os itens e a mesa de destino
+                </p>
+              </div>
+            </div>
+
+            {!showTransferConfirm ? (
+              <>
+                {/* Lista de itens para selecionar */}
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-sm font-medium text-foreground">Itens da comanda</label>
+                    {transferSourceTable?.items && transferSourceTable.items.filter(i => i.status !== 'cancelled').length > 0 && (
+                      <button
+                        onClick={() => handleToggleAllTransferItems(transferSourceTable.items || [])}
+                        className="text-xs text-primary hover:underline"
+                      >
+                        {transferSelectedItems.length === (transferSourceTable.items?.filter(i => i.status !== 'cancelled').length || 0)
+                          ? 'Desmarcar todos'
+                          : 'Selecionar todos'}
+                      </button>
+                    )}
+                  </div>
+                  <ScrollArea className="max-h-[240px]">
+                    <div className="space-y-1">
+                      {transferSourceTable?.items?.filter(i => i.status !== 'cancelled').map((item) => {
+                        const isSelected = transferSelectedItems.includes(item.id);
+                        const complements = item.complements as Array<{ name: string; price: number; quantity: number }> | null;
+                        return (
+                          <div
+                            key={item.id}
+                            onClick={() => handleToggleTransferItem(item.id)}
+                            className={cn(
+                              "flex items-start gap-3 p-2.5 rounded-lg cursor-pointer transition-colors border",
+                              isSelected
+                                ? "bg-orange-50 border-orange-200 dark:bg-orange-950/30 dark:border-orange-800"
+                                : "bg-muted/30 border-transparent hover:bg-muted/60"
+                            )}
+                          >
+                            <Checkbox
+                              checked={isSelected}
+                              onCheckedChange={() => handleToggleTransferItem(item.id)}
+                              className="mt-0.5 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium text-foreground truncate">
+                                  {item.quantity}x {item.productName}
+                                </span>
+                                <span className="text-sm font-semibold text-foreground ml-2 flex-shrink-0">
+                                  {formatCurrency(parseFloat(item.totalPrice))}
+                                </span>
+                              </div>
+                              {complements && complements.length > 0 && (
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                  + {complements.map(c => c.name).join(', ')}
+                                </p>
+                              )}
+                              {item.notes && (
+                                <p className="text-xs text-muted-foreground/70 italic mt-0.5">{item.notes}</p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </ScrollArea>
+                </div>
+
+                {/* Seletor de mesa de destino */}
+                <div className="mb-4">
+                  <label className="text-sm font-medium text-foreground mb-1.5 block">Mesa de destino</label>
+                  <Select
+                    value={transferTargetTableId?.toString() || ''}
+                    onValueChange={(val) => setTransferTargetTableId(parseInt(val))}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Selecione a mesa de destino" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {tables
+                        .filter(t =>
+                          t.id !== transferSourceTable?.id &&
+                          t.isActive !== false &&
+                          !t.mergedIntoId
+                        )
+                        .sort((a, b) => a.number - b.number)
+                        .map(t => {
+                          const tDisplay = t.displayNumber || t.number.toString();
+                          const tStatus = getDerivedStatus(t);
+                          const tHasItems = tableHasItems(t.id);
+                          return (
+                            <SelectItem key={t.id} value={t.id.toString()}>
+                              <span className="flex items-center gap-2">
+                                <span className={cn(
+                                  "w-2 h-2 rounded-full flex-shrink-0",
+                                  tStatus === 'occupied' ? 'bg-red-500' : tStatus === 'reserved' ? 'bg-blue-500' : 'bg-emerald-500'
+                                )} />
+                                Mesa {tDisplay}
+                                {tHasItems && (
+                                  <span className="text-xs text-muted-foreground">
+                                    ({getTableItemsCount(t.id)} {getTableItemsCount(t.id) === 1 ? 'item' : 'itens'})
+                                  </span>
+                                )}
+                              </span>
+                            </SelectItem>
+                          );
+                        })}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Opção de transferir label */}
+                {transferSourceTable?.label && (
+                  <div className="flex items-center gap-2 mb-4 p-2.5 rounded-lg bg-muted/30">
+                    <Checkbox
+                      id="transfer-label"
+                      checked={transferLabel}
+                      onCheckedChange={(checked) => setTransferLabel(!!checked)}
+                    />
+                    <label htmlFor="transfer-label" className="text-sm text-foreground cursor-pointer">
+                      Transferir identificação <span className="font-medium">"{transferSourceTable.label}"</span>
+                    </label>
+                  </div>
+                )}
+
+                {/* Botão continuar */}
+                <Button
+                  className="w-full rounded-xl h-10 font-semibold bg-orange-500 hover:bg-orange-600 text-white"
+                  onClick={() => setShowTransferConfirm(true)}
+                  disabled={transferSelectedItems.length === 0 || !transferTargetTableId}
+                >
+                  <ArrowRightLeft className="h-4 w-4 mr-2" />
+                  Continuar ({transferSelectedItems.length} {transferSelectedItems.length === 1 ? 'item' : 'itens'})
+                </Button>
+              </>
+            ) : (
+              /* Tela de confirmação */
+              <>
+                <div className="rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 p-4 mb-4">
+                  <p className="text-sm text-foreground font-medium text-center">
+                    Transferir <span className="font-bold text-orange-600">{transferSelectedItems.length} {transferSelectedItems.length === 1 ? 'item' : 'itens'}</span> da{' '}
+                    <span className="font-bold">Mesa {transferSourceTable?.displayNumber || transferSourceTable?.number}</span> para a{' '}
+                    <span className="font-bold">Mesa {(() => {
+                      const target = tables.find(t => t.id === transferTargetTableId);
+                      return target?.displayNumber || target?.number;
+                    })()}</span>?
+                  </p>
+                  
+                  {/* Resumo dos itens */}
+                  <div className="mt-3 space-y-1">
+                    {transferSourceTable?.items
+                      ?.filter(i => transferSelectedItems.includes(i.id))
+                      .map(item => (
+                        <div key={item.id} className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>{item.quantity}x {item.productName}</span>
+                          <span>{formatCurrency(parseFloat(item.totalPrice))}</span>
+                        </div>
+                      ))}
+                    <div className="flex items-center justify-between text-sm font-semibold text-foreground pt-1 border-t border-orange-200 dark:border-orange-700 mt-2">
+                      <span>Total</span>
+                      <span>{formatCurrency(
+                        transferSourceTable?.items
+                          ?.filter(i => transferSelectedItems.includes(i.id))
+                          .reduce((sum, i) => sum + parseFloat(i.totalPrice), 0) || 0
+                      )}</span>
+                    </div>
+                  </div>
+
+                  {transferSourceTable?.items?.filter(i => i.status !== 'cancelled').length === transferSelectedItems.length && (
+                    <p className="text-xs text-orange-600 mt-2 text-center">
+                      Todos os itens serão transferidos. A mesa de origem ficará livre.
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1 rounded-xl h-10"
+                    onClick={() => setShowTransferConfirm(false)}
+                    disabled={transferItemsMutation.isPending}
+                  >
+                    Voltar
+                  </Button>
+                  <Button
+                    className="flex-1 rounded-xl h-10 font-semibold bg-orange-500 hover:bg-orange-600 text-white"
+                    onClick={handleConfirmTransfer}
+                    disabled={transferItemsMutation.isPending}
+                  >
+                    {transferItemsMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Check className="h-4 w-4 mr-2" />
+                    )}
+                    Confirmar
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>

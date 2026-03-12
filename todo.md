@@ -8815,3 +8815,18 @@
 - [x] Verificar se a migração do campo deletedAt foi aplicada ao banco
 - [x] Aplicar migração com ALTER TABLE diretamente (pnpm db:push não aplicou no banco de produção)
 - [x] Confirmar que as queries com deletedAt funcionam sem erro
+
+## Transferir Itens entre Mesas
+- [x] Backend: criar função transferTabItems no db.ts (move itens entre comandas)
+- [x] Backend: criar endpoint tRPC tables.transferItems
+- [x] Backend: se mesa destino não tem comanda, criar uma nova
+- [x] Backend: se mesa origem ficar sem itens, fechar comanda e liberar mesa
+- [x] Backend: recalcular totais das duas comandas
+- [x] Backend: transferir label/identificação se mesa origem ficar vazia
+- [x] Frontend: adicionar opção "Transferir itens" no menu de contexto da mesa (acima de Reservar)
+- [x] Frontend: modal de transferência com lista de itens, checkboxes, seletor de mesa destino
+- [x] Frontend: mostrar complementos/observações nos itens do modal
+- [x] Frontend: confirmação antes de concluir ("Transferir X itens da Mesa Y para Mesa Z?")
+- [x] Frontend: toast de sucesso após transferência
+- [x] Frontend: refetch automático das mesas após transferência
+- [x] Testes vitest para a funcionalidade de transferência (17 testes passando)
