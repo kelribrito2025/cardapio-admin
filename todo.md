@@ -8841,8 +8841,3 @@
 - [x] Atualizar getNextDailyOrderNumber para usar INSERT ON DUPLICATE KEY UPDATE atômico com fallback
 - [x] Escrever testes vitest para concorrência (14 testes passando)
 - [x] Verificar que formato #P1, #P2 continua igual
-
-## Endpoint GET /api/bot/health
-- [x] Criar endpoint público GET /api/bot/health no botApiRouter
-- [x] Retornar status do servidor, banco, uptime e versão
-- [x] Escrever teste vitest (16 testes passando)
