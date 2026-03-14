@@ -8842,3 +8842,6 @@
 - [x] Atualizar getNextDailyOrderNumber para usar INSERT ON DUPLICATE KEY UPDATE atômico com fallback
 - [x] Escrever testes vitest para concorrência (14 testes passando)
 - [x] Verificar que formato #P1, #P2 continua igual
+- [ ] Fix N8N bot greeting showing literal {{nome}} instead of establishment name
+- [ ] Fix bot treating 'obrigado' as out-of-scope instead of a polite farewell response
+- [x] Fix catalog search to hide categories with no matching products (only show categories that contain filtered items)

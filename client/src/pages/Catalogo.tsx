@@ -1552,7 +1552,10 @@ export default function Catalogo() {
             const categoryProducts = localProductsByCategory[category.id] || [];
             const isDropTarget = activeProduct && activeProductCategoryId !== category.id;
             
-            // Mostrar todas as categorias (inclusive vazias)
+            // Quando há busca/filtro ativo, esconder categorias sem produtos correspondentes
+            if (search && categoryProducts.length === 0) {
+              return null;
+            }
             
             return (
               <SortableCategoryItem
