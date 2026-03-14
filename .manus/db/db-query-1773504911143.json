@@ -1,0 +1,34 @@
+{
+  "query": "SELECT p.id, p.name, p.price, c.name as cat FROM products p JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = (SELECT id FROM establishments WHERE name LIKE '%Sushi%' LIMIT 1) AND (p.name LIKE '%gua%' OR p.name LIKE '%Coca%' OR p.name LIKE '%Brownie%' OR p.name LIKE '%Combinado%' OR p.name LIKE '%Obent%') ORDER BY p.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.price, c.name as cat FROM products p JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = (SELECT id FROM establishments WHERE name LIKE '%Sushi%' LIMIT 1) AND (p.name LIKE '%gua%' OR p.name LIKE '%Coca%' OR p.name LIKE '%Brownie%' OR p.name LIKE '%Combinado%' OR p.name LIKE '%Obent%') ORDER BY p.id;",
+  "rows": [
+    {
+      "id": "120055",
+      "name": "COMBINADO SIMPLES | 13 peças",
+      "price": "15.00",
+      "cat": "🍱 Combos"
+    },
+    {
+      "id": "120056",
+      "name": "COMBINADO ESPECIAL | 26 peças",
+      "price": "45.00",
+      "cat": "🍱 Combos"
+    },
+    {
+      "id": "120073",
+      "name": "OBENTÔ",
+      "price": "30.00",
+      "cat": "🍭 PRATOS KIDS"
+    },
+    {
+      "id": "120100",
+      "name": "Água mineral",
+      "price": "5.00",
+      "cat": "🧂 ÁGUA MINERAL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprice\tcat\n120055\tCOMBINADO SIMPLES | 13 peças\t15.00\t🍱 Combos\n120056\tCOMBINADO ESPECIAL | 26 peças\t45.00\t🍱 Combos\n120073\tOBENTÔ\t30.00\t🍭 PRATOS KIDS\n120100\tÁgua mineral\t5.00\t🧂 ÁGUA MINERAL\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

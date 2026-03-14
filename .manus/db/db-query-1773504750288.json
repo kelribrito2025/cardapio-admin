@@ -1,0 +1,52 @@
+{
+  "query": "SELECT p.id, p.name, p.price, c.name as category_name FROM products p JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = 1 AND (p.name LIKE '%gua%' OR p.name LIKE '%Coca%' OR p.name LIKE '%Brownie%' OR p.name LIKE '%Combinado%' OR p.name LIKE '%Refriger%') ORDER BY p.name;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.price, c.name as category_name FROM products p JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = 1 AND (p.name LIKE '%gua%' OR p.name LIKE '%Coca%' OR p.name LIKE '%Brownie%' OR p.name LIKE '%Combinado%' OR p.name LIKE '%Refriger%') ORDER BY p.name;",
+  "rows": [
+    {
+      "id": "500015",
+      "name": "Água Mineral",
+      "price": "3.90",
+      "category_name": "🥤 Bebidas"
+    },
+    {
+      "id": "60030",
+      "name": "Brownie com Sorvete",
+      "price": "19.90",
+      "category_name": "🍟 Acompanhamentos"
+    },
+    {
+      "id": "500018",
+      "name": "Brownie com Sorvete",
+      "price": "18.90",
+      "category_name": "🍰 Sobremesas"
+    },
+    {
+      "id": "60022",
+      "name": "Coca-Cola 350ml",
+      "price": "7.90",
+      "category_name": "🥩 Hambúrgueres Premium"
+    },
+    {
+      "id": "60028",
+      "name": "Coca-Cola 600ml",
+      "price": "10.90",
+      "category_name": "🥩 Hambúrgueres Premium"
+    },
+    {
+      "id": "4",
+      "name": "Coca-Cola Lata",
+      "price": "6.90",
+      "category_name": "🥩 Hambúrgueres Premium"
+    },
+    {
+      "id": "500014",
+      "name": "Guaraná Antarctica Lata",
+      "price": "5.90",
+      "category_name": "🥤 Bebidas"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprice\tcategory_name\n500015\tÁgua Mineral\t3.90\t🥤 Bebidas\n60030\tBrownie com Sorvete\t19.90\t🍟 Acompanhamentos\n500018\tBrownie com Sorvete\t18.90\t🍰 Sobremesas\n60022\tCoca-Cola 350ml\t7.90\t🥩 Hambúrgueres Premium\n60028\tCoca-Cola 600ml\t10.90\t🥩 Hambúrgueres Premium\n4\tCoca-Cola Lata\t6.90\t🥩 Hambúrgueres Premium\n500014\tGuaraná Antarctica Lata\t5.90\t🥤 Bebidas\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

@@ -642,7 +642,8 @@ export function createBotApiRouter(): Router {
     couponCode: z.string().optional(),
     items: z.array(
       z.object({
-        productId: z.number(),
+        productId: z.number().optional(),
+        productName: z.string().optional(),
         quantity: z.number().min(1).default(1),
         complements: z
           .array(
@@ -710,14 +711,53 @@ export function createBotApiRouter(): Router {
       }> = [];
 
       for (const item of input.items) {
-        const [product] = await dbInstance
-          .select()
-          .from(products)
-          .where(and(eq(products.id, item.productId), eq(products.establishmentId, estId)))
-          .limit(1);
+        let product: any = null;
+
+        if (item.productId) {
+          // Busca por ID (método original)
+          const [found] = await dbInstance
+            .select()
+            .from(products)
+            .where(and(eq(products.id, item.productId), eq(products.establishmentId, estId)))
+            .limit(1);
+          product = found;
+        }
+        
+        if (!product && item.productName) {
+          // Busca por nome (fuzzy match para o bot WhatsApp)
+          const allProducts = await dbInstance
+            .select()
+            .from(products)
+            .where(eq(products.establishmentId, estId));
+          
+          const searchName = item.productName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          
+          // Primeiro: busca exata
+          product = allProducts.find(p => 
+            p.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') === searchName
+          );
+          
+          // Segundo: busca parcial (nome contém ou é contido)
+          if (!product) {
+            product = allProducts.find(p => {
+              const pName = p.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+              return pName.includes(searchName) || searchName.includes(pName);
+            });
+          }
+          
+          // Terceiro: busca por palavras-chave (cada palavra do nome buscado)
+          if (!product) {
+            const searchWords = searchName.split(/\s+/).filter(w => w.length > 2);
+            product = allProducts.find(p => {
+              const pName = p.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+              return searchWords.every(w => pName.includes(w));
+            });
+          }
+        }
 
         if (!product) {
-          return sendError(res, 400, `Produto ID ${item.productId} não encontrado.`);
+          const identifier = item.productName || `ID ${item.productId}`;
+          return sendError(res, 400, `Produto "${identifier}" não encontrado no cardápio.`);
         }
 
         if (product.status !== "active") {

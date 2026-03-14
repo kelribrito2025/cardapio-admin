@@ -1,0 +1,190 @@
+{
+  "query": "SELECT p.id, p.name, p.price, c.name as category_name FROM products p JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = 1 ORDER BY c.name, p.name LIMIT 30;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.price, c.name as category_name FROM products p JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = 1 ORDER BY c.name, p.name LIMIT 30;",
+  "rows": [
+    {
+      "id": "500013",
+      "name": "Batata com Cheddar e Bacon",
+      "price": "24.90",
+      "category_name": "🍟 Acompanhamentos"
+    },
+    {
+      "id": "500010",
+      "name": "Batata Frita G",
+      "price": "19.90",
+      "category_name": "🍟 Acompanhamentos"
+    },
+    {
+      "id": "500009",
+      "name": "Batata Frita P",
+      "price": "12.90",
+      "category_name": "🍟 Acompanhamentos"
+    },
+    {
+      "id": "60030",
+      "name": "Brownie com Sorvete",
+      "price": "19.90",
+      "category_name": "🍟 Acompanhamentos"
+    },
+    {
+      "id": "60034",
+      "name": "Cheesecake",
+      "price": "18.90",
+      "category_name": "🍟 Acompanhamentos"
+    },
+    {
+      "id": "500012",
+      "name": "Nuggets (10un)",
+      "price": "18.90",
+      "category_name": "🍟 Acompanhamentos"
+    },
+    {
+      "id": "500011",
+      "name": "Onion Rings",
+      "price": "16.90",
+      "category_name": "🍟 Acompanhamentos"
+    },
+    {
+      "id": "60032",
+      "name": "Petit Gateau",
+      "price": "24.90",
+      "category_name": "🍟 Acompanhamentos"
+    },
+    {
+      "id": "30001",
+      "name": "Pudim de leite",
+      "price": "29.90",
+      "category_name": "🍟 Acompanhamentos"
+    },
+    {
+      "id": "60036",
+      "name": "Sorvete Artesanal",
+      "price": "14.90",
+      "category_name": "🍟 Acompanhamentos"
+    },
+    {
+      "id": "500015",
+      "name": "Água Mineral",
+      "price": "3.90",
+      "category_name": "🥤 Bebidas"
+    },
+    {
+      "id": "500014",
+      "name": "Guaraná Antarctica Lata",
+      "price": "5.90",
+      "category_name": "🥤 Bebidas"
+    },
+    {
+      "id": "500016",
+      "name": "Milkshake Chocolate",
+      "price": "16.90",
+      "category_name": "🥤 Bebidas"
+    },
+    {
+      "id": "500017",
+      "name": "Milkshake Morango",
+      "price": "16.90",
+      "category_name": "🥤 Bebidas"
+    },
+    {
+      "id": "500023",
+      "name": "Combo Casal",
+      "price": "69.90",
+      "category_name": "🍱 Combos"
+    },
+    {
+      "id": "500021",
+      "name": "Combo Clássico",
+      "price": "39.90",
+      "category_name": "🍱 Combos"
+    },
+    {
+      "id": "500022",
+      "name": "Combo Premium",
+      "price": "64.90",
+      "category_name": "🍱 Combos"
+    },
+    {
+      "id": "1",
+      "name": "X-Bacon",
+      "price": "26.90",
+      "category_name": "🍔 Hambúrgueres Clássicos"
+    },
+    {
+      "id": "3",
+      "name": "X-Burguer",
+      "price": "22.90",
+      "category_name": "🍔 Hambúrgueres Clássicos"
+    },
+    {
+      "id": "2",
+      "name": "X-Egg",
+      "price": "24.90",
+      "category_name": "🍔 Hambúrgueres Clássicos"
+    },
+    {
+      "id": "500002",
+      "name": "X-Salada",
+      "price": "21.90",
+      "category_name": "🍔 Hambúrgueres Clássicos"
+    },
+    {
+      "id": "500001",
+      "name": "X-Tudo",
+      "price": "32.90",
+      "category_name": "🍔 Hambúrgueres Clássicos"
+    },
+    {
+      "id": "500003",
+      "name": "Angus Premium",
+      "price": "38.90",
+      "category_name": "🥩 Hambúrgueres Premium"
+    },
+    {
+      "id": "500004",
+      "name": "BBQ Pulled Pork",
+      "price": "44.90",
+      "category_name": "🥩 Hambúrgueres Premium"
+    },
+    {
+      "id": "60022",
+      "name": "Coca-Cola 350ml",
+      "price": "7.90",
+      "category_name": "🥩 Hambúrgueres Premium"
+    },
+    {
+      "id": "60028",
+      "name": "Coca-Cola 600ml",
+      "price": "10.90",
+      "category_name": "🥩 Hambúrgueres Premium"
+    },
+    {
+      "id": "4",
+      "name": "Coca-Cola Lata",
+      "price": "6.90",
+      "category_name": "🥩 Hambúrgueres Premium"
+    },
+    {
+      "id": "60026",
+      "name": "Milkshake",
+      "price": "18.90",
+      "category_name": "🥩 Hambúrgueres Premium"
+    },
+    {
+      "id": "500006",
+      "name": "Smash Duplo",
+      "price": "36.90",
+      "category_name": "🥩 Hambúrgueres Premium"
+    },
+    {
+      "id": "5",
+      "name": "Suco de Goiaba",
+      "price": "9.90",
+      "category_name": "🥩 Hambúrgueres Premium"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprice\tcategory_name\n500013\tBatata com Cheddar e Bacon\t24.90\t🍟 Acompanhamentos\n500010\tBatata Frita G\t19.90\t🍟 Acompanhamentos\n500009\tBatata Frita P\t12.90\t🍟 Acompanhamentos\n60030\tBrownie com Sorvete\t19.90\t🍟 Acompanhamentos\n60034\tCheesecake\t18.90\t🍟 Acompanhamentos\n500012\tNuggets (10un)\t18.90\t🍟 Acompanhamentos\n500011\tOnion Rings\t16.90\t🍟 Acompanhamentos\n60032\tPetit Gateau\t24.90\t🍟 Acompanhamentos\n30001\tPudim de leite\t29.90\t🍟 Acompanhamentos\n60036\tSorvete Artesanal\t14.90\t🍟 Acompanhamentos\n500015\tÁgua Mineral\t3.90\t🥤 Bebidas\n500014\tGuaraná Antarctica Lata\t5.90\t🥤 Bebidas\n500016\tMilkshake Chocolate\t16.90\t🥤 Bebidas\n500017\tMilkshake Morango\t16.90\t🥤 Bebidas\n500023\tCombo Casal\t69.90\t🍱 Combos\n500021\tCombo Clássico\t39.90\t🍱 Combos\n500022\tCombo Premium\t64.90\t🍱 Combos\n1\tX-Bacon\t26.90\t🍔 Hambúrgueres Clássicos\n3\tX-Burguer\t22.90\t🍔 Hambúrgueres Clássicos\n2\tX-Egg\t24.90\t🍔 Hambúrgueres Clássicos\n500002\tX-Salada\t21.90\t🍔 Hambúrgueres Clássicos\n500001\tX-Tudo\t32.90\t🍔 Hambúrgueres Clássicos\n500003\tAngus Premium\t38.90\t🥩 Hambúrgueres Premium\n500004\tBBQ Pulled Pork\t44.90\t🥩 Hambúrgueres Premium\n60022\tCoca-Cola 350ml\t7.90\t🥩 Hambúrgueres Premium\n60028\tCoca-Cola 600ml\t10.90\t🥩 Hambúrgueres Premium\n4\tCoca-Cola Lata\t6.90\t🥩 Hambúrgueres Premium\n60026\tMilkshake\t18.90\t🥩 Hambúrgueres Premium\n500006\tSmash Duplo\t36.90\t🥩 Hambúrgueres Premium\n5\tSuco de Goiaba\t9.90\t🥩 Hambúrgueres Premium\n",
+  "stderr": "",
+  "execution_time_ms": 111
+}

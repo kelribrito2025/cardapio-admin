@@ -1,0 +1,466 @@
+{
+  "query": "SELECT p.id, p.name, p.price, c.name as cat FROM products p JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = (SELECT id FROM establishments WHERE name LIKE '%Sushi%' LIMIT 1) ORDER BY c.name, p.name;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 35dchGD4KrPJFby.860a56c722bc --database enmWmXpAt34diouyKU4TE2 --execute SELECT p.id, p.name, p.price, c.name as cat FROM products p JOIN categories c ON p.categoryId = c.id WHERE c.establishmentId = (SELECT id FROM establishments WHERE name LIKE '%Sushi%' LIMIT 1) ORDER BY c.name, p.name;",
+  "rows": [
+    {
+      "id": "120100",
+      "name": "Água mineral",
+      "price": "5.00",
+      "cat": "🧂 ÁGUA MINERAL"
+    },
+    {
+      "id": "120102",
+      "name": "Bebidas quentes",
+      "price": "3.00",
+      "cat": "🥃 Bebidas quentes"
+    },
+    {
+      "id": "120085",
+      "name": "Caipirinhas",
+      "price": "3.00",
+      "cat": "🍹 Caipirinhas"
+    },
+    {
+      "id": "120093",
+      "name": "Caipvodkas",
+      "price": "3.00",
+      "cat": "🍹 Caipirinhas"
+    },
+    {
+      "id": "120094",
+      "name": "Cervejas",
+      "price": "0.00",
+      "cat": "🍺 CERVEJAS"
+    },
+    {
+      "id": "120056",
+      "name": "COMBINADO ESPECIAL | 26 peças",
+      "price": "45.00",
+      "cat": "🍱 Combos"
+    },
+    {
+      "id": "120055",
+      "name": "COMBINADO SIMPLES | 13 peças",
+      "price": "15.00",
+      "cat": "🍱 Combos"
+    },
+    {
+      "id": "120059",
+      "name": "SASHIMI ESPECIAL | 17 Peças",
+      "price": "30.00",
+      "cat": "🍱 Combos"
+    },
+    {
+      "id": "120061",
+      "name": "SUSHI BRASIL | 20 Peças",
+      "price": "30.00",
+      "cat": "🍱 Combos"
+    },
+    {
+      "id": "120058",
+      "name": "SUSHI ESPECIAL | 23 Peças",
+      "price": "30.00",
+      "cat": "🍱 Combos"
+    },
+    {
+      "id": "120060",
+      "name": "SUSHI HARUNO | 25 peças",
+      "price": "40.00",
+      "cat": "🍱 Combos"
+    },
+    {
+      "id": "120062",
+      "name": "SUSHI JUMBO | 18 Peças",
+      "price": "30.00",
+      "cat": "🍱 Combos"
+    },
+    {
+      "id": "120057",
+      "name": "SUSHI SIMPLES | 9 peças",
+      "price": "15.00",
+      "cat": "🍱 Combos"
+    },
+    {
+      "id": "120068",
+      "name": "BATATA FRITA",
+      "price": "20.00",
+      "cat": "🫔 Entradas"
+    },
+    {
+      "id": "120069",
+      "name": "CAMARÃO AO ALHO E ÓLEO",
+      "price": "45.00",
+      "cat": "🫔 Entradas"
+    },
+    {
+      "id": "120063",
+      "name": "HARUMAKI (Rolinho primavera)",
+      "price": "122.00",
+      "cat": "🫔 Entradas"
+    },
+    {
+      "id": "120025",
+      "name": "EBI MAKE",
+      "price": "17.00",
+      "cat": "🍣 Hossomaki"
+    },
+    {
+      "id": "120027",
+      "name": "FUTO MAKE",
+      "price": "17.00",
+      "cat": "🍣 Hossomaki"
+    },
+    {
+      "id": "120028",
+      "name": "HOSSOMAKI MISTO",
+      "price": "24.00",
+      "cat": "🍣 Hossomaki"
+    },
+    {
+      "id": "120024",
+      "name": "KANI MAKE",
+      "price": "17.00",
+      "cat": "🍣 Hossomaki"
+    },
+    {
+      "id": "120026",
+      "name": "SALMÃO MAKE",
+      "price": "17.00",
+      "cat": "🍣 Hossomaki"
+    },
+    {
+      "id": "120030",
+      "name": "HOT CAMARÃO",
+      "price": "17.00",
+      "cat": "🧆 Hot's"
+    },
+    {
+      "id": "120033",
+      "name": "HOT ESPECIAL",
+      "price": "17.00",
+      "cat": "🧆 Hot's"
+    },
+    {
+      "id": "120029",
+      "name": "HOT FILADÉLFIA",
+      "price": "17.00",
+      "cat": "🧆 Hot's"
+    },
+    {
+      "id": "120032",
+      "name": "HOT HARUNO",
+      "price": "24.00",
+      "cat": "🧆 Hot's"
+    },
+    {
+      "id": "120034",
+      "name": "HOT SALMÃO C/TOMATE SECO",
+      "price": "22.00",
+      "cat": "🧆 Hot's"
+    },
+    {
+      "id": "120031",
+      "name": "HOT SKIN",
+      "price": "17.00",
+      "cat": "🧆 Hot's"
+    },
+    {
+      "id": "120073",
+      "name": "OBENTÔ",
+      "price": "30.00",
+      "cat": "🍭 PRATOS KIDS"
+    },
+    {
+      "id": "120074",
+      "name": "PRATO KIDS",
+      "price": "17.00",
+      "cat": "🍭 PRATOS KIDS"
+    },
+    {
+      "id": "120071",
+      "name": "CAMARÃO ENPANADO",
+      "price": "35.00",
+      "cat": "🍲 Pratos quentes"
+    },
+    {
+      "id": "120072",
+      "name": "FILÉ DE FRANGO",
+      "price": "35.00",
+      "cat": "🍲 Pratos quentes"
+    },
+    {
+      "id": "120070",
+      "name": "Salmão grelhado",
+      "price": "42.00",
+      "cat": "🍲 Pratos quentes"
+    },
+    {
+      "id": "120006",
+      "name": "DUPLA DE CAMARÃO",
+      "price": "7.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120009",
+      "name": "Dupla de gunda tomate seco",
+      "price": "7.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120008",
+      "name": "DUPLA DE GUNGA PATÊ DE CAMARÃO",
+      "price": "7.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120007",
+      "name": "DUPLA DE GUNGA SKIN",
+      "price": "7.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120011",
+      "name": "Dupla de salmão",
+      "price": "6.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120013",
+      "name": "DUPLA DE SALMÃO C/ CAMARÃO",
+      "price": "8.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120012",
+      "name": "DUPLA DE SALMÃO C/ QUEIJO",
+      "price": "8.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120014",
+      "name": "DUPLA DE SALMÃO C/ SKIN",
+      "price": "7.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120005",
+      "name": "DUPLA DE SKIN",
+      "price": "5.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120010",
+      "name": "DUPLA EBI SHAKÊ",
+      "price": "8.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120004",
+      "name": "DUPLA KANI",
+      "price": "6.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120015",
+      "name": "DUPLA VEGETAL MAKE",
+      "price": "6.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120001",
+      "name": "SASHIMI DE SALMÃO",
+      "price": "15.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120002",
+      "name": "SHASHIMI - TEMPURÁ",
+      "price": "16.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120003",
+      "name": "SUNOMONO",
+      "price": "16.00",
+      "cat": "🍣 Sashimis"
+    },
+    {
+      "id": "120076",
+      "name": "Browne",
+      "price": "8.00",
+      "cat": "🍮 Sobremesas"
+    },
+    {
+      "id": "120075",
+      "name": "Sushi Hot - Banana com nutela",
+      "price": "16.00",
+      "cat": "🍮 Sobremesas"
+    },
+    {
+      "id": "120036",
+      "name": "TEMAKI C/ CAMARÃO EMPANADO",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120035",
+      "name": "TEMAKI CALIFÓRNIA",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120043",
+      "name": "TEMAKI CAMARÃO",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120039",
+      "name": "TEMAKI EMPANADO DE CAMARÃO",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120038",
+      "name": "TEMAKI EMPANADO DE SALMÃO",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120037",
+      "name": "TEMAKI EMPANADO DE SKIN",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120046",
+      "name": "TEMAKI EMPANADO MISTO C/ SALMÃO E CAMARÃO",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120047",
+      "name": "TEMAKI EMPANADO MISTO C/ SALMÃO E TOMATE SECO",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120049",
+      "name": "TEMAKI MASSA ESPECIAL FRITA C/ CAMARÃO",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120048",
+      "name": "TEMAKI MASSA ESPECIAL FRITA C/ SALMÃO",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120044",
+      "name": "TEMAKI MISTO",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120045",
+      "name": "TEMAKI MISTO C/ SALMÃO E TOMATE SECO",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120041",
+      "name": "TEMAKI SALMÃO",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120042",
+      "name": "TEMAKI SALMÃO ESPECIAL",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120040",
+      "name": "TEMAKI SKIN",
+      "price": "15.00",
+      "cat": "🍤 Temaki"
+    },
+    {
+      "id": "120020",
+      "name": "CALIFORNIA",
+      "price": "16.00",
+      "cat": "🥢 URAMAKE"
+    },
+    {
+      "id": "120018",
+      "name": "CAMARÃO ESPECIAL",
+      "price": "17.00",
+      "cat": "🥢 URAMAKE"
+    },
+    {
+      "id": "120016",
+      "name": "EBITEN",
+      "price": "1.00",
+      "cat": "🥢 URAMAKE"
+    },
+    {
+      "id": "120019",
+      "name": "FILADÉLFIA",
+      "price": "17.00",
+      "cat": "🥢 URAMAKE"
+    },
+    {
+      "id": "120022",
+      "name": "SALMÃO",
+      "price": "17.00",
+      "cat": "🥢 URAMAKE"
+    },
+    {
+      "id": "120023",
+      "name": "SALMÃO C/TOMATE SECO",
+      "price": "22.00",
+      "cat": "🥢 URAMAKE"
+    },
+    {
+      "id": "120017",
+      "name": "SALMÃO ESPECIAL",
+      "price": "17.00",
+      "cat": "🥢 URAMAKE"
+    },
+    {
+      "id": "120021",
+      "name": "SKIN",
+      "price": "17.00",
+      "cat": "🥢 URAMAKE"
+    },
+    {
+      "id": "120050",
+      "name": "Yakissoba Individual",
+      "price": "2.00",
+      "cat": "🍜 Yakissoba"
+    },
+    {
+      "id": "120092",
+      "name": "Yakissoba P/ 2 Pessoas",
+      "price": "2.00",
+      "cat": "🍜 Yakissoba"
+    },
+    {
+      "id": "120101",
+      "name": "Refrigerantes",
+      "price": "2.00",
+      "cat": "🥤Refrigerante"
+    },
+    {
+      "id": "120077",
+      "name": "Sucos da fruta",
+      "price": "0.00",
+      "cat": "🧋Sucos"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tprice\tcat\n120100\tÁgua mineral\t5.00\t🧂 ÁGUA MINERAL\n120102\tBebidas quentes\t3.00\t🥃 Bebidas quentes\n120085\tCaipirinhas\t3.00\t🍹 Caipirinhas\n120093\tCaipvodkas\t3.00\t🍹 Caipirinhas\n120094\tCervejas\t0.00\t🍺 CERVEJAS\n120056\tCOMBINADO ESPECIAL | 26 peças\t45.00\t🍱 Combos\n120055\tCOMBINADO SIMPLES | 13 peças\t15.00\t🍱 Combos\n120059\tSASHIMI ESPECIAL | 17 Peças\t30.00\t🍱 Combos\n120061\tSUSHI BRASIL | 20 Peças\t30.00\t🍱 Combos\n120058\tSUSHI ESPECIAL | 23 Peças\t30.00\t🍱 Combos\n120060\tSUSHI HARUNO | 25 peças\t40.00\t🍱 Combos\n120062\tSUSHI JUMBO | 18 Peças\t30.00\t🍱 Combos\n120057\tSUSHI SIMPLES | 9 peças\t15.00\t🍱 Combos\n120068\tBATATA FRITA\t20.00\t🫔 Entradas\n120069\tCAMARÃO AO ALHO E ÓLEO\t45.00\t🫔 Entradas\n120063\tHARUMAKI (Rolinho primavera)\t122.00\t🫔 Entradas\n120025\tEBI MAKE\t17.00\t🍣 Hossomaki\n120027\tFUTO MAKE\t17.00\t🍣 Hossomaki\n120028\tHOSSOMAKI MISTO\t24.00\t🍣 Hossomaki\n120024\tKANI MAKE\t17.00\t🍣 Hossomaki\n120026\tSALMÃO MAKE\t17.00\t🍣 Hossomaki\n120030\tHOT CAMARÃO\t17.00\t🧆 Hot's\n120033\tHOT ESPECIAL\t17.00\t🧆 Hot's\n120029\tHOT FILADÉLFIA\t17.00\t🧆 Hot's\n120032\tHOT HARUNO\t24.00\t🧆 Hot's\n120034\tHOT SALMÃO C/TOMATE SECO\t22.00\t🧆 Hot's\n120031\tHOT SKIN\t17.00\t🧆 Hot's\n120073\tOBENTÔ\t30.00\t🍭 PRATOS KIDS\n120074\tPRATO KIDS\t17.00\t🍭 PRATOS KIDS\n120071\tCAMARÃO ENPANADO\t35.00\t🍲 Pratos quentes\n120072\tFILÉ DE FRANGO\t35.00\t🍲 Pratos quentes\n120070\tSalmão grelhado\t42.00\t🍲 Pratos quentes\n120006\tDUPLA DE CAMARÃO\t7.00\t🍣 Sashimis\n120009\tDupla de gunda tomate seco\t7.00\t🍣 Sashimis\n120008\tDUPLA DE GUNGA PATÊ DE CAMARÃO\t7.00\t🍣 Sashimis\n120007\tDUPLA DE GUNGA SKIN\t7.00\t🍣 Sashimis\n120011\tDupla de salmão\t6.00\t🍣 Sashimis\n120013\tDUPLA DE SALMÃO C/ CAMARÃO\t8.00\t🍣 Sashimis\n120012\tDUPLA DE SALMÃO C/ QUEIJO\t8.00\t🍣 Sashimis\n120014\tDUPLA DE SALMÃO C/ SKIN\t7.00\t🍣 Sashimis\n120005\tDUPLA DE SKIN\t5.00\t🍣 Sashimis\n120010\tDUPLA EBI SHAKÊ\t8.00\t🍣 Sashimis\n120004\tDUPLA KANI\t6.00\t🍣 Sashimis\n120015\tDUPLA VEGETAL MAKE\t6.00\t🍣 Sashimis\n120001\tSASHIMI DE SALMÃO\t15.00\t🍣 Sashimis\n120002\tSHASHIMI - TEMPURÁ\t16.00\t🍣 Sashimis\n120003\tSUNOMONO\t16.00\t🍣 Sashimis\n120076\tBrowne\t8.00\t🍮 Sobremesas\n120075\tSushi Hot - Banana com nutela\t16.00\t🍮 Sobremesas\n120036\tTEMAKI C/ CAMARÃO EMPANADO\t15.00\t🍤 Temaki\n120035\tTEMAKI CALIFÓRNIA\t15.00\t🍤 Temaki\n120043\tTEMAKI CAMARÃO\t15.00\t🍤 Temaki\n120039\tTEMAKI EMPANADO DE CAMARÃO\t15.00\t🍤 Temaki\n120038\tTEMAKI EMPANADO DE SALMÃO\t15.00\t🍤 Temaki\n120037\tTEMAKI EMPANADO DE SKIN\t15.00\t🍤 Temaki\n120046\tTEMAKI EMPANADO MISTO C/ SALMÃO E CAMARÃO\t15.00\t🍤 Temaki\n120047\tTEMAKI EMPANADO MISTO C/ SALMÃO E TOMATE SECO\t15.00\t🍤 Temaki\n120049\tTEMAKI MASSA ESPECIAL FRITA C/ CAMARÃO\t15.00\t🍤 Temaki\n120048\tTEMAKI MASSA ESPECIAL FRITA C/ SALMÃO\t15.00\t🍤 Temaki\n120044\tTEMAKI MISTO\t15.00\t🍤 Temaki\n120045\tTEMAKI MISTO C/ SALMÃO E TOMATE SECO\t15.00\t🍤 Temaki\n120041\tTEMAKI SALMÃO\t15.00\t🍤 Temaki\n120042\tTEMAKI SALMÃO ESPECIAL\t15.00\t🍤 Temaki\n120040\tTEMAKI SKIN\t15.00\t🍤 Temaki\n120020\tCALIFORNIA\t16.00\t🥢 URAMAKE\n120018\tCAMARÃO ESPECIAL\t17.00\t🥢 URAMAKE\n120016\tEBITEN\t1.00\t🥢 URAMAKE\n120019\tFILADÉLFIA\t17.00\t🥢 URAMAKE\n120022\tSALMÃO\t17.00\t🥢 URAMAKE\n120023\tSALMÃO C/TOMATE SECO\t22.00\t🥢 URAMAKE\n120017\tSALMÃO ESPECIAL\t17.00\t🥢 URAMAKE\n120021\tSKIN\t17.00\t🥢 URAMAKE\n120050\tYakissoba Individual\t2.00\t🍜 Yakissoba\n120092\tYakissoba P/ 2 Pessoas\t2.00\t🍜 Yakissoba\n120101\tRefrigerantes\t2.00\t🥤Refrigerante\n120077\tSucos da fruta\t0.00\t🧋Sucos\n",
+  "stderr": "",
+  "execution_time_ms": 59
+}
