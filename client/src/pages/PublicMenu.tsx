@@ -283,7 +283,9 @@ export default function PublicMenu() {
     images: string | null; hasStock: boolean; availableStock: number | null; outOfStock: boolean;
   } | null>(null);
   const [priceChangeAlert, setPriceChangeAlert] = useState<Array<{ name: string; oldPrice: number; newPrice: number }> | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix" | "card_online">("pix");
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "pix" | "card_online" | null>(null);
+  const paymentSectionRef = useRef<HTMLDivElement>(null);
+  const [paymentError, setPaymentError] = useState(false);
   const [showCardOptions, setShowCardOptions] = useState(false);
   const [changeAmount, setChangeAmount] = useState("");
   const [changeAmountError, setChangeAmountError] = useState<string | null>(null);
@@ -886,7 +888,7 @@ export default function PublicMenu() {
         }, 0).toFixed(2),
         status: "sent" as const,
         deliveryType,
-        paymentMethod,
+        paymentMethod: paymentMethod!,
         address: deliveryType === 'delivery' ? deliveryAddress : undefined,
         customerName: customerInfo.name,
         customerPhone: customerInfo.phone,
@@ -4051,10 +4053,11 @@ export default function PublicMenu() {
                 </div>
 
                 {/* Forma de Pagamento */}
-                <div>
-                  <h3 className="font-semibold text-gray-800 text-sm mb-3 flex items-center gap-2">
-                    <CreditCard className="h-4 w-4 text-red-500" />
+                <div ref={paymentSectionRef}>
+                  <h3 className={`font-semibold text-sm mb-3 flex items-center gap-2 ${paymentError ? 'text-red-600' : 'text-gray-800'}`}>
+                    <CreditCard className={`h-4 w-4 ${paymentError ? 'text-red-600' : 'text-red-500'}`} />
                     Forma de pagamento
+                    {paymentError && <span className="text-xs font-normal text-red-500 ml-1">— Selecione uma opção</span>}
                   </h3>
                   <div className="space-y-2">
                     <div>
@@ -4066,7 +4069,7 @@ export default function PublicMenu() {
                           name="paymentMethod"
                           value="cash"
                           checked={paymentMethod === "cash"}
-                          onChange={() => setPaymentMethod("cash")}
+                          onChange={() => { setPaymentMethod("cash"); setPaymentError(false); }}
                           className="w-4 h-4 text-red-500 focus:ring-red-500"
                         />
                         <Banknote className="h-5 w-5 text-gray-600" />
@@ -4217,7 +4220,7 @@ export default function PublicMenu() {
                                 name="paymentMethod"
                                 value="card"
                                 checked={paymentMethod === "card"}
-                                onChange={() => setPaymentMethod("card")}
+                                onChange={() => { setPaymentMethod("card"); setPaymentError(false); }}
                                 className="w-4 h-4 text-red-500 focus:ring-red-500"
                               />
                               <CreditCard className="h-4 w-4 text-gray-600" />
@@ -4232,7 +4235,7 @@ export default function PublicMenu() {
                                 name="paymentMethod"
                                 value="card_online"
                                 checked={paymentMethod === "card_online"}
-                                onChange={() => setPaymentMethod("card_online")}
+                                onChange={() => { setPaymentMethod("card_online"); setPaymentError(false); }}
                                 className="w-4 h-4 text-blue-500 focus:ring-blue-500"
                               />
                               <svg className="h-4 w-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -4259,7 +4262,7 @@ export default function PublicMenu() {
                           name="paymentMethod"
                           value="card"
                           checked={paymentMethod === "card"}
-                          onChange={() => setPaymentMethod("card")}
+                          onChange={() => { setPaymentMethod("card"); setPaymentError(false); }}
                           className="w-4 h-4 text-red-500 focus:ring-red-500"
                         />
                         <CreditCard className="h-5 w-5 text-gray-600" />
@@ -4274,7 +4277,7 @@ export default function PublicMenu() {
                         name="paymentMethod"
                         value="pix"
                         checked={paymentMethod === "pix"}
-                        onChange={() => setPaymentMethod("pix")}
+                        onChange={() => { setPaymentMethod("pix"); setPaymentError(false); }}
                         className="w-4 h-4 text-red-500 focus:ring-red-500"
                       />
                       <QrCode className="h-5 w-5 text-gray-600" />
@@ -4339,6 +4342,12 @@ export default function PublicMenu() {
                             alert('Por favor, preencha todos os campos obrigatórios do endereço (Rua, Número e Bairro).');
                             return;
                           }
+                          if (!paymentMethod) {
+                            setPaymentError(true);
+                            paymentSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            return;
+                          }
+                          setPaymentError(false);
                           setCheckoutStep(2);
                         }}
                         className={`flex-1 py-3.5 font-semibold rounded-xl transition-colors ${
@@ -5093,9 +5102,9 @@ setOnlinePaymentUrl(null);
                          customerName: customerInfo.name,
                          customerPhone: customerInfo.phone,
                          customerAddress: fullAddress || undefined,
-                         deliveryType,
-                         paymentMethod,
-                         subtotal: subtotal.toFixed(2),
+                          deliveryType,
+                          paymentMethod: paymentMethod!,
+                          subtotal: subtotal.toFixed(2),
                          deliveryFee: deliveryFeeValue.toFixed(2),
                          discount: discount.toFixed(2),
                          total: total.toFixed(2),
@@ -6136,7 +6145,7 @@ setOnlinePaymentUrl(null);
                   }
                   setOrderObservation("");
                   setDeliveryType("pickup");
-                  setPaymentMethod("pix");
+                  setPaymentMethod(null);
                   setChangeAmount("");
                 }}
                 className="w-full py-3.5 font-semibold rounded-xl transition-colors bg-gray-100 hover:bg-gray-200 text-gray-700"

@@ -167,6 +167,7 @@
 
 ## Bugs
 - [x] Corrigir link do menu Estoque na sidebar que não carrega a página
+- [ ] Bug: Pedido via WhatsApp captura nome e telefone do restaurante em vez do cliente real
 
 ## Estilo Visual dos Cards de Estoque
 - [x] Ajustar cards da página de Estoque para seguir o mesmo estilo visual da Dashboard
