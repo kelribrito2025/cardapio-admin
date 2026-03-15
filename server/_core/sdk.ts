@@ -39,7 +39,19 @@ class OAuthService {
   }
 
   private decodeState(state: string): string {
-    const redirectUri = atob(state);
+    let redirectUri: string;
+    try {
+      redirectUri = atob(state);
+    } catch {
+      throw new Error("Parâmetro OAuth state inválido.");
+    }
+
+    // Permitir apenas caminhos relativos (ex: "/callback", "/?ref=x")
+    // Rejeitar URLs absolutas para prevenir open redirect
+    if (redirectUri.startsWith("http://") || redirectUri.startsWith("https://") || redirectUri.startsWith("//")) {
+      throw new Error("Redirect URI no OAuth state deve ser um caminho relativo.");
+    }
+
     return redirectUri;
   }
 

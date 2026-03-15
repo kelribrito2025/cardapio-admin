@@ -18,4 +18,10 @@ export const ENV = {
   // Stripe
   stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
+  // Origens permitidas para o app de impressora (separadas por vírgula)
+  // Ex: PRINTER_ALLOWED_ORIGINS=https://impressora.meusite.com,https://app.impressora.com
+  printerAllowedOrigins: (process.env.PRINTER_ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map(o => o.trim())
+    .filter(Boolean),
 };

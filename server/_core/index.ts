@@ -3126,7 +3126,21 @@ async function startServer() {
       res.setHeader("Connection", "keep-alive");
       res.setHeader("Transfer-Encoding", "chunked");
       res.setHeader("X-Accel-Buffering", "no");
-      res.setHeader("Access-Control-Allow-Origin", "*");
+      // Restringir CORS: usar lista de origens configuradas em PRINTER_ALLOWED_ORIGINS
+      // ou refletir a origem da requisição (mais seguro que wildcard "*")
+      const requestOrigin = req.headers.origin;
+      const allowedPrinterOrigins = ENV.printerAllowedOrigins;
+      if (allowedPrinterOrigins.length > 0) {
+        if (requestOrigin && allowedPrinterOrigins.includes(requestOrigin)) {
+          res.setHeader("Access-Control-Allow-Origin", requestOrigin);
+          res.setHeader("Vary", "Origin");
+        }
+        // Se a origem não está na lista, não define o header (bloqueio pelo browser)
+      } else if (requestOrigin) {
+        // Sem lista configurada: reflete a origem da requisição (melhor que "*")
+        res.setHeader("Access-Control-Allow-Origin", requestOrigin);
+        res.setHeader("Vary", "Origin");
+      }
       res.flushHeaders();
       
       // Enviar evento de conex\u00e3o estabelecida

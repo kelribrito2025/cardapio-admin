@@ -21,6 +21,17 @@ import { buildDriverDeliveryMessage } from './driverMessage';
 import { botApiKeys, collaborators } from '../drizzle/schema';
 import crypto from 'crypto';
 
+// Security helper: verifica que o usuário autenticado é dono do estabelecimento
+async function assertEstablishmentOwnership(userId: number, establishmentId: number): Promise<void> {
+  const establishment = await db.getEstablishmentById(establishmentId);
+  if (!establishment || establishment.userId !== userId) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Acesso negado: você não tem permissão para acessar este estabelecimento.",
+    });
+  }
+}
+
 export const appRouter = router({
   system: systemRouter,
   ifood: ifoodRouter,
@@ -90,7 +101,7 @@ export const appRouter = router({
     loginWithEmail: publicProcedure
       .input(z.object({
         email: z.string().email("Email inválido"),
-        password: z.string().min(1, "Senha é obrigatória"),
+        password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
         rememberMe: z.boolean().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
@@ -158,7 +169,8 @@ export const appRouter = router({
     
     getOpenStatus: protectedProcedure
       .input(z.object({ establishmentId: z.number() }))
-      .query(async ({ input }) => {
+      .query(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.establishmentId);
         return db.getEstablishmentOpenStatus(input.establishmentId);
       }),
     
@@ -364,7 +376,8 @@ export const appRouter = router({
         id: z.number(),
         isOpen: z.boolean(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.id);
         await db.toggleEstablishmentOpen(input.id, input.isOpen);
         // Invalidar cache do menu público para que o próximo refetch traga dados frescos
         db.invalidatePublicMenuCache(input.id);
@@ -382,7 +395,8 @@ export const appRouter = router({
         id: z.number(),
         close: z.boolean(), // true = fechar manualmente, false = abrir
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.id);
         await db.setManualClose(input.id, input.close);
         // Invalidar cache do menu público para que o próximo refetch traga dados frescos
         db.invalidatePublicMenuCache(input.id);
@@ -402,7 +416,8 @@ export const appRouter = router({
         noteStyle: z.string().optional(),
         validityDays: z.number().min(1).max(7).optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.id);
         await db.savePublicNote(input.id, input.note, input.noteStyle, input.validityDays);
         return { success: true };
       }),
@@ -412,7 +427,8 @@ export const appRouter = router({
       .input(z.object({
         id: z.number(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.id);
         await db.removePublicNote(input.id);
         return { success: true };
       }),
@@ -420,7 +436,8 @@ export const appRouter = router({
     // Buscar horários de funcionamento
     getBusinessHours: protectedProcedure
       .input(z.object({ establishmentId: z.number() }))
-      .query(async ({ input }) => {
+      .query(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.establishmentId);
         return db.getBusinessHoursByEstablishment(input.establishmentId);
       }),
     
@@ -435,7 +452,8 @@ export const appRouter = router({
           closeTime: z.string().nullable(),
         })),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.establishmentId);
         await db.saveBusinessHours(input.establishmentId, input.hours);
         return { success: true };
       }),
@@ -718,7 +736,8 @@ export const appRouter = router({
         hasStock: z.boolean().optional(),
         printerId: z.number().nullable().optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.establishmentId);
         const id = await db.createProduct(input);
         // Criar automaticamente item de estoque quando controle de estoque está ativado
         if (input.hasStock) {

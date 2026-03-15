@@ -4267,16 +4267,38 @@ export async function getPublicOrderByNumber(orderNumber: string, establishmentI
 export async function getPublicOrderById(orderId: number) {
   const db = await getDb();
   if (!db) return undefined;
-  
-  const result = await db.select().from(orders)
+
+  // Seleciona apenas campos necessários para rastreamento — exclui PII sensível
+  const result = await db.select({
+    id: orders.id,
+    establishmentId: orders.establishmentId,
+    orderNumber: orders.orderNumber,
+    status: orders.status,
+    deliveryType: orders.deliveryType,
+    paymentMethod: orders.paymentMethod,
+    subtotal: orders.subtotal,
+    deliveryFee: orders.deliveryFee,
+    discount: orders.discount,
+    total: orders.total,
+    source: orders.source,
+    isScheduled: orders.isScheduled,
+    scheduledAt: orders.scheduledAt,
+    createdAt: orders.createdAt,
+    updatedAt: orders.updatedAt,
+    completedAt: orders.completedAt,
+    acceptedAt: orders.acceptedAt,
+    readyAt: orders.readyAt,
+    // customerPhone, customerAddress, customerName, notes, changeAmount, externalData
+    // são intencionalmente omitidos para proteger PII do cliente
+  }).from(orders)
     .where(eq(orders.id, orderId))
     .limit(1);
-  
+
   if (result.length === 0) return undefined;
-  
+
   const order = result[0];
   const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id));
-  
+
   return { ...order, items };
 }
 
