@@ -8,41 +8,33 @@ function isIpAddress(host: string) {
   return host.includes(":");
 }
 
-function isSecureRequest(req: Request) {
-  if (req.protocol === "https") return true;
+function isLocalRequest(req: Request): boolean {
+  const host = req.hostname;
+  return LOCAL_HOSTS.has(host) || isIpAddress(host);
+}
 
-  const forwardedProto = req.headers["x-forwarded-proto"];
-  if (!forwardedProto) return false;
-
-  const protoList = Array.isArray(forwardedProto)
-    ? forwardedProto
-    : forwardedProto.split(",");
-
-  return protoList.some(proto => proto.trim().toLowerCase() === "https");
+/**
+ * Determina se a requisição veio via HTTPS.
+ * Usa apenas req.protocol (definido pelo Express com base em trust proxy configurado),
+ * evitando ler diretamente o header x-forwarded-proto que pode ser manipulado por clientes.
+ */
+function isSecureRequest(req: Request): boolean {
+  return req.protocol === "https";
 }
 
 export function getSessionCookieOptions(
   req: Request
 ): Pick<CookieOptions, "domain" | "httpOnly" | "path" | "sameSite" | "secure"> {
-  // const hostname = req.hostname;
-  // const shouldSetDomain =
-  //   hostname &&
-  //   !LOCAL_HOSTS.has(hostname) &&
-  //   !isIpAddress(hostname) &&
-  //   hostname !== "127.0.0.1" &&
-  //   hostname !== "::1";
-
-  // const domain =
-  //   shouldSetDomain && !hostname.startsWith(".")
-  //     ? `.${hostname}`
-  //     : shouldSetDomain
-  //       ? hostname
-  //       : undefined;
+  const secure = isSecureRequest(req);
+  const isLocal = isLocalRequest(req);
 
   return {
     httpOnly: true,
     path: "/",
-    sameSite: "none",
-    secure: isSecureRequest(req),
+    // "lax" protege contra CSRF em navegadores modernos e é compatível com
+    // fluxos de autenticação padrão. "none" só é necessário para contextos
+    // cross-site explícitos e exige secure=true.
+    sameSite: isLocal ? "lax" : secure ? "lax" : "none",
+    secure,
   };
 }

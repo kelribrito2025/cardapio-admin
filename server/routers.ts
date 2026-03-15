@@ -7090,7 +7090,7 @@ export const appRouter = router({
     login: publicProcedure
       .input(z.object({
         email: z.string().email("Email inválido"),
-        password: z.string().min(1, "Senha é obrigatória"),
+        password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
       }))
       .mutation(async ({ ctx, input }) => {
         // Find collaborator by email (global search)

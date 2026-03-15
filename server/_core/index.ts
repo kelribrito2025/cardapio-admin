@@ -1,5 +1,7 @@
 import "dotenv/config";
 import express from "express";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import { createServer } from "http";
@@ -1372,10 +1374,45 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
   throw new Error(`No available port found starting from ${startPort}`);
 }
 
+// Rate limiters para endpoints públicos sensíveis
+const publicApiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Muitas requisições. Tente novamente em alguns minutos." },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 20, // máximo 20 tentativas de login por IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Muitas tentativas de login. Tente novamente em 15 minutos." },
+});
+
+const webhookLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minuto
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Limite de requisições excedido." },
+});
+
 async function startServer() {
   const app = express();
   const server = createServer(app);
-  
+
+  // Trust proxy — necessário para que req.protocol seja correto atrás de reverse proxy
+  // Ajuste o valor conforme a sua infraestrutura (1 = um nível de proxy, "loopback", etc.)
+  app.set("trust proxy", 1);
+
+  // Headers de segurança via helmet
+  app.use(helmet({
+    contentSecurityPolicy: false, // Desativado para não quebrar o frontend SPA; ativar com política adequada futuramente
+    crossOriginEmbedderPolicy: false, // Necessário para recursos de terceiros (imagens, fontes)
+  }));
+
   // Stripe webhook MUST be registered BEFORE express.json() for signature verification
   app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async (req, res) => {
     try {
@@ -1732,9 +1769,9 @@ async function startServer() {
     }
   }));
   
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // Limite de 5MB para JSON padrão; uploads de imagem usam endpoint dedicado com limite próprio
+  app.use(express.json({ limit: "5mb" }));
+  app.use(express.urlencoded({ limit: "5mb", extended: true }));
   app.use(cookieParser());
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
@@ -2666,21 +2703,13 @@ async function startServer() {
 
   // Webhook para receber respostas dos botões do WhatsApp (UAZAPI)
   // Este endpoint recebe TODOS os webhooks e encaminha para o n8n automaticamente
-  app.post("/api/webhook/whatsapp/:establishmentId", express.json(), async (req, res) => {
+  app.post("/api/webhook/whatsapp/:establishmentId", webhookLimiter, express.json(), async (req, res) => {
     try {
       const establishmentId = parseInt(req.params.establishmentId);
       const body = req.body;
       
-      console.log('[WhatsApp Webhook] Recebido para establishment:', establishmentId, 'body keys:', Object.keys(body));
-      console.log('[WhatsApp Webhook] Body resumo:', JSON.stringify({
-        hasMessage: !!body.message,
-        hasData: !!body.data,
-        fromMe: body.fromMe || body.message?.fromMe,
-        buttonOrListid: body.buttonOrListid || body.message?.buttonOrListid || body.data?.buttonOrListid,
-        messageType: body.message?.type || body.type,
-      }));
-      // Log COMPLETO do payload para debug de mensagens de entregador
-      console.log('[WhatsApp Webhook] PAYLOAD COMPLETO:', JSON.stringify(body).substring(0, 2000));
+      // Log sem dados sensíveis do cliente (telefone, mensagens, endereços)
+      console.log('[WhatsApp Webhook] Recebido para establishment:', establishmentId, '| type:', body.message?.type || body.type || 'unknown', '| hasButton:', !!(body.buttonOrListid || body.message?.buttonOrListid || body.data?.buttonOrListid));
       
       // PROXY: Encaminhar para o n8n em background (não bloquear a resposta)
       const N8N_WEBHOOK_URL = 'https://webn8n.granaupvps.shop/webhook/mindi';
@@ -2719,16 +2748,11 @@ async function startServer() {
         senderPhone = chatId || chatPhone || rawSender;
       }
       
-      console.log('[WhatsApp Webhook] senderPhone extraído:', senderPhone, '| fontes:', JSON.stringify({
-        rawSender, chatId, chatPhone,
-        isLid: rawSender?.includes('@lid'),
-        msgSender: message?.sender, msgFrom: message?.from,
-        msgChatid: message?.chatid, bodyChatid: body?.chatid,
-        chatWaChatid: body?.chat?.wa_chatid, bodyNumber: body?.number,
-      }));
-      
+      // Log sem telefone real para proteger PII
+      console.log('[WhatsApp Webhook] senderPhone resolvido:', senderPhone ? '[REDACTED]' : 'undefined', '| isLid:', rawSender?.includes('@lid'));
+
       if (buttonId) {
-        console.log('[WhatsApp Webhook] Botão clicado:', buttonId, 'sender:', senderPhone);
+        console.log('[WhatsApp Webhook] Botão clicado:', buttonId);
         
         // ========== BOTÕES DE CONFIRMAÇÃO/CANCELAMENTO DE PEDIDO ==========
         const confirmMatch = buttonId.match(/confirm_order_(#P\d+)/);
@@ -2740,19 +2764,15 @@ async function startServer() {
         
         if (confirmMatch) {
           const orderNumber = confirmMatch[1];
-          console.log('[WhatsApp Webhook] Pedido confirmado:', orderNumber);
           const { confirmOrderByNumber } = await import('../db');
           const result = await confirmOrderByNumber(establishmentId, orderNumber);
-          console.log('[WhatsApp Webhook] Resultado confirmação:', result);
           if (result.success) {
-            console.log('[WhatsApp Webhook] Pedido confirmado com sucesso');
+            console.log('[WhatsApp Webhook] Pedido confirmado com sucesso:', orderNumber);
           }
         } else if (cancelMatch) {
           const orderNumber = cancelMatch[1];
-          console.log('[WhatsApp Webhook] Pedido cancelado pelo cliente:', orderNumber);
           const { cancelOrderByNumber } = await import('../db');
           const result = await cancelOrderByNumber(establishmentId, orderNumber, 'Cancelado pelo cliente via WhatsApp');
-          console.log('[WhatsApp Webhook] Resultado cancelamento:', result);
           if (result.success) {
             const { getWhatsappConfig } = await import('../db');
             const { sendTextMessage } = await import('./uazapi');
@@ -3335,6 +3355,19 @@ async function startServer() {
 
   // Bot API (REST endpoints para integração n8n / WhatsApp bots)
   app.use("/api/bot", createBotApiRouter());
+
+  // Rate limiting nos endpoints de autenticação tRPC
+  app.use("/api/trpc/auth.loginWithEmail", authLimiter);
+  app.use("/api/trpc/auth.register", authLimiter);
+  app.use("/api/trpc/collaborator.login", authLimiter);
+
+  // Rate limiting geral em endpoints públicos tRPC
+  app.use("/api/trpc/orders.getOrderById", publicApiLimiter);
+  app.use("/api/trpc/orders.getOrdersByPhone", publicApiLimiter);
+  app.use("/api/trpc/orders.getOrderByNumber", publicApiLimiter);
+  app.use("/api/trpc/orders.validateCoupon", publicApiLimiter);
+  app.use("/api/trpc/orders.canReview", publicApiLimiter);
+  app.use("/api/trpc/establishment.checkSlugAvailability", publicApiLimiter);
 
   // Desabilitar cache HTTP para respostas da API tRPC
   app.use("/api/trpc", (req, res, next) => {
