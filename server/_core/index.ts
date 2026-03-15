@@ -1409,8 +1409,25 @@ async function startServer() {
 
   // Headers de segurança via helmet
   app.use(helmet({
-    contentSecurityPolicy: false, // Desativado para não quebrar o frontend SPA; ativar com política adequada futuramente
-    crossOriginEmbedderPolicy: false, // Necessário para recursos de terceiros (imagens, fontes)
+    // CSP: política básica que previne carregamento de scripts/frames de origens externas desconhecidas
+    // 'unsafe-inline' é necessário para o Vite SPA e Tailwind; remova gradualmente com nonces futuramente
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // unsafe-eval necessário para Vite dev
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "blob:", "https:"], // https: permite imagens de S3 e CDNs
+        connectSrc: ["'self'", "https:", "wss:", "ws:"], // wss/ws para SSE e WebSockets
+        fontSrc: ["'self'", "data:"],
+        objectSrc: ["'none'"], // bloqueia Flash, Silverlight, etc.
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"], // impede clickjacking via iframes
+        frameAncestors: ["'none'"], // impede a página de ser embutida em iframes externos
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false, // Necessário para recursos de terceiros (imagens, fontes de CDN)
   }));
 
   // Stripe webhook MUST be registered BEFORE express.json() for signature verification

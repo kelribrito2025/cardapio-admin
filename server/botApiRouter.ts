@@ -56,6 +56,15 @@ async function botApiAuth(req: BotApiRequest, res: Response, next: NextFunction)
       return res.status(403).json({ error: "API Key desativada." });
     }
 
+    // Verificar expiração por inatividade: chaves não usadas por 365 dias são rejeitadas
+    const MAX_INACTIVE_DAYS = 365;
+    if (keyRecord.lastUsedAt) {
+      const daysSinceLastUse = (Date.now() - new Date(keyRecord.lastUsedAt).getTime()) / (1000 * 60 * 60 * 24);
+      if (daysSinceLastUse > MAX_INACTIVE_DAYS) {
+        return res.status(401).json({ error: "API Key expirada por inatividade. Gere uma nova chave no painel." });
+      }
+    }
+
     // Atualizar lastUsedAt e requestCount (fire-and-forget)
     dbInstance
       .update(botApiKeys)
