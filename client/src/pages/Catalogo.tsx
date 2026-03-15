@@ -762,7 +762,7 @@ export default function Catalogo() {
   const [establishmentId, setEstablishmentId] = useState<number | null>(null);
 
   // Filters - use global search from topbar + local mobile search
-  const { searchQuery: globalSearch } = useSearch();
+  const { searchQuery: globalSearch, setSearchQuery: setGlobalSearch } = useSearch();
   const [mobileSearch, setMobileSearch] = useState("");
   // Combine global search (topbar) with local mobile search
   const search = globalSearch || mobileSearch;
@@ -1648,7 +1648,7 @@ export default function Catalogo() {
                 description={`Não encontramos produtos para "${search}". Tente buscar com outro termo.`}
                 action={{
                   label: "Limpar busca",
-                  onClick: () => setMobileSearch("")
+                  onClick: () => { setMobileSearch(""); setGlobalSearch(""); }
                 }}
               />
             </SectionCard>
