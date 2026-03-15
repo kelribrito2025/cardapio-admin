@@ -8845,3 +8845,4 @@
 - [ ] Fix N8N bot greeting showing literal {{nome}} instead of establishment name
 - [ ] Fix bot treating 'obrigado' as out-of-scope instead of a polite farewell response
 - [x] Fix catalog search to hide categories with no matching products (only show categories that contain filtered items)
+- [x] Add 'no results found' message when catalog search returns no matching items

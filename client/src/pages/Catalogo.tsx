@@ -1639,6 +1639,21 @@ export default function Catalogo() {
             );
           })}
           
+          {/* No results message when search returns empty */}
+          {search && products.length === 0 && (
+            <SectionCard>
+              <EmptyState
+                icon={Search}
+                title="Nenhum resultado encontrado"
+                description={`Não encontramos produtos para "${search}". Tente buscar com outro termo.`}
+                action={{
+                  label: "Limpar busca",
+                  onClick: () => setMobileSearch("")
+                }}
+              />
+            </SectionCard>
+          )}
+          
           {/* Products without category */}
           {(localProductsByCategory[0] && localProductsByCategory[0].length > 0) || activeProduct ? (
             <div 
