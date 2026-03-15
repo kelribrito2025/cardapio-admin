@@ -20,6 +20,18 @@ import { sendMenuPublicEvent } from "./_core/sse";
 import { buildDriverDeliveryMessage } from './driverMessage';
 import { botApiKeys, collaborators } from '../drizzle/schema';
 import crypto from 'crypto';
+import { auditLog } from './_core/auditLog';
+
+// Security helper: verifica que o usuário autenticado é dono do estabelecimento
+async function assertEstablishmentOwnership(userId: number, establishmentId: number): Promise<void> {
+  const establishment = await db.getEstablishmentById(establishmentId);
+  if (!establishment || establishment.userId !== userId) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Acesso negado: você não tem permissão para acessar este estabelecimento.",
+    });
+  }
+}
 
 export const appRouter = router({
   system: systemRouter,
@@ -82,7 +94,8 @@ export const appRouter = router({
           ...cookieOptions,
           maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-        
+
+        auditLog({ type: "auth.register", userId: user.id, ip: ctx.req.ip });
         return { success: true, userId: user.id };
       }),
     
@@ -90,28 +103,30 @@ export const appRouter = router({
     loginWithEmail: publicProcedure
       .input(z.object({
         email: z.string().email("Email inválido"),
-        password: z.string().min(1, "Senha é obrigatória"),
+        password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
         rememberMe: z.boolean().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         // Find user by email
         const user = await db.getUserByEmail(input.email);
         if (!user || !user.passwordHash) {
+          auditLog({ type: "auth.login.failure", ip: ctx.req.ip });
           throw new TRPCError({
             code: "UNAUTHORIZED",
             message: "Email ou senha incorretos.",
           });
         }
-        
+
         // Verify password
         const isValid = await bcrypt.compare(input.password, user.passwordHash);
         if (!isValid) {
+          auditLog({ type: "auth.login.failure", userId: user.id, ip: ctx.req.ip });
           throw new TRPCError({
             code: "UNAUTHORIZED",
             message: "Email ou senha incorretos.",
           });
         }
-        
+
         // Update last signed in
         await db.updateUserLastSignedIn(user.id);
         
@@ -127,10 +142,11 @@ export const appRouter = router({
           ...cookieOptions,
           maxAge: input.rememberMe ? 30 * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000,
         });
-        
+
+        auditLog({ type: "auth.login.success", userId: user.id, ip: ctx.req.ip });
         return { success: true };
       }),
-    
+
     // Forgot password (placeholder - sends notification to owner)
     forgotPassword: publicProcedure
       .input(z.object({
@@ -158,7 +174,8 @@ export const appRouter = router({
     
     getOpenStatus: protectedProcedure
       .input(z.object({ establishmentId: z.number() }))
-      .query(async ({ input }) => {
+      .query(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.establishmentId);
         return db.getEstablishmentOpenStatus(input.establishmentId);
       }),
     
@@ -364,7 +381,8 @@ export const appRouter = router({
         id: z.number(),
         isOpen: z.boolean(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.id);
         await db.toggleEstablishmentOpen(input.id, input.isOpen);
         // Invalidar cache do menu público para que o próximo refetch traga dados frescos
         db.invalidatePublicMenuCache(input.id);
@@ -382,7 +400,8 @@ export const appRouter = router({
         id: z.number(),
         close: z.boolean(), // true = fechar manualmente, false = abrir
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.id);
         await db.setManualClose(input.id, input.close);
         // Invalidar cache do menu público para que o próximo refetch traga dados frescos
         db.invalidatePublicMenuCache(input.id);
@@ -402,7 +421,8 @@ export const appRouter = router({
         noteStyle: z.string().optional(),
         validityDays: z.number().min(1).max(7).optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.id);
         await db.savePublicNote(input.id, input.note, input.noteStyle, input.validityDays);
         return { success: true };
       }),
@@ -412,7 +432,8 @@ export const appRouter = router({
       .input(z.object({
         id: z.number(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.id);
         await db.removePublicNote(input.id);
         return { success: true };
       }),
@@ -420,7 +441,8 @@ export const appRouter = router({
     // Buscar horários de funcionamento
     getBusinessHours: protectedProcedure
       .input(z.object({ establishmentId: z.number() }))
-      .query(async ({ input }) => {
+      .query(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.establishmentId);
         return db.getBusinessHoursByEstablishment(input.establishmentId);
       }),
     
@@ -435,7 +457,8 @@ export const appRouter = router({
           closeTime: z.string().nullable(),
         })),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.establishmentId);
         await db.saveBusinessHours(input.establishmentId, input.hours);
         return { success: true };
       }),
@@ -718,7 +741,8 @@ export const appRouter = router({
         hasStock: z.boolean().optional(),
         printerId: z.number().nullable().optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        await assertEstablishmentOwnership(ctx.user.id, input.establishmentId);
         const id = await db.createProduct(input);
         // Criar automaticamente item de estoque quando controle de estoque está ativado
         if (input.hasStock) {
@@ -735,6 +759,7 @@ export const appRouter = router({
             console.error("Erro ao criar item de estoque automaticamente:", e);
           }
         }
+        auditLog({ type: "product.create", userId: ctx.user.id, establishmentId: input.establishmentId, metadata: { productId: id } });
         return { id };
       }),
     
@@ -799,11 +824,12 @@ export const appRouter = router({
     
     delete: protectedProcedure
       .input(z.object({ id: z.number() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         await db.deleteProduct(input.id);
+        auditLog({ type: "product.delete", userId: ctx.user.id, metadata: { productId: input.id } });
         return { success: true };
       }),
-    
+
     toggleStatus: protectedProcedure
       .input(z.object({
         id: z.number(),
@@ -6645,7 +6671,7 @@ export const appRouter = router({
         establishmentId: z.number(),
         name: z.string().min(1, "Nome é obrigatório"),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const dbInstance = await db.getDb();
         if (!dbInstance) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB indisponível' });
         const apiKey = `bot_${crypto.randomBytes(32).toString('hex')}`;
@@ -6656,6 +6682,7 @@ export const appRouter = router({
           isActive: true,
           requestCount: 0,
         });
+        auditLog({ type: "api_key.create", userId: ctx.user.id, establishmentId: input.establishmentId, metadata: { keyId: result[0].insertId, name: input.name } });
         return { id: result[0].insertId, apiKey, name: input.name };
       }),
 
@@ -6672,11 +6699,12 @@ export const appRouter = router({
 
     delete: protectedProcedure
       .input(z.object({ id: z.number() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const dbInstance = await db.getDb();
         if (!dbInstance) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'DB indisponível' });
         await dbInstance.delete(botApiKeys)
           .where(eq(botApiKeys.id, input.id));
+        auditLog({ type: "api_key.delete", userId: ctx.user.id, metadata: { keyId: input.id } });
         return { success: true };
       }),
 
@@ -7071,28 +7099,31 @@ export const appRouter = router({
     login: publicProcedure
       .input(z.object({
         email: z.string().email("Email inválido"),
-        password: z.string().min(1, "Senha é obrigatória"),
+        password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
       }))
       .mutation(async ({ ctx, input }) => {
         // Find collaborator by email (global search)
         const collab = await db.getCollaboratorByEmailGlobal(input.email);
         if (!collab || !collab.passwordHash) {
+          auditLog({ type: "collaborator.login.failure", ip: ctx.req.ip });
           throw new TRPCError({
             code: "UNAUTHORIZED",
             message: "Email ou senha incorretos.",
           });
         }
-        
+
         if (!collab.isActive) {
+          auditLog({ type: "collaborator.login.failure", establishmentId: collab.establishmentId, ip: ctx.req.ip, metadata: { reason: "account_disabled" } });
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "Sua conta foi desativada. Contacte o administrador.",
           });
         }
-        
+
         // Verify password
         const isValid = await bcrypt.compare(input.password, collab.passwordHash);
         if (!isValid) {
+          auditLog({ type: "collaborator.login.failure", establishmentId: collab.establishmentId, ip: ctx.req.ip });
           throw new TRPCError({
             code: "UNAUTHORIZED",
             message: "Email ou senha incorretos.",
@@ -7145,6 +7176,7 @@ export const appRouter = router({
           httpOnly: false, // Frontend needs to read this
         });
         
+        auditLog({ type: "collaborator.login.success", establishmentId: collab.establishmentId, ip: ctx.req.ip, metadata: { collaboratorId: collab.id } });
         return {
           success: true,
           collaborator: {
